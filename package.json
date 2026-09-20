@@ -1,0 +1,13 @@
+{
+  "name": "vega-application",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start:web": "node scripts/start-web.mjs",
+    "start:worker": "node scripts/start-worker.mjs",
+    "test": "node --test",
+    "foundation:check": "node --env-file-if-exists=.env.local scripts/check-foundation.mjs"
+  }
+}
