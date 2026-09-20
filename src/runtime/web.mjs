@@ -1,4 +1,5 @@
 import { createServer } from 'node:http';
+import { receiveSquareWebhook } from './square-webhook.mjs';
 
 export function createDevelopmentServer(env = process.env) {
   if (env.VEGA_ENV !== 'development' || env.VEGA_EXTERNAL_EFFECTS !== 'disabled') {
@@ -8,6 +9,10 @@ export function createDevelopmentServer(env = process.env) {
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 'no-store');
     res.setHeader('X-Content-Type-Options', 'nosniff');
+    if (req.url === '/webhooks/square') {
+      void receiveSquareWebhook(req, res, env);
+      return;
+    }
     if (req.method === 'GET' && req.url === '/health/live') {
       res.writeHead(200);
       res.end(JSON.stringify({ application: 'vega', environment: 'development', status: 'alive' }));
