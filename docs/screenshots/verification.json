@@ -1,0 +1,21 @@
+{
+  "checks": [
+    "Desktop member home renders",
+    "Search and member reservation",
+    "Staff check-in and undo",
+    "Staff creates synthetic class",
+    "Staff adds synthetic participant",
+    "All staff surfaces render",
+    "Member cancellation",
+    "All member surfaces render",
+    "390px mobile class layout no horizontal page overflow",
+    "Leave workspace clears access"
+  ],
+  "errors": [],
+  "screenshots": [
+    "desktop-today.png",
+    "mobile-classes.png"
+  ],
+  "scope": "Synthetic interactive wireframe; no provider/authenticated backend effects",
+  "passed": true
+}
