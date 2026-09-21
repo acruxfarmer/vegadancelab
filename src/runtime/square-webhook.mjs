@@ -10,7 +10,7 @@ export function verifySquareSignature(rawBody, signature, key) {
   return actual.length === expected.length && timingSafeEqual(expected, actual);
 }
 
-export async function receiveSquareWebhook(req, res, env) {
+export async function receiveSquareWebhook(req, res, env, persistEvent) {
   const reply = (status, code) => { res.writeHead(status); res.end(JSON.stringify({ status: code })); };
   if (req.method !== 'POST') { res.setHeader('Allow', 'POST'); reply(405, 'method_not_allowed'); return; }
   if (env.SQUARE_ENVIRONMENT !== 'sandbox' || !env.SQUARE_WEBHOOK_SIGNATURE_KEY) {
@@ -31,13 +31,18 @@ export async function receiveSquareWebhook(req, res, env) {
     if (req.headers['square-environment'] !== 'Sandbox') { reply(403, 'sandbox_required'); return; }
     let event;
     try { event = JSON.parse(rawBody.toString('utf8')); } catch { reply(400, 'invalid_json'); return; }
-    if (!event || typeof event.event_id !== 'string' || !squareEventTypes.has(event.type)) {
+    if (!event || typeof event.event_id !== 'string' || !event.event_id || event.event_id.length > 255 || typeof event.merchant_id !== 'string' || !event.merchant_id || event.merchant_id.length > 255 || !squareEventTypes.has(event.type)) {
       reply(400, 'unsupported_event'); return;
     }
     // Never acknowledge an event until durable, idempotent storage is available.
     // No payment state changes or payload logging occur during foundation setup.
-    res.setHeader('Retry-After', '60');
-    reply(503, 'durable_inbox_pending');
+    if (!persistEvent) { res.setHeader('Retry-After', '60'); reply(503, 'durable_inbox_pending'); return; }
+    try {
+      const outcome = await persistEvent(event, rawBody);
+      if (outcome === 'conflict') { reply(409, 'event_identity_conflict'); return; }
+      if (!['stored', 'duplicate'].includes(outcome)) throw new Error('Invalid storage result');
+      reply(200, outcome);
+    } catch { res.setHeader('Retry-After', '60'); reply(503, 'durable_inbox_unavailable'); }
   } catch {
     if (!res.headersSent) reply(400, 'invalid_request');
   }

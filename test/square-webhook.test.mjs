@@ -20,7 +20,7 @@ test('webhook rejects unsigned requests and never acknowledges unstored events',
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   try {
     const url = `http://127.0.0.1:${server.address().port}/webhooks/square`;
-    const body = JSON.stringify({ event_id: 'synthetic-event', type: 'payment.updated' });
+    const body = JSON.stringify({ event_id: 'synthetic-event', type: 'payment.updated', merchant_id: 'synthetic-merchant' });
     assert.equal((await fetch(url, { method: 'POST', body })).status, 401);
     const headers = { 'x-square-hmacsha256-signature': createHmac('sha256', key).update(squareNotificationUrl).update(body).digest('base64'), 'square-environment': 'Sandbox' };
     assert.equal((await fetch(url, { method: 'POST', body, headers })).status, 503);
