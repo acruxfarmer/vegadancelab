@@ -31,7 +31,7 @@ try {
     if($LASTEXITCODE -ne 0){throw 'Items lookup failed'}
     $items=@(($raw|ConvertFrom-Json)|Where-Object { $_.folderId -eq $folders[0].id -and -not $_.deletedDate })
     $records=@{}
-    foreach($name in @('Vega Dev - Supabase','Vega Dev - Supabase Operator','Vega Dev - Render Operator','Vega Dev - Square Sandbox')) {
+    foreach($name in @('Vega Dev - Supabase','Vega Dev - Render Operator','Vega Dev - Square Sandbox')) {
         $stage='Bitwarden item: '+$name
         $matches=@($items|Where-Object name -CEQ $name)
         if($matches.Count -ne 1 -or $matches[0].type -ne 2){throw 'Item not unique secure note'}
@@ -39,8 +39,6 @@ try {
     }
     $stage='Vega Dev - Render Operator / RENDER_API_KEY'
     $renderKey=Field $records['Vega Dev - Render Operator'] 'RENDER_API_KEY'
-    $stage='Vega Dev - Supabase Operator / ADMIN_DATABASE_URL'
-    $adminUrl=Field $records['Vega Dev - Supabase Operator'] 'ADMIN_DATABASE_URL'
     $stage='Square sandbox webhook configuration'
     $square=$records['Vega Dev - Square Sandbox']
     if((Field $square 'SQUARE_ENVIRONMENT') -cne 'sandbox'){throw 'Wrong environment'}
@@ -53,29 +51,12 @@ try {
     $pooler=Field $database 'SUPABASE_POOLER_HOST'
     if($pooler -notmatch '^aws-\d+-us-west-1\.pooler\.supabase\.com$'){throw 'Unexpected pooler'}
     $databaseUrl=Field $database 'DATABASE_URL' -Optional
-    if(-not $databaseUrl) {
-        $stage='save dedicated database credential to Bitwarden'
-        $bytes=New-Object byte[] 32
-        $rng=[Security.Cryptography.RandomNumberGenerator]::Create(); $rng.GetBytes($bytes); $rng.Dispose()
-        $password=[Convert]::ToBase64String($bytes).TrimEnd('=').Replace('+','-').Replace('/','_')
-        $databaseUrl='postgresql://vega_ingest_runtime.cjdoczrxcjynjhgpgqop:'+ $password +'@'+$pooler+':5432/postgres'
-        $fields=@($database.fields|Where-Object {$null -ne $_})
-        $existing=@($fields|Where-Object name -CEQ 'DATABASE_URL')
-        if($existing.Count -eq 1){$existing[0].value=$databaseUrl;$existing[0].type=1}
-        else{$fields+=[pscustomobject]@{name='DATABASE_URL';value=$databaseUrl;type=1};$database.fields=$fields}
-        # Store before activation so any retry reuses the same credential.
-        $encoded=($database|ConvertTo-Json -Depth 50 -Compress)|& bw encode 2>$null
-        if($LASTEXITCODE -ne 0){throw 'Encoding failed'}
-        $saved=$encoded|& bw edit item $database.id --nointeraction 2>$null
-        if($LASTEXITCODE -ne 0){throw 'Save failed'}
-        $verified=$saved|ConvertFrom-Json
-        if($verified.id -ne $database.id -or (Field $verified 'DATABASE_URL') -cne $databaseUrl){throw 'Save verification failed'}
-    }
+    if(-not $databaseUrl){throw 'Existing restricted DATABASE_URL required'}
     $stage='restricted database and Render handoff'
-    $payload=@{adminDatabaseUrl=$adminUrl;databaseUrl=$databaseUrl;renderApiKey=$renderKey;squareSignature=$signature;squareNotificationUrl=$notification;commit=$commit}|ConvertTo-Json -Compress
+    $payload=@{databaseUrl=$databaseUrl;renderApiKey=$renderKey;squareSignature=$signature;squareNotificationUrl=$notification;commit=$commit}|ConvertTo-Json -Compress
     $result=$payload|& $node (Join-Path $PSScriptRoot 'handoff-hosted-ingestion.mjs') 2>$null
     $report=($result|Out-String)|ConvertFrom-Json
     if($report.status -eq 'ingestion_deployment_requested'){Write-Host 'Restricted database login verified; Render ingestion deployment requested. Square subscription unchanged. No secrets displayed.'}
-    else{Write-Host ('Hosted ingestion incomplete at: '+$report.stage+'. No secrets displayed. Existing login credentials will not be reset on retry.')}
+    else{Write-Host ('Hosted ingestion incomplete at: '+$report.stage+' ['+($report.codes -join ',')+']. No secrets displayed. Existing login credentials will not be reset on retry.')}
 }catch{Write-Host ('Stopped at: '+$stage+'. No secret values displayed. Square and B2 unchanged.')}
 finally{$env:BITWARDENCLI_DEBUG=$priorDebug;$raw=$null;$records=$null;$items=$null;$matches=$null;$database=$null;$fields=$null;$existing=$null;$signature=$null;$renderKey=$null;$adminUrl=$null;$databaseUrl=$null;$password=$null;$bytes=$null;$encoded=$null;$saved=$null;$verified=$null;$payload=$null}
