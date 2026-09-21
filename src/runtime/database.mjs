@@ -1,5 +1,6 @@
 import pg from 'pg';
 import { createSquareInboxWriter } from './square-inbox.mjs';
+import { databaseTls } from './database-tls.mjs';
 
 export const projectRef = 'cjdoczrxcjynjhgpgqop';
 export const runtimeRole = 'vega_ingest_runtime';
@@ -10,7 +11,7 @@ export function databaseOptions(value, { operator = false } = {}) {
   const pooler = /^aws-\d+-us-west-1\.pooler\.supabase\.com$/.test(url.hostname);
   if (!['postgres:', 'postgresql:'].includes(url.protocol) || (!direct && !pooler) || url.pathname !== '/postgres' || !['5432','6543',''].includes(url.port) || decodeURIComponent(url.username) !== (direct ? role : `${role}.${projectRef}`) || !url.password) throw new Error('Invalid development database configuration');
   // Construct explicit properties: URL SSL flags can never disable verification.
-  return { host: url.hostname, port: Number(url.port || 5432), database: 'postgres', user: decodeURIComponent(url.username), password: decodeURIComponent(url.password), ssl: { rejectUnauthorized: true }, connectionTimeoutMillis: 10000, statement_timeout: 10000, query_timeout: 12000, application_name: operator ? 'vega-ingestion-provision' : 'vega-development-ingest' };
+  return { host: url.hostname, port: Number(url.port || 5432), database: 'postgres', user: decodeURIComponent(url.username), password: decodeURIComponent(url.password), ssl: databaseTls(url.hostname), connectionTimeoutMillis: 10000, statement_timeout: 10000, query_timeout: 12000, application_name: operator ? 'vega-ingestion-provision' : 'vega-development-ingest' };
 }
 export async function checkIngestionDatabase(query) {
   const { rows } = await query(`select current_user as role,

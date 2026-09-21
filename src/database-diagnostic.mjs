@@ -1,5 +1,6 @@
 import pg from 'pg';
 import { databaseOptions, checkIngestionDatabase } from './runtime/database.mjs';
+import { databaseCaFingerprint } from './runtime/database-tls.mjs';
 const knownCodes = new Set(['ENOTFOUND','EAI_AGAIN','ENETUNREACH','EHOSTUNREACH','ECONNREFUSED','ETIMEDOUT','ECONNRESET','28P01','28000','3D000','53300','57P03','SELF_SIGNED_CERT_IN_CHAIN','DEPTH_ZERO_SELF_SIGNED_CERT','UNABLE_TO_VERIFY_LEAF_SIGNATURE','UNABLE_TO_GET_ISSUER_CERT_LOCALLY','CERT_HAS_EXPIRED','ERR_TLS_CERT_ALTNAME_INVALID']);
 export function connectionFailure(error) {
   const codes=[error?.code,...(error?.errors||[]).map(e=>e.code)].filter(c=>knownCodes.has(c));
@@ -8,7 +9,7 @@ export function connectionFailure(error) {
   return {codes:safe,category:tls?'tls_trust_or_identity':safe.some(c=>['28P01','28000'].includes(c))?'authentication_or_login_permission':'connection',...(tls?{authentication:'not_reached'}:{})};
 }
 export async function diagnoseRestrictedDatabase(databaseUrl,{Client=pg.Client}={}) {
-  const report={item:'Vega Dev - Supabase',field:'DATABASE_URL',tlsVerification:'required',credentialsChanged:false,operatorConnectionAttempted:false};
+  const report={item:'Vega Dev - Supabase',field:'DATABASE_URL',tlsVerification:'verify-full-equivalent',caSource:'project-bundled Supabase Root 2021 CA',caFingerprint256:databaseCaFingerprint,credentialsChanged:false,operatorConnectionAttempted:false};
   let client;let stage='restricted_configuration';
   try {
     const config=databaseOptions(databaseUrl);

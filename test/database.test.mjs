@@ -1,9 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { databaseOptions, checkIngestionDatabase } from '../src/runtime/database.mjs';
+import { X509Certificate } from 'node:crypto';
+import { databaseCaFingerprint } from '../src/runtime/database-tls.mjs';
 test('database config pins project and runtime identity with strict TLS', () => {
   const url='postgresql://vega_ingest_runtime.cjdoczrxcjynjhgpgqop:synthetic@aws-0-us-west-1.pooler.supabase.com:5432/postgres?sslmode=disable';
   assert.equal(databaseOptions(url).ssl.rejectUnauthorized,true);
+  const tls=databaseOptions(url).ssl;
+  assert.equal(new X509Certificate(tls.ca).fingerprint256,databaseCaFingerprint);
+  assert.equal(tls.servername,'aws-0-us-west-1.pooler.supabase.com');
+  assert.equal(tls.checkServerIdentity(tls.servername,{subjectaltname:'DNS:aws-0-us-west-1.pooler.supabase.com'}),undefined);
+  assert.equal(tls.checkServerIdentity(tls.servername,{subjectaltname:'DNS:attacker.invalid'}).code,'ERR_TLS_CERT_ALTNAME_INVALID');
   assert.throws(()=>databaseOptions(url.replace('vega_ingest_runtime','postgres')));
   assert.throws(()=>databaseOptions(url.replace('cjdoczrxcjynjhgpgqop','wrong-project')));
   assert.throws(()=>databaseOptions(url.replace('pooler.supabase.com','attacker.invalid')));
