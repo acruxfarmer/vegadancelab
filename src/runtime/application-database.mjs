@@ -26,7 +26,16 @@ export function createApplicationStore(pool){
   if(rows.length!==1)throw new ApplicationError('Studio application data is not initialized',503);return rows[0];
  }
  return {
-  check:async()=>{const {rows}=await pool.query("select current_user as role,has_table_privilege(current_user,'vega_private.app_state','SELECT') and has_table_privilege(current_user,'vega_private.app_state','UPDATE') as state_access,has_table_privilege(current_user,'vega_private.app_members','INSERT,UPDATE,DELETE') as can_assign");if(rows[0]?.role!=='vega_app_runtime'||!rows[0].state_access||rows[0].can_assign)throw new Error('Application identity not ready');return true;},
+  check:async()=>{const {rows}=await pool.query(`select current_user as role,
+   not r.rolsuper and not r.rolbypassrls as restricted,
+   has_table_privilege(current_user,'vega_private.app_state','SELECT') and has_table_privilege(current_user,'vega_private.app_state','UPDATE')
+   and has_table_privilege(current_user,'vega_private.app_members','SELECT')
+   and has_table_privilege(current_user,'vega_private.app_commands','SELECT') and has_table_privilege(current_user,'vega_private.app_commands','INSERT') as state_access,
+   has_table_privilege(current_user,'vega_private.app_members','INSERT,UPDATE,DELETE') as can_assign,
+   (select count(*)=3 and bool_and(c.relrowsecurity and c.relforcerowsecurity and c.relowner<>r.oid)
+    from pg_class c join pg_namespace n on n.oid=c.relnamespace
+    where n.nspname='vega_private' and c.relname in ('app_state','app_members','app_commands')) as isolated
+   from pg_roles r where r.rolname=current_user`);if(rows[0]?.role!=='vega_app_runtime'||!rows[0].restricted||!rows[0].isolated||!rows[0].state_access||rows[0].can_assign)throw new Error('Application identity not ready');return true;},
   read:userId=>transaction(userId,async(c,a)=>{
    const row=await stateRow(c,a);let jobs=[];
    if(a.role==='staff'){
@@ -37,6 +46,10 @@ export function createApplicationStore(pool){
   }),
   command:(userId,command)=>transaction(userId,async(c,a)=>{
    const row=await stateRow(c,a,true),requestId=command.body?.requestId;
+   // A command may wait behind another transaction. Recheck authority after the wait.
+   const assigned=await c.query('select tenant_id,business_id,role,participant_ids from vega_private.app_members where user_id=$1',[userId]);
+   const latest=assigned.rows[0];
+   if(assigned.rows.length!==1||latest.tenant_id!==a.tenantId||latest.business_id!==a.businessId||latest.role!==a.role||JSON.stringify(latest.participant_ids)!==JSON.stringify(a.participantIds))throw new ApplicationError('Access changed. Reload your account before continuing.',403);
    if(typeof requestId!=='string'||!requestId.trim()||requestId.length>128)throw new ApplicationError('A request identifier is required');
    const fingerprint=createHash('sha256').update(JSON.stringify(command)).digest('hex');
    const {rows}=await c.query('select fingerprint,response from vega_private.app_commands where tenant_id=$1 and business_id=$2 and actor_id=$3 and request_id=$4',[a.tenantId,a.businessId,userId,requestId]);

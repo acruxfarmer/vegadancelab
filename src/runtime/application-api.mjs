@@ -14,7 +14,7 @@ export function createApplicationApi(env,store,fetcher=fetch){
   if(typeof token!=='string'||!/^Bearer [A-Za-z0-9._-]+$/.test(token)||token.length>8192)throw new ApplicationError('Sign in to continue',401);
   const response=await fetcher(`${origin}/auth/v1/user`,{headers:{apikey:key,Authorization:token},signal:AbortSignal.timeout(10000)});
   if(!response.ok)throw new ApplicationError(response.status>=500?'Authentication unavailable':'Session expired or invalid',response.status>=500?503:401);
-  const user=await response.json();if(!/^[0-9a-f-]{36}$/i.test(user.id||''))throw new ApplicationError('Invalid session',401);return user.id;
+  const user=await response.json();if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(user.id||''))throw new ApplicationError('Invalid session',401);return user.id;
  }
  return async(req,res)=>{
   const url=new URL(req.url,'http://vega.local');if(!url.pathname.startsWith('/api/'))return false;

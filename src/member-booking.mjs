@@ -5,7 +5,7 @@ export function memberBookingOption(state,c,participantId,at){
  const base={classId:c.id,participantId,creditRequired:!!c.creditRequired};
  const blocked=reason=>({...base,eligible:false,reason});
  if(!state.participants.some(p=>p.id===participantId))return blocked('Participant unavailable.');
- if(c.status!=='open'||!Number.isFinite(Date.parse(c.startsAt))||Date.parse(c.startsAt)<=Date.parse(at))return blocked('This class is no longer available to book.');
+ if(c.status!=='open'||!Number.isFinite(Date.parse(c.startsAt))||!Number.isFinite(Date.parse(at))||Date.parse(c.startsAt)<=Date.parse(at)||!Number.isInteger(c.capacity)||c.capacity<1)return blocked('This class is no longer available to book.');
  if(state.reservations.some(r=>r.classId===c.id&&r.participantId===participantId&&['reserved','waitlisted'].includes(r.status)))return blocked('You already have a booking for this class.');
  if(state.reservations.filter(r=>r.classId===c.id&&r.status==='reserved').length>=c.capacity)return blocked('This class is full.');
  if(!c.creditRequired)return {...base,eligible:true,reason:'Eligible to book. No class credit is required.'};

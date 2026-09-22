@@ -10,6 +10,7 @@ export class ApplicationError extends Error {
 }
 const fail=(message,status=400)=>{throw new ApplicationError(message,status);};
 const text=(value,max=200)=>typeof value==='string'&&value.trim()&&value.length<=max;
+const bookableClass=(c,at)=>c&&c.status==='open'&&Number.isFinite(Date.parse(c.startsAt))&&Date.parse(c.startsAt)>Date.parse(at)&&Number.isInteger(c.capacity)&&c.capacity>0;
 function reservationView(reservation,authority){
  const result=structuredClone(reservation);
  if(authority.role!=='staff'&&result.cancellationHistory)result.cancellationHistory=result.cancellationHistory.filter(e=>e.outcome==='applied').map(e=>({action:e.action,to:e.to,createdAt:e.createdAt,creditOutcome:e.creditOutcome}));
@@ -50,7 +51,7 @@ export function transition(original, command, authority, {id=randomUUID,now=()=>
  if(command.action==='reserve'){
   own(body.participantId);
   const c=state.classes.find(x=>x.id===body.classId);
-  if(!c||c.status!=='open'||Date.parse(c.startsAt)<=Date.parse(now()))fail('Class unavailable',409);
+  if(!bookableClass(c,now()))fail('Class unavailable',409);
   if(state.reservations.some(r=>r.classId===c.id&&r.participantId===body.participantId&&['reserved','waitlisted'].includes(r.status)))fail('Already booked or waitlisted',409);
   const full=state.reservations.filter(r=>r.classId===c.id&&r.status==='reserved').length>=c.capacity;
   if(full&&(body.reservationOnly===true||authority.role!=='staff'||!c.waitlistEnabled))fail('Class full',409);
@@ -75,7 +76,7 @@ export function transition(original, command, authority, {id=randomUUID,now=()=>
   result=r;
  }else if(command.action==='promote'){
   staff();const r=state.reservations.find(x=>x.id===command.id);if(!r||r.status!=='waitlisted')fail('Waitlist entry unavailable',409);
-  const c=state.classes.find(x=>x.id===r.classId);if(!c||c.status!=='open'||Date.parse(c.startsAt)<=Date.parse(now())||state.reservations.filter(x=>x.classId===c.id&&x.status==='reserved').length>=c.capacity)fail('No capacity available',409);
+  const c=state.classes.find(x=>x.id===r.classId);if(!bookableClass(c,now())||state.reservations.filter(x=>x.classId===c.id&&x.status==='reserved').length>=c.capacity)fail('No capacity available',409);
   accounting.consume(r,c);r.status='reserved';result=r;
  }else if(command.action==='issue-credit'){
   staff();own(body.participantId);result=accounting.issue({participantId:body.participantId,quantity:body.quantity,reason:body.reason,requestId:body.requestId});
