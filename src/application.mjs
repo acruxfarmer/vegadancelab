@@ -2,6 +2,7 @@ import {bookingAccounting,cancelBooking} from './cancellation.mjs';
 import {entitlementOperations} from './entitlements.mjs';
 import {memberBookingOption} from './member-booking.mjs';
 import {memberCancellationOption} from './member-cancellation.mjs';
+import {memberAccountSummary} from './member-account.mjs';
 import { randomUUID } from 'node:crypto';
 
 export class ApplicationError extends Error {
@@ -29,6 +30,7 @@ export function visibleState(state,authority,at=new Date().toISOString()){
   result.bookingOptions=result.classes.flatMap(c=>result.participants.map(p=>memberBookingOption(state,c,p.id,at)));
   result.bookingCheckedAt=at;
   result.cancellationOptions=result.reservations.map(r=>memberCancellationOption(state,r,at));
+  result.memberAccount=memberAccountSummary(result,at);
  }
  result.classes=(result.classes||[]).map(c=>({...c,reservedCount:state.reservations.filter(r=>r.classId===c.id&&r.status==='reserved').length}));
  return result;

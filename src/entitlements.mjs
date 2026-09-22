@@ -4,13 +4,20 @@ export function eligibleCredits(state,c,participantId,at,passId){
 }
 export function entitlementEligible(unit,c,at){
  const e=unit.entitlement;
+ if(!entitlementActive(unit,at,c.startsAt))return false;
+ if(!e)return true;
+ if(e.categories?.length&&!e.categories.includes(c.category))return false;
+ if(e.classIds?.length&&!e.classIds.includes(c.id))return false;
+ return true;
+}
+// Shared validity window for the booking selector and read-only account summary.
+export function entitlementActive(unit,at,startsAt=at){
+ const e=unit.entitlement;
  if(!e)return true; // Existing credits retain their original unrestricted terms.
- const now=Date.parse(at),start=Date.parse(c.startsAt);
+ const now=Date.parse(at),start=Date.parse(startsAt);
  if(!Number.isFinite(now)||!Number.isFinite(start))return false;
  if(e.validFrom&&(now<Date.parse(e.validFrom)||start<Date.parse(e.validFrom)))return false;
  if(e.expiresAt&&(now>=Date.parse(e.expiresAt)||start>=Date.parse(e.expiresAt)))return false;
- if(e.categories?.length&&!e.categories.includes(c.category))return false;
- if(e.classIds?.length&&!e.classIds.includes(c.id))return false;
  return true;
 }
 export function entitlementOperations(state,authority,{id,now},fail,accounting){

@@ -1,0 +1,11 @@
+import {emptyState} from '../src/application.mjs';
+export const portalActor={role:'member',userId:'local-member',participantIds:['p']};
+export function portalFixture(at=Date.now()){
+ const stamp=offset=>new Date(at+offset*86400000).toISOString();
+ const terms={productType:'class_pack',validFrom:stamp(-10),expiresAt:stamp(10),categories:['Dance'],classIds:[]};
+ const classes=[['next','Upcoming dance',2],['past','Attended dance',-2],['unknown','Past without attendance',-3],['absent','Missed dance',-4],['early','Early cancelled dance',1],['late','Late cancelled dance',1]].map(([id,title,days])=>({id,title,startsAt:stamp(days),category:'Dance',status:'open',capacity:5,duration:60,instructor:'Test instructor',location:'Local studio',creditRequired:true}));
+ const passes=[{id:'pack',label:'Dance pack',participantId:'p',entitlement:terms},{id:'expired',label:'Expired membership',participantId:'p',entitlement:{...terms,productType:'membership',expiresAt:stamp(-1)}},{id:'future',label:'Future membership',participantId:'p',entitlement:{...terms,productType:'membership',validFrom:stamp(1)}},{id:'courtesy',label:'Courtesy pass',participantId:'p',entitlement:{source:'staff_courtesy'}},{id:'foreign',label:'PRIVATE OTHER PASS',participantId:'other'}];
+ const creditUnits=passes.map(p=>({id:`unit-${p.id}`,passId:p.id,participantId:p.participantId,status:'available',entitlement:p.entitlement,...(p.id==='pack'?{originBookingId:'early'}:{})}));
+ const reservations=classes.map(c=>({id:c.id,classId:c.id,participantId:'p',status:['early','late'].includes(c.id)?'cancelled':'reserved',createdAt:stamp(-5),attendanceStatus:c.id==='past'?'present':c.id==='absent'?'absent':'not_recorded',...(['early','late'].includes(c.id)?{creditConsumption:{passId:'pack'},cancellation:{classification:c.id,creditOutcome:c.id==='early'?'restored':'not_applicable',originalCancelledAt:stamp(c.id==='early'?-1:-0.5)}}:{})}));
+ return {...emptyState(),classes,passes,creditUnits,reservations:[...reservations,{id:'foreign-reservation',participantId:'other',classId:'next',notes:'PRIVATE OTHER BOOKING',createdAt:stamp(0)}],participants:[{id:'p',name:'Local Member'},{id:'other',name:'PRIVATE OTHER MEMBER',notes:'PRIVATE NOTES'}],activity:[{message:'PRIVATE STAFF AUDIT'}]};
+}

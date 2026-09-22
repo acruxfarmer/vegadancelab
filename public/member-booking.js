@@ -1,6 +1,8 @@
 import {cancellationOutcome} from './member-cancellation.js';
+import {memberPortalUI} from './member-portal.js';
 export function memberBookingUI({getData,escape:e,modal,mutate,load,notify,date,time}){
  const data=()=>getData();
+ const portal=memberPortalUI({getData,escape:e,date,time});
  const classFor=id=>data().classes.find(c=>c.id===id);
  const name=id=>data().participants.find(p=>p.id===id)?.name||'Participant';
  const detail=c=>`${date(c.startsAt)} · ${time(c.startsAt)} Pacific<br>${e(c.instructor)} · ${e(c.duration)} minutes<br>${e(c.location)}`;
@@ -13,19 +15,22 @@ export function memberBookingUI({getData,escape:e,modal,mutate,load,notify,date,
  }
  function booking(r){
   const c=classFor(r.classId),pass=data().passes?.find(p=>p.id===r.creditConsumption?.passId),cancel=data().cancellationOptions?.find(o=>o.reservationId===r.id);
-  return `<article class="card"><p class="eyebrow">${e(name(r.participantId))}</p><h3>${e(c?.title||'Class')}</h3><p class="meta">${c?detail(c):'Class details unavailable'}</p><p class="pill">${e(r.status==='reserved'?'Booked':r.status)}</p><p>${r.creditConsumption?`1 credit used · ${e(pass?.label||'Class credit')}`:'No class credit consumed'}</p>${r.status==='cancelled'?`<p>${e(cancellationOutcome(r,pass?.label))}</p>`:''}${['reserved','waitlisted'].includes(r.status)?cancel?.allowed?`<button class="button secondary" data-cancel="${e(r.id)}">Cancel reservation</button>`:`<p>${e(cancel?.reason||'Refresh to check cancellation availability.')}</p>`:''}</article>`;
+  const past=c&&!future(c),status=r.status==='cancelled'?'Cancelled':r.attendanceStatus==='present'?'Attended':r.attendanceStatus==='absent'?'Marked absent':past&&r.status==='reserved'?'Past booking · attendance not recorded':r.status==='reserved'?'Booked':r.status;
+  return `<article class="card"><p class="eyebrow">${e(name(r.participantId))}</p><h3>${e(c?.title||'Class')}</h3><p class="meta">${c?detail(c):'Class details unavailable'}</p><p class="pill">${e(status)}</p><p>${r.creditConsumption?`1 credit used · ${e(pass?.label||'Class credit')}`:'No class credit consumed'}</p>${r.status==='cancelled'?`<p>${e(r.cancellation?.classification==='early'?'Early cancellation':r.cancellation?.classification==='late'?'Late cancellation':'Cancellation outcome')} · ${e(cancellationOutcome(r,pass?.label))}</p>`:''}${['reserved','waitlisted'].includes(r.status)?cancel?.allowed?`<button class="button secondary" data-cancel="${e(r.id)}">Cancel reservation</button>`:`<p>${e(cancel?.reason||'Refresh to check cancellation availability.')}</p>`:''}</article>`;
  }
  const upcoming=()=>data().reservations.filter(r=>r.status==='reserved'&&classFor(r.classId)&&future(classFor(r.classId))).sort((a,b)=>Date.parse(classFor(a.classId).startsAt)-Date.parse(classFor(b.classId).startsAt));
  function render(page,{query='',category='All'}={}){
   const refresh='<button class="button secondary" data-refresh-booking>Refresh schedule & credits</button>';
+  const recent=items=>[...items].sort((a,b)=>(Date.parse(classFor(b.classId)?.startsAt)||0)-(Date.parse(classFor(a.classId)?.startsAt)||0));
+  if(page==='passes')return `<div class="page-heading"><h1>Passes & membership</h1>${refresh}</div>${portal.entitlements()}`;
   if(page==='classes'){
    const all=ordered(data().classes.filter(future)),list=all.filter(c=>(category==='All'||c.category===category)&&`${c.title} ${c.instructor} ${c.location}`.toLowerCase().includes(query.toLowerCase()));
    return `<div class="page-heading"><div><h1>The studio schedule</h1><p>Upcoming classes · All times Pacific</p></div>${refresh}</div><div class="toolbar"><input id="search" type="search" aria-label="Search classes" placeholder="Search classes, instructors or locations" value="${e(query)}"><select id="category" aria-label="Class category">${['All',...new Set(all.map(c=>c.category).filter(Boolean))].map(c=>`<option ${category===c?'selected':''}>${e(c)}</option>`).join('')}</select></div><div class="grid">${list.map(card).join('')}</div>${list.length?'':'<p>No matching upcoming classes. Try another search or refresh the schedule.</p>'}`;
   }
-  if(page==='today')return `<div class="page-heading"><div><h1>Your upcoming activity</h1><p>Your confirmed classes, in date order.</p></div>${refresh}</div><div class="grid">${upcoming().slice(0,3).map(booking).join('')||'<p>No upcoming bookings yet.</p>'}</div><p><a class="button" href="#classes">Find a class</a> <a class="text-button" href="#bookings">All bookings</a></p>`;
+  if(page==='today')return `<div class="page-heading"><div><h1>Your Vega account</h1><p>Your bookings, class history and credits in one place.</p></div>${refresh}</div><h2>Upcoming bookings</h2><div class="grid">${upcoming().slice(0,3).map(booking).join('')||'<p>No upcoming bookings yet.</p>'}</div><p><a class="button" href="#classes">Find a class</a> <a class="text-button" href="#bookings">All bookings</a></p>${portal.entitlements()}<h2>Past & attended classes</h2><div class="grid">${recent(data().reservations.filter(r=>r.status!=='cancelled'&&classFor(r.classId)&&!future(classFor(r.classId)))).slice(0,3).map(booking).join('')||'<p>No past classes recorded yet.</p>'}</div><h2>Recent cancelled bookings</h2><div class="grid">${data().reservations.filter(r=>r.status==='cancelled').sort((a,b)=>(Date.parse(b.cancellation?.originalCancelledAt)||0)-(Date.parse(a.cancellation?.originalCancelledAt)||0)).slice(0,3).map(booking).join('')||'<p>No cancelled bookings.</p>'}</div>${portal.activity()}`;
   if(page==='bookings'){
    const next=upcoming(),ids=new Set(next.map(r=>r.id)),history=data().reservations.filter(r=>!ids.has(r.id));
-   return `<div class="page-heading"><h1>My bookings</h1>${refresh}</div><h2>Upcoming</h2><div class="grid">${next.map(booking).join('')||'<p>No upcoming bookings. <a href="#classes">Find a class</a>.</p>'}</div><h2>Past & cancelled</h2><div class="grid">${history.slice().reverse().map(booking).join('')||'<p>No past bookings.</p>'}</div>`;
+   return `<div class="page-heading"><h1>My bookings</h1>${refresh}</div><h2>Upcoming</h2><div class="grid">${next.map(booking).join('')||'<p>No upcoming bookings. <a href="#classes">Find a class</a>.</p>'}</div><h2>Past & cancelled</h2><div class="grid">${recent(history).map(booking).join('')||'<p>No past bookings.</p>'}</div>${portal.activity()}`;
   }
   return null;
  }

@@ -75,7 +75,7 @@ classDetail=function(id){originalDetail(id);const c=cls(id);if(!localDemo&&c.res
 document.addEventListener('click',async event=>{const b=event.target.closest('button');if(!b)return;if(b.id==='sign-out'){session.clear();token=null;data=null;localDemo=false;drafts=[];cart=[];waitlist=[];preferences={email:false,sms:false};pendingRequests.clear();view='member';page='today';b.remove();login();return}try{await integration.click(b)}catch(error){notify(error.message)}});
 document.addEventListener('submit',async event=>{const form=event.target;if(!['create-class','create-person','live-preferences','live-draft'].includes(form.id))return;event.preventDefault();const button=form.querySelector('button');button.disabled=true;try{await integration.submit(form)}catch(error){form.querySelector('[role="alert"]').textContent=error.message}finally{button.disabled=false}});
 const legacyRender=render;
-render=function(){legacyRender();if(!data||localDemo||view!=='member')return;const html=memberBooking.render(page,{query,category});if(html!==null)$('#main').innerHTML=html+(page==='bookings'?cancellation.render(page):'');};
+render=function(){legacyRender();if(!data||localDemo||view!=='member')return;const html=memberBooking.render(page,{query,category});if(html!==null)$('#main').innerHTML=html;};
 const staffClassDetail=classDetail;
 classDetail=function(id){if(!localDemo&&view==='member')return memberBooking.open(id);return staffClassDetail(id);};
 document.addEventListener('change',event=>{if(event.target.matches('#member-booking select[name="participantId"]'))memberBooking.show(event.target.form.dataset.id,event.target.value);});
