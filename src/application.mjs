@@ -13,6 +13,7 @@ const text=(value,max=200)=>typeof value==='string'&&value.trim()&&value.length<
 const bookableClass=(c,at)=>c&&c.status==='open'&&Number.isFinite(Date.parse(c.startsAt))&&Date.parse(c.startsAt)>Date.parse(at)&&Number.isInteger(c.capacity)&&c.capacity>0;
 function reservationView(reservation,authority){
  const result=structuredClone(reservation);
+ if(authority.role!=='staff'&&result.attendanceHistory)result.attendanceHistory=result.attendanceHistory.map(({from,to,createdAt})=>({from,to,createdAt}));
  if(authority.role!=='staff'&&result.cancellationHistory)result.cancellationHistory=result.cancellationHistory.filter(e=>e.outcome==='applied').map(e=>({action:e.action,to:e.to,createdAt:e.createdAt,creditOutcome:e.creditOutcome}));
  return result;
 }
@@ -46,7 +47,7 @@ export function transition(original, command, authority, {id=randomUUID,now=()=>
  if(!text(body.requestId,128))fail('A request identifier is required');
  const staff=()=>{if(authority.role!=='staff')fail('Staff access required',403);};
  const own=participantId=>{if(!authority.participantIds.includes(participantId)&&authority.role!=='staff')fail('Participant authority required',403); if(!state.participants.some(p=>p.id===participantId))fail('Participant unavailable',404);};
- const accounting=bookingAccounting(state,authority,{id,now},fail);
+ const accounting=command.action==='attendance'?null:bookingAccounting(state,authority,{id,now},fail);
  let result;
  if(command.action==='reserve'){
   own(body.participantId);
@@ -59,11 +60,22 @@ export function transition(original, command, authority, {id=randomUUID,now=()=>
   if(body.passId!==undefined){if(!state.passes.some(p=>p.id===body.passId&&p.participantId===body.participantId))fail('Participant pass unavailable',403);result.passId=body.passId;}
   if(!full)accounting.consume(result,c);state.reservations.push(result);
  }else if(['cancel','correct-cancellation','attendance'].includes(command.action)){
+  if(command.action==='attendance')staff();
   const r=state.reservations.find(x=>x.id===command.id);if(!r)fail('Reservation unavailable',404);
   if(command.action==='attendance'){
    staff();if(r.status!=='reserved')fail('Only reserved participants can be checked in',409);
    if(!['present','absent','not_recorded'].includes(body.status))fail('Invalid attendance status');
-   r.attendanceStatus=body.status;
+   const from=r.attendanceStatus||'not_recorded',revision=r.attendanceRevision||0;
+   if(body.expectedRevision!==undefined&&(!Number.isSafeInteger(body.expectedRevision)||body.expectedRevision<0))fail('Invalid attendance revision');
+   if(body.reason!==undefined&&(typeof body.reason!=='string'||body.reason.length>1000))fail('Invalid attendance reason');
+   if(from===body.status)return {state,result:{...r,outcome:'unchanged'}};
+   if(body.expectedRevision!==undefined&&body.expectedRevision!==revision)fail('Attendance changed since this roster was loaded. Refresh and review before correcting it.',409);
+   if((revision>0||from!=='not_recorded')&&!text(body.reason,1000))fail('A reason is required to correct attendance');
+   const recordedAt=now(),historyId=id();
+   (r.attendanceHistory??=[]).push({id:historyId,action:revision>0||from!=='not_recorded'?'correction':'recorded',from,to:body.status,actorId:authority.userId,createdAt:recordedAt,reason:body.reason?.trim()||'',requestId:body.requestId,revision:revision+1});
+   r.attendanceStatus=body.status;r.attendanceRevision=revision+1;
+   state.activity.push({id:id(),action:'attendance',actorId:authority.userId,subjectId:r.id,attendanceHistoryId:historyId,createdAt:recordedAt});
+   return {state,result:{...r,outcome:'applied'}};
   }else{
    own(r.participantId);const cancelAt=now();
    if(command.action==='cancel'&&authority.role!=='staff'&&r.status!=='cancelled'){

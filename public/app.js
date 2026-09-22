@@ -1,4 +1,5 @@
 import {entitlementsUI} from './entitlements-ui.js';
+import {attendanceUI} from './attendance-ui.js';
 import {staffBookingUI} from './staff-booking.js';
 import {reportingAuditUI} from './reporting-audit.js';
 import {memberBookingUI} from './member-booking.js';
@@ -82,6 +83,9 @@ const entitlements=entitlementsUI({escape,mutate,notify,getData:()=>data});
 const memberBooking=memberBookingUI({getData:()=>data,escape,modal,mutate,load,notify,date,time});
 const staffBooking=staffBookingUI({getData:()=>data,isStaff:()=>!!data&&!localDemo&&view==='staff'&&data.context?.role==='staff',escape,modal,mutate,load,notify,render:()=>render(),date,time});
 const reportingAudit=reportingAuditUI({getData:()=>data,isStaff:()=>!!data&&!localDemo&&view==='staff'&&data.context?.role==='staff',escape,render:()=>render()});
+const attendance=attendanceUI({getData:()=>data,isStaff:()=>!!data&&!localDemo&&view==='staff'&&data.context?.role==='staff',escape,modal,mutate,notify,date,time});
+const legacySchedule=schedule;
+schedule=function(){return !localDemo&&data?.context?.role==='staff'?attendance.render(selectedClass):legacySchedule();};
 memberCancellationUI({getData:()=>data,isMember:()=>!!data&&!localDemo&&view==='member',escape,modal,load,mutate,notify,date,time});
 const cancellation=cancellationUI({escape,mutate,notify,getData:()=>data});
 const originalRender=render;

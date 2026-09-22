@@ -97,6 +97,22 @@ try{
   const r=await overlap([()=>store.command(m1,cmd),()=>store.command(m1,cmd)]);assert.ok(r.every(x=>x.status==='fulfilled'));assert.deepEqual(r[0].value,r[1].value);
   const after=await state();assert.equal(after.state.reservations.length,before.state.reservations.length+1);assert.equal(after.state.creditEvents.filter(e=>e.type==='consume').length,before.state.creditEvents.filter(e=>e.type==='consume').length+1);
  });
+ await check('concurrent attendance repeats and corrections preserve one history per change and all credit/booking outcomes',async()=>{
+  const initial=(await state()).state,r=initial.reservations.find(r=>r.status==='reserved');
+  const invariant=s=>{s=structuredClone(s);s.activity=s.activity.filter(a=>a.action!=='attendance');for(const r of s.reservations){delete r.attendanceStatus;delete r.attendanceRevision;delete r.attendanceHistory;}return s;};
+  let results=await overlap([0,1].map(()=>()=>store.command(staff,command('attendance',{status:'present',expectedRevision:0},r.id))));
+  assert.ok(results.every(x=>x.status==='fulfilled'));assert.equal((await state()).state.reservations.find(x=>x.id===r.id).attendanceHistory.length,1);
+  results=await overlap(['absent','not_recorded'].map(status=>()=>store.command(staff,command('attendance',{status,expectedRevision:1,reason:'Concurrent correction'},r.id))));
+  assert.equal(results.filter(x=>x.status==='fulfilled').length,1);assert.equal(results.find(x=>x.status==='rejected').reason.status,409);
+  const after=(await state()).state;assert.equal(after.reservations.find(x=>x.id===r.id).attendanceHistory.length,2);assert.deepEqual(invariant(after),invariant(initial));
+  const before=await state();await assert.rejects(store.command(m1,command('attendance',{status:'present'},r.id)),e=>e.status===403);assert.deepEqual(await state(),before);
+  await admin.query('create trigger fail_receipt before insert on vega_private.app_commands for each row execute function vega_private.fail_receipt()');
+  const cmd=command('attendance',{status:'present',expectedRevision:2,reason:'Rollback correction'},r.id);
+  await assert.rejects(store.command(staff,cmd),/synthetic receipt failure/);assert.deepEqual(await state(),before);
+  await admin.query('drop trigger fail_receipt on vega_private.app_commands');
+  await store.command(staff,cmd);const committed=await state();await store.command(staff,cmd);assert.deepEqual(await state(),committed);assert.deepEqual(invariant(committed.state),invariant(initial));
+  assert.equal(committed.state.reservations.find(x=>x.id===r.id).attendanceHistory.length,3);
+ });
  await check('readiness rejects missing receipt grants, disabled RLS and elevated runtime role',async()=>{
   for(const [breakIt,repair] of [
    ['revoke insert on vega_private.app_commands from vega_app_runtime','grant insert on vega_private.app_commands to vega_app_runtime'],

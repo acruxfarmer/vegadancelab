@@ -18,6 +18,7 @@ test('fresh local runtime serves all front-door assets with security headers and
    assert.ok((await response.text()).length>0);
   }
   const config=await fetch(`${origin}/api/config`);assert.equal(config.status,200);
+  const attendance=await fetch(`${origin}/attendance-ui.js`);assert.equal(attendance.status,200);assert.match(attendance.headers.get('content-type'),/text\/javascript/);assert.match(await attendance.text(),/export function attendanceUI/);
   assert.equal((await config.json()).squareEnabled,false);
   for(const path of ['/api/app','/health/ready','/health/ingestion']){
    const response=await fetch(`${origin}${path}`);assert.equal(response.status,503,path);
