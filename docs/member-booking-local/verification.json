@@ -1,0 +1,14 @@
+{
+  "scope": "Local browser with synthetic identity/state and real domain transitions; no hosted database or provider effects",
+  "checks": [
+    "Pre-confirmation pass/participant eligibility; lost POST response retries same request and consumes exactly once",
+    "Confirmed booking persists through browser refresh",
+    "Duplicate, restricted entitlement and capacity rejected before confirmation; no waitlist action",
+    "Repeated cancellation restores once; refreshed booking and credit state agree",
+    "Late member cancellation retains debit under verified cutoff rule",
+    "Capacity lost after preflight is rechecked at confirmation without member debit",
+    "Member isolation and responsive schedule at 390px"
+  ],
+  "errors": [],
+  "passed": true
+}

@@ -20,7 +20,13 @@ test('locked store replays cancellation commands and commits blocked correction 
  const store=createApplicationStore({connect:async()=>client});let n=0;
  const run=(action,body={},id,user='member')=>store.command(user,{action,id,body:{requestId:`r${++n}`,...body}});
  await run('issue-credit',{participantId:'p',quantity:1,reason:'Test'},undefined,'desk');
- const booking=await run('reserve',{participantId:'p',classId:'c'});
+ const bookingCommand={action:'reserve',body:{requestId:'book-one',participantId:'p',classId:'c'}};
+ const booking=await store.command('member',bookingCommand),afterBooking=revision;
+ assert.deepEqual(await store.command('member',bookingCommand),JSON.parse(JSON.stringify(booking)));assert.equal(revision,afterBooking);
+ assert.equal(state.creditEvents.filter(e=>e.type==='consume').length,1);
+ await assert.rejects(store.command('member',{...bookingCommand,body:{...bookingCommand.body,classId:'d'}}),e=>e.status===409);
+ await assert.rejects(run('reserve',{participantId:'p',classId:'c'}),e=>e.status===409);
+ assert.equal(revision,afterBooking);
  const cancel={action:'cancel',id:booking.id,body:{requestId:'cancel-one'}};
  const first=await store.command('member',cancel),afterCancel=revision;
  assert.deepEqual(await store.command('member',cancel),JSON.parse(JSON.stringify(first)));assert.equal(revision,afterCancel);

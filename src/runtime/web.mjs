@@ -19,6 +19,7 @@ export function createDevelopmentServer(env = process.env, persistSquareEvent, c
     }
     if(req.url.startsWith('/api/')){void api(req,res);return;}
     const files={'/entitlements-ui.js':['entitlements-ui.js','text/javascript; charset=utf-8'],'/cancellation-ui.js':['cancellation-ui.js','text/javascript; charset=utf-8'],'/session.js':['session.js','text/javascript; charset=utf-8'],'/':['index.html','text/html; charset=utf-8'],'/app.js':['app.js','text/javascript; charset=utf-8'],'/integration.js':['integration.js','text/javascript; charset=utf-8'],'/styles.css':['styles.css','text/css; charset=utf-8']};
+    files['/member-booking.js']=['member-booking.js','text/javascript; charset=utf-8'];
     const asset=files[req.url.split('?')[0]];
     if(asset&&req.method==='GET'){
       void readFile(new URL(`../../public/${asset[0]}`,import.meta.url)).then(body=>{res.writeHead(200,{'Content-Type':asset[1]});res.end(body);}).catch(()=>{res.writeHead(503);res.end(JSON.stringify({error:'Application assets unavailable'}));});return;

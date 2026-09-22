@@ -1,4 +1,4 @@
-import {entitlementEligible} from './entitlements.mjs';
+import {eligibleCredits} from './entitlements.mjs';
 // Runs only inside the existing locked application-state transaction.
 export function bookingAccounting(state, authority, {id, now}, fail) {
  state.creditUnits ||= []; state.creditEvents ||= [];
@@ -17,7 +17,7 @@ export function bookingAccounting(state, authority, {id, now}, fail) {
   },
   consume(r,c){
    if(!c.creditRequired||r.creditConsumption)return;
-   const unit=state.creditUnits.filter(u=>u.participantId===r.participantId&&u.status==='available'&&(!r.passId||u.passId===r.passId)&&entitlementEligible(u,c,stamp)).sort((a,b)=>(Date.parse(a.entitlement?.expiresAt)||Infinity)-(Date.parse(b.entitlement?.expiresAt)||Infinity))[0];
+   const unit=eligibleCredits(state,c,r.participantId,stamp,r.passId)[0];
    if(!unit)fail('No eligible class credit for this participant',409);
    unit.status='spent';unit.spentByBookingId=r.id;
    const e=event('consume',unit,r.id);

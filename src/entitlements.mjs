@@ -1,4 +1,7 @@
 const validText=(v,max=200)=>typeof v==='string'&&v.trim().length>0&&v.length<=max;
+export function eligibleCredits(state,c,participantId,at,passId){
+ return (state.creditUnits||[]).filter(u=>u.participantId===participantId&&u.status==='available'&&(!passId||u.passId===passId)&&entitlementEligible(u,c,at)).sort((a,b)=>(Date.parse(a.entitlement?.expiresAt)||Infinity)-(Date.parse(b.entitlement?.expiresAt)||Infinity));
+}
 export function entitlementEligible(unit,c,at){
  const e=unit.entitlement;
  if(!e)return true; // Existing credits retain their original unrestricted terms.
