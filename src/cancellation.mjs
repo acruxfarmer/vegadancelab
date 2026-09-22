@@ -1,4 +1,7 @@
 import {eligibleCredits} from './entitlements.mjs';
+export function cancellationClassification(c,at){
+ return Date.parse(at)<=Date.parse(c.startsAt)-(c.cancellationCutoffMinutes??90)*60000?'early':'late';
+}
 // Runs only inside the existing locked application-state transaction.
 export function bookingAccounting(state, authority, {id, now}, fail) {
  state.creditUnits ||= []; state.creditEvents ||= [];
@@ -62,7 +65,7 @@ export function cancelBooking(state,r,c,body,authority,accounting,{id,now},fail,
  if(requested!==undefined&&authority.role!=='staff')fail('Staff access required',403);
  if((correction||requested!==undefined)&&!['early','late'].includes(requested))fail('Early or late classification required');
  if((correction||requested!==undefined)&&(typeof body.reason!=='string'||!body.reason.trim()||body.reason.length>1000))fail('Staff correction reason required');
- const classification=requested??(Date.parse(time)<=Date.parse(c.startsAt)-cutoff*60000?'early':'late');
+ const classification=requested??cancellationClassification(c,time);
  const from=r.cancellation?.classification??null;
  if(correction&&!r.cancellation)fail('Legacy cancellation requires separate reconciliation',409);
  let creditOutcome='not_applicable',outcome='applied';

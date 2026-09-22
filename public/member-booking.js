@@ -1,3 +1,4 @@
+import {cancellationOutcome} from './member-cancellation.js';
 export function memberBookingUI({getData,escape:e,modal,mutate,load,notify,date,time}){
  const data=()=>getData();
  const classFor=id=>data().classes.find(c=>c.id===id);
@@ -11,8 +12,8 @@ export function memberBookingUI({getData,escape:e,modal,mutate,load,notify,date,
   return `<article class="card"><p class="eyebrow">${e(c.category||'Class')}</p><h3>${e(c.title)}</h3><p class="meta">${detail(c)}</p><p>${c.status!=='open'?'Unavailable':`${Math.max(0,c.capacity-c.reservedCount)} places available`}</p>${booked.map(r=>`<p class="pill">${e(name(r.participantId))} · ${e(r.status==='reserved'?'Booked':r.status)}</p>`).join('')}<p>${c.creditRequired?'1 eligible class credit required':'No class credit required'}</p><button class="button secondary" data-class="${e(c.id)}">View class</button></article>`;
  }
  function booking(r){
-  const c=classFor(r.classId),pass=data().passes?.find(p=>p.id===r.creditConsumption?.passId);
-  return `<article class="card"><p class="eyebrow">${e(name(r.participantId))}</p><h3>${e(c?.title||'Class')}</h3><p class="meta">${c?detail(c):'Class details unavailable'}</p><p class="pill">${e(r.status==='reserved'?'Booked':r.status)}</p><p>${r.creditConsumption?`1 credit used · ${e(pass?.label||'Class credit')}`:'No class credit consumed'}</p>${r.cancellation?`<p>${e(r.cancellation.classification)} cancellation · ${e(r.cancellation.creditOutcome.replaceAll('_',' '))}</p>`:''}${['reserved','waitlisted'].includes(r.status)?r.attendanceStatus==='not_recorded'?`<button class="button secondary" data-cancel="${e(r.id)}">Cancel reservation</button>`:'<p>Contact the studio to cancel a booking with recorded attendance.</p>':''}</article>`;
+  const c=classFor(r.classId),pass=data().passes?.find(p=>p.id===r.creditConsumption?.passId),cancel=data().cancellationOptions?.find(o=>o.reservationId===r.id);
+  return `<article class="card"><p class="eyebrow">${e(name(r.participantId))}</p><h3>${e(c?.title||'Class')}</h3><p class="meta">${c?detail(c):'Class details unavailable'}</p><p class="pill">${e(r.status==='reserved'?'Booked':r.status)}</p><p>${r.creditConsumption?`1 credit used · ${e(pass?.label||'Class credit')}`:'No class credit consumed'}</p>${r.status==='cancelled'?`<p>${e(cancellationOutcome(r,pass?.label))}</p>`:''}${['reserved','waitlisted'].includes(r.status)?cancel?.allowed?`<button class="button secondary" data-cancel="${e(r.id)}">Cancel reservation</button>`:`<p>${e(cancel?.reason||'Refresh to check cancellation availability.')}</p>`:''}</article>`;
  }
  const upcoming=()=>data().reservations.filter(r=>r.status==='reserved'&&classFor(r.classId)&&future(classFor(r.classId))).sort((a,b)=>Date.parse(classFor(a.classId).startsAt)-Date.parse(classFor(b.classId).startsAt));
  function render(page,{query='',category='All'}={}){

@@ -1,8 +1,11 @@
+import {cancellationOutcome} from './member-cancellation.js';
 export function cancellationUI({escape:e,mutate,notify,getData}){
  const field=(name,label,type='text',value='')=>`<label class="field">${label}<input name="${name}" type="${type}" value="${e(value)}" required></label>`;
  return {
   render(page){
-   const d=getData(),staff=d.context.role==='staff';let html='';
+   const source=getData(),staff=source.context.role==='staff';
+   // Present member outcomes in plain language without modifying persisted records.
+   const d=staff?source:{...source,reservations:source.reservations.map(r=>r.cancellation?{...r,cancellation:{...r.cancellation,creditOutcome:cancellationOutcome(r,source.passes?.find(p=>p.id===r.creditConsumption?.passId)?.label)}}:r)};let html='';
    if(page==='bookings'||page==='people')html+=`<section class="card"><h2>Class credits</h2>${d.participants.map(p=>`<p>${e(p.name)}: ${(d.creditUnits||[]).filter(u=>u.participantId===p.id&&u.status==='available').length} unspent credits (eligibility applies)</p>`).join('')}<p class="meta">Only classes configured to require a credit consume one. Cancellation never creates a cash refund.</p></section>`;
    if(staff&&page==='people')html+=`<form id="issue-credit" class="card"><h2>Issue manual courtesy credits</h2><label class="field">Participant<select name="participantId">${d.participants.map(p=>`<option value="${e(p.id)}">${e(p.name)}</option>`).join('')}</select></label>${field('quantity','Number of credits','number','1')}${field('reason','Issuance reason')}<button class="button">Issue credits</button><p role="alert"></p></form><section class="card"><h2>Credit history</h2>${(d.creditEvents||[]).map(v=>`<p>${e(v.type)} · ${e(v.createdAt)} · booking ${e(v.bookingId||'issuance')} · credit ${e(v.unitId)} · actor ${e(v.actorId)}</p>`).join('')||'<p>No credit movements.</p>'}</section>`;
    if(staff&&page==='schedule'){

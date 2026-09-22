@@ -1,5 +1,6 @@
 import {entitlementsUI} from './entitlements-ui.js';
 import {memberBookingUI} from './member-booking.js';
+import {memberCancellationUI} from './member-cancellation.js';
 import {cancellationUI} from './cancellation-ui.js';
 import {extend} from './integration.js';
 import {createSession} from './session.js';
@@ -65,6 +66,7 @@ window.addEventListener('hashchange',()=>{page=location.hash.slice(1)||'today';i
 const integration=extend({$,getData:()=>data,isDemo:()=>localDemo,escape,heading,empty,modal,mutate,notify,render:()=>render(),key});
 const entitlements=entitlementsUI({escape,mutate,notify,getData:()=>data});
 const memberBooking=memberBookingUI({getData:()=>data,escape,modal,mutate,load,notify,date,time});
+memberCancellationUI({getData:()=>data,isMember:()=>!!data&&!localDemo&&view==='member',escape,modal,load,mutate,notify,date,time});
 const cancellation=cancellationUI({escape,mutate,notify,getData:()=>data});
 const originalRender=render;
 render=function(){originalRender();if(!data)return;const action=integration.staffActions(page);if(action&&view==='staff')$('#main .page-heading').insertAdjacentHTML('beforeend',action);if(!localDemo){if(['library','events','shop'].includes(page))$('#main').innerHTML=integration.unavailable({passes:'Passes & membership',library:'Video library',events:'Studio events',shop:'Studio shop'}[page],'Configured studio offerings will appear here when available.');if(page==='communications')$('#main').innerHTML=integration.communications();if(page==='profile'){$('#preferences').outerHTML=integration.preferences();const p=$('#live-preferences')?.previousElementSibling;if(p)p.textContent='Choose studio updates by channel. Preferences do not grant Network consent.'}document.querySelectorAll('[data-retry]').forEach(b=>b.replaceWith(document.createTextNode('Manual recovery unavailable')))}if(page==='schedule'){const c=cls(selectedClass)||data.classes[0];const waiting=data.reservations.filter(r=>r.classId===c?.id&&r.status==='waitlisted');if(waiting.length)$('#main').insertAdjacentHTML('beforeend',`<section class="card"><h2>Waitlist</h2>${waiting.map(r=>`<div class="row"><span>${escape(person(r.participantId))}</span><button class="button secondary small" data-promote="${escape(r.id)}">Promote to reservation</button></div>`).join('')}</section>`)}if(!localDemo){if(page==='passes')$('#main').innerHTML='';$('#main').insertAdjacentHTML('beforeend',cancellation.render(page)+entitlements.render(page));}if(!$('#sign-out'))document.querySelector('header').insertAdjacentHTML('beforeend','<button id="sign-out" class="text-button">Leave workspace</button>');};

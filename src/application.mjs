@@ -1,6 +1,7 @@
 import {bookingAccounting,cancelBooking} from './cancellation.mjs';
 import {entitlementOperations} from './entitlements.mjs';
 import {memberBookingOption} from './member-booking.mjs';
+import {memberCancellationOption} from './member-cancellation.mjs';
 import { randomUUID } from 'node:crypto';
 
 export class ApplicationError extends Error {
@@ -27,6 +28,7 @@ export function visibleState(state,authority,at=new Date().toISOString()){
   result.memberships=result.memberships.filter(m=>own(m.participantId)).map(({reference,...m})=>m);
   result.bookingOptions=result.classes.flatMap(c=>result.participants.map(p=>memberBookingOption(state,c,p.id,at)));
   result.bookingCheckedAt=at;
+  result.cancellationOptions=result.reservations.map(r=>memberCancellationOption(state,r,at));
  }
  result.classes=(result.classes||[]).map(c=>({...c,reservedCount:state.reservations.filter(r=>r.classId===c.id&&r.status==='reserved').length}));
  return result;
@@ -54,7 +56,15 @@ export function transition(original, command, authority, {id=randomUUID,now=()=>
    staff();if(r.status!=='reserved')fail('Only reserved participants can be checked in',409);
    if(!['present','absent','not_recorded'].includes(body.status))fail('Invalid attendance status');
    r.attendanceStatus=body.status;
-  }else{own(r.participantId);const change=cancelBooking(state,r,state.classes.find(c=>c.id===r.classId),body,authority,accounting,{id,now},fail,command.action==='correct-cancellation');if(change.outcome==='unchanged'&&command.action==='cancel')return {state,result:reservationView(r,authority)};state.activity.push({id:id(),action:command.action,actorId:authority.userId,subjectId:r.id,outcome:change.outcome,createdAt:now()});return {state,result:{...reservationView(r,authority),outcome:change.outcome,creditOutcome:change.creditOutcome,message:change.message}};}
+  }else{
+   own(r.participantId);const cancelAt=now();
+   if(command.action==='cancel'&&authority.role!=='staff'&&r.status!=='cancelled'){
+    const option=memberCancellationOption(state,r,cancelAt);
+    if(!option.allowed)fail(option.reason,409);
+    if(body.expectedCancellationClassification!==undefined&&body.expectedCancellationClassification!==option.classification)fail('The cancellation consequence has changed. Review the current consequence before confirming again.',409);
+   }
+   const change=cancelBooking(state,r,state.classes.find(c=>c.id===r.classId),body,authority,accounting,{id,now:()=>cancelAt},fail,command.action==='correct-cancellation');if(change.outcome==='unchanged'&&command.action==='cancel')return {state,result:reservationView(r,authority)};state.activity.push({id:id(),action:command.action,actorId:authority.userId,subjectId:r.id,outcome:change.outcome,createdAt:cancelAt});return {state,result:{...reservationView(r,authority),outcome:change.outcome,creditOutcome:change.creditOutcome,message:change.message}};
+  }
   result=r;
  }else if(command.action==='promote'){
   staff();const r=state.reservations.find(x=>x.id===command.id);if(!r||r.status!=='waitlisted')fail('Waitlist entry unavailable',409);

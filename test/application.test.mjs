@@ -19,7 +19,7 @@ test('participant and staff boundaries are enforced in command policy',()=>{
  const booked=transition(fixture(),command('reserve',{classId:'c',participantId:'a'}),member,options);
  assert.throws(()=>transition(booked.state,command('attendance',{status:'present'},'new'),member,options),/Staff/);
  const attended=transition(booked.state,command('attendance',{status:'present'},'new'),staff,options);
- assert.throws(()=>transition(attended.state,command('cancel',{},'new'),member,options),/reconciliation/);
+ assert.throws(()=>transition(attended.state,command('cancel',{},'new'),member,options),e=>e.status===409&&/Attendance has been recorded.*Contact the studio/.test(e.message));
  assert.equal(booked.state.reservations[0].attendanceStatus,'not_recorded');
 });
 test('member reads exclude other participants, drafts, staff events and future unknown keys',()=>{
