@@ -19,7 +19,7 @@ export function memberCancellationUI({getData,isMember,escape:e,modal,load,mutat
  const identity=()=>isMember()?getData()?.context?.userId:null;
  const passLabel=r=>getData()?.passes?.find(p=>p.id===r.creditConsumption?.passId)?.label||'your class pass';
  function result(r,title='Booking cancelled'){
-  const c=getData()?.classes.find(c=>c.id===r.classId);
+  const c=getData()?.classes.find(c=>c.id===r.classId);if(r.cancellation?.originalBookingStatus==='waitlisted'){modal(`<h2>Waitlist left</h2><h3>${e(c?.title||'Class')}</h3><p>No seat was reserved and no credit was consumed or restored.</p><button class="button" data-booking-done>View my bookings</button>`);return;}
   modal(`<h2>${e(title)}</h2><h3>${e(c?.title||'Class booking')}</h3><p>${e(r.cancellation?.classification?`${r.cancellation.classification==='early'?'Early':'Late'} cancellation recorded.`:'Cancellation recorded.')}</p><p role="status">${e(cancellationOutcome(r,passLabel(r)))}</p><p>Your booking and credit state are updated.</p><button class="button" data-booking-done>View my bookings</button>`);
  }
  let opening=0;
@@ -32,6 +32,7 @@ export function memberCancellationUI({getData,isMember,escape:e,modal,load,mutat
    if(r?.status==='cancelled'){result(r,'Booking already cancelled');return;}
    const c=d.classes.find(c=>c.id===r?.classId);
    if(!r||!option?.allowed){body().innerHTML=`<h2>Unable to cancel online</h2><p role="alert">${e(!r?'This booking is unavailable. Refresh your bookings or contact the studio.':cancellationConsequence(option))}</p><button class="button secondary" data-cancellation-keep>Close</button>`;return;}
+   if(r.status==='waitlisted'){body().innerHTML=`<h2>Leave this waitlist?</h2><h3>${e(c.title)}</h3><p>Leaving releases your waitlist position. It does not change credits or cancel a confirmed booking. Rejoining puts you at the end of the queue.</p><form id="member-cancellation" data-id="${e(id)}" data-waitlist="true"><button class="button danger" type="submit">Confirm leave waitlist</button><button class="button secondary" type="button" data-cancellation-keep>Keep waiting</button><p role="alert"></p><button class="text-button" type="button" data-review-cancellation="${e(id)}" hidden>Review current booking</button></form>`;return;}
    body().innerHTML=`<h2>Cancel this booking?</h2><h3>${e(c.title)}</h3><p>${date(c.startsAt)} · ${time(c.startsAt)} Pacific</p><p><strong>${option.classification==='early'?'Early cancellation':'Late cancellation'}</strong></p><div class="notice">${e(cancellationConsequence(option))}</div>${option.creditConsumed&&option.expiresAt?`<p>Original credit expiry: ${date(option.expiresAt)} · ${time(option.expiresAt)} Pacific.</p>`:''}<p>Early cancellation deadline: ${date(option.cutoffAt)} · ${time(option.cutoffAt)} Pacific.</p><p class="meta">If the consequence changes before confirmation, you will be asked to review it again.</p><form id="member-cancellation" data-id="${e(id)}" data-classification="${e(option.classification)}"><button class="button danger" type="submit">Confirm ${option.classification} cancellation</button> <button class="button secondary" type="button" data-cancellation-keep>Keep booking</button><p role="alert"></p><button class="text-button" type="button" data-review-cancellation="${e(id)}" hidden>Review current booking</button></form>`;
   }catch(error){if(identity()===actor&&attempt===opening&&dialog().open)body().innerHTML=`<h2>Unable to check cancellation</h2><p role="alert">${e(error.message)} No cancellation was submitted.</p><button class="button" data-review-cancellation="${e(id)}">Try again</button>`;}
  }
@@ -39,9 +40,9 @@ export function memberCancellationUI({getData,isMember,escape:e,modal,load,mutat
   if(form.dataset.pending)return;
   const actor=identity();form.dataset.pending='true';const buttons=[...form.querySelectorAll('button')];buttons.forEach(b=>b.disabled=true);
   try{
-   const r=await mutate(`/api/reservations/${encodeURIComponent(form.dataset.id)}/cancel`,{expectedCancellationClassification:form.dataset.classification},()=>{});
+   const r=await mutate(`/api/reservations/${encodeURIComponent(form.dataset.id)}/cancel`,form.dataset.waitlist==='true'?{expectedReservationStatus:'waitlisted'}:{expectedCancellationClassification:form.dataset.classification},()=>{});
    if(identity()!==actor)return;
-   result(r);notify('Booking cancelled. Your credit outcome is shown in the confirmation.');
+   result(r);notify(r.cancellation?.originalBookingStatus==='waitlisted'?'Waitlist left. Credits unchanged.':'Booking cancelled. Your credit outcome is shown in the confirmation.');
   }catch(error){
    if(identity()!==actor||!form.isConnected)return;
    form.querySelector('[role="alert"]').textContent=`${error.message} Review the current booking to confirm its status before trying again.`;

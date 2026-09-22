@@ -1,0 +1,26 @@
+# 6.2 — Waitlist & Staff Promotion V1 verification record
+
+Status: implementation and local verification complete; hosted gate pending. Do not close 6.2 before hosted staff/member verification.
+
+## Contract and existing capability comparison
+
+Existing waitlisted reservations, staff promotion command, capacity lock, credit selector/consumer, cancellation engine, command receipts, session recovery, audit view and 6.1 roster are reused. Previously members were denied full-class booking; staff promotion had no review surface or defined order; waitlist lineage lacked explicit transition records. No new database schema, queue service, job or parallel booking/credit engine is introduced.
+
+Member joining is an explicit waitlist-only reserve intent. It requires an open, future, full, waitlist-enabled occurrence. If a seat becomes available before confirmation it fails safely and asks for review, rather than consuming a credit as an unreviewed booking. Joining does not require a currently eligible entitlement: no place is promised; eligibility is checked at promotion. Duplicate active entries are blocked.
+
+Queue policy: ascending reservation creation time, then lexical reservation ID for ties (legacy missing times sort first). Staff may promote only the earliest currently eligible entry. Earlier ineligible entries remain visible in place with reasons. Eligibility, capacity and ordering are recalculated inside the existing locked transaction. Waiting does not hold a seat, so ordinary bookings remain governed by the existing capacity rules. No automatic seat hold or promotion is added.
+
+Leaving uses the existing cancellation operation with an expected-waitlisted guard. A stale leave after promotion is rejected; repeated leave is unchanged. Rejoining creates a new position, preserving the old record. Promotion retains the reservation ID, consumes one eligible credit for credit-required classes, and leaves attendance/payment/notification outcomes separate. Repeated promotion creates no additional history or debit. Join/leave/promote history is stored on the reservation with actor/time/request lineage; Reports only projects it. Members see their own safe transition details and position, never the queue's other accounts or staff actor details.
+
+## Local evidence — 2026-09-22
+
+- Node regression: 99 tests passed, zero failures. Existing Sections 1–5/6.1 tests retained. Five targeted tests cover no-credit join/leave/rejoin, stale intent, deterministic eligible order, duplicate promotion, stale leave, invalid classes/payload, expired/future/restricted/spent credits, audit projection and member isolation/presentation.
+- Native PostgreSQL 18.4: 13 checks passed against the production application schema with restricted runtime identity. Actual overlapping waitlist-join replays produced one entry; waiting did not change credit units/events or reserved count. Competing promotions produced one confirmed booking/one debit; receipt-insert failure rolled back the state, ledger and history. Same request replay and fresh repeated promotion did not duplicate consumption or lineage. Member promotion denied; stale leave rejected. Earlier capacity, cancellation, issuance, attendance, RLS, authority-refresh and readiness checks rerun.
+- Loopback browser with real domain/projection code and synthetic authentication: full class → join → leave → rejoin; explicit no-credit confirmations; position and history visible. Staff cancelled synthetic seat holder using existing cancellation, reviewed the one-credit promotion consequence and promoted the member. Roster showed reserved / Not recorded with attendance controls. Member reload showed Booked and one used credit; pass balance 2 → 1 only at promotion. Staff reload retained roster. Both browser error/warning logs empty.
+- Static HTTP asset test covers the new allowlisted staff module; frontdoor build and diff checks required before commit.
+
+## Hosted gate
+
+Deploy pinned Development web commit and matching protected Preview. Use separate actual member/staff sessions. Create or reuse a controlled full, waitlist-enabled, credit-required class; verify join, leave, rejoin, capacity release, explicit staff promotion, single debit, member confirmation, roster inclusion, audit and reload/session recovery. Retain exact IDs/timestamps and before/after credit counts. Reuse local/real PostgreSQL concurrency/rollback and existing authorization evidence; do not represent synthetic auth as hosted authorization evidence. Keep fixture cleanup separate from promotion and retain history.
+
+Production, Square, worker and unrelated services unchanged. Square stays disabled. Exclusions remain exactly those in the approved 6.2 contract.

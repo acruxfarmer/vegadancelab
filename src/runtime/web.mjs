@@ -25,6 +25,7 @@ export function createDevelopmentServer(env = process.env, persistSquareEvent, c
     files['/staff-booking.js']=['staff-booking.js','text/javascript; charset=utf-8'];
     files['/reporting-audit.js']=['reporting-audit.js','text/javascript; charset=utf-8'];
     files['/attendance-ui.js']=['attendance-ui.js','text/javascript; charset=utf-8'];
+    files['/staff-waitlist.js']=['staff-waitlist.js','text/javascript; charset=utf-8'];
     files['/request-journal.js']=['request-journal.js','text/javascript; charset=utf-8'];
     const asset=files[req.url.split('?')[0]];
     if(asset&&req.method==='GET'){

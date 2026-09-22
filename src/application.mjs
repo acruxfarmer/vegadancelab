@@ -1,6 +1,7 @@
 import {bookingAccounting,cancelBooking} from './cancellation.mjs';
 import {entitlementOperations} from './entitlements.mjs';
 import {memberBookingOption} from './member-booking.mjs';
+import {orderedWaitlist,promotionOptions} from './waitlist.mjs';
 import {memberCancellationOption} from './member-cancellation.mjs';
 import {memberAccountSummary} from './member-account.mjs';
 import { randomUUID } from 'node:crypto';
@@ -13,6 +14,7 @@ const text=(value,max=200)=>typeof value==='string'&&value.trim()&&value.length<
 const bookableClass=(c,at)=>c&&c.status==='open'&&Number.isFinite(Date.parse(c.startsAt))&&Date.parse(c.startsAt)>Date.parse(at)&&Number.isInteger(c.capacity)&&c.capacity>0;
 function reservationView(reservation,authority){
  const result=structuredClone(reservation);
+ if(authority.role!=='staff'&&result.waitlistHistory)result.waitlistHistory=result.waitlistHistory.map(({action,from,to,createdAt})=>({action,from,to,createdAt}));
  if(authority.role!=='staff'&&result.attendanceHistory)result.attendanceHistory=result.attendanceHistory.map(({from,to,createdAt})=>({from,to,createdAt}));
  if(authority.role!=='staff'&&result.cancellationHistory)result.cancellationHistory=result.cancellationHistory.filter(e=>e.outcome==='applied').map(e=>({action:e.action,to:e.to,createdAt:e.createdAt,creditOutcome:e.creditOutcome}));
  return result;
@@ -33,12 +35,14 @@ export function visibleState(state,authority,at=new Date().toISOString()){
   result.bookingCheckedAt=at;
   result.cancellationOptions=result.reservations.map(r=>memberCancellationOption(state,r,at));
   result.memberAccount=memberAccountSummary(result,at);
+  for(const r of result.reservations)if(r.status==='waitlisted')r.waitlistPosition=orderedWaitlist(state,r.classId).findIndex(x=>x.id===r.id)+1;
  }
  result.classes=(result.classes||[]).map(c=>({...c,reservedCount:state.reservations.filter(r=>r.classId===c.id&&r.status==='reserved').length}));
  if(authority.role==='staff'){
   result.bookingOptions=result.classes.flatMap(c=>result.participants.map(p=>memberBookingOption(state,c,p.id,at)));
   result.bookingCheckedAt=at;
   result.staffAccount=memberAccountSummary(result,at);
+  result.promotionOptions=result.classes.flatMap(c=>promotionOptions(state,c,at));
  }
  return result;
 }
@@ -48,6 +52,7 @@ export function transition(original, command, authority, {id=randomUUID,now=()=>
  const staff=()=>{if(authority.role!=='staff')fail('Staff access required',403);};
  const own=participantId=>{if(!authority.participantIds.includes(participantId)&&authority.role!=='staff')fail('Participant authority required',403); if(!state.participants.some(p=>p.id===participantId))fail('Participant unavailable',404);};
  const accounting=command.action==='attendance'?null:bookingAccounting(state,authority,{id,now},fail);
+ const waitlistEvent=(r,action,from,to)=>{(r.waitlistHistory??=[]).push({id:id(),action,from,to,actorId:authority.userId,actorRole:authority.role,requestId:body.requestId,createdAt:now()});};
  let result;
  if(command.action==='reserve'){
   own(body.participantId);
@@ -55,10 +60,12 @@ export function transition(original, command, authority, {id=randomUUID,now=()=>
   if(!bookableClass(c,now()))fail('Class unavailable',409);
   if(state.reservations.some(r=>r.classId===c.id&&r.participantId===body.participantId&&['reserved','waitlisted'].includes(r.status)))fail('Already booked or waitlisted',409);
   const full=state.reservations.filter(r=>r.classId===c.id&&r.status==='reserved').length>=c.capacity;
-  if(full&&(body.reservationOnly===true||authority.role!=='staff'||!c.waitlistEnabled))fail('Class full',409);
+  if(body.waitlistOnly!==undefined&&typeof body.waitlistOnly!=='boolean')fail('Invalid waitlist intent');
+  if(body.waitlistOnly===true&&(!full||!c.waitlistEnabled||body.reservationOnly===true))fail('Waitlist unavailable. Refresh and review the class before booking.',409);
+  if(full&&(body.reservationOnly===true||(authority.role!=='staff'&&body.waitlistOnly!==true)||!c.waitlistEnabled))fail('Class full',409);
   result={id:id(),classId:c.id,participantId:body.participantId,status:full?'waitlisted':'reserved',paymentStatus:'not_evaluated',attendanceStatus:'not_recorded',notificationStatus:'not_requested',createdAt:now()};
   if(body.passId!==undefined){if(!state.passes.some(p=>p.id===body.passId&&p.participantId===body.participantId))fail('Participant pass unavailable',403);result.passId=body.passId;}
-  if(!full)accounting.consume(result,c);state.reservations.push(result);
+  if(!full)accounting.consume(result,c);else waitlistEvent(result,'joined',null,'waitlisted');state.reservations.push(result);
  }else if(['cancel','correct-cancellation','attendance'].includes(command.action)){
   if(command.action==='attendance')staff();
   const r=state.reservations.find(x=>x.id===command.id);if(!r)fail('Reservation unavailable',404);
@@ -78,18 +85,23 @@ export function transition(original, command, authority, {id=randomUUID,now=()=>
    return {state,result:{...r,outcome:'applied'}};
   }else{
    own(r.participantId);const cancelAt=now();
+   if(body.expectedReservationStatus!==undefined&&body.expectedReservationStatus!=='waitlisted')fail('Invalid expected reservation status');
+   if(body.expectedReservationStatus==='waitlisted'&&r.status!=='waitlisted'&&!(r.status==='cancelled'&&r.cancellation?.originalBookingStatus==='waitlisted'))fail('This entry is no longer waitlisted. Refresh and review the confirmed booking before cancelling.',409);
+   const wasWaiting=r.status==='waitlisted';
    if(command.action==='cancel'&&authority.role!=='staff'&&r.status!=='cancelled'){
     const option=memberCancellationOption(state,r,cancelAt);
     if(!option.allowed)fail(option.reason,409);
     if(body.expectedCancellationClassification!==undefined&&body.expectedCancellationClassification!==option.classification)fail('The cancellation consequence has changed. Review the current consequence before confirming again.',409);
    }
-   const change=cancelBooking(state,r,state.classes.find(c=>c.id===r.classId),body,authority,accounting,{id,now:()=>cancelAt},fail,command.action==='correct-cancellation');if(change.outcome==='unchanged'&&command.action==='cancel')return {state,result:reservationView(r,authority)};state.activity.push({id:id(),action:command.action,actorId:authority.userId,subjectId:r.id,outcome:change.outcome,createdAt:cancelAt});return {state,result:{...reservationView(r,authority),outcome:change.outcome,creditOutcome:change.creditOutcome,message:change.message}};
+   const change=cancelBooking(state,r,state.classes.find(c=>c.id===r.classId),body,authority,accounting,{id,now:()=>cancelAt},fail,command.action==='correct-cancellation');if(wasWaiting&&change.outcome==='applied')waitlistEvent(r,'left','waitlisted','cancelled');if(change.outcome==='unchanged'&&command.action==='cancel')return {state,result:reservationView(r,authority)};state.activity.push({id:id(),action:command.action,actorId:authority.userId,subjectId:r.id,outcome:change.outcome,createdAt:cancelAt});return {state,result:{...reservationView(r,authority),outcome:change.outcome,creditOutcome:change.creditOutcome,message:change.message}};
   }
   result=r;
  }else if(command.action==='promote'){
-  staff();const r=state.reservations.find(x=>x.id===command.id);if(!r||r.status!=='waitlisted')fail('Waitlist entry unavailable',409);
+  staff();const r=state.reservations.find(x=>x.id===command.id);if(r?.status==='reserved'&&r.waitlistHistory?.some(h=>h.action==='promoted'))return {state,result:{...r,outcome:'unchanged'}};if(!r||r.status!=='waitlisted')fail('Waitlist entry unavailable',409);
   const c=state.classes.find(x=>x.id===r.classId);if(!bookableClass(c,now())||state.reservations.filter(x=>x.classId===c.id&&x.status==='reserved').length>=c.capacity)fail('No capacity available',409);
-  accounting.consume(r,c);r.status='reserved';result=r;
+  const option=promotionOptions(state,c,now()).find(o=>o.reservationId===r.id);if(!option?.promotable)fail(option?.reason||'Promotion unavailable',409);
+  if(body.passId!==undefined&&body.passId!==option.passId)fail('Eligible credit changed. Refresh and review before promotion.',409);
+  accounting.consume(r,c);r.status='reserved';waitlistEvent(r,'promoted','waitlisted','reserved');result=r;
  }else if(command.action==='issue-credit'){
   staff();own(body.participantId);result=accounting.issue({participantId:body.participantId,quantity:body.quantity,reason:body.reason,requestId:body.requestId});
  }else if(['entitlement-product','issue-entitlement'].includes(command.action)){
@@ -113,5 +125,5 @@ export function transition(original, command, authority, {id=randomUUID,now=()=>
   result={id:id(),participantId:body.participantId,subject:body.subject,message:body.message,status:'draft',deliveryStatus:'disabled',createdAt:now()};state.notifications.push(result);
  }else fail('Unknown operation',404);
  state.activity.push({id:id(),action:command.action,actorId:authority.userId,subjectId:result.id||result.participantId,createdAt:now()});
- return {state,result};
+ return {state,result:command.action==='reserve'?reservationView(result,authority):result};
 }

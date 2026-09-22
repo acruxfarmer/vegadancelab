@@ -1,6 +1,8 @@
-# Section 6 — Staff Attendance & Check-In V1
+# Section 6.1 — Staff Attendance & Check-In V1
 
-Status: implemented; local verification passed; hosted verification pending. Not closed.
+Roadmap correction: Section 6 is Studio Operating Core Completion. This completed slice is 6.1; original evidence referring to Section 6 remains historical evidence for 6.1.
+
+Status: PASS — local, real PostgreSQL and hosted staff/member verification completed on 2026-09-22. No Section 6 blockers remain. Hosted evidence: ../vega/docs/hosted-staff-attendance-verified.md in the shared workspace.
 
 ## Existing foundation and bounded additions
 
@@ -18,8 +20,8 @@ The staff roster shows occurrence time/instructor/location/capacity and existing
 - Loopback browser uses real transition/visibleState with synthetic authentication: accurate roster; Not recorded → Present → Absent; both history entries and actor/reason visible; repeated Absent save leaves two entries; reload restores Absent and the original two entries. Member sign-in and reload show Marked absent, one credit available, and one credit used for the existing booking. No staff controls/notes appear. Browser warning/error log empty.
 - Domain tests also cover clearing attendance, immutable prefix lineage, malformed status/revision, cancelled/waitlisted rejection, correction reason, isolation, audit projection and exact nonattendance-state invariants.
 
-## Hosted gate still required
+## Hosted gate completed
 
-Deploy the pinned Section 6 commit to Development web only, preserving /health/application. Use the matching protected Preview with separate staff/member sessions. Exercise controlled booking, Present/Absent/correction, repeat save, roster/member reload and session recovery, attendance audit lineage and unchanged booking/credit/payment state during attendance. Record exact booking/history IDs, actor, timestamps, credits before/after and browser errors. Reuse verified staff/member authorization, RLS and request-recovery evidence alongside the targeted tests; do not claim local fixture authentication as hosted authorization evidence.
+Commit bdba9ad68a6bc0d239bff5f8a92c6cdb1651f541 deployed to Development web dep-dapf4qe0tbcc73amlacg and protected Preview vega-development-737dfmc4n-acruxfarmer.vercel.app. Separate real staff/member sessions verified booking 98564638-9935-417f-8a46-8e735cf5c58d: Not recorded → Present → Absent → Not recorded. Repeated Absent save added no event. Both views agreed after reload/session restoration; credits remained five throughout attendance. Member then explicitly early-cancelled the fixture through existing rules, restoring six credits. Seven final audit records (booking, consume, three attendance changes, cancellation, restoration) were identical after staff reload. Member #schedule redirected to #today with zero attendance controls. Staff/member warning/error logs empty; application readiness healthy and Square disabled. API denial, concurrent transaction and exact nonattendance-state invariants are supported by the targeted local/real-PostgreSQL checks above; no hosted token extraction or direct database mutation was used.
 
 No Production, Square, worker or unrelated service change. Square remains disabled. No self-check-in, penalties, waitlist work, recurring scheduling, substitutions, payment/POS, broad reporting or visual redesign.

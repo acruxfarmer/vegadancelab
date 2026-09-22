@@ -113,6 +113,29 @@ try{
   await store.command(staff,cmd);const committed=await state();await store.command(staff,cmd);assert.deepEqual(await state(),committed);assert.deepEqual(invariant(committed.state),invariant(initial));
   assert.equal(committed.state.reservations.find(x=>x.id===r.id).attendanceHistory.length,3);
  });
+ await check('waitlist join replay, competing promotions and receipt rollback are atomic without waiting credit effects',async()=>{
+  const c=await store.command(staff,command('class',{title:'Waitlist atomicity',instructor:'Test',location:'Local',capacity:1,duration:60,startsAt:'2099-10-02T12:00:00Z',creditRequired:true,waitlistEnabled:true}));
+  const holder=await store.command(staff,command('participant',{name:'Seat holder'}));
+  await store.command(staff,command('issue-credit',{participantId:holder.id,quantity:1,reason:'Local seat fixture'}));
+  const held=await store.command(staff,command('reserve',{participantId:holder.id,classId:c.id}));
+  const join=command('reserve',{participantId:'p',classId:c.id,waitlistOnly:true}),beforeJoin=(await state()).state;
+  const joins=await overlap([()=>store.command(m1,join),()=>store.command(m1,join)]);assert.ok(joins.every(r=>r.status==='fulfilled'));assert.deepEqual(joins[0].value,joins[1].value);
+  const first=joins[0].value,second=await store.command(m2,command('reserve',{participantId:'q',classId:c.id,waitlistOnly:true}));
+  const waiting=(await state()).state;assert.deepEqual(waiting.creditUnits,beforeJoin.creditUnits);assert.deepEqual(waiting.creditEvents,beforeJoin.creditEvents);assert.equal(waiting.reservations.filter(r=>r.classId===c.id&&r.status==='reserved').length,1);
+  await assert.rejects(store.command(m1,command('promote',{},first.id)),e=>e.status===403);
+  await store.command(staff,command('cancel',{},held.id));
+  const before=await state(),promote=command('promote',{},first.id);
+  await admin.query('create trigger fail_receipt before insert on vega_private.app_commands for each row execute function vega_private.fail_receipt()');
+  await assert.rejects(store.command(staff,promote),/synthetic receipt failure/);assert.deepEqual(await state(),before);
+  await admin.query('drop trigger fail_receipt on vega_private.app_commands');
+  const results=await overlap([()=>store.command(staff,promote),()=>store.command(staff,command('promote',{},second.id))]);
+  assert.equal(results.filter(r=>r.status==='fulfilled').length,1);assert.equal(results.find(r=>r.status==='rejected').reason.status,409);
+  const after=await state();assert.equal(after.state.reservations.filter(r=>r.classId===c.id&&r.status==='reserved').length,1);assert.equal(after.state.creditEvents.length,before.state.creditEvents.length+1);
+  const r=after.state.reservations.find(r=>r.id===first.id);assert.equal(r.status,'reserved');assert.deepEqual(r.waitlistHistory.map(h=>h.action),['joined','promoted']);assert.equal(r.attendanceStatus,'not_recorded');assert.equal(r.paymentStatus,'not_evaluated');
+  await store.command(staff,promote);assert.deepEqual(await state(),after);
+  await store.command(staff,command('promote',{},first.id));assert.deepEqual((await state()).state,after.state);
+  await assert.rejects(store.command(m1,command('cancel',{expectedReservationStatus:'waitlisted'},first.id)),e=>e.status===409);
+ });
  await check('readiness rejects missing receipt grants, disabled RLS and elevated runtime role',async()=>{
   for(const [breakIt,repair] of [
    ['revoke insert on vega_private.app_commands from vega_app_runtime','grant insert on vega_private.app_commands to vega_app_runtime'],
