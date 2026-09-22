@@ -21,12 +21,16 @@ export function createApplicationApi(env,store,fetcher=fetch){
   const send=(status,data)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(data));};
   try{
    if(url.pathname==='/api/config'&&req.method==='GET'){send(200,{environment:'development',squareEnabled:false,externalEffects:'disabled',authenticationConfigured:!!key,applicationConfigured:!!store});return true;}
-   if(url.pathname==='/api/auth/sign-in'&&req.method==='POST'){
+   if(['/api/auth/sign-in','/api/auth/refresh'].includes(url.pathname)&&req.method==='POST'){
     configured();const body=await readJson(req);
-    if(typeof body.email!=='string'||body.email.length>254||typeof body.password!=='string'||body.password.length>1024)throw new ApplicationError('Email and password required');
-    const response=await fetcher(`${origin}/auth/v1/token?grant_type=password`,{method:'POST',headers:{apikey:key,'Content-Type':'application/json'},body:JSON.stringify({email:body.email,password:body.password}),signal:AbortSignal.timeout(10000)});
-    if(!response.ok)throw new ApplicationError('Unable to sign in with these details',response.status>=500?503:401);
-    const session=await response.json();send(200,{accessToken:session.access_token,access_token:session.access_token,expiresIn:session.expires_in});return true;
+    const refreshing=url.pathname==='/api/auth/refresh';
+    if(refreshing){if(typeof body.refreshToken!=='string'||!body.refreshToken.length||body.refreshToken.length>8192)throw new ApplicationError('Session expired or invalid',401);}
+    else if(typeof body.email!=='string'||body.email.length>254||typeof body.password!=='string'||body.password.length>1024)throw new ApplicationError('Email and password required');
+    const response=await fetcher(`${origin}/auth/v1/token?grant_type=${refreshing?'refresh_token':'password'}`,{method:'POST',headers:{apikey:key,'Content-Type':'application/json'},body:JSON.stringify(refreshing?{refresh_token:body.refreshToken}:{email:body.email,password:body.password}),signal:AbortSignal.timeout(10000)});
+    if(!response.ok)throw new ApplicationError(refreshing?'Session expired or invalid':'Unable to sign in with these details',response.status>=500?503:401);
+    const session=await response.json();
+    if(typeof session.access_token!=='string'||typeof session.refresh_token!=='string'||!Number.isFinite(session.expires_in)||session.expires_in<=60)throw new ApplicationError('Authentication unavailable',503);
+    send(200,{accessToken:session.access_token,access_token:session.access_token,refreshToken:session.refresh_token,expiresIn:session.expires_in});return true;
    }
    const userId=await principal(req);
    if(!store)throw new ApplicationError('Application database handoff is pending',503);

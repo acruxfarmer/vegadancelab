@@ -14,3 +14,14 @@ test('validated identity comes from auth service, never request user or metadata
  const api=createApplicationApi(env,{command:async(user)=>{identity=user;return {saved:true};}},async()=>({ok:true,json:async()=>({id,user_metadata:{role:'staff'}})}));
  const response=await request(api,'/api/reservations',{token:'Bearer valid',method:'POST',body:{userId:'attacker',requestId:'x'}});assert.equal(response.status,200);assert.equal(identity,id);
 });
+
+test('refresh exchanges only the supplied refresh token and returns rotated credentials',async()=>{
+ let sent,url;const api=createApplicationApi(env,null,async(u,init)=>{url=u;sent=JSON.parse(init.body);return {ok:true,json:async()=>({access_token:'new.access',refresh_token:'new-refresh',expires_in:3600,user:{user_metadata:{role:'staff'}}})};});
+ const r=await request(api,'/api/auth/refresh',{method:'POST',body:{refreshToken:'old-refresh',role:'staff',userId:'attacker'}});
+ assert.equal(r.status,200);assert.ok(url.endsWith('grant_type=refresh_token'));assert.deepEqual(sent,{refresh_token:'old-refresh'});assert.equal(r.result.refreshToken,'new-refresh');assert.equal(r.result.role,undefined);assert.equal(r.result.user,undefined);
+});
+test('invalid or revoked refresh session cannot access the store',async()=>{
+ let used=false;const api=createApplicationApi(env,{read:()=>used=true},async()=>({ok:false,status:400}));
+ assert.equal((await request(api,'/api/auth/refresh',{method:'POST',body:{refreshToken:'revoked'}})).status,401);
+ assert.equal((await request(api,'/api/auth/refresh',{method:'POST',body:{}})).status,401);assert.equal(used,false);
+});
