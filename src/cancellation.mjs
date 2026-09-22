@@ -1,3 +1,4 @@
+import {entitlementEligible} from './entitlements.mjs';
 // Runs only inside the existing locked application-state transaction.
 export function bookingAccounting(state, authority, {id, now}, fail) {
  state.creditUnits ||= []; state.creditEvents ||= [];
@@ -9,14 +10,15 @@ export function bookingAccounting(state, authority, {id, now}, fail) {
  return {
   issue(body){
    if(!Number.isInteger(body.quantity)||body.quantity<1||body.quantity>100||typeof body.reason!=='string'||!body.reason.trim()||body.reason.length>1000)fail('Credit quantity and reason required');
-   const pass={id:id(),participantId:body.participantId,label:'Staff-issued class credits',createdAt:stamp};state.passes.push(pass);
-   for(let n=0;n<body.quantity;n++){const unit={id:id(),passId:pass.id,participantId:pass.participantId,status:'available'};state.creditUnits.push(unit);event('issue',unit,null,{reason:body.reason,requestId:body.requestId});}
+   const entitlement=body.entitlement??{source:'staff_courtesy',validFrom:stamp,expiresAt:null,categories:[],classIds:[]};
+   const pass={id:id(),participantId:body.participantId,label:body.label||'Staff courtesy class credits',quantity:body.quantity,entitlement:structuredClone(entitlement),createdAt:stamp};state.passes.push(pass);
+   for(let n=0;n<body.quantity;n++){const unit={id:id(),passId:pass.id,participantId:pass.participantId,status:'available',entitlement:structuredClone(entitlement)};state.creditUnits.push(unit);event('issue',unit,null,{reason:body.reason,requestId:body.requestId,source:entitlement.source,issuanceId:entitlement.issuanceId??null});}
    return pass;
   },
   consume(r,c){
    if(!c.creditRequired||r.creditConsumption)return;
-   const unit=state.creditUnits.find(u=>u.participantId===r.participantId&&u.status==='available'&&(!r.passId||u.passId===r.passId));
-   if(!unit)fail('No available class credit for this participant',409);
+   const unit=state.creditUnits.filter(u=>u.participantId===r.participantId&&u.status==='available'&&(!r.passId||u.passId===r.passId)&&entitlementEligible(u,c,stamp)).sort((a,b)=>(Date.parse(a.entitlement?.expiresAt)||Infinity)-(Date.parse(b.entitlement?.expiresAt)||Infinity))[0];
+   if(!unit)fail('No eligible class credit for this participant',409);
    unit.status='spent';unit.spentByBookingId=r.id;
    const e=event('consume',unit,r.id);
    r.creditConsumption={unitId:unit.id,passId:unit.passId,eventId:e.id};
@@ -31,7 +33,7 @@ export function bookingAccounting(state, authority, {id, now}, fail) {
     if(unit.status!=='reversed')return 'already_restored';
     unit.status='available';event('restore_after_reversal',unit,r.id);return 'restored';
    }
-   unit={id:id(),passId:debit.passId,participantId:r.participantId,status:'available',originBookingId:r.id,sourceUnitId:debit.id};
+   unit={id:id(),passId:debit.passId,participantId:r.participantId,status:'available',originBookingId:r.id,sourceUnitId:debit.id,...(debit.entitlement?{entitlement:structuredClone(debit.entitlement)}:{})};
    state.creditUnits.push(unit);r.restoredCreditUnitId=unit.id;event('restore',unit,r.id);return 'restored';
   },
   reverse(r){

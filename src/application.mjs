@@ -1,4 +1,5 @@
 import {bookingAccounting,cancelBooking} from './cancellation.mjs';
+import {entitlementOperations} from './entitlements.mjs';
 import { randomUUID } from 'node:crypto';
 
 export class ApplicationError extends Error {
@@ -13,13 +14,16 @@ function reservationView(reservation,authority){
 }
 export function emptyState(){return {classes:[],participants:[],reservations:[],passes:[],videos:[],events:[],products:[],orders:[],notifications:[],activity:[],preferences:[]};}
 export function visibleState(state,authority){
- const result=Object.fromEntries(['classes','participants','reservations','passes','videos','events','products','orders','notifications','activity','preferences','creditUnits','creditEvents'].map(k=>[k,structuredClone(state[k]||[])]));
+ const result=Object.fromEntries(['classes','participants','reservations','passes','videos','events','products','orders','notifications','activity','preferences','creditUnits','creditEvents','entitlementProducts','entitlementIssuances','memberships'].map(k=>[k,structuredClone(state[k]||[])]));
  if(authority.role!=='staff'){
   const own=id=>authority.participantIds.includes(id);
   for(const key of ['participants','reservations','passes','orders','creditUnits']) result[key]=(result[key]||[]).filter(x=>own(key==='participants'?x.id:x.participantId));
   result.notifications=(result.notifications||[]).filter(x=>own(x.participantId)&&x.status==='published');
   result.preferences=(result.preferences||[]).filter(x=>own(x.participantId));
   result.activity=[];result.creditEvents=[];result.reservations=result.reservations.map(r=>reservationView(r,authority));
+  result.entitlementIssuances=[];
+  result.entitlementProducts=result.entitlementProducts.map(({createdBy,...p})=>p);
+  result.memberships=result.memberships.filter(m=>own(m.participantId)).map(({reference,...m})=>m);
  }
  result.classes=(result.classes||[]).map(c=>({...c,reservedCount:state.reservations.filter(r=>r.classId===c.id&&r.status==='reserved').length}));
  return result;
@@ -54,7 +58,11 @@ export function transition(original, command, authority, {id=randomUUID,now=()=>
   const c=state.classes.find(x=>x.id===r.classId);if(!c||c.status!=='open'||Date.parse(c.startsAt)<=Date.parse(now())||state.reservations.filter(x=>x.classId===c.id&&x.status==='reserved').length>=c.capacity)fail('No capacity available',409);
   accounting.consume(r,c);r.status='reserved';result=r;
  }else if(command.action==='issue-credit'){
-  staff();own(body.participantId);result=accounting.issue(body);
+  staff();own(body.participantId);result=accounting.issue({participantId:body.participantId,quantity:body.quantity,reason:body.reason,requestId:body.requestId});
+ }else if(['entitlement-product','issue-entitlement'].includes(command.action)){
+  staff();const entitlements=entitlementOperations(state,authority,{id,now},fail,accounting);
+  if(command.action==='entitlement-product')result=entitlements.product(body);
+  else {own(body.participantId);result=entitlements.issue(body);}
  }else if(command.action==='class-policy'){
   staff();const c=state.classes.find(c=>c.id===body.classId);if(!c)fail('Class unavailable',404);if(!Number.isInteger(body.cancellationCutoffMinutes)||body.cancellationCutoffMinutes<0||body.cancellationCutoffMinutes>10080)fail('Invalid cancellation cutoff');const before=c.cancellationCutoffMinutes??90;c.cancellationCutoffMinutes=body.cancellationCutoffMinutes;state.activity.push({id:id(),action:'cancellation-policy',subjectId:c.id,from:before,to:c.cancellationCutoffMinutes,actorId:authority.userId,createdAt:now()});result=c;
  }else if(command.action==='class'){
