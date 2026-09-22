@@ -8,7 +8,7 @@ test('fresh local runtime serves all front-door assets with security headers and
  server.listen(0,'127.0.0.1');await once(server,'listening');
  const origin=`http://127.0.0.1:${server.address().port}`;
  try{
-  for(const [path,type] of [['/','text/html'],['/app.js','text/javascript'],['/integration.js','text/javascript'],['/session.js','text/javascript'],['/styles.css','text/css']]){
+  for(const [path,type] of [['/','text/html'],['/app.js','text/javascript'],['/integration.js','text/javascript'],['/session.js','text/javascript'],['/cancellation-ui.js','text/javascript'],['/styles.css','text/css']]){
    const response=await fetch(`${origin}${path}`);assert.equal(response.status,200,path);
    assert.ok(response.headers.get('content-type').startsWith(type));
    assert.equal(response.headers.get('cache-control'),'no-store');
