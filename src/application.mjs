@@ -1,4 +1,5 @@
 import {bookingAccounting,cancelBooking} from './cancellation.mjs';
+import {classCancellationOption,cancelClass} from './class-cancellation.mjs';
 import {entitlementOperations} from './entitlements.mjs';
 import {memberBookingOption} from './member-booking.mjs';
 import {orderedWaitlist,promotionOptions} from './waitlist.mjs';
@@ -23,6 +24,7 @@ export function emptyState(){return {classes:[],participants:[],reservations:[],
 export function visibleState(state,authority,at=new Date().toISOString()){
  const result=Object.fromEntries(['classes','participants','reservations','passes','videos','events','products','orders','notifications','activity','preferences','creditUnits','creditEvents','entitlementProducts','entitlementIssuances','memberships'].map(k=>[k,structuredClone(state[k]||[])]));
  if(authority.role!=='staff'){
+  result.classes=result.classes.map(({cancellationHistory,...c})=>c);
   const own=id=>authority.participantIds.includes(id);
   for(const key of ['participants','reservations','passes','orders','creditUnits']) result[key]=(result[key]||[]).filter(x=>own(key==='participants'?x.id:x.participantId));
   result.notifications=(result.notifications||[]).filter(x=>own(x.participantId)&&x.status==='published');
@@ -43,6 +45,7 @@ export function visibleState(state,authority,at=new Date().toISOString()){
   result.bookingCheckedAt=at;
   result.staffAccount=memberAccountSummary(result,at);
   result.promotionOptions=result.classes.flatMap(c=>promotionOptions(state,c,at));
+  result.classCancellationOptions=state.classes.map(c=>classCancellationOption(state,c,at));
  }
  return result;
 }
@@ -54,7 +57,9 @@ export function transition(original, command, authority, {id=randomUUID,now=()=>
  const accounting=command.action==='attendance'?null:bookingAccounting(state,authority,{id,now},fail);
  const waitlistEvent=(r,action,from,to)=>{(r.waitlistHistory??=[]).push({id:id(),action,from,to,actorId:authority.userId,actorRole:authority.role,requestId:body.requestId,createdAt:now()});};
  let result;
- if(command.action==='reserve'){
+ if(command.action==='cancel-class'){
+  staff();result=cancelClass(state,body.classId,body,authority,{id,now},fail);return {state,result};
+ }else if(command.action==='reserve'){
   own(body.participantId);
   const c=state.classes.find(x=>x.id===body.classId);
   if(!bookableClass(c,now()))fail('Class unavailable',409);
@@ -85,6 +90,7 @@ export function transition(original, command, authority, {id=randomUUID,now=()=>
    return {state,result:{...r,outcome:'applied'}};
   }else{
    own(r.participantId);const cancelAt=now();
+   if(command.action==='correct-cancellation'){staff();if(r.classCancellation)fail('Occurrence cancellation requires separate reconciliation',409);}
    if(body.expectedReservationStatus!==undefined&&body.expectedReservationStatus!=='waitlisted')fail('Invalid expected reservation status');
    if(body.expectedReservationStatus==='waitlisted'&&r.status!=='waitlisted'&&!(r.status==='cancelled'&&r.cancellation?.originalBookingStatus==='waitlisted'))fail('This entry is no longer waitlisted. Refresh and review the confirmed booking before cancelling.',409);
    const wasWaiting=r.status==='waitlisted';

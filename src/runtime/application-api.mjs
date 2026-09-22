@@ -36,7 +36,7 @@ export function createApplicationApi(env,store,fetcher=fetch){
    if(!store)throw new ApplicationError('Application database handoff is pending',503);
    if(url.pathname==='/api/app'&&req.method==='GET'){send(200,await store.read(userId));return true;}
    if(req.method!=='POST')throw new ApplicationError('Method not allowed',405);
-   const body=await readJson(req),routes={'/api/entitlements/products':'entitlement-product','/api/entitlements/issue':'issue-entitlement','/api/credits/issue':'issue-credit','/api/classes/policy':'class-policy','/api/reservations':'reserve','/api/classes':'class','/api/participants':'participant','/api/preferences':'preferences','/api/notifications':'notification'};
+   const body=await readJson(req),routes={'/api/entitlements/products':'entitlement-product','/api/entitlements/issue':'issue-entitlement','/api/credits/issue':'issue-credit','/api/classes/cancel':'cancel-class','/api/classes/policy':'class-policy','/api/reservations':'reserve','/api/classes':'class','/api/participants':'participant','/api/preferences':'preferences','/api/notifications':'notification'};
    let action=routes[url.pathname],id;
    const match=url.pathname.match(/^\/api\/reservations\/([A-Za-z0-9-]{1,128})\/(cancel|correct-cancellation|attendance|promote)$/);
    if(match){id=match[1];action=match[2];}

@@ -19,7 +19,7 @@ export function memberCancellationUI({getData,isMember,escape:e,modal,load,mutat
  const identity=()=>isMember()?getData()?.context?.userId:null;
  const passLabel=r=>getData()?.passes?.find(p=>p.id===r.creditConsumption?.passId)?.label||'your class pass';
  function result(r,title='Booking cancelled'){
-  const c=getData()?.classes.find(c=>c.id===r.classId);if(r.cancellation?.originalBookingStatus==='waitlisted'){modal(`<h2>Waitlist left</h2><h3>${e(c?.title||'Class')}</h3><p>No seat was reserved and no credit was consumed or restored.</p><button class="button" data-booking-done>View my bookings</button>`);return;}
+  const c=getData()?.classes.find(c=>c.id===r.classId);if(r.classCancellation){modal(`<h2>Class cancelled by studio</h2><h3>${e(c?.title||'Class')}</h3><p>${e(cancellationOutcome(r,passLabel(r)))}</p><button class="button" data-booking-done>View my bookings</button>`);return;}if(r.cancellation?.originalBookingStatus==='waitlisted'){modal(`<h2>Waitlist left</h2><h3>${e(c?.title||'Class')}</h3><p>No seat was reserved and no credit was consumed or restored.</p><button class="button" data-booking-done>View my bookings</button>`);return;}
   modal(`<h2>${e(title)}</h2><h3>${e(c?.title||'Class booking')}</h3><p>${e(r.cancellation?.classification?`${r.cancellation.classification==='early'?'Early':'Late'} cancellation recorded.`:'Cancellation recorded.')}</p><p role="status">${e(cancellationOutcome(r,passLabel(r)))}</p><p>Your booking and credit state are updated.</p><button class="button" data-booking-done>View my bookings</button>`);
  }
  let opening=0;

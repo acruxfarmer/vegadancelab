@@ -9,6 +9,7 @@ import assert from 'node:assert/strict';
 import pg from 'pg';
 import {createApplicationStore} from '../src/runtime/application-database.mjs';
 import {emptyState,transition} from '../src/application.mjs';
+import {verifyClassCancellation} from './verify-class-cancellation-postgres.mjs';
 const bin=process.env.PG_TEST_BIN;if(!bin)throw new Error('PG_TEST_BIN required; local binaries only');
 const dir=await mkdtemp(join(tmpdir(),'vega-hardening-')),password=randomUUID(),port=Number(process.env.PG_TEST_PORT||55439);
 if(!Number.isInteger(port)||port<49152||port>65535)throw new Error('Use a local test port');
@@ -136,6 +137,7 @@ try{
   await store.command(staff,command('promote',{},first.id));assert.deepEqual((await state()).state,after.state);
   await assert.rejects(store.command(m1,command('cancel',{expectedReservationStatus:'waitlisted'},first.id)),e=>e.status===409);
  });
+ await verifyClassCancellation({store,staff,m1,m2,state,command,overlap,admin,check});
  await check('readiness rejects missing receipt grants, disabled RLS and elevated runtime role',async()=>{
   for(const [breakIt,repair] of [
    ['revoke insert on vega_private.app_commands from vega_app_runtime','grant insert on vega_private.app_commands to vega_app_runtime'],

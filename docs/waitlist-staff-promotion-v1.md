@@ -1,6 +1,6 @@
 # 6.2 — Waitlist & Staff Promotion V1 verification record
 
-Status: implementation and local verification complete; hosted gate pending. Do not close 6.2 before hosted staff/member verification.
+Status: PASS — implementation, local regression, real PostgreSQL and hosted staff/member verification complete on 2026-09-22. No remaining 6.2 blockers. Hosted evidence is recorded in the shared workspace at vega/docs/hosted-waitlist-staff-promotion-verified.md.
 
 ## Contract and existing capability comparison
 
@@ -19,8 +19,8 @@ Leaving uses the existing cancellation operation with an expected-waitlisted gua
 - Loopback browser with real domain/projection code and synthetic authentication: full class → join → leave → rejoin; explicit no-credit confirmations; position and history visible. Staff cancelled synthetic seat holder using existing cancellation, reviewed the one-credit promotion consequence and promoted the member. Roster showed reserved / Not recorded with attendance controls. Member reload showed Booked and one used credit; pass balance 2 → 1 only at promotion. Staff reload retained roster. Both browser error/warning logs empty.
 - Static HTTP asset test covers the new allowlisted staff module; frontdoor build and diff checks required before commit.
 
-## Hosted gate
+## Hosted gate — passed
 
-Deploy pinned Development web commit and matching protected Preview. Use separate actual member/staff sessions. Create or reuse a controlled full, waitlist-enabled, credit-required class; verify join, leave, rejoin, capacity release, explicit staff promotion, single debit, member confirmation, roster inclusion, audit and reload/session recovery. Retain exact IDs/timestamps and before/after credit counts. Reuse local/real PostgreSQL concurrency/rollback and existing authorization evidence; do not represent synthetic auth as hosted authorization evidence. Keep fixture cleanup separate from promotion and retain history.
+Commit b0b6719701b98fd4856777b9994956835adb9860 deployed to Development web dep-dapfl08ae00c73cuv19g and protected Preview vega-development-o9gxfa16u-acruxfarmer.vercel.app. Actual member and staff sessions verified full class → member join → leave → rejoin → capacity release → staff promotion → confirmed member booking and 6.1 roster entry. Member balance stayed six while waiting, fell to five only at promotion, and returned to six after explicit early-cancellation cleanup. Promotion reservation c9b9259d-1c2e-49af-9395-5e525b35cb86 retained its ID. Audit had exactly join/promotion/one debit before cleanup; all five final records (including cancellation/restoration) were identical after reload. Member staff-route navigation was denied; staff/member browser logs were empty. Concurrent/replayed promotion and command-level authorization reuse the real PostgreSQL evidence above rather than claiming extra hosted API probes. Original leave record and synthetic holder history retained; no code correction or deployment during hosted verification.
 
 Production, Square, worker and unrelated services unchanged. Square stays disabled. Exclusions remain exactly those in the approved 6.2 contract.
