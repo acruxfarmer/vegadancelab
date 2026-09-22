@@ -33,6 +33,11 @@ export function visibleState(state,authority,at=new Date().toISOString()){
   result.memberAccount=memberAccountSummary(result,at);
  }
  result.classes=(result.classes||[]).map(c=>({...c,reservedCount:state.reservations.filter(r=>r.classId===c.id&&r.status==='reserved').length}));
+ if(authority.role==='staff'){
+  result.bookingOptions=result.classes.flatMap(c=>result.participants.map(p=>memberBookingOption(state,c,p.id,at)));
+  result.bookingCheckedAt=at;
+  result.staffAccount=memberAccountSummary(result,at);
+ }
  return result;
 }
 export function transition(original, command, authority, {id=randomUUID,now=()=>new Date().toISOString()}={}){
@@ -48,7 +53,7 @@ export function transition(original, command, authority, {id=randomUUID,now=()=>
   if(!c||c.status!=='open'||Date.parse(c.startsAt)<=Date.parse(now()))fail('Class unavailable',409);
   if(state.reservations.some(r=>r.classId===c.id&&r.participantId===body.participantId&&['reserved','waitlisted'].includes(r.status)))fail('Already booked or waitlisted',409);
   const full=state.reservations.filter(r=>r.classId===c.id&&r.status==='reserved').length>=c.capacity;
-  if(full&&(authority.role!=='staff'||!c.waitlistEnabled))fail('Class full',409);
+  if(full&&(body.reservationOnly===true||authority.role!=='staff'||!c.waitlistEnabled))fail('Class full',409);
   result={id:id(),classId:c.id,participantId:body.participantId,status:full?'waitlisted':'reserved',paymentStatus:'not_evaluated',attendanceStatus:'not_recorded',notificationStatus:'not_requested',createdAt:now()};
   if(body.passId!==undefined){if(!state.passes.some(p=>p.id===body.passId&&p.participantId===body.participantId))fail('Participant pass unavailable',403);result.passId=body.passId;}
   if(!full)accounting.consume(result,c);state.reservations.push(result);

@@ -1,4 +1,5 @@
 import {entitlementsUI} from './entitlements-ui.js';
+import {staffBookingUI} from './staff-booking.js';
 import {memberBookingUI} from './member-booking.js';
 import {memberCancellationUI} from './member-cancellation.js';
 import {cancellationUI} from './cancellation-ui.js';
@@ -66,6 +67,7 @@ window.addEventListener('hashchange',()=>{page=location.hash.slice(1)||'today';i
 const integration=extend({$,getData:()=>data,isDemo:()=>localDemo,escape,heading,empty,modal,mutate,notify,render:()=>render(),key});
 const entitlements=entitlementsUI({escape,mutate,notify,getData:()=>data});
 const memberBooking=memberBookingUI({getData:()=>data,escape,modal,mutate,load,notify,date,time});
+const staffBooking=staffBookingUI({getData:()=>data,isStaff:()=>!!data&&!localDemo&&view==='staff'&&data.context?.role==='staff',escape,modal,mutate,load,notify,render:()=>render(),date,time});
 memberCancellationUI({getData:()=>data,isMember:()=>!!data&&!localDemo&&view==='member',escape,modal,load,mutate,notify,date,time});
 const cancellation=cancellationUI({escape,mutate,notify,getData:()=>data});
 const originalRender=render;
@@ -75,7 +77,7 @@ classDetail=function(id){originalDetail(id);const c=cls(id);if(!localDemo&&c.res
 document.addEventListener('click',async event=>{const b=event.target.closest('button');if(!b)return;if(b.id==='sign-out'){session.clear();token=null;data=null;localDemo=false;drafts=[];cart=[];waitlist=[];preferences={email:false,sms:false};pendingRequests.clear();view='member';page='today';b.remove();login();return}try{await integration.click(b)}catch(error){notify(error.message)}});
 document.addEventListener('submit',async event=>{const form=event.target;if(!['create-class','create-person','live-preferences','live-draft'].includes(form.id))return;event.preventDefault();const button=form.querySelector('button');button.disabled=true;try{await integration.submit(form)}catch(error){form.querySelector('[role="alert"]').textContent=error.message}finally{button.disabled=false}});
 const legacyRender=render;
-render=function(){legacyRender();if(!data||localDemo||view!=='member')return;const html=memberBooking.render(page,{query,category});if(html!==null)$('#main').innerHTML=html;};
+render=function(){legacyRender();if(!data||localDemo)return;if(view==='staff'){if(page==='people')$('#main').innerHTML=staffBooking.render()+'<details><summary>Existing entitlement product provisioning</summary>'+entitlements.render(page)+'</details>';return;}const html=memberBooking.render(page,{query,category});if(html!==null)$('#main').innerHTML=html;};
 const staffClassDetail=classDetail;
 classDetail=function(id){if(!localDemo&&view==='member')return memberBooking.open(id);return staffClassDetail(id);};
 document.addEventListener('change',event=>{if(event.target.matches('#member-booking select[name="participantId"]'))memberBooking.show(event.target.form.dataset.id,event.target.value);});
@@ -87,6 +89,6 @@ window.addEventListener('pageshow',event=>{if(event.persisted&&!localDemo){resto
 window.addEventListener('pagehide',()=>{if(!localDemo&&session.active())hideProtected();});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&session.active()&&!localDemo){restoreWorkspace(false);}});
 
-document.addEventListener('submit',async event=>{const form=event.target;if(form.id!=='issue-credit'&&!form.hasAttribute('data-cancellation-policy')&&!form.hasAttribute('data-cancellation-correction'))return;event.preventDefault();const button=form.querySelector('button');button.disabled=true;try{await cancellation.submit(form)}catch(error){form.querySelector('[role=alert]').textContent=error.message}finally{button.disabled=false}});
+document.addEventListener('submit',async event=>{const form=event.target;if(form.id!=='issue-credit'&&!form.hasAttribute('data-cancellation-policy')&&!form.hasAttribute('data-cancellation-correction'))return;event.preventDefault();if(form.dataset.pending)return;form.dataset.pending='true';const button=form.querySelector('button');button.disabled=true;try{await cancellation.submit(form)}catch(error){form.querySelector('[role=alert]').textContent=error.message}finally{delete form.dataset.pending;button.disabled=false}});
 
 document.addEventListener('submit',async event=>{const form=event.target;if(!['entitlement-product','entitlement-issue'].includes(form.id))return;event.preventDefault();const button=form.querySelector('button');button.disabled=true;try{await entitlements.submit(form)}catch(error){form.querySelector('[role=alert]').textContent=error.message}finally{button.disabled=false}});
