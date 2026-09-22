@@ -9,7 +9,7 @@ let preferences={email:false,sms:false},drafts=[],cart=[],waitlist=[];
 const memberNav=[['today','◷','Today'],['classes','▦','Classes'],['bookings','▤','My bookings'],['passes','◇','Passes & membership'],['library','▷','Video library'],['events','✦','Events'],['shop','▧','Studio shop'],['profile','○','My profile']];
 const staffNav=[['overview','◷','Overview'],['schedule','▦','Schedule & rosters'],['people','○','People'],['communications','✉','Communications'],['operations','⇄','Processing'],['reports','▥','Reports']];
 function hideProtected(){data=null;$('#dialog').close();$('#dialog-body').replaceChildren();$('#nav').replaceChildren();$('#main').replaceChildren();$('#environment').textContent='Checking your session…';}
-const session=createSession({storage:{getItem:k=>sessionStorage.getItem(k),setItem:(k,v)=>sessionStorage.setItem(k,v),removeItem:k=>sessionStorage.removeItem(k)},onPending:hideProtected,onLost:()=>{token=null;localDemo=false;$('#sign-out')?.remove();login('Please sign in to continue.');},onReady:()=>load().catch(()=>session.clear())});
+const session=createSession({storage:{getItem:k=>sessionStorage.getItem(k),setItem:(k,v)=>sessionStorage.setItem(k,v),removeItem:k=>sessionStorage.removeItem(k)},onPending:hideProtected,onLost:()=>{token=null;localDemo=false;$('#sign-out')?.remove();login('Please sign in to continue.');},onReady:()=>restoreWorkspace(false)});
 async function api(path,options={}){
  const generation=session.generation(),protectedRequest=!path.startsWith('/api/auth/');
  if(protectedRequest)token=await session.access();
@@ -66,7 +66,8 @@ const originalDetail=classDetail;
 classDetail=function(id){originalDetail(id);const c=cls(id);if(!localDemo&&c.reservedCount>=c.capacity){const b=$('[data-waitlist]');if(b){if(c.waitlistEnabled){b.removeAttribute('data-waitlist');b.type='submit';b.textContent='Join waitlist';b.nextElementSibling.textContent='A waitlist request does not reserve a place or collect payment.'}else{b.disabled=true;b.textContent='Waitlist unavailable';b.nextElementSibling.textContent='This class is full and does not accept a waitlist.'}}}};
 document.addEventListener('click',async event=>{const b=event.target.closest('button');if(!b)return;if(b.id==='sign-out'){session.clear();token=null;data=null;localDemo=false;drafts=[];cart=[];waitlist=[];preferences={email:false,sms:false};pendingRequests.clear();view='member';page='today';b.remove();login();return}try{await integration.click(b)}catch(error){notify(error.message)}});
 document.addEventListener('submit',async event=>{const form=event.target;if(!['create-class','create-person','live-preferences','live-draft'].includes(form.id))return;event.preventDefault();const button=form.querySelector('button');button.disabled=true;try{await integration.submit(form)}catch(error){form.querySelector('[role="alert"]').textContent=error.message}finally{button.disabled=false}});
-if(session.restore()){session.refresh().then(()=>load()).catch(()=>session.clear());}else{login();}
-window.addEventListener('pageshow',event=>{if(event.persisted&&!localDemo){hideProtected();session.refresh().then(()=>load()).catch(()=>session.clear());}});
+async function restoreWorkspace(force){const generation=session.generation();hideProtected();try{if(force)await session.refresh();else await session.access();await load();}catch{if(generation===session.generation())session.clear();}}
+if(session.restore()){restoreWorkspace(true);}else{login();}
+window.addEventListener('pageshow',event=>{if(event.persisted&&!localDemo){restoreWorkspace(true);}});
 window.addEventListener('pagehide',()=>{if(!localDemo&&session.active())hideProtected();});
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&session.active()&&!localDemo){hideProtected();session.access().then(()=>load()).catch(()=>session.clear());}});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&session.active()&&!localDemo){restoreWorkspace(false);}});
