@@ -10,3 +10,8 @@
 .occurrence-history li { padding-block:1rem; border-bottom:1px solid #ddd; }
 .occurrence-history dd { margin-left:0; margin-bottom:.75rem; }
 .occurrence-history summary { cursor:pointer; padding-block:.5rem; }
+.schedule-navigation .field { min-width:0; }
+.schedule-navigation input,.schedule-navigation select { max-width:100%; min-width:0; }
+.schedule-navigation .row { gap:1rem; flex-wrap:wrap; }
+#roster-class { max-width:100%; min-width:0; }
+.toolbar:has(#roster-class) label { min-width:0; width:100%; }

@@ -3,7 +3,7 @@ import {mkdir,writeFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
 import {classEditingFixture} from './class-editing-fixture.mjs';
-const fixture=classEditingFixture(),{server}=fixture,output=new URL('../docs/class-duplication-local/',import.meta.url);
+const fixture=classEditingFixture(),{server}=fixture,output=new URL(process.env.VEGA_VERIFY_OUTPUT||'../docs/class-duplication-local/',import.meta.url);
 await mkdir(output,{recursive:true});await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const base=`http://127.0.0.1:${server.address().port}`,report={scope:'Loopback synthetic auth; real API/domain/projections; PostgreSQL separately verified',checks:[],errors:[]};let browser;
 try{
@@ -36,7 +36,7 @@ try{
  const sv=await fixture.store.read(fixture.staff.userId),mv=await fixture.store.read(fixture.member.userId),{creationProvenance,...staffClass}=sv.classes.find(c=>c.id===created.id);assert.deepEqual(mv.classes.find(c=>c.id===created.id),staffClass);assert.equal(await member.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
  await member.screenshot({path:fileURLToPath(new URL('member-refreshed.png',output)),fullPage:true});report.checks.push('Staff/member refresh agree on new identity and schedule fields; member has no staff controls/audit');
  // Review from one staff surface; change its source from another before confirming.
- const other=await context.newPage();observe(other);await login(other,'staff');await other.goto(base+'/#schedule');
+ const other=await context.newPage();observe(other);await login(other,'staff');await other.goto(base+'/#schedule');await other.locator('#roster-class').selectOption('c');
  await page.locator('#roster-class').selectOption('c');await page.locator('[data-duplicate-occurrence="c"]').click();await page.locator('#occurrence-duplicate-form').waitFor();await page.locator('[name=startsAt]').fill('2099-10-04T10:30');await page.getByRole('button',{name:'Review new occurrence',exact:true}).click();await page.getByRole('heading',{name:'Review new occurrence',exact:true}).waitFor();
  await other.locator('[data-edit-occurrence="c"]').click();await other.locator('#occurrence-edit-form').waitFor();await other.locator('[name=title]').fill('Source edited after review');await other.locator('[name=reason]').fill('Concurrent source change');await other.getByRole('button',{name:'Review proposed changes',exact:true}).click();await other.getByRole('heading',{name:'Review occurrence changes'}).waitFor();await other.getByRole('button',{name:'Confirm occurrence changes'}).click();await other.getByRole('heading',{name:'Occurrence updated',exact:true}).waitFor();
  const staleBefore=fixture.snapshot();await page.getByRole('button',{name:'Confirm new occurrence'}).click();await page.locator('#occurrence-duplicate-confirm [role=alert]').filter({hasText:'Source occurrence changed'}).waitFor();assert.deepEqual(fixture.snapshot(),staleBefore);report.checks.push('Two staff surfaces prove source-version stale confirmation cannot create a copy');

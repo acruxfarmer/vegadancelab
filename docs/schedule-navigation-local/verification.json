@@ -1,0 +1,12 @@
+{
+  "scope": "Loopback synthetic auth; real API/domain/read projection; browser timezone Asia/Tokyo",
+  "checks": [
+    "Explicit selection only; refresh retains visible identity; status exclusion clears roster/history and dependent controls without substitution",
+    "Text search distinguishes duplicate titles by ID; empty and invalid filters clear selection; Pacific DST dates and repeated-hour ordering hold in Tokyo browser",
+    "Removed-on-refresh selection clears; returning occurrence is not auto-selected; keyboard selection, desktop/mobile and intentional reload reset pass",
+    "Member navigation unchanged; filtering/selecting/refreshing sends zero mutation requests and leaves entire state/revision unchanged"
+  ],
+  "errors": [],
+  "mutationRequests": [],
+  "passed": true
+}

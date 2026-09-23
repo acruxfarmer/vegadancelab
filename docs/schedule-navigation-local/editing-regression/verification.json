@@ -1,0 +1,15 @@
+{
+  "scope": "Loopback synthetic auth; real API/domain/projections; PostgreSQL separately verified",
+  "checks": [
+    "Staff schedule renders and loads edit asset",
+    "Editable details validated via real review API; before/after review causes no mutation",
+    "Back preserves draft; confirmation writes one attributable edit, retains identity and refreshes staff roster",
+    "Member refresh agrees with staff details and identity; staff audit/edit controls hidden; mobile schedule fits",
+    "Two-tab stale confirmation rejects without overwriting winner",
+    "Cancelled reservation history presents hard editing block",
+    "Mobile occurrence editor renders without page overflow",
+    "Mobile form scrolls to review and confirmation; review has no horizontal overflow"
+  ],
+  "errors": [],
+  "passed": true
+}

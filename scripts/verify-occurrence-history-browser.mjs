@@ -4,7 +4,7 @@ import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
 import {classEditingFixture} from './class-editing-fixture.mjs';
 import {classCancellationOption} from '../src/class-cancellation.mjs';
-const fixture=classEditingFixture(),{server,store,staff,member}=fixture,output=new URL('../docs/occurrence-history-local/',import.meta.url);
+const fixture=classEditingFixture(),{server,store,staff,member}=fixture,output=new URL(process.env.VEGA_VERIFY_OUTPUT||'../docs/occurrence-history-local/',import.meta.url);
 const command=(action,body)=>store.command(staff.userId,{action,body:{requestId:crypto.randomUUID(),...body}});
 let d=await store.read(staff.userId),source=d.classes.find(c=>c.id==='c');
 const {id,status,reservedCount,...sourceDetails}=source;
@@ -34,7 +34,7 @@ try{
  await page.setViewportSize({width:390,height:844});await history.scrollIntoViewIfNeeded();assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);await page.screenshot({path:fileURLToPath(new URL('mobile-copy-history.png',output)),fullPage:true});
  await page.locator('#roster-class').selectOption('c');await history.locator('summary').evaluateAll(nodes=>nodes.forEach(n=>n.click()));await history.scrollIntoViewIfNeeded();assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);await page.screenshot({path:fileURLToPath(new URL('mobile-source-history.png',output)),fullPage:true});
  report.checks.push('Copy provenance appears once, independent of source edit/cancellation; desktop/mobile details expand without overflow');
- await page.locator('#roster-class').selectOption(past.id);assert.equal(await history.locator('[data-history-event="creation"]').count(),1);await history.getByText('After',{exact:true}).click();assert.ok((await history.innerText()).includes('unrecorded'));report.checks.push('Past occurrences remain selectable; creation snapshot gaps shown as unrecorded');
+ await page.getByRole('button',{name:'All dates',exact:true}).click();await page.locator('#roster-class').selectOption(past.id);assert.equal(await history.locator('[data-history-event="creation"]').count(),1);await history.getByText('After',{exact:true}).click();assert.ok((await history.innerText()).includes('unrecorded'));report.checks.push('Past occurrences remain selectable; creation snapshot gaps shown as unrecorded');
  const memberPage=await browser.newPage({viewport:{width:390,height:844}});await login(memberPage,'member');await memberPage.goto(base+'/#classes');await memberPage.reload();assert.equal(await memberPage.locator('.occurrence-history').count(),0);await memberPage.goto(base+'/#schedule');assert.equal(await memberPage.locator('.occurrence-history').count(),0);
  const staffRead=await store.read(staff.userId),memberRead=await store.read(member.userId);
  for(const c of staffRead.classes){const {editHistory,cancellationHistory,creationProvenance,...visible}=c;assert.deepEqual(memberRead.classes.find(m=>m.id===c.id),visible);}

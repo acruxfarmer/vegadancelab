@@ -2,8 +2,9 @@ import {cancellationOutcome} from './member-cancellation.js';
 export function cancellationUI({escape:e,mutate,notify,getData}){
  const field=(name,label,type='text',value='')=>`<label class="field">${label}<input name="${name}" type="${type}" value="${e(value)}" required></label>`;
  return {
-  render(page,{includeCredits=true}={}){
-   const source=getData(),staff=source.context.role==='staff';
+  render(page,{includeCredits=true,occurrenceId}={}){
+   let source=getData();const staff=source.context.role==='staff';
+   if(staff&&page==='schedule'&&occurrenceId!==undefined){if(!occurrenceId)return '';source={...source,classes:source.classes.filter(c=>c.id===occurrenceId),reservations:source.reservations.filter(r=>r.classId===occurrenceId)};}
    // Present member outcomes in plain language without modifying persisted records.
    const d=staff?source:{...source,reservations:source.reservations.map(r=>r.cancellation?{...r,cancellation:{...r.cancellation,creditOutcome:cancellationOutcome(r,source.passes?.find(p=>p.id===r.creditConsumption?.passId)?.label)}}:r)};let html='';
    if(includeCredits&&(page==='bookings'||page==='people'))html+=`<section class="card"><h2>Class credits</h2>${d.participants.map(p=>`<p>${e(p.name)}: ${(d.creditUnits||[]).filter(u=>u.participantId===p.id&&u.status==='available').length} unspent credits (eligibility applies)</p>`).join('')}<p class="meta">Only classes configured to require a credit consume one. Cancellation never creates a cash refund.</p></section>`;

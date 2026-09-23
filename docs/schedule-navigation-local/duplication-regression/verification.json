@@ -1,0 +1,14 @@
+{
+  "scope": "Loopback synthetic auth; real API/domain/projections; PostgreSQL separately verified",
+  "checks": [
+    "History-bearing source allowed read-only; start must be explicitly chosen; no direct confirmation",
+    "Canonical creation limit rejects invalid duration; complete timezone-explicit review is nonmutating",
+    "Back retains draft; lost acknowledgement retry creates exactly one new identity and leaves source/history untouched",
+    "Attributable provenance and confirmed fields persist across full staff reload",
+    "Staff/member refresh agree on new identity and schedule fields; member has no staff controls/audit",
+    "Two staff surfaces prove source-version stale confirmation cannot create a copy",
+    "Mobile fresh review and confirmation succeed without horizontal overflow"
+  ],
+  "errors": [],
+  "passed": true
+}

@@ -13,6 +13,7 @@ import {verifyClassCancellation} from './verify-class-cancellation-postgres.mjs'
 import {verifyClassEditing} from './verify-class-editing-postgres.mjs';
 import {verifyClassDuplication} from './verify-class-duplication-postgres.mjs';
 import {verifyOccurrenceHistory} from './verify-occurrence-history-postgres.mjs';
+import {verifyScheduleNavigation} from './verify-schedule-navigation-postgres.mjs';
 const bin=process.env.PG_TEST_BIN;if(!bin)throw new Error('PG_TEST_BIN required; local binaries only');
 const dir=await mkdtemp(join(tmpdir(),'vega-hardening-')),password=randomUUID(),port=Number(process.env.PG_TEST_PORT||55439);
 if(!Number.isInteger(port)||port<49152||port>65535)throw new Error('Use a local test port');
@@ -144,6 +145,7 @@ try{
  await verifyClassEditing({store,staff,m1,state,command,overlap,admin,check});
  await verifyClassDuplication({store,staff,m1,state,command,overlap,admin,check});
  await verifyOccurrenceHistory({store,staff,m1,state,admin,check});
+ await verifyScheduleNavigation({store,staff,m1,state,admin,check});
  await check('readiness rejects missing receipt grants, disabled RLS and elevated runtime role',async()=>{
   for(const [breakIt,repair] of [
    ['revoke insert on vega_private.app_commands from vega_app_runtime','grant insert on vega_private.app_commands to vega_app_runtime'],

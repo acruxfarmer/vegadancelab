@@ -1,0 +1,12 @@
+{
+  "scope": "Loopback synthetic auth, real API/domain/projection; no hosted or provider access",
+  "checks": [
+    "Cancelled source shows one creation, edit and cancellation with attributable evidence and recorded snapshots; escaped text; reload persists",
+    "Copy provenance appears once, independent of source edit/cancellation; desktop/mobile details expand without overflow",
+    "Past occurrences remain selectable; creation snapshot gaps shown as unrecorded",
+    "Member has no occurrence audit UI/data; refreshed staff/member schedules agree; browsing causes zero mutations and no revision/state changes"
+  ],
+  "errors": [],
+  "mutationRequests": [],
+  "passed": true
+}

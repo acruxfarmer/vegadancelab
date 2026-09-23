@@ -8,3 +8,4 @@ await copyFile(new URL('public/staff-waitlist.js',root),new URL('dist-frontdoor/
 await copyFile(new URL('public/class-editing-ui.js',root),new URL('dist-frontdoor/class-editing-ui.js',root));
 await copyFile(new URL('public/class-duplication-ui.js',root),new URL('dist-frontdoor/class-duplication-ui.js',root));
 await copyFile(new URL('public/occurrence-history.js',root),new URL('dist-frontdoor/occurrence-history.js',root));
+await copyFile(new URL('public/schedule-navigation.js',root),new URL('dist-frontdoor/schedule-navigation.js',root));
