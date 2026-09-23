@@ -1,0 +1,17 @@
+{
+  "scope": "Disposable loopback fixture; synthetic auth; real domain/API projections",
+  "checks": [
+    "Combined canonical filters, duplicate-name identities, escaped display text, exact action target, full totals and waitlist order unchanged; same-occurrence refresh retains filters",
+    "No-match versus no-reservation states; reset restores stable order; waitlisted/cancelled rows retain view-only attendance; changing/leaving/clearing occurrence clears participant context and obsolete dialog",
+    "Desktop/mobile and keyboard filtering pass; reload and authority-scope change clear in-memory context; member excluded; navigation sends zero mutation requests and leaves complete state/revision unchanged",
+    "Separate existing-action regression: correcting the exact duplicate-name reservation still works and moves no credits",
+    "Delayed existing attendance response does not replace a newer participant dialog"
+  ],
+  "errors": [],
+  "mutationRequests": [
+    "http://127.0.0.1:54460/api/reservations/f96de184-58fc-449f-9174-f3242c83eafe/attendance",
+    "http://127.0.0.1:54460/api/reservations/f96de184-58fc-449f-9174-f3242c83eafe/attendance"
+  ],
+  "navigationMutationRequests": [],
+  "passed": true
+}

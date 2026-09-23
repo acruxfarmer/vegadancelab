@@ -22,6 +22,7 @@ test('fresh local runtime serves all front-door assets with security headers and
   const classEdit=await fetch(`${origin}/class-editing-ui.js`);assert.equal(classEdit.status,200);assert.match(await classEdit.text(),/export function classEditingUI/);
   const waitlist=await fetch(`${origin}/staff-waitlist.js`);assert.equal(waitlist.status,200);assert.match(await waitlist.text(),/export function staffWaitlistUI/);
   const attendance=await fetch(`${origin}/attendance-ui.js`);assert.equal(attendance.status,200);assert.match(attendance.headers.get('content-type'),/text\/javascript/);assert.match(await attendance.text(),/export function attendanceUI/);
+  const roster=await fetch(`${origin}/roster-navigation.js`);assert.equal(roster.status,200);assert.match(roster.headers.get('content-type'),/text\/javascript/);assert.match(await roster.text(),/export function rosterResults/);
   assert.equal((await config.json()).squareEnabled,false);
   for(const path of ['/api/app','/health/ready','/health/ingestion']){
    const response=await fetch(`${origin}${path}`);assert.equal(response.status,503,path);

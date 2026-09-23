@@ -15,3 +15,6 @@
 .schedule-navigation .row { gap:1rem; flex-wrap:wrap; }
 #roster-class { max-width:100%; min-width:0; }
 .toolbar:has(#roster-class) label { min-width:0; width:100%; }
+
+.roster-identity{display:block;overflow-wrap:anywhere;white-space:normal;margin-top:.4rem;max-width:24rem;color:var(--muted)}
+#selected-roster th:first-child,#selected-roster td:first-child{min-width:15rem}
