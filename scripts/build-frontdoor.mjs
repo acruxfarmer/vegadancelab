@@ -7,3 +7,4 @@ await copyFile(new URL('public/attendance-ui.js',root),new URL('dist-frontdoor/a
 await copyFile(new URL('public/staff-waitlist.js',root),new URL('dist-frontdoor/staff-waitlist.js',root));
 await copyFile(new URL('public/class-editing-ui.js',root),new URL('dist-frontdoor/class-editing-ui.js',root));
 await copyFile(new URL('public/class-duplication-ui.js',root),new URL('dist-frontdoor/class-duplication-ui.js',root));
+await copyFile(new URL('public/occurrence-history.js',root),new URL('dist-frontdoor/occurrence-history.js',root));

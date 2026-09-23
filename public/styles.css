@@ -4,3 +4,9 @@
 /* Long occurrence titles must not widen the mobile roster behind the editor. */
 [data-edit-back]{margin-right:16px}
 @media(max-width:700px){.toolbar:has(#roster-class) label{min-width:0;max-width:100%;width:100%}#roster-class{min-width:0;max-width:100%;width:100%}}
+/* Read-only occurrence evidence must wrap long IDs and snapshots on mobile. */
+.occurrence-history { overflow-wrap:anywhere; }
+.occurrence-history ol { padding-left:1.25rem; }
+.occurrence-history li { padding-block:1rem; border-bottom:1px solid #ddd; }
+.occurrence-history dd { margin-left:0; margin-bottom:.75rem; }
+.occurrence-history summary { cursor:pointer; padding-block:.5rem; }
