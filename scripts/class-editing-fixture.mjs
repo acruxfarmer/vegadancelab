@@ -4,6 +4,7 @@ import {createDevelopmentServer} from '../src/runtime/web.mjs';
 import {createApplicationApi} from '../src/runtime/application-api.mjs';
 import {emptyState,transition,visibleState,ApplicationError} from '../src/application.mjs';
 import {reviewClassEdit} from '../src/class-editing.mjs';
+import {reviewClassDuplicate} from '../src/class-duplication.mjs';
 export function classEditingFixture(){
  const staff={role:'staff',userId:'11111111-1111-4111-8111-111111111111',tenantId:'local',businessId:'local',participantIds:[]},member={...staff,role:'member',userId:'22222222-2222-4222-8222-222222222222',participantIds:['p']};
  let state={...emptyState(),participants:[{id:'p',name:'Test Member'}]};const receipts=new Map();let revision=0;
@@ -15,6 +16,7 @@ export function classEditingFixture(){
  state.reservations.push({id:'prior',classId:'blocked',participantId:'p',status:'cancelled',attendanceStatus:'not_recorded'});
  const store={read:async id=>({context:actor(id),...visibleState(state,actor(id)),mode:'development',squareEnabled:false,revision,jobs:[]}),
   reviewClassEdit:async(id,body)=>reviewClassEdit(state,body,actor(id),new Date().toISOString(),(m,s)=>{throw new ApplicationError(m,s);}),
+  reviewClassDuplicate:async(id,body)=>reviewClassDuplicate(state,body,actor(id),new Date().toISOString(),(m,s)=>{throw new ApplicationError(m,s);}),
   command:async(id,cmd)=>{const key=id+cmd.body.requestId,signature=JSON.stringify(cmd);if(receipts.has(key)){const prior=receipts.get(key);if(prior.signature!==signature)throw new ApplicationError('Request conflict',409);return prior.result;}const next=transition(state,cmd,actor(id));state=next.state;revision++;receipts.set(key,{signature,result:next.result});return next.result;}};
  const env={VEGA_ENV:'development',VEGA_EXTERNAL_EFFECTS:'disabled',SUPABASE_URL:'https://cjdoczrxcjynjhgpgqop.supabase.co',SUPABASE_PUBLISHABLE_KEY:'synthetic'};
  const api=createApplicationApi(env,store,async(url,init)=>{

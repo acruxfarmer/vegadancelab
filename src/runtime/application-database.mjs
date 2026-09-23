@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { databaseTls } from './database-tls.mjs';
 import { ApplicationError,transition,visibleState } from '../application.mjs';
 import {reviewClassEdit} from '../class-editing.mjs';
+import {reviewClassDuplicate} from '../class-duplication.mjs';
 
 export function applicationDatabaseOptions(value){
  const u=new URL(value),ref='cjdoczrxcjynjhgpgqop';
@@ -44,6 +45,10 @@ export function createApplicationStore(pool){
     jobs=result.rows;
    }
    return {mode:'development',context:{name:'Vega Dance Lab',...a},revision:row.revision,...visibleState(row.state,a),jobs,squareEnabled:false};
+  }),
+  reviewClassDuplicate:(userId,body)=>transaction(userId,async(c,a)=>{
+   const row=await stateRow(c,a);
+   return reviewClassDuplicate(row.state,body,a,new Date().toISOString(),(message,status)=>{throw new ApplicationError(message,status);});
   }),
   reviewClassEdit:(userId,body)=>transaction(userId,async(c,a)=>{
    const row=await stateRow(c,a);

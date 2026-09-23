@@ -3,6 +3,15 @@ import assert from 'node:assert/strict';
 import {Readable} from 'node:stream';
 import {createApplicationApi} from '../src/runtime/application-api.mjs';
 const env={SUPABASE_URL:'https://cjdoczrxcjynjhgpgqop.supabase.co',SUPABASE_PUBLISHABLE_KEY:'synthetic'};
+test('duplication review and confirmation authenticate before dispatch and use separate read/command paths',async()=>{
+ const id='11111111-1111-4111-8111-111111111111',calls=[];
+ const api=createApplicationApi(env,{reviewClassDuplicate:async(user,body)=>{calls.push(['review',user,body]);return {reviewToken:'review'};},command:async(user,cmd)=>{calls.push(['command',user,cmd]);return {id:'new'};}},async()=>({ok:true,json:async()=>({id})}));
+ const body={classId:'source',userId:'forged',details:{startsAt:'2099-10-03T12:00:00Z'}};
+ for(const path of ['/api/classes/duplicate/review','/api/classes/duplicate'])assert.equal((await request(api,path,{method:'POST',body})).status,401);
+ assert.equal(calls.length,0);
+ assert.equal((await request(api,'/api/classes/duplicate/review',{token:'Bearer valid',method:'POST',body})).status,200);assert.deepEqual(calls,[['review',id,body]]);
+ assert.equal((await request(api,'/api/classes/duplicate',{token:'Bearer valid',method:'POST',body})).status,200);assert.equal(calls[1][1],id);assert.equal(calls[1][2].action,'duplicate-class');
+});
 async function request(api,path,{token,body,method='GET'}={}){const req=Readable.from(body?[Buffer.from(JSON.stringify(body))]:[]);Object.assign(req,{url:path,method,headers:{'content-type':'application/json',...(token?{authorization:token}:{})}});let status,result;await api(req,{writeHead:s=>status=s,end:x=>result=JSON.parse(x)});return {status,result};}
 test('occurrence review uses authenticated read-only store method; confirm routes through transactional command',async()=>{
  const id='11111111-1111-4111-8111-111111111111',calls=[];
