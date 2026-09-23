@@ -1,5 +1,7 @@
 import {bookingAccounting,cancelBooking} from './cancellation.mjs';
 import {classCancellationOption,cancelClass} from './class-cancellation.mjs';
+import {classDetails} from './class-details.mjs';
+import {classEditOption,editClass} from './class-editing.mjs';
 import {entitlementOperations} from './entitlements.mjs';
 import {memberBookingOption} from './member-booking.mjs';
 import {orderedWaitlist,promotionOptions} from './waitlist.mjs';
@@ -24,7 +26,7 @@ export function emptyState(){return {classes:[],participants:[],reservations:[],
 export function visibleState(state,authority,at=new Date().toISOString()){
  const result=Object.fromEntries(['classes','participants','reservations','passes','videos','events','products','orders','notifications','activity','preferences','creditUnits','creditEvents','entitlementProducts','entitlementIssuances','memberships'].map(k=>[k,structuredClone(state[k]||[])]));
  if(authority.role!=='staff'){
-  result.classes=result.classes.map(({cancellationHistory,...c})=>c);
+  result.classes=result.classes.map(({cancellationHistory,editHistory,...c})=>c);
   const own=id=>authority.participantIds.includes(id);
   for(const key of ['participants','reservations','passes','orders','creditUnits']) result[key]=(result[key]||[]).filter(x=>own(key==='participants'?x.id:x.participantId));
   result.notifications=(result.notifications||[]).filter(x=>own(x.participantId)&&x.status==='published');
@@ -46,6 +48,7 @@ export function visibleState(state,authority,at=new Date().toISOString()){
   result.staffAccount=memberAccountSummary(result,at);
   result.promotionOptions=result.classes.flatMap(c=>promotionOptions(state,c,at));
   result.classCancellationOptions=state.classes.map(c=>classCancellationOption(state,c,at));
+  result.classEditOptions=state.classes.map(c=>classEditOption(state,c,at));
  }
  return result;
 }
@@ -54,10 +57,12 @@ export function transition(original, command, authority, {id=randomUUID,now=()=>
  if(!text(body.requestId,128))fail('A request identifier is required');
  const staff=()=>{if(authority.role!=='staff')fail('Staff access required',403);};
  const own=participantId=>{if(!authority.participantIds.includes(participantId)&&authority.role!=='staff')fail('Participant authority required',403); if(!state.participants.some(p=>p.id===participantId))fail('Participant unavailable',404);};
- const accounting=command.action==='attendance'?null:bookingAccounting(state,authority,{id,now},fail);
+ const accounting=['attendance','edit-class'].includes(command.action)?null:bookingAccounting(state,authority,{id,now},fail);
  const waitlistEvent=(r,action,from,to)=>{(r.waitlistHistory??=[]).push({id:id(),action,from,to,actorId:authority.userId,actorRole:authority.role,requestId:body.requestId,createdAt:now()});};
  let result;
- if(command.action==='cancel-class'){
+ if(command.action==='edit-class'){
+  staff();result=editClass(state,body,authority,{id,now},fail);return {state,result};
+ }else if(command.action==='cancel-class'){
   staff();result=cancelClass(state,body.classId,body,authority,{id,now},fail);return {state,result};
  }else if(command.action==='reserve'){
   own(body.participantId);
@@ -117,9 +122,7 @@ export function transition(original, command, authority, {id=randomUUID,now=()=>
  }else if(command.action==='class-policy'){
   staff();const c=state.classes.find(c=>c.id===body.classId);if(!c)fail('Class unavailable',404);if(!Number.isInteger(body.cancellationCutoffMinutes)||body.cancellationCutoffMinutes<0||body.cancellationCutoffMinutes>10080)fail('Invalid cancellation cutoff');const before=c.cancellationCutoffMinutes??90;c.cancellationCutoffMinutes=body.cancellationCutoffMinutes;state.activity.push({id:id(),action:'cancellation-policy',subjectId:c.id,from:before,to:c.cancellationCutoffMinutes,actorId:authority.userId,createdAt:now()});result=c;
  }else if(command.action==='class'){
-  staff();if(!text(body.title)||!text(body.instructor)||!text(body.location)||!Number.isInteger(body.capacity)||body.capacity<1||body.capacity>1000||!Number.isFinite(Date.parse(body.startsAt))||!Number.isInteger(body.duration)||body.duration<1||body.duration>1440)fail('Invalid class details');
-  if(body.cancellationCutoffMinutes!==undefined&&(!Number.isInteger(body.cancellationCutoffMinutes)||body.cancellationCutoffMinutes<0||body.cancellationCutoffMinutes>10080))fail('Invalid cancellation cutoff');
-  result={cancellationCutoffMinutes:body.cancellationCutoffMinutes??90,creditRequired:body.creditRequired===true,id:id(),title:body.title,instructor:body.instructor,location:body.location,capacity:body.capacity,startsAt:new Date(body.startsAt).toISOString(),duration:body.duration,category:text(body.category)?body.category:'Class',status:'open',waitlistEnabled:body.waitlistEnabled===true};state.classes.push(result);
+  staff();result={...classDetails(body,fail),id:id(),status:'open'};state.classes.push(result);
  }else if(command.action==='participant'){
   staff();if(!text(body.name))fail('Participant name required');result={id:id(),name:body.name,relationship:'Studio participant'};state.participants.push(result);
  }else if(command.action==='preferences'){

@@ -2,6 +2,7 @@ import pg from 'pg';
 import { createHash } from 'node:crypto';
 import { databaseTls } from './database-tls.mjs';
 import { ApplicationError,transition,visibleState } from '../application.mjs';
+import {reviewClassEdit} from '../class-editing.mjs';
 
 export function applicationDatabaseOptions(value){
  const u=new URL(value),ref='cjdoczrxcjynjhgpgqop';
@@ -43,6 +44,10 @@ export function createApplicationStore(pool){
     jobs=result.rows;
    }
    return {mode:'development',context:{name:'Vega Dance Lab',...a},revision:row.revision,...visibleState(row.state,a),jobs,squareEnabled:false};
+  }),
+  reviewClassEdit:(userId,body)=>transaction(userId,async(c,a)=>{
+   const row=await stateRow(c,a);
+   return reviewClassEdit(row.state,body,a,new Date().toISOString(),(message,status)=>{throw new ApplicationError(message,status);});
   }),
   command:(userId,command)=>transaction(userId,async(c,a)=>{
    const row=await stateRow(c,a,true),requestId=command.body?.requestId;

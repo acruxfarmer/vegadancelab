@@ -4,6 +4,14 @@ import {Readable} from 'node:stream';
 import {createApplicationApi} from '../src/runtime/application-api.mjs';
 const env={SUPABASE_URL:'https://cjdoczrxcjynjhgpgqop.supabase.co',SUPABASE_PUBLISHABLE_KEY:'synthetic'};
 async function request(api,path,{token,body,method='GET'}={}){const req=Readable.from(body?[Buffer.from(JSON.stringify(body))]:[]);Object.assign(req,{url:path,method,headers:{'content-type':'application/json',...(token?{authorization:token}:{})}});let status,result;await api(req,{writeHead:s=>status=s,end:x=>result=JSON.parse(x)});return {status,result};}
+test('occurrence review uses authenticated read-only store method; confirm routes through transactional command',async()=>{
+ const id='11111111-1111-4111-8111-111111111111',calls=[];
+ const api=createApplicationApi(env,{reviewClassEdit:async(user,body)=>{calls.push(['review',user,body]);return {reviewToken:'review'};},command:async(user,cmd)=>{calls.push(['command',user,cmd]);return {outcome:'applied'};}},async()=>({ok:true,json:async()=>({id})}));
+ const body={classId:'c',userId:'forged',details:{title:'Proposed'}};
+ assert.equal((await request(api,'/api/classes/edit/review',{token:'Bearer valid',method:'POST',body})).status,200);assert.deepEqual(calls,[['review',id,body]]);
+ assert.equal((await request(api,'/api/classes/edit',{token:'Bearer valid',method:'POST',body})).status,200);assert.equal(calls[1][1],id);assert.equal(calls[1][2].action,'edit-class');
+ assert.equal((await request(api,'/api/classes/edit/review',{method:'POST',body})).status,401);assert.equal(calls.length,2);
+});
 test('missing and forged sessions cannot read application or execute commands',async()=>{
  let used=false;const api=createApplicationApi(env,{read:()=>used=true},async()=>({ok:false,status:401}));
  assert.equal((await request(api,'/api/app')).status,401);

@@ -19,6 +19,7 @@ test('fresh local runtime serves all front-door assets with security headers and
   }
   const config=await fetch(`${origin}/api/config`);assert.equal(config.status,200);
   const classCancel=await fetch(`${origin}/class-cancellation-ui.js`);assert.equal(classCancel.status,200);assert.match(await classCancel.text(),/export function classCancellationUI/);
+  const classEdit=await fetch(`${origin}/class-editing-ui.js`);assert.equal(classEdit.status,200);assert.match(await classEdit.text(),/export function classEditingUI/);
   const waitlist=await fetch(`${origin}/staff-waitlist.js`);assert.equal(waitlist.status,200);assert.match(await waitlist.text(),/export function staffWaitlistUI/);
   const attendance=await fetch(`${origin}/attendance-ui.js`);assert.equal(attendance.status,200);assert.match(attendance.headers.get('content-type'),/text\/javascript/);assert.match(await attendance.text(),/export function attendanceUI/);
   assert.equal((await config.json()).squareEnabled,false);
