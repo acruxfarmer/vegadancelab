@@ -1,0 +1,11 @@
+{
+  "scope": "Synthetic loopback auth; real API/domain/projection; no external delivery or hosted operations",
+  "checks": [
+    "Staff review is nonmutating; confirmation creates one linked in-app notice and shows honest availability outcome",
+    "Member account shows recorded class details and stable notice after reload, with escaped text and no external-delivery/read claim",
+    "Later cancellation retains original notice and shows current cancelled status separately",
+    "Mobile 390x844 expanded notice identities wrap without document overflow; desktop 1440x1050 rendered"
+  ],
+  "errors": [],
+  "passed": true
+}

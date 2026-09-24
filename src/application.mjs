@@ -8,6 +8,7 @@ import {memberBookingOption} from './member-booking.mjs';
 import {orderedWaitlist,promotionOptions} from './waitlist.mjs';
 import {memberCancellationOption} from './member-cancellation.mjs';
 import {memberAccountSummary} from './member-account.mjs';
+import {recordPromotionNotice} from './promotion-notice.mjs';
 import { randomUUID } from 'node:crypto';
 
 export class ApplicationError extends Error {
@@ -116,7 +117,8 @@ export function transition(original, command, authority, {id=randomUUID,now=()=>
   const c=state.classes.find(x=>x.id===r.classId);if(!bookableClass(c,now())||state.reservations.filter(x=>x.classId===c.id&&x.status==='reserved').length>=c.capacity)fail('No capacity available',409);
   const option=promotionOptions(state,c,now()).find(o=>o.reservationId===r.id);if(!option?.promotable)fail(option?.reason||'Promotion unavailable',409);
   if(body.passId!==undefined&&body.passId!==option.passId)fail('Eligible credit changed. Refresh and review before promotion.',409);
-  accounting.consume(r,c);r.status='reserved';waitlistEvent(r,'promoted','waitlisted','reserved');result=r;
+  accounting.consume(r,c);r.status='reserved';waitlistEvent(r,'promoted','waitlisted','reserved');
+  recordPromotionNotice(state,r,c,r.waitlistHistory.at(-1),{id});result=r;
  }else if(command.action==='issue-credit'){
   staff();own(body.participantId);result=accounting.issue({participantId:body.participantId,quantity:body.quantity,reason:body.reason,requestId:body.requestId});
  }else if(['entitlement-product','issue-entitlement'].includes(command.action)){

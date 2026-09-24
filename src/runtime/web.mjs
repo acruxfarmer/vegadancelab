@@ -21,6 +21,7 @@ export function createDevelopmentServer(env = process.env, persistSquareEvent, c
     const files={'/entitlements-ui.js':['entitlements-ui.js','text/javascript; charset=utf-8'],'/cancellation-ui.js':['cancellation-ui.js','text/javascript; charset=utf-8'],'/session.js':['session.js','text/javascript; charset=utf-8'],'/':['index.html','text/html; charset=utf-8'],'/app.js':['app.js','text/javascript; charset=utf-8'],'/integration.js':['integration.js','text/javascript; charset=utf-8'],'/styles.css':['styles.css','text/css; charset=utf-8']};
     files['/member-booking.js']=['member-booking.js','text/javascript; charset=utf-8'];
     files['/member-cancellation.js']=['member-cancellation.js','text/javascript; charset=utf-8'];
+    files['/promotion-notices.js']=['promotion-notices.js','text/javascript; charset=utf-8'];
     files['/member-portal.js']=['member-portal.js','text/javascript; charset=utf-8'];
     files['/staff-booking.js']=['staff-booking.js','text/javascript; charset=utf-8'];
     files['/reporting-audit.js']=['reporting-audit.js','text/javascript; charset=utf-8'];

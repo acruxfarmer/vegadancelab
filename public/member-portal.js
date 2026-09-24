@@ -1,3 +1,4 @@
+import {promotionNoticesHTML} from './promotion-notices.js';
 import {cancellationOutcome} from './member-cancellation.js';
 
 export function memberPortalUI({getData,escape:e,date,time}){
@@ -20,5 +21,5 @@ export function memberPortalUI({getData,escape:e,date,time}){
   }).filter(x=>Number.isFinite(Date.parse(x.at))).sort((a,b)=>Date.parse(b.at)-Date.parse(a.at)).slice(0,10);
   return `<section class="card"><h2>Recent booking & cancellation activity</h2>${items.map(x=>`<article><h3>${e(x.label)} · ${e(x.title)}</h3><p>${e(x.who)} · ${e(stamp(x.at))}</p><p>${e(x.detail)}</p></article>`).join('')||'<p>No dated booking or cancellation activity yet.</p>'}<p class="meta">Most recent 10 recorded booking and cancellation events. Cancellation results reflect the current recorded outcome.</p></section>`;
  }
- return {entitlements,activity};
+ return {entitlements,activity,notices:()=>promotionNoticesHTML(getData(),e)};
 }

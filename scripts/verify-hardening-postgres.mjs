@@ -132,6 +132,12 @@ try{
   await assert.rejects(store.command(m1,command('promote',{},first.id)),e=>e.status===403);
   await store.command(staff,command('cancel',{},held.id));
   const before=await state(),promote=command('promote',{},first.id);
+  const receiptsBefore=(await admin.query('select * from vega_private.app_commands order by request_id')).rows;
+  await admin.query(`create function vega_private.fail_notice() returns trigger language plpgsql as $$ begin if jsonb_array_length(new.state->'notifications') > jsonb_array_length(old.state->'notifications') then raise exception 'synthetic notice persistence failure'; end if; return new; end $$`);
+  await admin.query('create trigger fail_notice before update on vega_private.app_state for each row execute function vega_private.fail_notice()');
+  await assert.rejects(store.command(staff,promote),/synthetic notice persistence failure/);assert.deepEqual(await state(),before);assert.deepEqual((await admin.query('select * from vega_private.app_commands order by request_id')).rows,receiptsBefore);
+  await admin.query('drop trigger fail_notice on vega_private.app_state');
+
   await admin.query('create trigger fail_receipt before insert on vega_private.app_commands for each row execute function vega_private.fail_receipt()');
   await assert.rejects(store.command(staff,promote),/synthetic receipt failure/);assert.deepEqual(await state(),before);
   await admin.query('drop trigger fail_receipt on vega_private.app_commands');
@@ -139,7 +145,9 @@ try{
   assert.equal(results.filter(r=>r.status==='fulfilled').length,1);assert.equal(results.find(r=>r.status==='rejected').reason.status,409);
   const after=await state();assert.equal(after.state.reservations.filter(r=>r.classId===c.id&&r.status==='reserved').length,1);assert.equal(after.state.creditEvents.length,before.state.creditEvents.length+1);
   const r=after.state.reservations.find(r=>r.id===first.id);assert.equal(r.status,'reserved');assert.deepEqual(r.waitlistHistory.map(h=>h.action),['joined','promoted']);assert.equal(r.attendanceStatus,'not_recorded');assert.equal(r.paymentStatus,'not_evaluated');
-  await store.command(staff,promote);assert.deepEqual(await state(),after);
+  const notice=after.state.notifications.find(n=>n.reservationId===first.id);assert.ok(notice);assert.equal(notice.promotionEventId,r.waitlistHistory.at(-1).id);assert.equal(notice.deliveryStatus,'disabled');assert.equal(notice.creditSnapshot.quantity,1);assert.equal(after.state.notifications.length,before.state.notifications.length+1);
+  assert.equal((await store.read(m1)).notifications.filter(n=>n.id===notice.id).length,1);assert.equal((await store.read(m2)).notifications.filter(n=>n.id===notice.id).length,0);
+  const replay=await overlap([()=>store.command(staff,promote),()=>store.command(staff,promote)]);assert.deepEqual(replay[0].value,replay[1].value);assert.equal(replay[0].value.promotionNoticeId,notice.id);assert.deepEqual(await state(),after);
   await store.command(staff,command('promote',{},first.id));assert.deepEqual((await state()).state,after.state);
   await assert.rejects(store.command(m1,command('cancel',{expectedReservationStatus:'waitlisted'},first.id)),e=>e.status===409);
  });
