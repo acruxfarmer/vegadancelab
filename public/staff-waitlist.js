@@ -1,10 +1,11 @@
 import {promotionNoticesHTML} from './promotion-notices.js';
+import {cancellationNoticesHTML} from './cancellation-notices.js';
 export function staffWaitlistUI({getData,isStaff,escape:e,modal,mutate,load,notify}){
  const identity=()=>isStaff()?getData()?.context?.userId:null;
  function render(classId){
   if(!isStaff())return '';
   const d=getData(),entries=(d.promotionOptions||[]).filter(o=>o.classId===classId).sort((a,b)=>a.position-b.position);
-  return `<section class="card"><h2>Waitlist</h2><p>Join time, then reservation ID determines queue order. Staff promotes the earliest currently eligible participant. Ineligible entries remain in place. Waiting reserves no seat and spends no credit.</p>${entries.map(o=>{const r=d.reservations.find(r=>r.id===o.reservationId);return `<article><h3>${o.position}. ${e(d.participants.find(p=>p.id===r?.participantId)?.name||'Participant')}</h3><p>Joined ${e(r?.createdAt||'time unrecorded')} · ${e(r?.id)}</p><p>${e(o.reason)}</p><button class="button secondary" data-review-promotion="${e(o.reservationId)}">Review promotion</button></article>`;}).join('')||'<p>No waiting participants.</p>'}</section>${promotionNoticesHTML(d,e,classId)}`;
+  return `<section class="card"><h2>Waitlist</h2><p>Join time, then reservation ID determines queue order. Staff promotes the earliest currently eligible participant. Ineligible entries remain in place. Waiting reserves no seat and spends no credit.</p>${entries.map(o=>{const r=d.reservations.find(r=>r.id===o.reservationId);return `<article><h3>${o.position}. ${e(d.participants.find(p=>p.id===r?.participantId)?.name||'Participant')}</h3><p>Joined ${e(r?.createdAt||'time unrecorded')} · ${e(r?.id)}</p><p>${e(o.reason)}</p><button class="button secondary" data-review-promotion="${e(o.reservationId)}">Review promotion</button></article>`;}).join('')||'<p>No waiting participants.</p>'}</section>${promotionNoticesHTML(d,e,classId)}${cancellationNoticesHTML(d,e,classId)}`;
  }
  let opening=0;
  async function open(id){

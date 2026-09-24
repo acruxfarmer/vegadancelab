@@ -1,0 +1,21 @@
+{
+  "cmd": {
+    "action": "cancel-class",
+    "body": {
+      "classId": "11762d73-44e9-4474-ab05-3e45487f884b",
+      "impactToken": "6ddd825f3c9119ea75d0d2b37d3ca6e68992e44e27bb74b3e8f03a6631b93540",
+      "reason": "PRIVATE ADMIN NOTE — local 6.12 fixture only",
+      "requestId": "ac38e8f6-f954-4551-a8c8-8e2ec6b871db"
+    }
+  },
+  "result": {
+    "classId": "11762d73-44e9-4474-ab05-3e45487f884b",
+    "outcome": "applied",
+    "eventId": "44df71c1-a987-4524-842f-2d94c46441e1",
+    "affectedCount": 2,
+    "noticeIds": [
+      "3d19f660-3d53-42a4-bd3e-609c125a2cda",
+      "11f3fd0e-3bb2-4e3d-b454-0d4c5bd9528f"
+    ]
+  }
+}

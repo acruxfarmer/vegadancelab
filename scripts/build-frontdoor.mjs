@@ -15,3 +15,4 @@ await copyFile(new URL('public/roster-navigation.js',root),new URL('dist-frontdo
 await copyFile(new URL('public/reservation-history.js',root),new URL('dist-frontdoor/reservation-history.js',root));
 
 await copyFile(new URL('public/promotion-notices.js',root),new URL('dist-frontdoor/promotion-notices.js',root));
+await copyFile(new URL('public/cancellation-notices.js',root),new URL('dist-frontdoor/cancellation-notices.js',root));

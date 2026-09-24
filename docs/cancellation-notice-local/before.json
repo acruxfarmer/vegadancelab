@@ -1,0 +1,618 @@
+{
+  "context": {
+    "role": "staff",
+    "userId": "11111111-1111-4111-8111-111111111111",
+    "tenantId": "local",
+    "businessId": "local",
+    "participantIds": []
+  },
+  "classes": [
+    {
+      "cancellationCutoffMinutes": 90,
+      "creditRequired": false,
+      "title": "Schedule Editing Test",
+      "instructor": "Original Teacher",
+      "location": "Studio One",
+      "capacity": 10,
+      "startsAt": "2099-10-02T12:00:00.000Z",
+      "duration": 60,
+      "category": "Dance",
+      "waitlistEnabled": true,
+      "id": "c",
+      "status": "open",
+      "reservedCount": 0
+    },
+    {
+      "cancellationCutoffMinutes": 90,
+      "creditRequired": false,
+      "title": "Cancelled Booking History",
+      "instructor": "Original Teacher",
+      "location": "Studio One",
+      "capacity": 10,
+      "startsAt": "2099-10-02T12:00:00.000Z",
+      "duration": 60,
+      "category": "Dance",
+      "waitlistEnabled": true,
+      "id": "blocked",
+      "status": "open",
+      "reservedCount": 0
+    },
+    {
+      "cancellationCutoffMinutes": 90,
+      "creditRequired": true,
+      "title": "Cancellation notice <test>",
+      "instructor": "Recorded Teacher",
+      "location": "Recorded Room",
+      "capacity": 1,
+      "startsAt": "2099-10-02T12:00:00.000Z",
+      "duration": 45,
+      "category": "Class",
+      "waitlistEnabled": true,
+      "id": "11762d73-44e9-4474-ab05-3e45487f884b",
+      "status": "open",
+      "reservedCount": 1
+    }
+  ],
+  "participants": [
+    {
+      "id": "p",
+      "name": "Test Member"
+    },
+    {
+      "id": "87fe0a19-5280-4028-ba51-41020cb31080",
+      "name": "Other participant",
+      "relationship": "Studio participant"
+    },
+    {
+      "id": "40c0776b-1444-4ae1-8021-a30ecbf75ad8",
+      "name": "Previously cancelled",
+      "relationship": "Studio participant"
+    }
+  ],
+  "reservations": [
+    {
+      "id": "prior",
+      "classId": "blocked",
+      "participantId": "p",
+      "status": "cancelled",
+      "attendanceStatus": "not_recorded"
+    },
+    {
+      "id": "ece865eb-687a-4e26-b199-29012766e2c4",
+      "classId": "11762d73-44e9-4474-ab05-3e45487f884b",
+      "participantId": "40c0776b-1444-4ae1-8021-a30ecbf75ad8",
+      "status": "cancelled",
+      "paymentStatus": "not_evaluated",
+      "attendanceStatus": "not_recorded",
+      "notificationStatus": "not_requested",
+      "createdAt": "2026-09-24T01:38:50.862Z",
+      "creditConsumption": {
+        "unitId": "4dd570a4-aa0f-43a5-bca4-b800cd041211",
+        "passId": "b1f96c68-3427-42f6-b646-06a2c5dc8997",
+        "eventId": "9e95538f-cdbd-4a10-ba47-b10a0451fd91"
+      },
+      "restoredCreditUnitId": "e78cb6eb-f1f7-46f5-8766-2030f5e05f8e",
+      "cancellationHistory": [
+        {
+          "id": "95357d75-9cfd-46a0-8c28-e31760ee1447",
+          "action": "cancel",
+          "from": null,
+          "to": "early",
+          "outcome": "applied",
+          "creditOutcome": "restored",
+          "actorId": "11111111-1111-4111-8111-111111111111",
+          "actorRole": "staff",
+          "reason": null,
+          "requestId": "3d66f42c-b17b-4b3f-a766-e0fdc0bf5ac6",
+          "createdAt": "2026-09-24T01:38:50.863Z"
+        }
+      ],
+      "cancellation": {
+        "originalClassification": "early",
+        "originalCancelledAt": "2026-09-24T01:38:50.863Z",
+        "cutoffMinutes": 90,
+        "classStartsAt": "2099-10-02T12:00:00.000Z",
+        "originalBookingStatus": "reserved",
+        "classification": "early",
+        "creditOutcome": "restored"
+      }
+    },
+    {
+      "id": "bb394c3d-2d05-4669-b698-b45c4f240649",
+      "classId": "11762d73-44e9-4474-ab05-3e45487f884b",
+      "participantId": "p",
+      "status": "reserved",
+      "paymentStatus": "not_evaluated",
+      "attendanceStatus": "not_recorded",
+      "notificationStatus": "in_app_available",
+      "createdAt": "2026-09-24T01:38:50.863Z",
+      "waitlistHistory": [
+        {
+          "id": "74c006e5-1ea5-44a2-8bd3-d651f6aa96af",
+          "action": "joined",
+          "from": null,
+          "to": "waitlisted",
+          "actorId": "11111111-1111-4111-8111-111111111111",
+          "actorRole": "staff",
+          "requestId": "643fe056-adfc-4818-932b-e2240f5fcf1f",
+          "createdAt": "2026-09-24T01:38:50.863Z"
+        },
+        {
+          "id": "a7ec0ced-a8cf-4ef8-8f1c-8ae632e474a9",
+          "action": "promoted",
+          "from": "waitlisted",
+          "to": "reserved",
+          "actorId": "11111111-1111-4111-8111-111111111111",
+          "actorRole": "staff",
+          "requestId": "5ecd9bd6-2216-4276-901f-59691a092a17",
+          "createdAt": "2026-09-24T01:38:50.864Z"
+        }
+      ],
+      "creditConsumption": {
+        "unitId": "f8457d88-e355-4659-a395-f97cb788c238",
+        "passId": "2e3dbe67-b2d1-4f48-92ce-9d157b6045ed",
+        "eventId": "215044ad-596f-43e4-8226-bbf2e3a41647"
+      },
+      "promotionNoticeId": "cbec8b16-7526-4cfe-87bb-d4148cab68a5"
+    },
+    {
+      "id": "2182ecc5-9d1d-49c7-99d0-5c8dbe78ae5e",
+      "classId": "11762d73-44e9-4474-ab05-3e45487f884b",
+      "participantId": "87fe0a19-5280-4028-ba51-41020cb31080",
+      "status": "waitlisted",
+      "paymentStatus": "not_evaluated",
+      "attendanceStatus": "not_recorded",
+      "notificationStatus": "not_requested",
+      "createdAt": "2026-09-24T01:38:50.864Z",
+      "waitlistHistory": [
+        {
+          "id": "ced53fdd-6906-453a-80a0-9398984a385a",
+          "action": "joined",
+          "from": null,
+          "to": "waitlisted",
+          "actorId": "11111111-1111-4111-8111-111111111111",
+          "actorRole": "staff",
+          "requestId": "e503890f-2881-4bbe-b195-79429ce0f59b",
+          "createdAt": "2026-09-24T01:38:50.864Z"
+        }
+      ]
+    }
+  ],
+  "passes": [
+    {
+      "id": "2e3dbe67-b2d1-4f48-92ce-9d157b6045ed",
+      "participantId": "p",
+      "label": "Staff courtesy class credits",
+      "quantity": 1,
+      "entitlement": {
+        "source": "staff_courtesy",
+        "validFrom": "2026-09-24T01:38:50.862Z",
+        "expiresAt": null,
+        "categories": [],
+        "classIds": []
+      },
+      "createdAt": "2026-09-24T01:38:50.862Z"
+    },
+    {
+      "id": "b1f96c68-3427-42f6-b646-06a2c5dc8997",
+      "participantId": "40c0776b-1444-4ae1-8021-a30ecbf75ad8",
+      "label": "Staff courtesy class credits",
+      "quantity": 1,
+      "entitlement": {
+        "source": "staff_courtesy",
+        "validFrom": "2026-09-24T01:38:50.862Z",
+        "expiresAt": null,
+        "categories": [],
+        "classIds": []
+      },
+      "createdAt": "2026-09-24T01:38:50.862Z"
+    }
+  ],
+  "videos": [],
+  "events": [],
+  "products": [],
+  "orders": [],
+  "notifications": [
+    {
+      "id": "cbec8b16-7526-4cfe-87bb-d4148cab68a5",
+      "type": "waitlist-promotion",
+      "version": 1,
+      "status": "published",
+      "deliveryStatus": "disabled",
+      "participantId": "p",
+      "reservationId": "bb394c3d-2d05-4669-b698-b45c4f240649",
+      "occurrenceId": "11762d73-44e9-4474-ab05-3e45487f884b",
+      "promotionEventId": "a7ec0ced-a8cf-4ef8-8f1c-8ae632e474a9",
+      "createdAt": "2026-09-24T01:38:50.864Z",
+      "subject": "Your waitlist place is confirmed",
+      "classSnapshot": {
+        "title": "Cancellation notice <test>",
+        "startsAt": "2099-10-02T12:00:00.000Z",
+        "duration": 45,
+        "instructor": "Recorded Teacher",
+        "location": "Recorded Room",
+        "category": "Class"
+      },
+      "creditSnapshot": {
+        "outcome": "consumed",
+        "quantity": 1,
+        "passId": "2e3dbe67-b2d1-4f48-92ce-9d157b6045ed",
+        "creditEventId": "215044ad-596f-43e4-8226-bbf2e3a41647"
+      }
+    }
+  ],
+  "activity": [
+    {
+      "id": "c",
+      "action": "class",
+      "actorId": "11111111-1111-4111-8111-111111111111",
+      "subjectId": "c",
+      "createdAt": "2026-09-24T01:38:50.860Z"
+    },
+    {
+      "id": "blocked",
+      "action": "class",
+      "actorId": "11111111-1111-4111-8111-111111111111",
+      "subjectId": "blocked",
+      "createdAt": "2026-09-24T01:38:50.860Z"
+    },
+    {
+      "id": "a6d84443-c5dc-42c4-9526-3e99500337dd",
+      "action": "participant",
+      "actorId": "11111111-1111-4111-8111-111111111111",
+      "subjectId": "87fe0a19-5280-4028-ba51-41020cb31080",
+      "createdAt": "2026-09-24T01:38:50.862Z"
+    },
+    {
+      "id": "40e75746-c39b-41a4-8722-32421c9e2361",
+      "action": "participant",
+      "actorId": "11111111-1111-4111-8111-111111111111",
+      "subjectId": "40c0776b-1444-4ae1-8021-a30ecbf75ad8",
+      "createdAt": "2026-09-24T01:38:50.862Z"
+    },
+    {
+      "id": "5b56fa79-c361-4f2e-83d6-a1bff02e1a92",
+      "action": "class",
+      "actorId": "11111111-1111-4111-8111-111111111111",
+      "subjectId": "11762d73-44e9-4474-ab05-3e45487f884b",
+      "createdAt": "2026-09-24T01:38:50.862Z"
+    },
+    {
+      "id": "61bdf518-4828-492f-a6c9-797607c8932e",
+      "action": "issue-credit",
+      "actorId": "11111111-1111-4111-8111-111111111111",
+      "subjectId": "2e3dbe67-b2d1-4f48-92ce-9d157b6045ed",
+      "createdAt": "2026-09-24T01:38:50.862Z"
+    },
+    {
+      "id": "98a884c6-d23e-4371-88ee-38bedf68bdb8",
+      "action": "issue-credit",
+      "actorId": "11111111-1111-4111-8111-111111111111",
+      "subjectId": "b1f96c68-3427-42f6-b646-06a2c5dc8997",
+      "createdAt": "2026-09-24T01:38:50.862Z"
+    },
+    {
+      "id": "468742d5-db3e-42ed-b9f6-193309b3e5bd",
+      "action": "reserve",
+      "actorId": "11111111-1111-4111-8111-111111111111",
+      "subjectId": "ece865eb-687a-4e26-b199-29012766e2c4",
+      "createdAt": "2026-09-24T01:38:50.863Z"
+    },
+    {
+      "id": "a2cef4cf-a509-4925-8ed0-d0d976cb2c51",
+      "action": "reserve",
+      "actorId": "11111111-1111-4111-8111-111111111111",
+      "subjectId": "bb394c3d-2d05-4669-b698-b45c4f240649",
+      "createdAt": "2026-09-24T01:38:50.863Z"
+    },
+    {
+      "id": "35fb2a0d-6982-4703-8193-f810b92d0bb4",
+      "action": "cancel",
+      "actorId": "11111111-1111-4111-8111-111111111111",
+      "subjectId": "ece865eb-687a-4e26-b199-29012766e2c4",
+      "outcome": "applied",
+      "createdAt": "2026-09-24T01:38:50.863Z"
+    },
+    {
+      "id": "900aed3b-d81a-40e1-a0a6-3e7c68ff1fd1",
+      "action": "promote",
+      "actorId": "11111111-1111-4111-8111-111111111111",
+      "subjectId": "bb394c3d-2d05-4669-b698-b45c4f240649",
+      "createdAt": "2026-09-24T01:38:50.864Z"
+    },
+    {
+      "id": "6ad65058-1406-44c4-8f52-5d55f2711da1",
+      "action": "reserve",
+      "actorId": "11111111-1111-4111-8111-111111111111",
+      "subjectId": "2182ecc5-9d1d-49c7-99d0-5c8dbe78ae5e",
+      "createdAt": "2026-09-24T01:38:50.864Z"
+    }
+  ],
+  "preferences": [],
+  "creditUnits": [
+    {
+      "id": "f8457d88-e355-4659-a395-f97cb788c238",
+      "passId": "2e3dbe67-b2d1-4f48-92ce-9d157b6045ed",
+      "participantId": "p",
+      "status": "spent",
+      "entitlement": {
+        "source": "staff_courtesy",
+        "validFrom": "2026-09-24T01:38:50.862Z",
+        "expiresAt": null,
+        "categories": [],
+        "classIds": []
+      },
+      "spentByBookingId": "bb394c3d-2d05-4669-b698-b45c4f240649"
+    },
+    {
+      "id": "4dd570a4-aa0f-43a5-bca4-b800cd041211",
+      "passId": "b1f96c68-3427-42f6-b646-06a2c5dc8997",
+      "participantId": "40c0776b-1444-4ae1-8021-a30ecbf75ad8",
+      "status": "spent",
+      "entitlement": {
+        "source": "staff_courtesy",
+        "validFrom": "2026-09-24T01:38:50.862Z",
+        "expiresAt": null,
+        "categories": [],
+        "classIds": []
+      },
+      "spentByBookingId": "ece865eb-687a-4e26-b199-29012766e2c4"
+    },
+    {
+      "id": "e78cb6eb-f1f7-46f5-8766-2030f5e05f8e",
+      "passId": "b1f96c68-3427-42f6-b646-06a2c5dc8997",
+      "participantId": "40c0776b-1444-4ae1-8021-a30ecbf75ad8",
+      "status": "available",
+      "originBookingId": "ece865eb-687a-4e26-b199-29012766e2c4",
+      "sourceUnitId": "4dd570a4-aa0f-43a5-bca4-b800cd041211",
+      "entitlement": {
+        "source": "staff_courtesy",
+        "validFrom": "2026-09-24T01:38:50.862Z",
+        "expiresAt": null,
+        "categories": [],
+        "classIds": []
+      }
+    }
+  ],
+  "creditEvents": [
+    {
+      "id": "e2ab404e-8ea2-4e69-9d05-c8575897b36f",
+      "type": "issue",
+      "unitId": "f8457d88-e355-4659-a395-f97cb788c238",
+      "passId": "2e3dbe67-b2d1-4f48-92ce-9d157b6045ed",
+      "participantId": "p",
+      "bookingId": null,
+      "actorId": "11111111-1111-4111-8111-111111111111",
+      "createdAt": "2026-09-24T01:38:50.862Z",
+      "reason": "Synthetic credit",
+      "requestId": "2d64bd5c-9753-45e6-b3ef-7388571bf9ce",
+      "source": "staff_courtesy",
+      "issuanceId": null
+    },
+    {
+      "id": "3064a2d0-4e3c-4e9c-9db5-5654e86dc5c0",
+      "type": "issue",
+      "unitId": "4dd570a4-aa0f-43a5-bca4-b800cd041211",
+      "passId": "b1f96c68-3427-42f6-b646-06a2c5dc8997",
+      "participantId": "40c0776b-1444-4ae1-8021-a30ecbf75ad8",
+      "bookingId": null,
+      "actorId": "11111111-1111-4111-8111-111111111111",
+      "createdAt": "2026-09-24T01:38:50.862Z",
+      "reason": "Synthetic holder credit",
+      "requestId": "c3d10edd-d13c-4045-a430-d1822dca7942",
+      "source": "staff_courtesy",
+      "issuanceId": null
+    },
+    {
+      "id": "9e95538f-cdbd-4a10-ba47-b10a0451fd91",
+      "type": "consume",
+      "unitId": "4dd570a4-aa0f-43a5-bca4-b800cd041211",
+      "passId": "b1f96c68-3427-42f6-b646-06a2c5dc8997",
+      "participantId": "40c0776b-1444-4ae1-8021-a30ecbf75ad8",
+      "bookingId": "ece865eb-687a-4e26-b199-29012766e2c4",
+      "actorId": "11111111-1111-4111-8111-111111111111",
+      "createdAt": "2026-09-24T01:38:50.862Z"
+    },
+    {
+      "id": "813ed168-f470-454d-8c87-be37f9cf0979",
+      "type": "restore",
+      "unitId": "e78cb6eb-f1f7-46f5-8766-2030f5e05f8e",
+      "passId": "b1f96c68-3427-42f6-b646-06a2c5dc8997",
+      "participantId": "40c0776b-1444-4ae1-8021-a30ecbf75ad8",
+      "bookingId": "ece865eb-687a-4e26-b199-29012766e2c4",
+      "actorId": "11111111-1111-4111-8111-111111111111",
+      "createdAt": "2026-09-24T01:38:50.863Z"
+    },
+    {
+      "id": "215044ad-596f-43e4-8226-bbf2e3a41647",
+      "type": "consume",
+      "unitId": "f8457d88-e355-4659-a395-f97cb788c238",
+      "passId": "2e3dbe67-b2d1-4f48-92ce-9d157b6045ed",
+      "participantId": "p",
+      "bookingId": "bb394c3d-2d05-4669-b698-b45c4f240649",
+      "actorId": "11111111-1111-4111-8111-111111111111",
+      "createdAt": "2026-09-24T01:38:50.863Z"
+    }
+  ],
+  "entitlementProducts": [],
+  "entitlementIssuances": [],
+  "memberships": [],
+  "bookingOptions": [
+    {
+      "classId": "c",
+      "participantId": "p",
+      "creditRequired": false,
+      "eligible": true,
+      "reason": "Eligible to book. No class credit is required."
+    },
+    {
+      "classId": "c",
+      "participantId": "87fe0a19-5280-4028-ba51-41020cb31080",
+      "creditRequired": false,
+      "eligible": true,
+      "reason": "Eligible to book. No class credit is required."
+    },
+    {
+      "classId": "c",
+      "participantId": "40c0776b-1444-4ae1-8021-a30ecbf75ad8",
+      "creditRequired": false,
+      "eligible": true,
+      "reason": "Eligible to book. No class credit is required."
+    },
+    {
+      "classId": "blocked",
+      "participantId": "p",
+      "creditRequired": false,
+      "eligible": true,
+      "reason": "Eligible to book. No class credit is required."
+    },
+    {
+      "classId": "blocked",
+      "participantId": "87fe0a19-5280-4028-ba51-41020cb31080",
+      "creditRequired": false,
+      "eligible": true,
+      "reason": "Eligible to book. No class credit is required."
+    },
+    {
+      "classId": "blocked",
+      "participantId": "40c0776b-1444-4ae1-8021-a30ecbf75ad8",
+      "creditRequired": false,
+      "eligible": true,
+      "reason": "Eligible to book. No class credit is required."
+    },
+    {
+      "classId": "11762d73-44e9-4474-ab05-3e45487f884b",
+      "participantId": "p",
+      "creditRequired": true,
+      "eligible": false,
+      "reason": "You already have a booking for this class."
+    },
+    {
+      "classId": "11762d73-44e9-4474-ab05-3e45487f884b",
+      "participantId": "87fe0a19-5280-4028-ba51-41020cb31080",
+      "creditRequired": true,
+      "eligible": false,
+      "reason": "You already have a booking for this class."
+    },
+    {
+      "classId": "11762d73-44e9-4474-ab05-3e45487f884b",
+      "participantId": "40c0776b-1444-4ae1-8021-a30ecbf75ad8",
+      "creditRequired": true,
+      "eligible": false,
+      "reason": "This class is full.",
+      "waitlistEligible": true
+    }
+  ],
+  "bookingCheckedAt": "2026-09-24T01:38:50.864Z",
+  "staffAccount": {
+    "checkedAt": "2026-09-24T01:38:50.864Z",
+    "available": 1,
+    "passes": [
+      {
+        "passId": "2e3dbe67-b2d1-4f48-92ce-9d157b6045ed",
+        "available": 0,
+        "unspent": 0,
+        "expired": 0,
+        "future": 0,
+        "restored": 0
+      },
+      {
+        "passId": "b1f96c68-3427-42f6-b646-06a2c5dc8997",
+        "available": 1,
+        "unspent": 1,
+        "expired": 0,
+        "future": 0,
+        "restored": 1
+      }
+    ]
+  },
+  "promotionOptions": [
+    {
+      "reservationId": "2182ecc5-9d1d-49c7-99d0-5c8dbe78ae5e",
+      "position": 1,
+      "classId": "11762d73-44e9-4474-ab05-3e45487f884b",
+      "participantId": "87fe0a19-5280-4028-ba51-41020cb31080",
+      "creditRequired": true,
+      "eligible": false,
+      "reason": "This class is full.",
+      "waitlistEligible": true,
+      "promotable": false
+    }
+  ],
+  "classCancellationOptions": [
+    {
+      "classId": "c",
+      "activeBookings": 0,
+      "waitingEntries": 0,
+      "expectedNotices": 0,
+      "expectedRestorations": 0,
+      "allowed": true,
+      "reason": "All active bookings will be cancelled and consumed credits restored under their original terms. Waiting entries will close without credit movement.",
+      "impactToken": "672db5e2af30773ddb044e80751ae477608f0713d6d123726da7ba07233fdf79"
+    },
+    {
+      "classId": "blocked",
+      "activeBookings": 0,
+      "waitingEntries": 0,
+      "expectedNotices": 0,
+      "expectedRestorations": 0,
+      "allowed": true,
+      "reason": "All active bookings will be cancelled and consumed credits restored under their original terms. Waiting entries will close without credit movement.",
+      "impactToken": "708dac849fb6535019ed64fbd697d750fe725f5e06d198798aaf6f6876a251cc"
+    },
+    {
+      "classId": "11762d73-44e9-4474-ab05-3e45487f884b",
+      "activeBookings": 1,
+      "waitingEntries": 1,
+      "expectedNotices": 2,
+      "expectedRestorations": 1,
+      "allowed": true,
+      "reason": "All active bookings will be cancelled and consumed credits restored under their original terms. Waiting entries will close without credit movement.",
+      "impactToken": "6ddd825f3c9119ea75d0d2b37d3ca6e68992e44e27bb74b3e8f03a6631b93540"
+    }
+  ],
+  "classEditOptions": [
+    {
+      "classId": "c",
+      "allowed": true,
+      "reason": "Review changes before confirming this occurrence edit.",
+      "versionToken": "b7d7c9eaa45ac179947c68b60ba9f85bd298da1cb53ce0cd05e0e46a314b4d77"
+    },
+    {
+      "classId": "blocked",
+      "allowed": false,
+      "reason": "Reservation, waitlist or attendance history exists, including cancelled history. This occurrence cannot be edited.",
+      "versionToken": "396157e49c01e9a13dac04aa1539f882efb98fef53d550549a291253ca241c5b"
+    },
+    {
+      "classId": "11762d73-44e9-4474-ab05-3e45487f884b",
+      "allowed": false,
+      "reason": "Reservation, waitlist or attendance history exists, including cancelled history. This occurrence cannot be edited.",
+      "versionToken": "245efbfe1a2a736236417b7189bf46766286dc407bbbae7f02b112132c1062b0"
+    }
+  ],
+  "classDuplicateOptions": [
+    {
+      "classId": "c",
+      "allowed": true,
+      "versionToken": "b7d7c9eaa45ac179947c68b60ba9f85bd298da1cb53ce0cd05e0e46a314b4d77",
+      "reason": "Create one independent occurrence from these details."
+    },
+    {
+      "classId": "blocked",
+      "allowed": true,
+      "versionToken": "396157e49c01e9a13dac04aa1539f882efb98fef53d550549a291253ca241c5b",
+      "reason": "Create one independent occurrence from these details."
+    },
+    {
+      "classId": "11762d73-44e9-4474-ab05-3e45487f884b",
+      "allowed": true,
+      "versionToken": "245efbfe1a2a736236417b7189bf46766286dc407bbbae7f02b112132c1062b0",
+      "reason": "Create one independent occurrence from these details."
+    }
+  ],
+  "mode": "development",
+  "squareEnabled": false,
+  "revision": 10,
+  "jobs": []
+}

@@ -1,0 +1,28 @@
+{
+  "status": "passed",
+  "scope": "Local synthetic loopback only",
+  "revisionBefore": 10,
+  "revisionAfter": 11,
+  "newNotices": 2,
+  "promotionNoticesUnchanged": true,
+  "previouslyCancelledUnchanged": true,
+  "restoredCredits": 1,
+  "noticeIds": [
+    "3d19f660-3d53-42a4-bd3e-609c125a2cda",
+    "11f3fd0e-3bb2-4e3d-b454-0d4c5bd9528f"
+  ],
+  "browserChecks": [
+    "Staff review: 1 booked, 1 waiting, 1 expected restoration, 2 notices",
+    "Staff confirmation and member account agree on participant-specific outcome",
+    "Member sees only own cancellation notice plus preserved promotion notice",
+    "Member reload: identical notice text and identities",
+    "No internal cancellation reason in member main or notice payload",
+    "Staff and member mobile 390x844: expanded IDs wrap, no horizontal overflow; screenshots inspected",
+    "Member desktop 1440x1050: both notice types visually inspected",
+    "Browser warning/error log empty; viewport reset"
+  ],
+  "limitations": [
+    "Synthetic authority fixture; hosted deployment and positive hosted mutation verification not performed",
+    "Prior hosted staff-mobile/isolation/DST and retained-fixture coverage limitations remain"
+  ]
+}

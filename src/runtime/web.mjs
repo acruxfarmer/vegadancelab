@@ -22,6 +22,7 @@ export function createDevelopmentServer(env = process.env, persistSquareEvent, c
     files['/member-booking.js']=['member-booking.js','text/javascript; charset=utf-8'];
     files['/member-cancellation.js']=['member-cancellation.js','text/javascript; charset=utf-8'];
     files['/promotion-notices.js']=['promotion-notices.js','text/javascript; charset=utf-8'];
+    files['/cancellation-notices.js']=['cancellation-notices.js','text/javascript; charset=utf-8'];
     files['/member-portal.js']=['member-portal.js','text/javascript; charset=utf-8'];
     files['/staff-booking.js']=['staff-booking.js','text/javascript; charset=utf-8'];
     files['/reporting-audit.js']=['reporting-audit.js','text/javascript; charset=utf-8'];

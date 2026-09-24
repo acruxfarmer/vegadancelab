@@ -1,5 +1,6 @@
 import {createHash} from 'node:crypto';
 import {bookingAccounting,cancelBooking} from './cancellation.mjs';
+import {recordCancellationNotice} from './cancellation-notice.mjs';
 
 const active=r=>['reserved','waitlisted'].includes(r.status);
 // The preview and commit use the same cancellation engine, on an isolated copy.
@@ -19,17 +20,19 @@ function apply(state,c,authority,body,{id,now},fail){
   Object.assign(r.cancellationHistory.at(-1),{source:'class_cancellation',classCancellationEventId:eventId});
   if(from==='waitlisted')(r.waitlistHistory??=[]).push({id:id(),action:'closed',from,to:'cancelled',actorId:authority.userId,actorRole:authority.role,requestId:body.requestId,createdAt:at,classCancellationEventId:eventId});
   for(const e of state.creditEvents.slice(creditStart))Object.assign(e,{source:'class_cancellation',classCancellationEventId:eventId});
-  affected.push({reservationId:r.id,participantId:r.participantId,from,to:'cancelled',creditOutcome:change.creditOutcome,restoredCreditUnitId:r.restoredCreditUnitId||null});
+  const effect={reservationId:r.id,participantId:r.participantId,from,to:'cancelled',creditOutcome:change.creditOutcome,restoredCreditUnitId:r.restoredCreditUnitId||null};
+  effect.noticeId=recordCancellationNotice(state,r,c,{id:eventId,createdAt:at},effect,{id}).id;
+  affected.push(effect);
  }
  c.status='cancelled';c.cancelledAt=at;
  (c.cancellationHistory??=[]).push({id:eventId,action:'class-cancelled',actorId:authority.userId,actorRole:authority.role,createdAt:at,requestId:body.requestId,reason:body.reason,affected});
  state.activity.push({id:id(),action:'cancel-class',actorId:authority.userId,subjectId:c.id,classCancellationEventId:eventId,createdAt:at});
- return {classId:c.id,outcome:'applied',eventId,affectedCount:affected.length};
+ return {classId:c.id,outcome:'applied',eventId,affectedCount:affected.length,noticeIds:affected.map(r=>r.noticeId)};
 }
 
 export function classCancellationOption(state,c,at){
  const rows=state.reservations.filter(r=>r.classId===c.id),bookings=rows.filter(r=>r.status==='reserved'),waiting=rows.filter(r=>r.status==='waitlisted');
- const option={classId:c.id,activeBookings:bookings.length,waitingEntries:waiting.length,expectedRestorations:bookings.filter(r=>r.creditConsumption).length,allowed:false,reason:''};
+ const option={classId:c.id,activeBookings:bookings.length,waitingEntries:waiting.length,expectedNotices:bookings.length+waiting.length,expectedRestorations:bookings.filter(r=>r.creditConsumption).length,allowed:false,reason:''};
  if(c.status!=='open')option.reason=c.status==='cancelled'?'This occurrence is already cancelled.':'This occurrence is not open.';
  else if(!Number.isFinite(Date.parse(c.startsAt))||Date.parse(c.startsAt)<=Date.parse(at))option.reason='Only an upcoming occurrence can be cancelled.';
  else if(rows.some(r=>(r.attendanceStatus&&r.attendanceStatus!=='not_recorded')||(r.attendanceHistory||[]).length||(r.attendanceRevision||0)>0))option.reason='Attendance has been recorded for this occurrence. Separate staff reconciliation is required.';

@@ -8,12 +8,21 @@ export async function verifyClassCancellation({store,staff,m1,m2,state,command,o
  await check('class cancellation receipt failure rolls back occurrence, all reservations, credits and audit; concurrent replay commits once',async()=>{
   const c=await make('Atomic class cancellation'),r=await store.command(m1,command('reserve',{classId:c.id,participantId:'p'})),w=await store.command(m2,command('reserve',{classId:c.id,participantId:'q',waitlistOnly:true}));
   const cmd=await review(c),before=await state();
+  const receipts=async()=> (await admin.query('select * from vega_private.app_commands order by tenant_id,business_id,actor_id,request_id')).rows;
+  const beforeReceipts=await receipts();
   await assert.rejects(store.command(m1,cmd),e=>e.status===403);assert.deepEqual(await state(),before);
+  await admin.query(`create function vega_private.fail_cancellation_notices() returns trigger language plpgsql as $$ begin if (select count(*) from jsonb_array_elements(new.state->'notifications') n where n->>'type'='occurrence-cancellation') >= 2 then raise exception 'synthetic cancellation notice failure'; end if; return new; end $$; create trigger fail_cancellation_notices before update on vega_private.app_state for each row execute function vega_private.fail_cancellation_notices()`);
+  await assert.rejects(store.command(staff,cmd),/synthetic cancellation notice failure/);assert.deepEqual(await state(),before);assert.deepEqual(await receipts(),beforeReceipts);
+  await admin.query('drop trigger fail_cancellation_notices on vega_private.app_state');
   await admin.query('create trigger fail_receipt before insert on vega_private.app_commands for each row execute function vega_private.fail_receipt()');
-  await assert.rejects(store.command(staff,cmd),/synthetic receipt failure/);assert.deepEqual(await state(),before);
+  await assert.rejects(store.command(staff,cmd),/synthetic receipt failure/);assert.deepEqual(await state(),before);assert.deepEqual(await receipts(),beforeReceipts);
   await admin.query('drop trigger fail_receipt on vega_private.app_commands');
   const results=await overlap([()=>store.command(staff,cmd),()=>store.command(staff,cmd)]);assert.ok(results.every(x=>x.status==='fulfilled'));assert.deepEqual(results[0].value,results[1].value);
   const after=await state(),s=after.state;assert.equal(BigInt(after.revision),BigInt(before.revision)+1n);assert.equal(s.classes.find(x=>x.id===c.id).cancellationHistory.length,1);assert.equal(s.reservations.find(x=>x.id===r.id).status,'cancelled');assert.equal(s.reservations.find(x=>x.id===w.id).waitlistHistory.at(-1).action,'closed');assert.equal(s.creditEvents.length,before.state.creditEvents.length+1);
+  const notices=s.notifications.filter(n=>n.occurrenceId===c.id&&n.type==='occurrence-cancellation');assert.equal(notices.length,2);assert.equal(notices.find(n=>n.reservationId===r.id).creditSnapshot.outcome,'restored');assert.equal(notices.find(n=>n.reservationId===w.id).creditSnapshot.outcome,'not_applicable');assert.equal(new Set(notices.map(n=>n.id)).size,2);assert.deepEqual(results[0].value.noticeIds,notices.map(n=>n.id));assert.equal((await receipts()).length,beforeReceipts.length+1);
+  const committedReceipts=await receipts();assert.deepEqual(await store.command(staff,cmd),results[0].value);assert.deepEqual(await state(),after);assert.deepEqual(await receipts(),committedReceipts);
+  for(const [actor,participant] of [[m1,'p'],[m2,'q']]){const projection=await store.read(actor);assert.deepEqual(projection.notifications.filter(n=>n.occurrenceId===c.id).map(n=>n.participantId),[participant]);assert.doesNotMatch(JSON.stringify(projection.notifications),/Local occurrence cancellation/);}
+  assert.deepEqual(await state(),after);assert.deepEqual(await receipts(),committedReceipts);
   const read=await store.read(m1);assert.equal(read.classes.find(x=>x.id===c.id).status,'cancelled');assert.equal(read.reservations.find(x=>x.id===r.id).status,'cancelled');assert.equal(read.classes.find(x=>x.id===c.id).cancellationHistory,undefined);
   await store.command(staff,await review(c));assert.deepEqual((await state()).state,s);
  });
