@@ -29,6 +29,7 @@ export function createDevelopmentServer(env = process.env, persistSquareEvent, c
     files['/class-editing-ui.js']=['class-editing-ui.js','text/javascript; charset=utf-8'];
     files['/class-duplication-ui.js']=['class-duplication-ui.js','text/javascript; charset=utf-8'];
     files['/occurrence-history.js']=['occurrence-history.js','text/javascript; charset=utf-8'];
+    files['/reservation-history.js']=['reservation-history.js','text/javascript; charset=utf-8'];
     files['/roster-navigation.js']=['roster-navigation.js','text/javascript; charset=utf-8'];
     files['/schedule-navigation.js']=['schedule-navigation.js','text/javascript; charset=utf-8'];
     files['/staff-waitlist.js']=['staff-waitlist.js','text/javascript; charset=utf-8'];

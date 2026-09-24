@@ -11,3 +11,5 @@ await copyFile(new URL('public/occurrence-history.js',root),new URL('dist-frontd
 await copyFile(new URL('public/schedule-navigation.js',root),new URL('dist-frontdoor/schedule-navigation.js',root));
 
 await copyFile(new URL('public/roster-navigation.js',root),new URL('dist-frontdoor/roster-navigation.js',root));
+
+await copyFile(new URL('public/reservation-history.js',root),new URL('dist-frontdoor/reservation-history.js',root));

@@ -1,14 +1,15 @@
+import {reservationHistoryHTML} from './reservation-history.js';
 import {occurrenceOption,studioDate} from './schedule-navigation.js';
 import {defaultRosterFilters,rosterResults,rosterFilterControls,attendanceLabel} from './roster-navigation.js';
 
 export function attendanceUI({getData,isStaff,escape:e,modal,mutate,notify,date,time,render}){
  const label=status=>e(attendanceLabel(status));
- let scope='',filters=defaultRosterFilters(),visibleIds=new Set(),active=null,generation=0;
+ let scope='',filters=defaultRosterFilters(),visibleIds=new Set(),active=null,generation=0,historySelection=null;
  function closeActive(){if(active){const dialog=document.querySelector('#dialog');if(dialog?.querySelector('[data-roster-attendance]')){dialog.close();dialog.querySelector('#dialog-body')?.replaceChildren();}active=null;generation++;}}
  function reconcile(occurrenceId){
   const d=getData(),id=isStaff()&&d?.classes.some(c=>c.id===occurrenceId)?occurrenceId:'';
   const next=id?JSON.stringify([d.context.userId,d.context.tenantId,d.context.businessId,id]):'';
-  if(scope!==next){closeActive();filters=defaultRosterFilters();visibleIds=new Set();scope=next;generation++;}
+  if(scope!==next){historySelection=null;closeActive();filters=defaultRosterFilters();visibleIds=new Set();scope=next;generation++;}
  }
  function roster(selectedClass,occurrences=getData().classes,navigation='',error=''){
   if(!isStaff())return '';
@@ -16,9 +17,10 @@ export function attendanceUI({getData,isStaff,escape:e,modal,mutate,notify,date,
   reconcile(c?.id);
   const result=rosterResults(d,c?.id,filters);visibleIds=new Set(result.rows.map(r=>r.id));
   if(active&&(!visibleIds.has(active.id)||d.reservations.find(r=>r.id===active.id)?.participantId!==active.participantId))closeActive();
+  if(historySelection&&(!visibleIds.has(historySelection.id)||d.reservations.find(r=>r.id===historySelection.id)?.participantId!==historySelection.participantId))historySelection=null;
   const header=`<div class="page-heading"><div><h1>Schedule & rosters</h1><p>Find an occurrence to view its roster and recorded history.</p></div><button class="button secondary" data-refresh-booking>Refresh roster</button></div>${navigation}<div class="toolbar"><label>Select class<select id="roster-class" aria-label="Select class" ${occurrences.length?'':'disabled'}><option value="">Select an occurrence</option>${occurrences.map(x=>`<option value="${e(x.id)}" ${x.id===c?.id?'selected':''}>${e(occurrenceOption(x))}</option>`).join('')}</select></label></div>`;
   if(!c)return header+`<section class="card" id="schedule-selection-empty"><h2>${error?'Check the date range and filters':occurrences.length?'Select an occurrence':'No matching occurrences'}</h2><p>${occurrences.length?'Choose an occurrence above to view its roster, controls and history.':'Adjust the filters or choose All dates. No occurrence is selected.'}</p></section>`;
-  return header+`<section class="card" id="selected-roster"><h2>${e(c.title)}</h2><p>${studioDate(c.startsAt)?`${date(c.startsAt)} · ${time(c.startsAt)} Pacific`:'Start date and time: unrecorded'} · ${e(c.instructor)} · ${e(c.location)}</p><p>Occurrence ${e(c.id)} · Status: ${e(c.status||'unrecorded')}</p><p>${rows.filter(r=>r.status==='reserved').length} booked · Capacity ${e(c.capacity)}</p>${rosterFilterControls(filters,result,e)}<div class="table-wrap"><table><thead><tr><th>Participant</th><th>Booking</th><th>Attendance</th><th>Action</th></tr></thead><tbody>${result.rows.map(r=>`<tr data-reservation-id="${e(r.id)}"><td>${e(name(r.participantId))}<small class="roster-identity">Participant ${e(r.participantId)}<br>Reservation ${e(r.id)}</small></td><td>${e(r.status)}</td><td>${label(r.attendanceStatus)}</td><td><button class="button secondary small" data-attendance-open="${e(r.id)}">${r.status==='reserved'?'Record / correct attendance':'View attendance history'}</button></td></tr>`).join('')||`<tr><td colspan="4">${rows.length?'No matching reservation rows. Reset roster filters to see the full roster.':'No reservations on this roster.'}</td></tr>`}</tbody></table></div></section>`;
+  return header+`<section class="card" id="selected-roster"><h2>${e(c.title)}</h2><p>${studioDate(c.startsAt)?`${date(c.startsAt)} · ${time(c.startsAt)} Pacific`:'Start date and time: unrecorded'} · ${e(c.instructor)} · ${e(c.location)}</p><p>Occurrence ${e(c.id)} · Status: ${e(c.status||'unrecorded')}</p><p>${rows.filter(r=>r.status==='reserved').length} booked · Capacity ${e(c.capacity)}</p>${rosterFilterControls(filters,result,e)}<div class="table-wrap"><table><thead><tr><th>Participant</th><th>Booking</th><th>Attendance</th><th>Action</th></tr></thead><tbody>${result.rows.map(r=>`<tr data-reservation-id="${e(r.id)}"><td>${e(name(r.participantId))}<small class="roster-identity">Participant ${e(r.participantId)}<br>Reservation ${e(r.id)}</small></td><td>${e(r.status)}</td><td>${label(r.attendanceStatus)}</td><td><button class="button secondary small" data-attendance-open="${e(r.id)}">${r.status==='reserved'?'Record / correct attendance':'View attendance history'}</button><button type="button" class="text-button" data-reservation-history-open="${e(r.id)}">View reservation history</button></td></tr>`).join('')||`<tr><td colspan="4">${rows.length?'No matching reservation rows. Reset roster filters to see the full roster.':'No reservations on this roster.'}</td></tr>`}</tbody></table></div></section>${historySelection?reservationHistoryHTML(d,historySelection.id,e):''}`;
  }
  function open(id){
   if(!isStaff()||!scope||!visibleIds.has(id))return;
@@ -40,5 +42,13 @@ export function attendanceUI({getData,isStaff,escape:e,modal,mutate,notify,date,
  });
  document.addEventListener('submit',event=>{if(event.target.id!=='roster-filters')return;event.preventDefault();if(!isStaff()||!scope)return;filters=Object.fromEntries(new FormData(event.target));render();document.querySelector('#roster-filters button')?.focus();});
  document.addEventListener('click',event=>{if(!event.target.closest('[data-reset-roster-filters]')||!isStaff()||!scope)return;filters=defaultRosterFilters();render();document.querySelector('[data-reset-roster-filters]')?.focus();});
+ document.addEventListener('click',event=>{
+  const b=event.target.closest('[data-reservation-history-open]');
+  if(b&&isStaff()&&scope&&visibleIds.has(b.dataset.reservationHistoryOpen)){
+   const r=getData().reservations.find(r=>r.id===b.dataset.reservationHistoryOpen);if(!r)return;
+   historySelection={id:r.id,participantId:r.participantId};render();document.querySelector('#reservation-history')?.focus();
+  }
+  if(event.target.closest('[data-close-reservation-history]')){const id=historySelection?.id;historySelection=null;render();[...document.querySelectorAll('[data-reservation-history-open]')].find(b=>b.dataset.reservationHistoryOpen===id)?.focus();}
+ });
  return {render:roster,reconcile};
 }

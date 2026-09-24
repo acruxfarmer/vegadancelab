@@ -18,3 +18,5 @@
 
 .roster-identity{display:block;overflow-wrap:anywhere;white-space:normal;margin-top:.4rem;max-width:24rem;color:var(--muted)}
 #selected-roster th:first-child,#selected-roster td:first-child{min-width:15rem}
+
+.reservation-history{overflow-wrap:anywhere}.reservation-history ol{padding-left:1.25rem}.reservation-history li{padding-block:1rem;border-bottom:1px solid #ddd}.reservation-history dd{margin-left:0;margin-bottom:.75rem}.reservation-history summary{cursor:pointer;padding-block:.5rem}

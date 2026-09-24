@@ -1,0 +1,13 @@
+{
+  "scope": "Synthetic loopback authentication; real API/domain/read projections; no hosted writes",
+  "checks": [
+    "Exact reservation shows bounded history, explicit unlinked evidence, unapplied outcomes and escaped notes without mutation controls",
+    "Distinct participants with identical names retain separate reservation timelines; delayed read does not replace newer history selection",
+    "Filter exclusion, occurrence/page changes, removed reservation, authority-scope change and reload clear stale history without automatic restoration",
+    "Stable event IDs/order after reload, keyboard open/close, legacy gaps, desktop/mobile and expanded snapshots pass",
+    "Member excluded; history reads/navigation leave complete state/revision unchanged and send zero mutation requests"
+  ],
+  "errors": [],
+  "mutationRequests": [],
+  "passed": true
+}
