@@ -29,5 +29,14 @@ export function createSession({storage,fetcher=fetch,now=Date.now,onPending=()=>
   pending=operation;return operation;
  }
  async function access(){if(!current)throw new Error('Sign in to continue.');if(current.expiresAt-now()<60000)return refresh();return current.accessToken;}
- return {accept,restore,refresh,access,clear,generation:()=>epoch,active:()=>!!current};
+ async function signOut(){
+  const captured=current;
+  clear(); // Synchronous: revoke local authority before any network work.
+  if(!captured)return;
+  const response=await fetcher('/api/auth/sign-out',{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${captured.accessToken}`},body:JSON.stringify({refreshToken:captured.refreshToken}),cache:'no-store',signal:AbortSignal.timeout(25000)});
+  if(!response.ok)throw new Error('Signed out on this device. Provider sign-out could not be confirmed.');
+  const result=await response.json();
+  if(result.signedOut!==true)throw new Error('Signed out on this device. Provider sign-out could not be confirmed.');
+ }
+ return {accept,restore,refresh,access,clear,signOut,generation:()=>epoch,active:()=>!!current};
 }

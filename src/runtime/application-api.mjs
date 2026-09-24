@@ -1,4 +1,5 @@
 import { ApplicationError } from '../application.mjs';
+import {revokeSession} from './sign-out.mjs';
 
 const origin='https://cjdoczrxcjynjhgpgqop.supabase.co';
 export async function readJson(req){
@@ -31,6 +32,11 @@ export function createApplicationApi(env,store,fetcher=fetch){
     const session=await response.json();
     if(typeof session.access_token!=='string'||typeof session.refresh_token!=='string'||!Number.isFinite(session.expires_in)||session.expires_in<=60)throw new ApplicationError('Authentication unavailable',503);
     send(200,{accessToken:session.access_token,access_token:session.access_token,refreshToken:session.refresh_token,expiresIn:session.expires_in});return true;
+   }
+   if(url.pathname==='/api/auth/sign-out'&&req.method==='POST'){
+    configured();const body=await readJson(req);
+    await revokeSession({origin,key,authorization:req.headers.authorization,refreshToken:body.refreshToken,fetcher});
+    send(200,{signedOut:true});return true;
    }
    const userId=await principal(req);
    if(!store)throw new ApplicationError('Application database handoff is pending',503);

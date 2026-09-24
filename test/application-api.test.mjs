@@ -3,6 +3,47 @@ import assert from 'node:assert/strict';
 import {Readable} from 'node:stream';
 import {createApplicationApi} from '../src/runtime/application-api.mjs';
 const env={SUPABASE_URL:'https://cjdoczrxcjynjhgpgqop.supabase.co',SUPABASE_PUBLISHABLE_KEY:'synthetic'};
+const sessionJwt=`header.${Buffer.from(JSON.stringify({session_id:'11111111-1111-4111-8111-111111111111'})).toString('base64url')}.signature`;
+test('sign-out revokes current provider session and replay cannot refresh or read; repeat is idempotent',async()=>{
+ let active=true,reads=0;const calls=[];
+ const api=createApplicationApi(env,{read:()=>{reads++;return {};}},async(url,init)=>{
+  calls.push(url);assert.equal(init.headers.apikey,'synthetic');
+  if(url.endsWith('/logout?scope=local')){assert.equal(init.headers.Authorization,`Bearer ${sessionJwt}`);if(!active)return {ok:false,status:403,json:async()=>({code:'session_not_found'})};active=false;return {ok:true,status:204};}
+  if(url.includes('grant_type=refresh_token'))return {ok:false,status:400};
+  if(url.endsWith('/user'))return {ok:false,status:403};
+  throw new Error('Unexpected provider operation');
+ });
+ const args={method:'POST',token:`Bearer ${sessionJwt}`,body:{refreshToken:'captured'}};
+ assert.deepEqual(await request(api,'/api/auth/sign-out',args),{status:200,result:{signedOut:true}});
+ assert.equal((await request(api,'/api/auth/sign-out',args)).status,200);
+ assert.equal((await request(api,'/api/auth/refresh',{method:'POST',body:{refreshToken:'captured'}})).status,401);
+ assert.equal((await request(api,'/api/app',{token:`Bearer ${sessionJwt}`})).status,401);assert.equal(reads,0);
+ assert.equal(calls.filter(u=>u.includes('/logout?scope=local')).length,2);
+});
+test('expired access is refreshed solely for current-session revocation; no rotated credentials escape',async()=>{
+ const calls=[];const api=createApplicationApi(env,null,async(url,init)=>{
+  calls.push(url);if(calls.length===1)return {ok:false,status:401,json:async()=>({code:'bad_jwt'})};
+  if(calls.length===2){assert.deepEqual(JSON.parse(init.body),{refresh_token:'expired-access-refresh'});return {ok:true,json:async()=>({access_token:sessionJwt,refresh_token:'never-returned'})};}
+  assert.ok(url.endsWith('/logout?scope=local'));return {ok:true,status:204};
+ });
+ const result=await request(api,'/api/auth/sign-out',{method:'POST',token:`Bearer ${sessionJwt}`,body:{refreshToken:'expired-access-refresh'}});
+ assert.deepEqual(result,{status:200,result:{signedOut:true}});assert.equal(calls.length,3);
+});
+test('invalid credentials and provider failures never claim confirmed sign-out or access the store',async()=>{
+ for(const status of [400,401,403,429,500]){
+  const api=createApplicationApi(env,{read:()=>assert.fail('store')},async()=>({ok:false,status,json:async()=>({code:'bad_jwt'})}));
+  const result=await request(api,'/api/auth/sign-out',{method:'POST',token:`Bearer ${sessionJwt}`,body:{refreshToken:'invalid'}});
+  assert.ok([401,503].includes(result.status));assert.equal(result.result.signedOut,undefined);
+ }
+ const api=createApplicationApi(env,null,async()=>{throw new Error('timeout');});
+ assert.equal((await request(api,'/api/auth/sign-out',{method:'POST',token:`Bearer ${sessionJwt}`,body:{}})).status,503);
+});
+test('session-less JWT cannot widen sign-out scope; missing credentials fail closed',async()=>{
+ let calls=0;const api=createApplicationApi(env,null,async()=>{calls++;assert.fail('provider must not receive session-less JWT');});
+ const nil=`Bearer header.${Buffer.from(JSON.stringify({session_id:'00000000-0000-0000-0000-000000000000'})).toString('base64url')}.signature`;
+ for(const token of [undefined,'Bearer header.e30.signature',nil])assert.equal((await request(api,'/api/auth/sign-out',{method:'POST',token,body:{}})).status,401);
+ assert.equal(calls,0);
+});
 test('duplication review and confirmation authenticate before dispatch and use separate read/command paths',async()=>{
  const id='11111111-1111-4111-8111-111111111111',calls=[];
  const api=createApplicationApi(env,{reviewClassDuplicate:async(user,body)=>{calls.push(['review',user,body]);return {reviewToken:'review'};},command:async(user,cmd)=>{calls.push(['command',user,cmd]);return {id:'new'};}},async()=>({ok:true,json:async()=>({id})}));
