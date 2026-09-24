@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {emptyState,transition,visibleState} from '../src/application.mjs';
-import {reservationHistory,reservationHistoryHTML,reservationHistoryTypes} from '../public/reservation-history.js';
+import {reservationHistory,reservationHistoryHTML,reservationHistoryTypes,historyResults,defaultHistoryFilters} from '../public/reservation-history.js';
 import {classCancellationOption} from '../src/class-cancellation.mjs';
 const staff={role:'staff',userId:'staff',participantIds:[]},at='2026-09-23T12:00:00Z';
 function fixture(){
@@ -50,5 +50,29 @@ test('blocked correction retains requested classification without claiming it be
 test('member/missing occurrence exclusion and escaped read-only rendering',()=>{
  const f=fixture(),r=f.cmd('reserve',{classId:'c',participantId:'p'});f.cmd('attendance',{status:'present',reason:'<script>secret</script>'},r.id);const d=f.data(),escape=v=>String(v).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
  assert.deepEqual(reservationHistory({...d,context:{role:'member'}},r.id).events,[]);assert.equal(reservationHistoryHTML({...d,context:{role:'member'}},r.id,escape),'');assert.deepEqual(reservationHistory({...d,classes:[]},r.id).events,[]);
- const html=reservationHistoryHTML(d,r.id,escape);assert.ok(html.includes('&lt;script&gt;secret'));assert.ok(!html.includes('<script>'));assert.ok(!html.includes('<form'));assert.ok(!html.includes('Save attendance'));
+ const html=reservationHistoryHTML(d,r.id,escape);assert.ok(html.includes('&lt;script&gt;secret'));assert.ok(!html.includes('<script>'));assert.ok(html.includes('reservation-history-filters'));assert.ok(!html.includes('Save attendance'));
+});
+
+test('history navigation filters projected events without changing evidence, order, identities or totals',()=>{
+ const f=fixture(),held=f.cmd('reserve',{classId:'c',participantId:'q'}),r=f.cmd('reserve',{classId:'c',participantId:'p',waitlistOnly:true});
+ f.cmd('cancel',{},held.id);f.cmd('promote',{},r.id);f.cmd('attendance',{status:'present',reason:'Recorded   special NOTE'},r.id);f.cmd('attendance',{status:'not_recorded',reason:'Clear attendance'},r.id);f.cmd('cancel',{},r.id);f.cmd('correct-cancellation',{classification:'early',reason:'Already early'},r.id);
+ const d=f.data(),before=structuredClone(d),h=reservationHistory(d,r.id),original=structuredClone(h);
+ for(const type of reservationHistoryTypes){const result=historyResults(h,{type,text:''});assert.equal(result.total,h.events.length);assert.ok(result.events.length);assert.deepEqual(result.events,h.events.filter(e=>e.type===type));}
+ const match=historyResults(h,{type:'attendance-change',text:'  SPECIAL   note  '});assert.equal(match.events.length,1);
+ assert.equal(historyResults(h,{type:'creation',text:'special note'}).events.length,0);
+ assert.equal(historyResults(h,{type:'all',text:'Same Name'}).events.length,0);
+ assert.equal(historyResults(h,{type:'all',text:'never recorded string'}).events.length,0);
+ assert.deepEqual(historyResults(h,defaultHistoryFilters()).events,h.events);
+ assert.ok(historyResults(h,{type:'invented',text:''}).error);
+ assert.deepEqual(h,original);assert.deepEqual(d,before);
+});
+test('filtered empty results retain unlinked count, conflicts and distinguish an empty timeline',()=>{
+ const d={context:staff,classes:[{id:'c'}],reservations:[{id:'r',classId:'c',participantId:'p',createdAt:at,attendanceHistory:[{id:'a',to:'present'},{id:'a',to:'absent'}]}],activity:[{id:'loose',subjectId:'r',action:'cancel',reason:'unlinked-only'}]};
+ const h=reservationHistory(d,'r'),e=s=>String(s).replaceAll('<','&lt;');
+ assert.equal(historyResults(h,{type:'all',text:'unlinked-only'}).events.length,0);
+ const html=reservationHistoryHTML(d,'r',e,{type:'creation',text:'no match'});
+ assert.ok(html.includes('No matching history events'));assert.ok(html.includes('1 unlinked supporting records (not filtered)'));assert.ok(html.includes('Some timeline entries contain conflicting evidence'));
+ assert.ok(html.includes('Showing 0 of 2'));assert.ok(!html.includes('data-reservation-history-event='));
+ d.reservations[0]={id:'r',classId:'c',participantId:'p'};
+ assert.ok(reservationHistoryHTML(d,'r',e).includes('No recorded timeline entries'));
 });
