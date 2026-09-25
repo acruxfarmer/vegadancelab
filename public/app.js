@@ -73,7 +73,14 @@ async function mutate(path,body,local){
  const pending=await pendingRequests.acquire([context.tenantId,context.businessId,context.userId],path,body);
  if(generation!==session.generation()||!session.active())throw new Error('Session changed. Sign in and review your account.');
  try{
-  const result=await api(path,{method:'POST',body:JSON.stringify({...body,requestId:pending.requestId})});
+  let result=await api(path,{method:'POST',body:JSON.stringify({...body,requestId:pending.requestId})});
+  if(result.pending)notify('Your change is recorded. Waiting for independent recovery confirmation.');
+  for(let attempt=0;result.pending&&attempt<8;attempt++){
+   await new Promise(resolve=>setTimeout(resolve,750));
+   if(generation!==session.generation()||!session.active())throw new Error('Session changed.');
+   result=await api('/api/recovery/operations/'+result.independentReceipt.operationId);
+  }
+  if(result.pending){await load();throw new Error('Your change is recorded locally but remains pending independent recovery confirmation.');}
   await load();pendingRequests.complete(pending);return result;
  }catch(error){throw new Error(`${error.message} Refresh to check the current state. If needed, retry the same details; the request will not be applied twice.`);}
 }
@@ -121,3 +128,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 document.addEventListener('submit',async event=>{const form=event.target;if(form.id!=='issue-credit'&&!form.hasAttribute('data-cancellation-policy')&&!form.hasAttribute('data-cancellation-correction'))return;event.preventDefault();if(form.dataset.pending)return;form.dataset.pending='true';const button=form.querySelector('button');button.disabled=true;try{await cancellation.submit(form)}catch(error){form.querySelector('[role=alert]').textContent=error.message}finally{delete form.dataset.pending;button.disabled=false}});
 
 document.addEventListener('submit',async event=>{const form=event.target;if(!['entitlement-product','entitlement-issue'].includes(form.id))return;event.preventDefault();const button=form.querySelector('button');button.disabled=true;try{await entitlements.submit(form)}catch(error){form.querySelector('[role=alert]').textContent=error.message}finally{button.disabled=false}});
+
+// Independent acknowledgment governs confirmation, including reload/read views.
+const renderBeforeRecoveryNotice=render;
+render=function(){renderBeforeRecoveryNotice();if(data?.recovery?.pendingCount>0){const notice=document.createElement('div');notice.className='notice warning';notice.setAttribute('role','status');notice.textContent='Recovery confirmation pending. The current view includes provisional changes. Do not treat them as finally confirmed until independent recovery acknowledgment completes.';document.querySelector('#main').prepend(notice);}};

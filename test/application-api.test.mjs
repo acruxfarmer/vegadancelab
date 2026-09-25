@@ -4,6 +4,21 @@ import {Readable} from 'node:stream';
 import {createApplicationApi} from '../src/runtime/application-api.mjs';
 const env={SUPABASE_URL:'https://cjdoczrxcjynjhgpgqop.supabase.co',SUPABASE_PUBLISHABLE_KEY:'synthetic'};
 const sessionJwt=`header.${Buffer.from(JSON.stringify({session_id:'11111111-1111-4111-8111-111111111111'})).toString('base64url')}.signature`;
+test('business API withholds domain confirmation until independent receipt acknowledgment',async()=>{
+ let state='pending';const operationId='a'.repeat(64);
+ const result=()=>({id:'booking',status:'reserved',independentReceipt:{operationId,state}});
+ const api=createApplicationApi(env,{command:async()=>result(),operation:async()=>state==='acknowledged'?result():{pending:true,independentReceipt:{operationId,state}}},async()=>({ok:true,json:async()=>({id:'11111111-1111-4111-8111-111111111111'})}));
+ const pending=await request(api,'/api/reservations',{method:'POST',token:'Bearer valid',body:{requestId:'r'}});
+ assert.equal(pending.status,202);assert.equal(pending.result.pending,true);assert.equal(pending.result.status,undefined);assert.equal(pending.result.id,undefined);
+ assert.equal((await request(api,'/api/recovery/operations/'+operationId,{token:'Bearer valid'})).status,202);
+ state='acknowledged';const confirmed=await request(api,'/api/recovery/operations/'+operationId,{token:'Bearer valid'});assert.equal(confirmed.status,200);assert.equal(confirmed.result.status,'reserved');
+});
+test('sign-out completes without waiting for unavailable evidence persistence',async()=>{
+ let observed=false;
+ const api=createApplicationApi(env,{recordRevocation:()=>{observed=true;return new Promise(()=>{});}},async()=>({ok:true,status:204}));
+ const result=await request(api,'/api/auth/sign-out',{method:'POST',token:`Bearer ${sessionJwt}`,body:{refreshToken:'r'}});
+ assert.equal(result.status,200);assert.equal(result.result.signedOut,true);await Promise.resolve();assert.equal(observed,true);
+});
 test('sign-out revokes current provider session and replay cannot refresh or read; repeat is idempotent',async()=>{
  let active=true,reads=0;const calls=[];
  const api=createApplicationApi(env,{read:()=>{reads++;return {};}},async(url,init)=>{

@@ -35,12 +35,17 @@ export function createApplicationApi(env,store,fetcher=fetch){
    }
    if(url.pathname==='/api/auth/sign-out'&&req.method==='POST'){
     configured();const body=await readJson(req);
-    await revokeSession({origin,key,authorization:req.headers.authorization,refreshToken:body.refreshToken,fetcher});
+    const termination=await revokeSession({origin,key,authorization:req.headers.authorization,refreshToken:body.refreshToken,fetcher});
+    // Security termination has already completed. Neither DB nor B2 may delay
+    // its response. Persist evidence asynchronously; report capture gaps safely.
+    if(store?.recordRevocation)void Promise.resolve().then(()=>store.recordRevocation(termination)).catch(()=>console.error('Revocation evidence capture uncertain; provider termination remains effective'));
     send(200,{signedOut:true});return true;
    }
    const userId=await principal(req);
    if(!store)throw new ApplicationError('Application database handoff is pending',503);
    if(url.pathname==='/api/app'&&req.method==='GET'){send(200,await store.read(userId));return true;}
+   const operation=url.pathname.match(/^\/api\/recovery\/operations\/([a-f0-9]{64})$/);
+   if(operation&&req.method==='GET'){const result=await store.operation(userId,operation[1]);send(result.pending?202:200,result);return true;}
    if(req.method!=='POST')throw new ApplicationError('Method not allowed',405);
    const body=await readJson(req),routes={'/api/entitlements/products':'entitlement-product','/api/entitlements/issue':'issue-entitlement','/api/credits/issue':'issue-credit','/api/classes/cancel':'cancel-class','/api/classes/policy':'class-policy','/api/reservations':'reserve','/api/classes':'class','/api/participants':'participant','/api/preferences':'preferences','/api/notifications':'notification'};
    if(url.pathname==='/api/classes/edit/review'){send(200,await store.reviewClassEdit(userId,body));return true;}
@@ -50,7 +55,10 @@ export function createApplicationApi(env,store,fetcher=fetch){
    const match=url.pathname.match(/^\/api\/reservations\/([A-Za-z0-9-]{1,128})\/(cancel|correct-cancellation|attendance|promote)$/);
    if(match){id=match[1];action=match[2];}
    if(!action)throw new ApplicationError('Operation unavailable',404);
-   send(200,await store.command(userId,{action,id,body}));
+   const result=await store.command(userId,{action,id,body});
+   if(result.independentReceipt&&result.independentReceipt.state!=='acknowledged'){
+    send(202,{pending:true,independentReceipt:result.independentReceipt,message:'Your change is recorded locally and awaits independent recovery confirmation. Retry the same details to check; do not submit a new operation.'});
+   }else send(200,result);
   }catch(error){send(error instanceof ApplicationError?error.status:503,{error:error instanceof ApplicationError?error.message:'Application temporarily unavailable'});}
   return true;
  };

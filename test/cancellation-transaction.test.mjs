@@ -2,10 +2,12 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {emptyState} from '../src/application.mjs';
 import {createApplicationStore} from '../src/runtime/application-database.mjs';
+import {generateKeyPairSync} from 'node:crypto';
+const receiptPublicKey=generateKeyPairSync('rsa',{modulusLength:3072}).publicKey.export({type:'spki',format:'pem'});
 
 test('locked store replays cancellation commands and commits blocked correction audit without moving credits',async()=>{
  let state={...emptyState(),participants:[{id:'p'}],classes:['c','d'].map(id=>({id,status:'open',startsAt:'2099-01-01T12:00:00Z',capacity:3,creditRequired:true}))},revision=0;
- const commands=new Map(),calls=[];
+ const commands=new Map(),outbox=new Map(),calls=[];
  let actor;
  const client={release(){},async query(sql,args){
   calls.push(sql);
@@ -15,9 +17,11 @@ test('locked store replays cancellation commands and commits blocked correction 
   if(sql.startsWith('select fingerprint'))return {rows:commands.has(args[2]+args[3])?[commands.get(args[2]+args[3])]:[]};
   if(sql.startsWith('update vega_private.app_state')){state=JSON.parse(args[0]);revision++;}
   if(sql.startsWith('insert into vega_private.app_commands'))commands.set(args[2]+args[3],{fingerprint:args[4],response:JSON.parse(args[5])});
+  if(sql.startsWith('insert into vega_private.recovery_outbox'))outbox.set(args[3]+args[4],{event_id:args[0],state:'pending'});
+  if(sql.startsWith('select event_id,state'))return {rows:[outbox.get(args[2]+args[3])]};
   return {rows:[]};
  }};
- const store=createApplicationStore({connect:async()=>client});let n=0;
+ const store=createApplicationStore({connect:async()=>client},{receiptPublicKey});let n=0;
  const run=(action,body={},id,user='member')=>store.command(user,{action,id,body:{requestId:`r${++n}`,...body}});
  await run('issue-credit',{participantId:'p',quantity:1,reason:'Test'},undefined,'desk');
  const bookingCommand={action:'reserve',body:{requestId:'book-one',participantId:'p',classId:'c'}};

@@ -10,20 +10,23 @@ export async function revokeSession({origin,key,authorization,refreshToken,fetch
  const logout=async access=>{
   if(!hasSession(access))throw new ApplicationError('Session expired or invalid',401);
   const response=await fetcher(`${origin}/auth/v1/logout?scope=local`,{method:'POST',headers:{apikey:key,Authorization:`Bearer ${access}`},signal:AbortSignal.timeout(10000)});
-  if(response.status===204)return true;
+  if(response.status===204)return 'revoked';
   if([401,403].includes(response.status)){
    const error=await response.json().catch(()=>({}));
-   if(error.code==='session_not_found')return true; // Provider confirms this session is already absent.
+   if(error.code==='session_not_found'||error.error_code==='session_not_found')return 'already_absent';
    return false;
   }
   throw new ApplicationError('Provider sign-out could not be confirmed',503);
  };
- if(token&&hasSession(token)&&await logout(token))return;
+ const evidence=(access,outcome)=>{const claims=JSON.parse(Buffer.from(access.split('.')[1],'base64url'));return {userId:claims.sub,sessionId:claims.session_id,outcome};};
+ if(token&&hasSession(token)){const outcome=await logout(token);if(outcome)return evidence(token,outcome);}
  // An expired access JWT cannot call logout. Exchange the associated refresh
  // credential only to revoke that provider session; never return/store the result.
  if(typeof refreshToken!=='string'||!refreshToken.length||refreshToken.length>8192)throw new ApplicationError('Session expired or invalid',401);
  const response=await fetcher(`${origin}/auth/v1/token?grant_type=refresh_token`,{method:'POST',headers:{apikey:key,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:refreshToken}),signal:AbortSignal.timeout(10000)});
  if(!response.ok)throw new ApplicationError('Provider sign-out could not be confirmed',response.status>=500||response.status===429?503:401);
  const session=await response.json();
- if(typeof session.access_token!=='string'||!await logout(session.access_token))throw new ApplicationError('Provider sign-out could not be confirmed',401);
+ if(typeof session.access_token!=='string')throw new ApplicationError('Provider sign-out could not be confirmed',401);
+ const outcome=await logout(session.access_token);if(!outcome)throw new ApplicationError('Provider sign-out could not be confirmed',401);
+ return evidence(session.access_token,outcome);
 }
