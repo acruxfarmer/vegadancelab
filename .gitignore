@@ -6,3 +6,4 @@ node_modules/
 coverage/
 dist-frontdoor/
 records/*.local.json
+supabase/.temp/

@@ -35,5 +35,5 @@ test('transaction errors rollback and release; actor is transaction-local',async
  const calls=[];let released=false;
  const c={query:async(sql,args)=>{calls.push([sql,args]);if(sql.startsWith('select tenant_id'))return {rows:[]};return {rows:[]};},release:()=>released=true};
  const store=createApplicationStore({connect:async()=>c});await assert.rejects(store.read('user'),/assignment/);
- assert.ok(calls.some(([s])=>s==="select set_config('vega.actor_id',$1,true)"));assert.ok(calls.some(([s])=>s==='rollback'));assert.ok(released);
+ assert.ok(calls.some(([s])=>s==="select set_config('vega.actor_id',$1,true),set_config('vega.receipt_discovery','v1',true)"));assert.ok(calls.some(([s])=>s==='rollback'));assert.ok(released);
 });

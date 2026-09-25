@@ -17,7 +17,7 @@ export function createApplicationStore(pool,{receiptPublicKey=process.env.RECEIP
   const client=await pool.connect();
   try{
    await client.query('begin');
-   await client.query("select set_config('vega.actor_id',$1,true)",[userId]);
+   await client.query("select set_config('vega.actor_id',$1,true),set_config('vega.receipt_discovery','v1',true)",[userId]);
    const {rows}=await client.query('select tenant_id,business_id,role,participant_ids from vega_private.app_members where user_id=$1',[userId]);
    if(rows.length!==1)throw new ApplicationError('No unambiguous Vega access assignment',403);
    const m=rows[0], authority={userId,tenantId:m.tenant_id,businessId:m.business_id,role:m.role,participantIds:m.participant_ids};
@@ -36,7 +36,7 @@ export function createApplicationStore(pool,{receiptPublicKey=process.env.RECEIP
    return {state:'pending',operationId:receipt.eventId};
   }),
   operation:(userId,eventId)=>transaction(userId,async(c,a)=>{
-   const {rows}=await c.query('select o.event_id,o.state,j.response from vega_private.recovery_outbox o join vega_private.app_commands j using(tenant_id,business_id,actor_id,request_id) where o.event_id=$1 and o.tenant_id=$2 and o.business_id=$3 and o.actor_id=$4',[eventId,a.tenantId,a.businessId,userId]);
+   const {rows}=await c.query('select o.event_id,o.discovery_state as state,j.response from vega_private.recovery_outbox o join vega_private.app_commands j using(tenant_id,business_id,actor_id,request_id) where o.event_id=$1 and o.tenant_id=$2 and o.business_id=$3 and o.actor_id=$4',[eventId,a.tenantId,a.businessId,userId]);
    if(rows.length!==1)throw new ApplicationError('Operation unavailable',404);
    return rows[0].state==='acknowledged'?{...rows[0].response,independentReceipt:{operationId:eventId,state:'acknowledged'}}:{pending:true,independentReceipt:{operationId:eventId,state:rows[0].state}};
   }),
@@ -45,7 +45,7 @@ export function createApplicationStore(pool,{receiptPublicKey=process.env.RECEIP
    has_table_privilege(current_user,'vega_private.app_state','SELECT') and has_table_privilege(current_user,'vega_private.app_state','UPDATE')
    and has_table_privilege(current_user,'vega_private.app_members','SELECT')
    and has_table_privilege(current_user,'vega_private.app_commands','SELECT') and has_table_privilege(current_user,'vega_private.app_commands','INSERT')
-   and has_table_privilege(current_user,'vega_private.recovery_outbox','SELECT') and has_column_privilege(current_user,'vega_private.recovery_outbox','payload','INSERT') as state_access,
+   and has_table_privilege(current_user,'vega_private.recovery_outbox','SELECT') and has_column_privilege(current_user,'vega_private.recovery_outbox','payload','INSERT') and has_column_privilege(current_user,'vega_private.recovery_outbox','discovery_sequence','SELECT') as state_access,
    has_table_privilege(current_user,'vega_private.app_members','INSERT,UPDATE,DELETE') as can_assign,
    (select count(*)=4 and bool_and(c.relrowsecurity and c.relforcerowsecurity and c.relowner<>r.oid)
     from pg_class c join pg_namespace n on n.oid=c.relnamespace
@@ -57,7 +57,7 @@ export function createApplicationStore(pool,{receiptPublicKey=process.env.RECEIP
     const result=await c.query(`select i.event_id as id,i.event_type as type,coalesce(j.status,'pending') as status,j.reason as "lastError",i.received_at as "createdAt" from vega_private.square_webhook_inbox i left join vega_private.square_processing_journal j using(event_id) order by i.received_at desc limit 100`);
     jobs=result.rows;
    }
-   const outstanding=await c.query("select count(*)::int as count from vega_private.recovery_outbox where tenant_id=$1 and business_id=$2 and event_kind='business' and state<>'acknowledged'",[a.tenantId,a.businessId]);
+   const outstanding=await c.query("select count(*)::int as count from vega_private.recovery_outbox where tenant_id=$1 and business_id=$2 and event_kind='business' and discovery_state<>'acknowledged'",[a.tenantId,a.businessId]);
    return {mode:'development',context:{name:'Vega Dance Lab',...a},revision:row.revision,...visibleState(row.state,a),jobs,squareEnabled:false,recovery:{pendingCount:outstanding.rows[0]?.count??0}};
   }),
   reviewClassDuplicate:(userId,body)=>transaction(userId,async(c,a)=>{
@@ -79,7 +79,7 @@ export function createApplicationStore(pool,{receiptPublicKey=process.env.RECEIP
    const {rows}=await c.query('select fingerprint,response from vega_private.app_commands where tenant_id=$1 and business_id=$2 and actor_id=$3 and request_id=$4',[a.tenantId,a.businessId,userId,requestId]);
    if(rows.length){
     if(rows[0].fingerprint!==fingerprint)throw new ApplicationError('Request identifier already used for another operation',409);
-    const delivered=await c.query('select event_id,state from vega_private.recovery_outbox where tenant_id=$1 and business_id=$2 and actor_id=$3 and request_id=$4',[a.tenantId,a.businessId,userId,requestId]);
+    const delivered=await c.query('select event_id,discovery_state as state from vega_private.recovery_outbox where tenant_id=$1 and business_id=$2 and actor_id=$3 and request_id=$4',[a.tenantId,a.businessId,userId,requestId]);
     if(!delivered.rows.length)throw new ApplicationError('This historical operation predates independent receipt capture. Review its existing record; do not repeat it with a new identifier.',409);
     return {...rows[0].response,independentReceipt:{operationId:delivered.rows[0].event_id,state:delivered.rows[0].state}};
    }

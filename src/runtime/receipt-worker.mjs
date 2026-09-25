@@ -13,8 +13,8 @@ export async function checkReceiptWorker(pool){
  not exists(select 1 from pg_auth_members where member=r.oid) as no_inherited_role,
  not has_schema_privilege(current_user,'vega_private','CREATE') as no_schema_create,
  has_table_privilege(current_user,'vega_private.recovery_outbox','SELECT') as can_read,
- has_column_privilege(current_user,'vega_private.recovery_outbox','state','UPDATE') as can_deliver,
- not has_column_privilege(current_user,'vega_private.recovery_outbox','payload','UPDATE') as immutable_payload,
+ has_column_privilege(current_user,'vega_private.recovery_outbox','discovery_state','UPDATE') as can_deliver,
+ not has_column_privilege(current_user,'vega_private.recovery_outbox','payload','UPDATE') and not has_column_privilege(current_user,'vega_private.recovery_outbox','discovery_sequence','UPDATE') as immutable_payload,
  not has_table_privilege(current_user,'vega_private.recovery_outbox','INSERT,DELETE,TRUNCATE') as cannot_replace,
  not exists(select 1 from pg_class t join pg_namespace n on n.oid=t.relnamespace where n.nspname='vega_private' and t.relkind in ('r','p') and t.relname<>'recovery_outbox' and has_table_privilege(current_user,t.oid,'SELECT,INSERT,UPDATE,DELETE,TRUNCATE')) as no_other_data,
  c.relrowsecurity and c.relforcerowsecurity and c.relowner<>r.oid as isolated
@@ -24,28 +24,40 @@ export async function checkReceiptWorker(pool){
  return true;
 }
 export async function deliverReceiptBatch(pool,archive){
+ const client=await pool.connect();let held=false;
+ try{
+  held=(await client.query("select pg_try_advisory_lock_shared(hashtextextended('vega:receipt:publication:v1',0)) as held")).rows[0].held;
+  if(!held)return {processed:0,publicationFenced:true};
+  return await deliverClaim(client,archive);
+ }finally{
+  let discard=false;
+  if(held)try{await client.query("select pg_advisory_unlock_shared(hashtextextended('vega:receipt:publication:v1',0))");}catch{discard=true;}
+  client.release(discard);
+ }
+}
+async function deliverClaim(pool,archive){
  const lease=randomUUID();
  // Claim commits before provider I/O. A crashed worker's lease expires, leaving
  // durable intent and exactly the same encrypted payload for the next worker.
  const {rows}=await pool.query(`with candidate as (
  select o.event_id from vega_private.recovery_outbox o
- where o.state<>'acknowledged' and o.available_at<=now()
+ where o.discovery_state<>'acknowledged' and o.available_at<=now()
  and (o.lease_until is null or o.lease_until<now())
- and not exists(select 1 from vega_private.recovery_outbox p where p.tenant_id=o.tenant_id and p.business_id=o.business_id and p.revision<o.revision and p.state<>'acknowledged')
+ and not exists(select 1 from vega_private.recovery_outbox p where p.tenant_id=o.tenant_id and p.business_id=o.business_id and p.event_kind=o.event_kind and p.discovery_sequence<o.discovery_sequence and p.discovery_state<>'acknowledged')
  order by o.created_at,o.event_id for update skip locked limit 1)
- update vega_private.recovery_outbox o set state='delivering',attempts=attempts+1,lease_token=$1,lease_until=now()+interval '120 seconds'
+ update vega_private.recovery_outbox o set discovery_state='delivering',attempts=attempts+1,lease_token=$1,lease_until=now()+interval '120 seconds'
  from candidate c where o.event_id=c.event_id returning o.*`,[lease]);
  if(!rows.length)return {processed:0};
  const row=rows[0];
  try{
   const ack=await archive.deliver(row);
-  if(ack.payloadDigest!==row.payload_digest||!ack.objectName||!ack.objectVersion||typeof ack.capturedAt!=='string'||!Number.isFinite(Date.parse(ack.capturedAt)))throw new Error('Receipt acknowledgment invalid');
-  const saved=await pool.query(`update vega_private.recovery_outbox set state='acknowledged',object_name=$1,object_version=$2,provider_captured_at=$5,acknowledged_at=now(),lease_token=null,lease_until=null,last_error=null where event_id=$3 and lease_token=$4 and state='delivering'`,[ack.objectName,ack.objectVersion,row.event_id,lease,ack.capturedAt]);
+  if(ack.discoverySequence!==row.discovery_sequence||!ack.discoveryName||!ack.discoveryVersion||!/^[a-f0-9]{64}$/.test(ack.discoveryDigest)||ack.payloadDigest!==row.payload_digest||!ack.objectName||!ack.objectVersion||typeof ack.capturedAt!=='string'||!Number.isFinite(Date.parse(ack.capturedAt)))throw new Error('Receipt acknowledgment invalid');
+  const saved=await pool.query(`update vega_private.recovery_outbox set state='acknowledged',object_name=coalesce(object_name,$1),object_version=coalesce(object_version,$2),provider_captured_at=coalesce(provider_captured_at,$5),acknowledged_at=coalesce(acknowledged_at,now()),discovery_state='acknowledged',discovery_object_name=$6,discovery_object_version=$7,discovery_digest=$8,discovery_acknowledged_at=now(),lease_token=null,lease_until=null,last_error=null where event_id=$3 and lease_token=$4 and discovery_state='delivering'`,[ack.objectName,ack.objectVersion,row.event_id,lease,ack.capturedAt,ack.discoveryName,ack.discoveryVersion,ack.discoveryDigest]);
   return {processed:saved.rowCount===1?1:0,acknowledgmentRecorded:saved.rowCount===1};
  }catch{
   // Includes accepted uploads whose responses were lost and failed local ACK
   // commits. Never repeat a business transition or claim the provider failed.
-  await pool.query(`update vega_private.recovery_outbox set state='retry',last_error='delivery_or_acknowledgment_unconfirmed',available_at=now()+least(attempts*5,300)*interval '1 second',lease_token=null,lease_until=null where event_id=$1 and lease_token=$2 and state='delivering'`,[row.event_id,lease]);
+  await pool.query(`update vega_private.recovery_outbox set discovery_state='retry',last_error='delivery_or_acknowledgment_unconfirmed',available_at=now()+least(attempts*5,300)*interval '1 second',lease_token=null,lease_until=null where event_id=$1 and lease_token=$2 and discovery_state='delivering'`,[row.event_id,lease]);
   return {processed:0,pending:true};
  }
 }

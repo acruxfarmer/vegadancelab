@@ -18,7 +18,7 @@ test('locked store replays cancellation commands and commits blocked correction 
   if(sql.startsWith('update vega_private.app_state')){state=JSON.parse(args[0]);revision++;}
   if(sql.startsWith('insert into vega_private.app_commands'))commands.set(args[2]+args[3],{fingerprint:args[4],response:JSON.parse(args[5])});
   if(sql.startsWith('insert into vega_private.recovery_outbox'))outbox.set(args[3]+args[4],{event_id:args[0],state:'pending'});
-  if(sql.startsWith('select event_id,state'))return {rows:[outbox.get(args[2]+args[3])]};
+  if(sql.startsWith('select event_id,discovery_state as state'))return {rows:[outbox.get(args[2]+args[3])]};
   return {rows:[]};
  }};
  const store=createApplicationStore({connect:async()=>client},{receiptPublicKey});let n=0;
