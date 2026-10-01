@@ -1,4 +1,5 @@
 import {entitlementsUI} from './entitlements-ui.js';
+import {commerceUI} from './commerce-ui.js';
 import {attendanceUI} from './attendance-ui.js';
 import {classCancellationUI} from './class-cancellation-ui.js';
 import {classEditingUI} from './class-editing-ui.js';
@@ -93,6 +94,7 @@ document.addEventListener('change',event=>{if(event.target.id==='view'){if(!loca
 window.addEventListener('hashchange',()=>{page=location.hash.slice(1)||'today';if(data&&!localDemo&&view!=='staff'&&staffNav.some(x=>x[0]===page)){page='today';location.hash=page}render();$('#main').focus()});
 const integration=extend({$,getData:()=>data,isDemo:()=>localDemo,escape,heading,empty,modal,mutate,notify,render:()=>render(),key});
 const entitlements=entitlementsUI({escape,mutate,notify,getData:()=>data});
+const commerce=commerceUI({escape,mutate,notify,getData:()=>data});
 const memberBooking=memberBookingUI({getData:()=>data,escape,modal,mutate,load,notify,date,time});
 const staffBooking=staffBookingUI({getData:()=>data,isStaff:()=>!!data&&!localDemo&&view==='staff'&&data.context?.role==='staff',escape,modal,mutate,load,notify,render:()=>render(),date,time});
 const reportingAudit=reportingAuditUI({getData:()=>data,isStaff:()=>!!data&&!localDemo&&view==='staff'&&data.context?.role==='staff',escape,render:()=>render()});
@@ -130,5 +132,8 @@ document.addEventListener('submit',async event=>{const form=event.target;if(form
 document.addEventListener('submit',async event=>{const form=event.target;if(!['entitlement-product','entitlement-issue'].includes(form.id))return;event.preventDefault();const button=form.querySelector('button');button.disabled=true;try{await entitlements.submit(form)}catch(error){form.querySelector('[role=alert]').textContent=error.message}finally{button.disabled=false}});
 
 // Independent acknowledgment governs confirmation, including reload/read views.
+const renderBeforeCommerce=render;
+render=function(){renderBeforeCommerce();if(data&&!localDemo&&(page==='passes'||(view==='staff'&&page==='people')))$('#main').insertAdjacentHTML('beforeend',commerce.render());};
+document.addEventListener('submit',event=>{if(event.target.id==='commerce-draft'){event.preventDefault();void commerce.submit(event.target);}});
 const renderBeforeRecoveryNotice=render;
 render=function(){renderBeforeRecoveryNotice();if(data?.recovery?.pendingCount>0){const notice=document.createElement('div');notice.className='notice warning';notice.setAttribute('role','status');notice.textContent='Recovery confirmation pending. The current view includes provisional changes. Do not treat them as finally confirmed until independent recovery acknowledgment completes.';document.querySelector('#main').prepend(notice);}};

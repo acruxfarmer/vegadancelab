@@ -1,4 +1,5 @@
 import {bookingAccounting,cancelBooking} from './cancellation.mjs';
+import {commerceView,createPurchaseDraft} from './commerce.mjs';
 import {classCancellationOption,cancelClass} from './class-cancellation.mjs';
 import {createClass} from './class-creation.mjs';
 import {classDuplicateOption,duplicateClass} from './class-duplication.mjs';
@@ -53,6 +54,7 @@ export function visibleState(state,authority,at=new Date().toISOString()){
   result.classEditOptions=state.classes.map(c=>classEditOption(state,c,at));
   result.classDuplicateOptions=state.classes.map(c=>classDuplicateOption(c,at));
  }
+ Object.assign(result,commerceView(state,authority));
  return result;
 }
 export function transition(original, command, authority, {id=randomUUID,now=()=>new Date().toISOString()}={}){
@@ -60,6 +62,7 @@ export function transition(original, command, authority, {id=randomUUID,now=()=>
  if(!text(body.requestId,128))fail('A request identifier is required');
  const staff=()=>{if(authority.role!=='staff')fail('Staff access required',403);};
  const own=participantId=>{if(!authority.participantIds.includes(participantId)&&authority.role!=='staff')fail('Participant authority required',403); if(!state.participants.some(p=>p.id===participantId))fail('Participant unavailable',404);};
+ if(command.action==='purchase-draft')return {state,result:createPurchaseDraft(state,body,authority,{id,now},fail)};
  const accounting=['attendance','edit-class','duplicate-class'].includes(command.action)?null:bookingAccounting(state,authority,{id,now},fail);
  const waitlistEvent=(r,action,from,to)=>{(r.waitlistHistory??=[]).push({id:id(),action,from,to,actorId:authority.userId,actorRole:authority.role,requestId:body.requestId,createdAt:now()});};
  let result;

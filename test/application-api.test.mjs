@@ -4,6 +4,16 @@ import {Readable} from 'node:stream';
 import {createApplicationApi} from '../src/runtime/application-api.mjs';
 const env={SUPABASE_URL:'https://cjdoczrxcjynjhgpgqop.supabase.co',SUPABASE_PUBLISHABLE_KEY:'synthetic'};
 const sessionJwt=`header.${Buffer.from(JSON.stringify({session_id:'11111111-1111-4111-8111-111111111111'})).toString('base64url')}.signature`;
+
+test('commerce draft route uses authenticated command handling and exposes no completion endpoints',async()=>{
+ const id='11111111-1111-4111-8111-111111111111';let received;
+ const api=createApplicationApi(env,{command:async(user,command)=>{received={user,command};return {status:'draft',paymentStatus:'not_started'};}},async()=>({ok:true,json:async()=>({id})}));
+ const body={requestId:'commerce',offerId:'development-three-class-pack-usd60-v1'};
+ assert.equal((await request(api,'/api/commerce/drafts',{method:'POST',body})).status,401);
+ const r=await request(api,'/api/commerce/drafts',{method:'POST',token:'Bearer valid',body});
+ assert.equal(r.status,200);assert.equal(r.result.paymentStatus,'not_started');assert.deepEqual(received,{user:id,command:{action:'purchase-draft',id:undefined,body}});
+ for(const path of ['/api/commerce/payments','/api/commerce/refunds','/api/commerce/fulfill'])assert.equal((await request(api,path,{method:'POST',token:'Bearer valid',body})).status,404);
+});
 test('business API withholds domain confirmation until independent receipt acknowledgment',async()=>{
  let state='pending';const operationId='a'.repeat(64);
  const result=()=>({id:'booking',status:'reserved',independentReceipt:{operationId,state}});

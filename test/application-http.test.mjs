@@ -27,6 +27,7 @@ test('fresh local runtime serves all front-door assets with security headers and
   const notices=await fetch(`${origin}/promotion-notices.js`);assert.equal(notices.status,200);assert.match(notices.headers.get('content-type'),/text\/javascript/);assert.match(await notices.text(),/export function promotionNoticesHTML/);
   const cancellationNotices=await fetch(`${origin}/cancellation-notices.js`);assert.equal(cancellationNotices.status,200);assert.match(cancellationNotices.headers.get('content-type'),/text\/javascript/);assert.match(await cancellationNotices.text(),/export function cancellationNoticesHTML/);
   assert.equal((await config.json()).squareEnabled,false);
+  const commerce=await fetch(`${origin}/commerce-ui.js`);assert.equal(commerce.status,200);assert.match(await commerce.text(),/export function commerceUI/);
   for(const path of ['/api/app','/health/ready','/health/ingestion']){
    const response=await fetch(`${origin}${path}`);assert.equal(response.status,503,path);
   }

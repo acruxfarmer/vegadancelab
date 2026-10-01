@@ -1,0 +1,47 @@
+{
+  "slice": "Layer 2 Commerce 6.8A",
+  "status": "implemented_local_verified_joe_review_pending",
+  "sourceBaseline": "44f058be16c02b31105cb53bd742bf27beeda45c",
+  "branch": "commerce/6.8a",
+  "workspace": "D:/JOES WIP/ACRUX/Codex Projects/vega-commerce-68a",
+  "productId": "5dcc7d89-2398-4b29-ba6e-f4e549d4e4f1",
+  "offerId": "development-three-class-pack-usd60-v1",
+  "implementation": [
+    "Versioned USD 6000-cent Development-only commerce offer; existing entitlement product unchanged",
+    "Offer version is persisted in business state with the first draft; every draft stores immutable terms",
+    "Existing transactional command, locking, idempotency and receipt paths reused without modifying their implementation",
+    "Self-purchase restricted to retained Development member identity and exact participant assignment; no general delegate inference",
+    "Member draft creation/reopening and business-scoped staff status views",
+    "Oregon Development non-taxable data, zero transaction tax and Production reconfirmation requirement",
+    "Validity and 30-day refund-request window anchored to confirmed payment; all draft clock timestamps null",
+    "No entitlement issuance, payment completion, refund execution or Square calls"
+  ],
+  "verification": {
+    "fullSuite": {"command": "node --test", "tests": 190, "passed": 190, "failed": 0, "skipped": 0},
+    "frontdoorBuild": "passed",
+    "gitDiffCheck": "passed",
+    "concurrency": "Passed through real application-store code with a serialized database test double; not a live PostgreSQL concurrency test",
+    "browser": [
+      "Synthetic loopback member creates one unpaid draft for USD 60.00 with zero tax",
+      "Draft terms display 3 credits, 30 days, Pack verification restriction and Development-only price label",
+      "Reload reopens one existing draft with zero credits and unset validity/refund clocks",
+      "Separate synthetic staff session reads the same draft, buyer and participant, with no commerce mutation controls",
+      "Staff browser error/warning log empty"
+    ],
+    "screenshots": ["member-draft.png", "staff-draft.png"]
+  },
+  "hostedVerificationRequiredAfterSeparateDeploymentAuthorization": [
+    "Reconcile the existing product and retained member self-account binding with authenticated Development records",
+    "Verify member create/reload and staff read against hosted persistence and existing acknowledgment path",
+    "Verify simultaneous duplicate requests against the real database, scoped access, unchanged balances and Square disabled",
+    "No new hosted schema, permission, worker or provider changes are prepared by this slice"
+  ],
+  "boundaries": {
+    "deployed": false,
+    "squareEnabled": false,
+    "productionChanges": false,
+    "existingWorkspacesModified": false,
+    "closedRemediationReopened": false,
+    "sixPointNineStarted": false
+  }
+}
