@@ -57,6 +57,42 @@ test('member views are buyer-bound and business-bound; staff can inspect only it
  assert.equal(visibleState(state,{...member,userId:'delegate'}).purchaseDrafts.length,0);
  assert.equal(visibleState(state,{...member,businessId:'other'}).commerceOffers.length,0);
 });
+test('persisted offers tolerate recursively reordered keys, preserving retries and independent drafts',()=>{
+ const reorder=value=>Array.isArray(value)?value.map(reorder):value&&typeof value==='object'?
+  Object.fromEntries(Object.entries(value).reverse().map(([key,item])=>[key,reorder(item)])):value;
+ const first=run(),persisted=JSON.parse(JSON.stringify(reorder(first.state)));
+ assert.notEqual(JSON.stringify(persisted.commerceOffers[0]),JSON.stringify(developmentOffer()));
+ const retry=run(persisted);assert.deepEqual(retry.result,first.result);
+ assert.equal(retry.state.purchaseDrafts.length,1);assert.equal(retry.state.activity.length,1);
+ const second=run(persisted,member,{requestId:'independent-after-persistence'});
+ assert.equal(second.state.purchaseDrafts.length,2);assert.equal(second.state.activity.length,2);
+ assert.notEqual(second.result.id,first.result.id);
+ assert.deepEqual(second.result.terms,developmentOffer());
+ for(const key of ['paymentConfirmedAt','validFrom','expiresAt','refundWindowStartsAt'])assert.equal(second.result[key],null);
+ for(const key of ['passes','creditUnits','creditEvents','entitlementIssuances','reservations'])assert.deepEqual(second.state[key],persisted[key]);
+});
+test('every immutable field rejects changed values, missing keys and added keys without mutation',()=>{
+ const {state}=run();
+ function check(edit,label){
+  const s=structuredClone(state);edit(s.commerceOffers[0]);const before=structuredClone(s);
+  assert.throws(()=>run(s,member,{requestId:'new'}),e=>e.status===409&&/Immutable offer/.test(e.message),label);
+  assert.deepEqual(s,before,label);
+ }
+ const at=(root,path)=>path.reduce((value,key)=>value[key],root);
+ function visit(value,path=[]){
+  for(const [key,item] of Object.entries(value)){
+   // The offer ID is the collection lookup key, not a comparable selected-version field.
+   if(!path.length&&key==='id')continue;
+   check(root=>{delete at(root,path)[key];},`missing ${[...path,key].join('.')}`);
+   check(root=>{at(root,path)[key]=null;},`null ${[...path,key].join('.')}`);
+   if(item&&typeof item==='object'&&!Array.isArray(item))visit(item,[...path,key]);
+   else check(root=>{at(root,path)[key]=Array.isArray(item)?[...item,'changed']:typeof item==='number'?item+1:typeof item==='boolean'?!item:item+'-changed';},`changed ${[...path,key].join('.')}`);
+  }
+  check(root=>{at(root,path).unexpected='extra';},`additional key at ${path.join('.')}`);
+ }
+ visit(developmentOffer());
+ check(root=>{root.priceMinor='6000';},'numeric type');
+});
 test('conflicting stored offer fails closed without changing original terms',()=>{
  const {state}=run();state.commerceOffers[0].priceMinor=1;
  assert.throws(()=>run(state,member,{requestId:'new'}),/Immutable offer/);

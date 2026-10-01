@@ -1,3 +1,5 @@
+import {isDeepStrictEqual} from 'node:util';
+
 // Development-only commerce terms. Product pricing and entitlement balances are untouched.
 export const PRODUCT_ID = '5dcc7d89-2398-4b29-ba6e-f4e549d4e4f1';
 export const OFFER_ID = 'development-three-class-pack-usd60-v1';
@@ -47,7 +49,8 @@ export function createPurchaseDraft(state, body, a, {id, now}, fail) {
  if (prior) { if (prior.offerId !== body.offerId) fail('Request identifier conflict', 409); return prior; }
  state.commerceOffers ||= [];
  const stored = state.commerceOffers.find(o => o.id === OFFER_ID);
- if (stored && JSON.stringify(stored) !== JSON.stringify(offer)) fail('Immutable offer version conflict', 409);
+ // PostgreSQL jsonb may reorder object keys; all keys, values and array order remain immutable.
+ if (stored && !isDeepStrictEqual(stored, offer)) fail('Immutable offer version conflict', 409);
  if (!stored) state.commerceOffers.push(developmentOffer());
  const draft = { id: id(), tenantId: a.tenantId, businessId: a.businessId, buyerId: a.userId, participantId,
   offerId: OFFER_ID, offerVersion: 1, terms: developmentOffer(), currency: 'USD', subtotalMinor: offer.priceMinor,
