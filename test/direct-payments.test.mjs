@@ -214,3 +214,41 @@ test('legacy prepared evidence resolves without rewriting original binding, key,
  for(const field of ['id','binding','idempotencyKey','referenceId','requestDigest','offerDigest','prepareRequestId','createdAt'])assert.deepEqual(after[field],original[field]);
  assert.equal(after.integrationRef,undefined);assert.equal(h.providerPayments.size,1);assert.equal(h.state().entitlementIssuances.length,1);assert.deepEqual(after.evidence.integrationRef,read.integrationRef);
 });
+
+test('fresh disabled preparation coexists with closed drafts and a legacy attempt without rewriting historical state',async()=>{
+ const h=preparationHarness();
+ h.edit(s=>{
+  const draft=structuredClone(s.purchaseDrafts[0]);
+  for(const id of HISTORICAL_DRAFTS)s.purchaseDrafts.push({...structuredClone(draft),id,requestId:`closed:${id}`});
+  const oldId=randomUUID(),oldAttempt=randomUUID();
+  s.purchaseDrafts.push({...draft,id:oldId,requestId:'historical',paymentStatus:'pending',activeAttemptId:oldAttempt});
+  s.paymentAttempts=[{id:oldAttempt,purchaseId:oldId,buyerId:member.userId,participantId:member.participantIds[0],binding:{...B},status:'pending',sourceDigest:null,prepareSourceDigest:null,paymentId:null,idempotencyKey:oldAttempt,referenceId:oldAttempt,requestDigest:digest('original-native-request'),offerDigest:digest(draft.terms),createdAt:'2026-10-01T00:00:00.000Z',paymentConfirmedAt:null}];
+ });
+ const before=h.state(),historicalDrafts=before.purchaseDrafts.slice(1),historicalAttempts=before.paymentAttempts;
+ assert.equal(before.paymentAttempts.filter(a=>a.purchaseId===h.purchaseId).length,0);
+ const results=await Promise.all(Array.from({length:12},(_,i)=>h.prepare(i<6?'fresh-shared':`fresh-distinct-${i}`)));
+ assert.equal(new Set(results.map(r=>r.attemptId)).size,1);
+ const after=h.state(),fresh=after.paymentAttempts.find(a=>a.purchaseId===h.purchaseId);
+ assert.deepEqual(after.purchaseDrafts.slice(1),historicalDrafts);
+ assert.deepEqual(after.paymentAttempts.filter(a=>a.id!==fresh.id),historicalAttempts);
+ assert.deepEqual(after.activity.slice(0,before.activity.length),before.activity);
+ assert.equal(after.activity.filter(a=>a.action==='payment-intent'&&a.subjectId===h.purchaseId).length,1);
+ assert.deepEqual(fresh.integrationRef,legacySquareIntegration(B,member));
+ assert.deepEqual(fresh.financialIntent,{amountMinor:6000,currency:'USD',collection:'immediate',method:'card',partialAllowed:false,tipsAllowed:false});
+ assert.equal(fresh.binding,undefined);assert.equal(fresh.idempotencyKey,fresh.id);assert.equal(fresh.reason,'prepared_execution_disabled');
+ assert.deepEqual(after.purchaseDrafts[0].terms,before.purchaseDrafts[0].terms);
+ assertUnpaid(h,before);
+});
+
+test('fresh pending receipt remains honest and identical retries after acknowledgment retain the original attempt',async()=>{
+ const h=preparationHarness(),before=h.state();h.ack=false;
+ const first=await h.prepare('fresh-pending');
+ assert.equal(first.independentReceipt.state,'pending');assert.equal(first.executionEnabled,false);
+ const inserted=h.state().paymentAttempts[0];
+ assert.equal((await h.prepare('fresh-pending')).attemptId,inserted.id);
+ h.ack=true;
+ const acknowledged=await h.prepare('fresh-pending');
+ assert.equal(acknowledged.independentReceipt.state,'acknowledged');
+ assert.deepEqual(h.state().paymentAttempts,[inserted]);
+ assertUnpaid(h,before);
+});

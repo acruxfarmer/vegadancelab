@@ -1,0 +1,54 @@
+[
+  {
+    "path": "D:/JOES WIP/ACRUX/Codex Projects/vega-commerce-68a/commerce-test-results.txt",
+    "sha256": "16FDA82017F598DB109C592D795945E481C19D1F1D400EF07CCB7273BC7F1A37"
+  },
+  {
+    "path": "D:\\JOES WIP\\ACRUX\\Codex Projects\\vega-commerce-68a-deployment\\69-provider-neutral-hosted-final.json",
+    "sha256": "B1B612983B7A27A162B55690C43EC4892FC7EC761988307119883CE563229D2E"
+  },
+  {
+    "path": "D:\\JOES WIP\\ACRUX\\Codex Projects\\vega-commerce-68a-deployment\\69-provider-neutral-postgresql-final.json",
+    "sha256": "2BC885F1ECB2B38951788190257B768C2A2A7242E9536CA5647A38677C0B462B"
+  },
+  {
+    "path": "D:\\JOES WIP\\ACRUX\\Codex Projects\\vega-commerce-68a-deployment\\69-provider-neutral-verification-results.json",
+    "sha256": "239DA4DE081E20C5D5802CBF854FBC1FE2168972DFA39513BCED1CDF6D1A19A5"
+  },
+  {
+    "path": "D:\\JOES WIP\\ACRUX\\Codex Projects\\vega-commerce-68a-deployment\\correction-concurrency-reconciled.json",
+    "sha256": "9D9C3F1A8655C1AB2EC52FF2BCCEBE3E1E2CA4304FBC29C154E212464E5202A6"
+  },
+  {
+    "path": "D:\\JOES WIP\\ACRUX\\Codex Projects\\vega-commerce-68a-deployment\\correction-concurrency-results.json",
+    "sha256": "4A065D08D9D9A53DD6B9F86A4F03465765925C72EF04C76B6AB0FB9695CA9920"
+  },
+  {
+    "path": "D:\\JOES WIP\\ACRUX\\Codex Projects\\vega-commerce-68a-deployment\\correction-hosted-final.json",
+    "sha256": "9F3465F04093CE47243C37C53666562C390220C1ECDEEDD9BB52EF837204F87D"
+  },
+  {
+    "path": "D:\\JOES WIP\\ACRUX\\Codex Projects\\vega-commerce-68a-deployment\\correction-preview-ready.json",
+    "sha256": "B49D3D132ADA351129867163DBE4F782E92F36C2172B226D26898FA6325C5B1B"
+  },
+  {
+    "path": "D:\\JOES WIP\\ACRUX\\Codex Projects\\vega-commerce-68a-deployment\\correction-staff-only-results.json",
+    "sha256": "8D1C8FEC2FF80828661CFF8CB90FAD8154D191EB6B8842C528BDD09DB4D16764"
+  },
+  {
+    "path": "D:\\JOES WIP\\ACRUX\\Codex Projects\\vega-commerce-68a-deployment\\hosted-evidence\\corrected-second-draft.png",
+    "sha256": "3DC4215EB0BF69ACC2932F49E2BECAA5D745ECCE1AB885297299891A572B38A8"
+  },
+  {
+    "path": "D:\\JOES WIP\\ACRUX\\Codex Projects\\vega-commerce-68a-deployment\\joe-approved-closure.json",
+    "sha256": "946D63B91904A6431AE27F31C9CDE1C3392D30A99A25D0C36766BDC5B1A91774"
+  },
+  {
+    "path": "D:\\JOES WIP\\ACRUX\\Codex Projects\\vega-commerce-68a-deployment\\render-69-provider-neutral-deployment-receipt.json",
+    "sha256": "139EF297C02938FA6BF0F160C31F9CFE92405C615B7D9AEFE34FA3324918C32F"
+  },
+  {
+    "path": "D:\\JOES WIP\\ACRUX\\Codex Projects\\vega-commerce-68a-deployment\\render-correction-deployment-receipt.json",
+    "sha256": "E9AF2C95D73A6B3B98C50D792DE2DC2994FEDED1DC6C00C9810784CF1E78EABB"
+  }
+]

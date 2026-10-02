@@ -1,0 +1,23 @@
+{
+  "slice": "Layer 2 Commerce 6.9 — fresh provider-neutral attempt creation",
+  "authorization": "Joe cleared the startup gate and authorized this bounded Development-only verification on 2026-10-02.",
+  "runtimeCandidate": "d9dffd4f2125612448d5fbcb28f0c0b6b5723d9e",
+  "branch": "commerce/6.9-direct",
+  "implementation": "Verification-only additions. Existing production application logic, adapter boundary, schema and historical semantics are unchanged.",
+  "developmentProject": "cjdoczrxcjynjhgpgqop",
+  "developmentWebService": "srv-dao5cjbm8hqs73db51j0",
+  "expectedWrites": [
+    "One fresh unpaid Development draft through the authenticated owned API.",
+    "Change only Development web VEGA_SANDBOX_PURCHASE_ID to designate the fresh draft; redeploy the same runtime candidate.",
+    "One fresh provider-neutral attempt despite five overlapping requests using two new command IDs.",
+    "Three total durable commands and existing independent recovery receipts: draft plus two preparation commands.",
+    "Two new domain activity entries: purchase-draft and payment-intent."
+  ],
+  "excluded": ["Square transactions", "execution enablement", "webhooks", "Production", "Strata", "6.10", "entitlement or fulfillment changes", "historical rewrites", "new schema or permissions"],
+  "localChecks": {"regressionTestsPassed": 222, "focusedTestsPassed": 30, "offlineHandoffCasesPassed": 22, "frontdoorBuild": "passed", "whitespace": "passed"},
+  "hostedStatus": "pending private operator run and independent PostgreSQL reconciliation",
+  "operatorCommand": "& 'D:/JOES WIP/ACRUX/Codex Projects/vega-commerce-68a/scripts/verify-fresh-preparation.ps1'",
+  "operatorReceipt": "D:/JOES WIP/ACRUX/Codex Projects/vega-commerce-68a-deployment/fresh-20261002/operator-results.json",
+  "rerunPolicy": "No automatic rerun, new request IDs, or new draft after an uncertain result. Inspect saved receipt and database first.",
+  "coverageLimits": ["No additional legitimate member/business identities", "No live second provider", "No packet-level trace", "No payment, fulfillment, refund or settlement execution"]
+}

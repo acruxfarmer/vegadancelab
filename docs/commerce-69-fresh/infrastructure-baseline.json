@@ -1,0 +1,22 @@
+{
+  "integrations": [
+    {
+      "selected": true,
+      "integration_ref": {
+        "id": "vega-development-card",
+        "version": 1,
+        "provider": "square",
+        "tenantId": "vega-development",
+        "businessId": "vega-dance-lab",
+        "environment": "sandbox"
+      }
+    }
+  ],
+  "commands_count": 119,
+  "commands_digest": "2743393b232fff70fa6539812a19e53b",
+  "outbox_count": 16,
+  "inbox_count": 2,
+  "inbox_digest": "4cd04e248c95103a20680283598e32bd",
+  "journal_count": 2,
+  "journal_digest": "0341dcc12dafa5341a209527ccb9a12a"
+}

@@ -1,0 +1,60 @@
+{
+  "revision": 120,
+  "state_digest": "25f7af7cb00f5ced2f5f14be5657c620",
+  "unaffected_state_digest": "09df374e879a16c29172b717af519e31",
+  "component_digests": {
+    "events": "d751713988987e9331980363e24189ce",
+    "orders": "d751713988987e9331980363e24189ce",
+    "passes": "fb4c7a2c82bcccc9d561eb2e7e512dc7",
+    "videos": "d751713988987e9331980363e24189ce",
+    "classes": "9a7a94befabd6fb7973391f797994229",
+    "activity": "05d79feb45d8627a7621b47e14436151",
+    "products": "d751713988987e9331980363e24189ce",
+    "creditUnits": "7f39096bb9ba830fc474b42e32b59ffa",
+    "memberships": "349f5e22a36368c502d40690aa5454aa",
+    "preferences": "106395fd65ff34d78373674586e829b1",
+    "creditEvents": "26bfbd362372670ac81492035499f008",
+    "participants": "ee9a5e2cad0737556d666f75d78cf3c3",
+    "reservations": "bc86b9bca4268541755bab4cfa759440",
+    "notifications": "e5c2d83837079263ec9d557903043d32",
+    "commerceOffers": "9d2980bba6c1de5dff445972e412bd47",
+    "purchaseDrafts": "3b055034fd08bf55126d35eacc1a0784",
+    "paymentAttempts": "f54ffd1bff8e0c05969ada4b07885d80",
+    "entitlementProducts": "9e9a882af149d86c6517f70d92e0b62d",
+    "entitlementIssuances": "949b63e449ce3723846fe1d626abf110"
+  },
+  "purchases": [
+    {
+      "id": "87d6177e-2988-4aab-973a-5e424ee9c2db",
+      "digest": "f497cda214ad6e6d81119a02432333a1"
+    },
+    {
+      "id": "1cdb80f7-f796-4eda-a98a-3d6419649277",
+      "digest": "3a6df07abec8d9addc819aa9bda56d8a"
+    },
+    {
+      "id": "b0f90447-56d3-4c3d-9225-d2d29110a69a",
+      "digest": "68b991e4e778d9361a6beba713529a02"
+    },
+    {
+      "id": "f21d3bdc-0612-447b-ab22-7bdbd61ee432",
+      "digest": "837628e0073534fdf7e871cfe255d5e0"
+    },
+    {
+      "id": "4f9c79e5-bbc3-4792-88ea-dbdfa0181e88",
+      "digest": "41fc5e13ed8abbc2d70c36d6a4c5236d"
+    },
+    {
+      "id": "86902504-8bbe-4e38-9c99-dfc19b249ee6",
+      "digest": "989d27ba40bde1110e9afd75efdddf3f"
+    }
+  ],
+  "attempts": [
+    {
+      "id": "e81f8bc6-b0f8-4896-9708-69db493030c0",
+      "digest": "69b94a076143a3a6fffac21bf15d6d6e"
+    }
+  ],
+  "activity_count": 116,
+  "activity_digest": "05d79feb45d8627a7621b47e14436151"
+}
