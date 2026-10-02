@@ -1,6 +1,7 @@
 import {ApplicationError} from '../application.mjs';
 import {PAYMENT_BINDING as B,HISTORICAL_DRAFTS,digest} from '../payments.mjs';
 const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
+export function paymentPreparationEnabled(e){return e.VEGA_ENV==='development'&&e.VEGA_EXTERNAL_EFFECTS==='disabled'&&e.VEGA_PAYMENT_ATTEMPT_PREPARATION==='enabled'&&e.VEGA_SANDBOX_PAYMENT_EXECUTION==='disabled'&&e.SQUARE_ENVIRONMENT==='sandbox'&&e.SQUARE_APPLICATION_ID===B.applicationId&&e.SQUARE_MERCHANT_ID===B.merchantId&&e.SQUARE_LOCATION_ID===B.locationId&&uuid.test(e.VEGA_SANDBOX_PURCHASE_ID||'')&&!HISTORICAL_DRAFTS.has(e.VEGA_SANDBOX_PURCHASE_ID);}
 export function sandboxPaymentEnabled(e){return e.VEGA_ENV==='development'&&e.VEGA_EXTERNAL_EFFECTS==='disabled'&&e.VEGA_SANDBOX_PAYMENT_EXECUTION==='authorized'&&e.SQUARE_ENVIRONMENT==='sandbox'&&e.SQUARE_APPLICATION_ID===B.applicationId&&e.SQUARE_MERCHANT_ID===B.merchantId&&e.SQUARE_LOCATION_ID===B.locationId&&uuid.test(e.VEGA_SANDBOX_PURCHASE_ID||'')&&!HISTORICAL_DRAFTS.has(e.VEGA_SANDBOX_PURCHASE_ID)&&!!e.SQUARE_ACCESS_TOKEN&&/^cnon:[A-Za-z0-9_-]{1,240}$/.test(e.SQUARE_SANDBOX_SOURCE_ID||'');}
 export function verifyPayment(p,a){
  const invalid=reason=>({status:'unresolved',reason});
@@ -27,15 +28,20 @@ export function createDirectPayments(env,store,fetcher=fetch){
  }
  async function settle(userId,purchaseId,attemptId){
   gate(purchaseId);let {attempt}=await store.paymentRead(userId,purchaseId,attemptId);
-  const intent=await store.paymentCommand(userId,{action:'payment-prepare',body:{purchaseId,sourceDigest:attempt.sourceDigest,requestId:attempt.prepareRequestId}});
+  const intent=await store.paymentCommand(userId,{action:'payment-prepare',body:{purchaseId,sourceDigest:attempt.prepareSourceDigest===null?null:attempt.sourceDigest,requestId:attempt.prepareRequestId}});
   if(intent.independentReceipt?.state!=='acknowledged')return {purchaseId,attemptId,status:'pending',fulfillmentStatus:'not_issued'};
   if(attempt.status==='succeeded')return fulfill(userId,purchaseId,attemptId);
   if(['failed','cancelled'].includes(attempt.status))return {purchaseId,attemptId,status:attempt.status};
+  if(attempt.prepareSourceDigest===null){
+   const bound=await store.paymentCommand(userId,{action:'payment-bind-source',body:{purchaseId,attemptId,sourceDigest:digest(env.SQUARE_SANDBOX_SOURCE_ID),requestId:`source:${attemptId}`}});
+   if(bound.independentReceipt?.state!=='acknowledged')return {purchaseId,attemptId,status:'pending',fulfillmentStatus:'not_issued'};
+   attempt=(await store.paymentRead(userId,purchaseId,attemptId)).attempt;
+  }
   if(attempt.sourceDigest!==digest(env.SQUARE_SANDBOX_SOURCE_ID))throw new ApplicationError('Original Sandbox payment source required for retry',409);
   const identity=await request('/oauth2/token/status',{method:'POST'});
   if(!identity.ok||identity.value?.client_id!==B.applicationId||identity.value?.merchant_id!==B.merchantId){await observe(userId,purchaseId,attemptId,{status:'unresolved',reason:'provider_credential_identity_unverified'});return {purchaseId,attemptId,status:'unresolved'};}
   if(!attempt.paymentId){
-   if(Date.now()-Date.parse(attempt.createdAt)>15*60*1000){await observe(userId,purchaseId,attemptId,{status:'unresolved',reason:'create_retry_window_closed'});return {purchaseId,attemptId,status:'unresolved'};}
+   if(Date.now()-Date.parse(attempt.executionStartedAt||attempt.createdAt)>15*60*1000){await observe(userId,purchaseId,attemptId,{status:'unresolved',reason:'create_retry_window_closed'});return {purchaseId,attemptId,status:'unresolved'};}
    const created=await request('/v2/payments',{method:'POST',body:{source_id:env.SQUARE_SANDBOX_SOURCE_ID,idempotency_key:attempt.idempotencyKey,amount_money:{amount:6000,currency:'USD'},location_id:B.locationId,reference_id:attempt.id,autocomplete:true,accept_partial_authorization:false}});
    const paymentId=created.value?.payment?.id;
    if(!created.ok||typeof paymentId!=='string'||! /^[A-Za-z0-9_-]{1,192}$/.test(paymentId)){
@@ -53,6 +59,12 @@ export function createDirectPayments(env,store,fetcher=fetch){
   return {purchaseId,attemptId,status:evidence.status,fulfillmentStatus:evidence.status==='succeeded'?'pending':'not_issued'};
  }
  return {
+  async prepare(userId,body){
+   if(Object.keys(body).some(k=>!['purchaseId','requestId'].includes(k))||!uuid.test(body.purchaseId||'')||typeof body.requestId!=='string'||!body.requestId.trim()||body.requestId.length>128)throw new ApplicationError('Invalid payment intent');
+   if(!paymentPreparationEnabled(env)||body.purchaseId!==env.VEGA_SANDBOX_PURCHASE_ID)throw new ApplicationError('Payment preparation disabled for this purchase',403);
+   const result=await store.paymentCommand(userId,{action:'payment-prepare',body:{purchaseId:body.purchaseId,requestId:body.requestId,sourceDigest:null}});
+   return {...result,status:'pending',fulfillmentStatus:'not_issued',executionEnabled:false};
+  },
   async start(userId,body){
    if(Object.keys(body).some(k=>!['purchaseId','requestId'].includes(k))||!uuid.test(body.purchaseId||'')||typeof body.requestId!=='string'||!body.requestId.trim()||body.requestId.length>128)throw new ApplicationError('Invalid payment intent');
    gate(body.purchaseId);

@@ -1,6 +1,6 @@
 export function paymentStatusHTML(d,e,staff,execution){
  const labels={not_started:'not started',pending:'pending',unresolved:'unresolved — do not start another payment',succeeded:'paid',failed:'failed',cancelled:'cancelled'};
- const payment=labels[d.paymentStatus]||'unavailable';
+ const payment=d.paymentSummary?.reason==='prepared_execution_disabled'?'attempt prepared — payment execution disabled':labels[d.paymentStatus]||'unavailable';
  const fulfillment=d.fulfillmentStatus==='issued'?'credits issued':d.paymentStatus==='succeeded'?'Paid — credits pending':'not issued';
  const canAct=!staff&&execution?.enabled&&execution.purchaseId===d.id&&d.fulfillmentStatus!=='issued';
  const retry=d.activeAttemptId&&!['failed','cancelled'].includes(d.paymentStatus);

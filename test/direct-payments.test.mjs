@@ -7,6 +7,9 @@ import {PAYMENT_BINDING as B,digest,HISTORICAL_DRAFTS} from '../src/payments.mjs
 import {emptyState,transition,visibleState} from '../src/application.mjs';
 import {developmentOffer,OFFER_ID,PRODUCT_ID} from '../src/commerce.mjs';
 import {paymentStatusHTML} from '../public/payment-status.js';
+import {Readable} from 'node:stream';
+import {createApplicationApi} from '../src/runtime/application-api.mjs';
+import {paymentPreparationEnabled} from '../src/runtime/direct-payments.mjs';
 
 const member={userId:'e5946b40-9839-4a96-99d5-93262d9573f0',tenantId:B.tenantId,businessId:B.businessId,role:'member',participantIds:['vega-member-test-joe']};
 const receiptPublicKey=generateKeyPairSync('rsa',{modulusLength:3072}).publicKey.export({type:'spki',format:'pem'});
@@ -136,4 +139,64 @@ test('old unresolved no-ID attempt never creates again outside the bounded retry
  const h=harness();h.ack=false;await h.start();h.ack=true;
  h.edit(s=>{s.paymentAttempts[0].createdAt='2000-01-01T00:00:00.000Z';});
  await h.resume();assert.equal(h.providerPayments.size,0);assert.equal(h.state().paymentAttempts[0].reason,'create_retry_window_closed');assert.equal(h.state().passes.length,0);
+});
+
+function preparationHarness(){
+ const h=harness();Object.assign(h.env,{VEGA_PAYMENT_ATTEMPT_PREPARATION:'enabled',VEGA_SANDBOX_PAYMENT_EXECUTION:'disabled'});
+ delete h.env.SQUARE_ACCESS_TOKEN;delete h.env.SQUARE_SANDBOX_SOURCE_ID;
+ h.prepare=(requestId='prepare')=>h.service().prepare(member.userId,{purchaseId:h.purchaseId,requestId});
+ return h;
+}
+function assertUnpaid(h,before){
+ const s=h.state(),d=s.purchaseDrafts[0];assert.equal(h.calls.length,0);assert.equal(h.providerPayments.size,0);
+ for(const key of ['passes','creditUnits','entitlementIssuances','reservations'])assert.deepEqual(s[key],before[key]);
+ for(const key of ['paymentConfirmedAt','validFrom','expiresAt','refundWindowStartsAt'])assert.equal(d[key],null);
+ assert.equal(d.fulfillmentStatus,'not_issued');assert.notEqual(d.status,'paid');
+ assert.ok(!(s.activity||[]).some(e=>['payment-observation','payment-source-bound','purchase-fulfilled'].includes(e.action)));
+}
+test('disabled preparation persists and reopens one stable attempt under simultaneous same and different request IDs',async()=>{
+ const h=preparationHarness(),before=h.state();assert.equal(paymentPreparationEnabled(h.env),true);assert.equal(sandboxPaymentEnabled(h.env),false);
+ const results=await Promise.all(Array.from({length:12},(_,i)=>h.prepare(i<6?'prepare':`prepare-${i}`)));
+ assert.equal(new Set(results.map(r=>r.attemptId)).size,1);
+ const a=h.state().paymentAttempts[0];assert.equal(h.state().paymentAttempts.length,1);assert.equal(a.idempotencyKey,a.id);assert.deepEqual(a.binding,B);assert.equal(a.sourceDigest,null);assert.equal(a.executionStartedAt,undefined);assert.match(a.requestDigest,/^[a-f0-9]{64}$/);
+ assert.equal((await h.prepare()).attemptId,a.id);
+ assert.deepEqual((await h.store.paymentRead(member.userId,h.purchaseId,a.id)).attempt,a);
+ for(const role of ['member','staff']){
+  const view=visibleState(h.state(),{...member,role});const d=view.purchaseDrafts.find(d=>d.id===h.purchaseId);
+  assert.equal(d.activeAttemptId,a.id);assert.equal(d.paymentSummary.status,'pending');
+  assert.doesNotMatch(paymentStatusHTML(d,String,role==='staff',{enabled:false}),/<form/);
+ }
+ await assert.rejects(h.start(),e=>e.status===403);await assert.rejects(h.resume(),e=>e.status===403);assertUnpaid(h,before);
+});
+test('preparation changed payload conflicts and rejects extra client evidence without new attempts',async()=>{
+ const h=preparationHarness(),before=h.state();await h.prepare();
+ const draft=structuredClone(h.state().purchaseDrafts[0]);draft.id=randomUUID();draft.paymentStatus='not_started';delete draft.activeAttemptId;h.edit(s=>s.purchaseDrafts.push(draft));
+ h.env.VEGA_SANDBOX_PURCHASE_ID=draft.id;
+ await assert.rejects(h.service().prepare(member.userId,{purchaseId:draft.id,requestId:'prepare'}),e=>e.status===409);
+ await assert.rejects(h.service().prepare(member.userId,{purchaseId:draft.id,requestId:'extra',amount:1}),e=>e.status===400);
+ assert.equal(h.state().paymentAttempts.length,1);assertUnpaid(h,before);
+});
+test('preparation rolls back failed persistence; invalid terms, authority, environment and binding fail closed',async()=>{
+ const h=preparationHarness();h.failUpdate=true;await assert.rejects(h.prepare());assert.equal(h.state().paymentAttempts,undefined);await h.prepare();assert.equal(h.state().paymentAttempts.length,1);
+ for(const change of [{VEGA_ENV:'production'},{VEGA_EXTERNAL_EFFECTS:'enabled'},{VEGA_PAYMENT_ATTEMPT_PREPARATION:undefined},{VEGA_SANDBOX_PAYMENT_EXECUTION:'authorized'},{VEGA_SANDBOX_PAYMENT_EXECUTION:undefined},{SQUARE_ENVIRONMENT:'production'},{SQUARE_APPLICATION_ID:'strata'},{SQUARE_MERCHANT_ID:'other'},{SQUARE_LOCATION_ID:'other'},{VEGA_SANDBOX_PURCHASE_ID:[...HISTORICAL_DRAFTS][0]}]){
+  const h=preparationHarness();Object.assign(h.env,change);await assert.rejects(h.prepare());assert.equal(h.calls.length,0);assert.equal(h.state().paymentAttempts,undefined);
+ }
+ for(const change of [{role:'staff'},{participantIds:['other']},{businessId:'other'},{tenantId:'other'}]){const h=preparationHarness();Object.assign(h.authority,change);await assert.rejects(h.prepare());assert.equal(h.state().paymentAttempts,undefined);}
+ for(const mutate of [h=>{h.binding=null;},h=>{h.binding.locationId='other';},h=>h.edit(s=>{s.purchaseDrafts[0].terms.totalMinor=1;}),h=>h.edit(s=>{s.purchaseDrafts[0].currency='EUR';})]){const h=preparationHarness();mutate(h);await assert.rejects(h.prepare());assert.equal(h.calls.length,0);assert.equal(h.state().paymentAttempts,undefined);}
+});
+test('authenticated preparation API works while start/resume and unauthenticated preparation remain blocked',async()=>{
+ const h=preparationHarness(),before=h.state();Object.assign(h.env,{SUPABASE_URL:'https://cjdoczrxcjynjhgpgqop.supabase.co',SUPABASE_PUBLISHABLE_KEY:'local-fixture'});
+ let authCalls=0;const api=createApplicationApi(h.env,h.store,async url=>{assert.equal(url,'https://cjdoczrxcjynjhgpgqop.supabase.co/auth/v1/user');authCalls++;return {ok:true,json:async()=>({id:member.userId})};});
+ async function call(path,body,authenticated=true){const req=Readable.from([Buffer.from(JSON.stringify(body))]);Object.assign(req,{url:path,method:'POST',headers:{'content-type':'application/json',...(authenticated?{authorization:'Bearer local-fixture'}:{})}});let status,value;await api(req,{writeHead(s){status=s;},end(v){value=JSON.parse(v);}});return {status,value};}
+ assert.equal((await call('/api/commerce/payments/prepare',{purchaseId:h.purchaseId,requestId:'api'},false)).status,401);assert.equal(authCalls,0);
+ const first=await call('/api/commerce/payments/prepare',{purchaseId:h.purchaseId,requestId:'api'});assert.equal(first.status,202);assert.equal(first.value.executionEnabled,false);
+ assert.equal((await call('/api/commerce/payments/prepare',{purchaseId:h.purchaseId,requestId:'api'})).value.attemptId,first.value.attemptId);
+ for(const path of ['/api/commerce/payments','/api/commerce/payments/resume'])assert.equal((await call(path,{purchaseId:h.purchaseId,attemptId:first.value.attemptId,requestId:'blocked'})).status,404);
+ assertUnpaid(h,before);
+});
+test('later simulated authorization binds source once without changing preparation fingerprint or idempotency key',async()=>{
+ const h=preparationHarness();await h.prepare();const prepared=h.state().paymentAttempts[0];
+ Object.assign(h.env,{VEGA_SANDBOX_PAYMENT_EXECUTION:'authorized',SQUARE_ACCESS_TOKEN:randomUUID(),SQUARE_SANDBOX_SOURCE_ID:`cnon:${randomUUID()}`});
+ h.interruptCreate=true;await h.resume();await h.resume();
+ const a=h.state().paymentAttempts[0];assert.equal(a.idempotencyKey,prepared.idempotencyKey);assert.equal(a.requestDigest,prepared.requestDigest);assert.match(a.executionRequestDigest,/^[a-f0-9]{64}$/);assert.equal(h.providerPayments.size,1);assert.equal(h.state().entitlementIssuances.length,1);
 });

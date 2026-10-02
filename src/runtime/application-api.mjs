@@ -1,6 +1,6 @@
 import { ApplicationError } from '../application.mjs';
 import {revokeSession} from './sign-out.mjs';
-import {createDirectPayments,sandboxPaymentEnabled} from './direct-payments.mjs';
+import {createDirectPayments,sandboxPaymentEnabled,paymentPreparationEnabled} from './direct-payments.mjs';
 
 const origin='https://cjdoczrxcjynjhgpgqop.supabase.co';
 export async function readJson(req){
@@ -49,6 +49,10 @@ export function createApplicationApi(env,store,fetcher=fetch){
    const operation=url.pathname.match(/^\/api\/recovery\/operations\/([a-f0-9]{64})$/);
    if(operation&&req.method==='GET'){const result=await store.operation(userId,operation[1]);send(result.pending?202:200,result);return true;}
    if(req.method!=='POST')throw new ApplicationError('Method not allowed',405);
+   if(url.pathname==='/api/commerce/payments/prepare'){
+    if(!paymentPreparationEnabled(env))throw new ApplicationError('Operation unavailable',404);
+    send(202,await payments.prepare(userId,await readJson(req)));return true;
+   }
    if(['/api/commerce/payments','/api/commerce/payments/resume'].includes(url.pathname)){
     if(!sandboxPaymentEnabled(env))throw new ApplicationError('Operation unavailable',404);
     const input=await readJson(req),result=await (url.pathname.endsWith('/resume')?payments.resume(userId,input):payments.start(userId,input));

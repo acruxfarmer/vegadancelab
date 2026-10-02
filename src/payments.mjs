@@ -23,11 +23,12 @@ export function paymentTransition(state,command,a,{id,now},fail){
   if(HISTORICAL_DRAFTS.has(d.id))fail('Closed verification draft cannot be paid',409);
   if(!isDeepStrictEqual(d.terms,developmentOffer())||d.totalMinor!==6000||d.subtotalMinor!==6000||d.taxMinor!==0||d.currency!=='USD')fail('Immutable purchase terms mismatch',409);
   if(d.paymentStatus==='succeeded'||d.fulfillmentStatus==='issued')fail('Purchase already paid',409);
-  if(!/^[a-f0-9]{64}$/.test(b.sourceDigest||''))fail('Invalid source fingerprint');
+  if(b.sourceDigest!==null&&!/^[a-f0-9]{64}$/.test(b.sourceDigest||''))fail('Invalid source fingerprint');
   const active=state.paymentAttempts.find(p=>p.purchaseId===d.id&&!['failed','cancelled'].includes(p.status));
   if(active){if(active.sourceDigest!==b.sourceDigest)fail('Active payment source conflict',409);return {attemptId:active.id,purchaseId:d.id};}
   const attempt={id:id(),purchaseId:d.id,buyerId:d.buyerId,participantId:d.participantId,binding:{...PAYMENT_BINDING},offerDigest:digest(d.terms),sourceDigest:b.sourceDigest,status:'pending',paymentId:null,createdAt:now(),paymentConfirmedAt:null};
   attempt.idempotencyKey=attempt.id;attempt.referenceId=attempt.id;attempt.prepareRequestId=b.requestId;
+  if(b.sourceDigest===null){attempt.prepareSourceDigest=null;attempt.reason='prepared_execution_disabled';}
   attempt.requestDigest=digest({amount:6000,currency:'USD',binding:attempt.binding,sourceDigest:attempt.sourceDigest,referenceId:attempt.id,autocomplete:true});
   state.paymentAttempts.push(attempt);d.paymentStatus='pending';d.activeAttemptId=attempt.id;
   event('payment-intent',attempt,{idempotencyKey:attempt.idempotencyKey,requestDigest:attempt.requestDigest,offerDigest:attempt.offerDigest});
@@ -35,6 +36,15 @@ export function paymentTransition(state,command,a,{id,now},fail){
  }
  const attempt=state.paymentAttempts.find(p=>p.id===b.attemptId&&p.purchaseId===d.id);
  if(!attempt)fail('Payment attempt unavailable',404);
+ if(command.action==='payment-bind-source'){
+  if(!/^[a-f0-9]{64}$/.test(b.sourceDigest||'')||attempt.prepareSourceDigest!==null)fail('Invalid source binding',409);
+  if(attempt.sourceDigest!==null){if(attempt.sourceDigest!==b.sourceDigest)fail('Active payment source conflict',409);return {attemptId:attempt.id,purchaseId:d.id};}
+  if(attempt.status!=='pending'||attempt.paymentId||attempt.offerDigest!==digest(d.terms))fail('Attempt cannot bind payment source',409);
+  attempt.sourceDigest=b.sourceDigest;attempt.executionStartedAt=now();attempt.reason='source_bound_awaiting_provider';
+  attempt.executionRequestDigest=digest({amount:6000,currency:'USD',binding:attempt.binding,sourceDigest:attempt.sourceDigest,referenceId:attempt.id,autocomplete:true});
+  event('payment-source-bound',attempt,{executionRequestDigest:attempt.executionRequestDigest});
+  return {attemptId:attempt.id,purchaseId:d.id};
+ }
  if(command.action==='payment-observe'){
   // Only the server adapter can construct these commands; HTTP routes never accept evidence.
   if(['succeeded','failed','cancelled'].includes(attempt.status))return {attemptId:attempt.id,purchaseId:d.id,status:attempt.status};
