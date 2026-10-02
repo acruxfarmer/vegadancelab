@@ -2,8 +2,8 @@ import pg from 'pg';
 import { createHash } from 'node:crypto';
 import { databaseTls } from './database-tls.mjs';
 import { ApplicationError,transition,visibleState } from '../application.mjs';
-import {PAYMENT_BINDING,purchaseForPayment,canonical} from '../payments.mjs';
-import {isDeepStrictEqual} from 'node:util';
+import {purchaseForPayment,canonical} from '../payments.mjs';
+import {resolveStoredIntegration} from './payment-integrations.mjs';
 import {reviewClassEdit} from '../class-editing.mjs';
 import {reviewClassDuplicate} from '../class-duplication.mjs';
 import {buildRecoveryReceipt,buildRevocationReceipt,receiptKey} from '../recovery-receipt.mjs';
@@ -14,7 +14,7 @@ export function applicationDatabaseOptions(value){
  if(!['postgres:','postgresql:'].includes(u.protocol)||(!direct&&!pooler)||u.pathname!=='/postgres'||!['','5432','6543'].includes(u.port)||decodeURIComponent(u.username)!==(direct?'vega_app_runtime':`vega_app_runtime.${ref}`)||!u.password)throw new Error('Invalid application database configuration');
  return {host:u.hostname,port:Number(u.port||5432),database:'postgres',user:decodeURIComponent(u.username),password:decodeURIComponent(u.password),ssl:databaseTls(u.hostname),connectionTimeoutMillis:10000,statement_timeout:10000,application_name:'vega-development-application'};
 }
-export function createApplicationStore(pool,{receiptPublicKey=process.env.RECEIPT_PUBLIC_KEY}={}){
+export function createApplicationStore(pool,{receiptPublicKey=process.env.RECEIPT_PUBLIC_KEY,resolveIntegration=resolveStoredIntegration}={}){
  const paymentCapability=Symbol('server payment command');
  async function transaction(userId,fn){
   const client=await pool.connect();
@@ -32,14 +32,19 @@ export function createApplicationStore(pool,{receiptPublicKey=process.env.RECEIP
   if(rows.length!==1)throw new ApplicationError('Studio application data is not initialized',503);return rows[0];
  }
  const store={
+  paymentContext:(userId,purchaseId)=>transaction(userId,async(c,a)=>{
+   const row=await stateRow(c,a);
+   const draft=purchaseForPayment(row.state,a,purchaseId,(m,s)=>{throw new ApplicationError(m,s);});
+   const attempt=(row.state.paymentAttempts||[]).find(p=>p.purchaseId===draft.id&&!['failed','cancelled'].includes(p.status));
+   return {draft,integrationRef:await resolveIntegration(c,a,attempt)};
+  }),
   paymentRead:(userId,purchaseId,attemptId)=>transaction(userId,async(c,a)=>{
    const row=await stateRow(c,a);
    const draft=purchaseForPayment(row.state,a,purchaseId,(m,s)=>{throw new ApplicationError(m,s);});
    const attempt=(row.state.paymentAttempts||[]).find(p=>p.id===attemptId&&p.purchaseId===draft.id);
    if(!attempt)throw new ApplicationError('Payment attempt unavailable',404);
-   const binding=await c.query('select binding from vega_private.commerce_provider_binding where tenant_id=$1 and business_id=$2',[a.tenantId,a.businessId]);
-   if(binding.rows.length!==1||!isDeepStrictEqual(binding.rows[0].binding,PAYMENT_BINDING))throw new ApplicationError('Payment binding unavailable',503);
-   return {draft,attempt};
+   const integrationRef=await resolveIntegration(c,a,attempt);
+   return {draft,attempt,integrationRef};
   }),
   paymentCommand:(userId,command)=>store.command(userId,command,paymentCapability),
   recordRevocation:({userId,sessionId,outcome})=>transaction(userId,async(c,a)=>{
@@ -85,8 +90,6 @@ export function createApplicationStore(pool,{receiptPublicKey=process.env.RECEIP
    const trustedPayment=capability===paymentCapability;
    if(command.action.startsWith('payment-')){
     if(!trustedPayment)throw new ApplicationError('Internal payment operation only',403);
-    const binding=await c.query('select binding from vega_private.commerce_provider_binding where tenant_id=$1 and business_id=$2',[a.tenantId,a.businessId]);
-    if(binding.rows.length!==1||!isDeepStrictEqual(binding.rows[0].binding,PAYMENT_BINDING))throw new ApplicationError('Payment binding unavailable',503);
    }
    const row=await stateRow(c,a,true),requestId=command.body?.requestId;
    // A command may wait behind another transaction. Recheck authority after the wait.
@@ -103,7 +106,11 @@ export function createApplicationStore(pool,{receiptPublicKey=process.env.RECEIP
     return {...rows[0].response,independentReceipt:{operationId:delivered.rows[0].event_id,state:delivered.rows[0].state}};
    }
    if(!receiptPublicKey)throw new ApplicationError('Independent recovery capture is unavailable. No change was committed.',503);
-   const next=transition(row.state,command,a,{trustedPayment});
+   const paymentAttempt=trustedPayment?(row.state.paymentAttempts||[]).find(p=>p.purchaseId===command.body.purchaseId&&(command.body.attemptId?p.id===command.body.attemptId:!['failed','cancelled'].includes(p.status))):null;
+   const integrationRef=trustedPayment?await resolveIntegration(c,a,paymentAttempt):undefined;
+   const legacyIntegrationRefs={};
+   if(trustedPayment)for(const old of row.state.paymentAttempts||[]){if(!old.integrationRef)legacyIntegrationRefs[old.id]=await resolveIntegration(c,a,old);}
+   const next=transition(row.state,command,a,{trustedPayment,integrationRef,legacyIntegrationRefs});
    const receipt=buildRecoveryReceipt({before:row.state,after:next.state,revision:row.revision,authority:a,command,result:next.result,occurredAt:new Date().toISOString(),publicKey:receiptPublicKey});
    await c.query('update vega_private.app_state set state=$1,revision=revision+1,updated_at=now() where tenant_id=$2 and business_id=$3',[JSON.stringify(next.state),a.tenantId,a.businessId]);
    await c.query('insert into vega_private.app_commands(tenant_id,business_id,actor_id,request_id,fingerprint,response) values($1,$2,$3,$4,$5,$6)',[a.tenantId,a.businessId,userId,requestId,fingerprint,JSON.stringify(next.result)]);

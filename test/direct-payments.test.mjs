@@ -2,8 +2,9 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {randomUUID,generateKeyPairSync} from 'node:crypto';
 import {createApplicationStore} from '../src/runtime/application-database.mjs';
-import {createDirectPayments,verifyPayment,sandboxPaymentEnabled} from '../src/runtime/direct-payments.mjs';
-import {PAYMENT_BINDING as B,digest,HISTORICAL_DRAFTS} from '../src/payments.mjs';
+import {createDirectPayments,sandboxPaymentEnabled} from '../src/runtime/direct-payments.mjs';
+import {PAYMENT_BINDING as B,legacySquareIntegration} from '../src/runtime/providers/square-configuration.mjs';
+import {digest,HISTORICAL_DRAFTS} from '../src/payments.mjs';
 import {emptyState,transition,visibleState} from '../src/application.mjs';
 import {developmentOffer,OFFER_ID,PRODUCT_ID} from '../src/commerce.mjs';
 import {paymentStatusHTML} from '../public/payment-status.js';
@@ -26,6 +27,7 @@ function harness(){
    if(sql==='rollback'){({state,revision,commands,outbox}=snapshot);release();return {rows:[]};}
    if(sql.startsWith('select tenant_id'))return {rows:[{tenant_id:h.authority.tenantId,business_id:h.authority.businessId,role:h.authority.role,participant_ids:h.authority.participantIds}]};
    if(sql.startsWith('select binding'))return {rows:h.binding?[{binding:structuredClone(h.binding)}]:[]};
+   if(sql.startsWith('select integration_ref')){const ref=legacySquareIntegration(h.binding,h.authority);return {rows:ref?[{integration_ref:ref}]:[]};}
    if(sql.startsWith('select state'))return {rows:[{state:structuredClone(state),revision}]};
    if(sql.startsWith('select fingerprint'))return {rows:commands.has(args[3])?[commands.get(args[3])]:[]};
    if(sql.startsWith('select event_id,discovery_state'))return {rows:[{...outbox.get(args[3]),state:h.ack?'acknowledged':'pending'}]};
@@ -158,7 +160,7 @@ test('disabled preparation persists and reopens one stable attempt under simulta
  const h=preparationHarness(),before=h.state();assert.equal(paymentPreparationEnabled(h.env),true);assert.equal(sandboxPaymentEnabled(h.env),false);
  const results=await Promise.all(Array.from({length:12},(_,i)=>h.prepare(i<6?'prepare':`prepare-${i}`)));
  assert.equal(new Set(results.map(r=>r.attemptId)).size,1);
- const a=h.state().paymentAttempts[0];assert.equal(h.state().paymentAttempts.length,1);assert.equal(a.idempotencyKey,a.id);assert.deepEqual(a.binding,B);assert.equal(a.sourceDigest,null);assert.equal(a.executionStartedAt,undefined);assert.match(a.requestDigest,/^[a-f0-9]{64}$/);
+ const a=h.state().paymentAttempts[0];assert.equal(h.state().paymentAttempts.length,1);assert.equal(a.idempotencyKey,a.id);assert.deepEqual(a.integrationRef,legacySquareIntegration(B,member));assert.equal(a.binding,undefined);assert.equal(a.sourceDigest,null);assert.equal(a.executionStartedAt,undefined);assert.match(a.requestDigest,/^[a-f0-9]{64}$/);
  assert.equal((await h.prepare()).attemptId,a.id);
  assert.deepEqual((await h.store.paymentRead(member.userId,h.purchaseId,a.id)).attempt,a);
  for(const role of ['member','staff']){
@@ -199,4 +201,16 @@ test('later simulated authorization binds source once without changing preparati
  Object.assign(h.env,{VEGA_SANDBOX_PAYMENT_EXECUTION:'authorized',SQUARE_ACCESS_TOKEN:randomUUID(),SQUARE_SANDBOX_SOURCE_ID:`cnon:${randomUUID()}`});
  h.interruptCreate=true;await h.resume();await h.resume();
  const a=h.state().paymentAttempts[0];assert.equal(a.idempotencyKey,prepared.idempotencyKey);assert.equal(a.requestDigest,prepared.requestDigest);assert.match(a.executionRequestDigest,/^[a-f0-9]{64}$/);assert.equal(h.providerPayments.size,1);assert.equal(h.state().entitlementIssuances.length,1);
+});
+
+test('legacy prepared evidence resolves without rewriting original binding, key, offer or request fingerprints',async()=>{
+ const h=preparationHarness();await h.prepare();
+ h.edit(s=>{const a=s.paymentAttempts[0];delete a.integrationRef;delete a.financialIntent;a.binding={...B};a.requestDigest=digest({amount:6000,currency:'USD',binding:B,sourceDigest:null,referenceId:a.id,autocomplete:true});});
+ const original=h.state().paymentAttempts[0];
+ const read=await h.store.paymentRead(member.userId,h.purchaseId,original.id);assert.deepEqual(read.integrationRef,legacySquareIntegration(B,member));assert.deepEqual(read.attempt,original);
+ await h.prepare();assert.deepEqual(h.state().paymentAttempts[0],original);assert.equal(h.calls.length,0);
+ Object.assign(h.env,{VEGA_SANDBOX_PAYMENT_EXECUTION:'authorized',SQUARE_ACCESS_TOKEN:randomUUID(),SQUARE_SANDBOX_SOURCE_ID:`cnon:${randomUUID()}`});
+ await h.resume();await h.resume();const after=h.state().paymentAttempts[0];
+ for(const field of ['id','binding','idempotencyKey','referenceId','requestDigest','offerDigest','prepareRequestId','createdAt'])assert.deepEqual(after[field],original[field]);
+ assert.equal(after.integrationRef,undefined);assert.equal(h.providerPayments.size,1);assert.equal(h.state().entitlementIssuances.length,1);assert.deepEqual(after.evidence.integrationRef,read.integrationRef);
 });
