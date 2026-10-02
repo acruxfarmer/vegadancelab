@@ -133,7 +133,8 @@ document.addEventListener('submit',async event=>{const form=event.target;if(!['e
 
 // Independent acknowledgment governs confirmation, including reload/read views.
 const renderBeforeCommerce=render;
-render=function(){renderBeforeCommerce();if(data&&!localDemo&&(page==='passes'||(view==='staff'&&page==='people')))$('#main').insertAdjacentHTML('beforeend',commerce.render());};
+render=function(){renderBeforeCommerce();if(data&&!localDemo){if(data.paymentExecution?.enabled)$('#environment').textContent='Authenticated development workspace · Designated Sandbox payment only';if(page==='passes'||(view==='staff'&&page==='people'))$('#main').insertAdjacentHTML('beforeend',commerce.render());}};
 document.addEventListener('submit',event=>{if(event.target.id==='commerce-draft'){event.preventDefault();void commerce.submit(event.target);}});
+document.addEventListener('submit',event=>{if(event.target.hasAttribute('data-commerce-payment')){event.preventDefault();void commerce.submitPayment(event.target);}});
 const renderBeforeRecoveryNotice=render;
 render=function(){renderBeforeRecoveryNotice();if(data?.recovery?.pendingCount>0){const notice=document.createElement('div');notice.className='notice warning';notice.setAttribute('role','status');notice.textContent='Recovery confirmation pending. The current view includes provisional changes. Do not treat them as finally confirmed until independent recovery acknowledgment completes.';document.querySelector('#main').prepend(notice);}};

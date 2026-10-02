@@ -34,7 +34,10 @@ export function commerceView(state, a) {
   commerceSelfParticipantId: participantId,
   purchaseDrafts: allowed ? structuredClone((state.purchaseDrafts || []).filter(d =>
    d.tenantId === a.tenantId && d.businessId === a.businessId &&
-   (a.role === 'staff' || (participantId && d.buyerId === a.userId && d.participantId === participantId)))) : []
+   (a.role === 'staff' || (participantId && d.buyerId === a.userId && d.participantId === participantId)))).map(d=>{
+    const p=(state.paymentAttempts||[]).find(p=>p.id===d.activeAttemptId&&p.purchaseId===d.id);
+    return p?{...d,paymentSummary:{attemptId:p.id,status:p.status,paymentId:p.paymentId,reason:p.reason??null,paymentConfirmedAt:p.paymentConfirmedAt}}:d;
+   }) : []
  };
 }
 export function createPurchaseDraft(state, body, a, {id, now}, fail) {

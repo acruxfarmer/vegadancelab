@@ -2,6 +2,7 @@ import { createServer } from 'node:http';
 import { receiveSquareWebhook } from './square-webhook.mjs';
 import { readFile } from 'node:fs/promises';
 import { createApplicationApi } from './application-api.mjs';
+import { sandboxPaymentEnabled } from './direct-payments.mjs';
 
 export function createDevelopmentServer(env = process.env, persistSquareEvent, checkIngestion, applicationStore) {
   if (env.VEGA_ENV !== 'development' || env.VEGA_EXTERNAL_EFFECTS !== 'disabled') {
@@ -15,7 +16,7 @@ export function createDevelopmentServer(env = process.env, persistSquareEvent, c
     res.setHeader('Referrer-Policy','no-referrer');
     res.setHeader('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
     if(req.method==='GET'&&req.url==='/health/application'){
-      void(async()=>{try{if(!applicationStore||env.SUPABASE_URL!=='https://cjdoczrxcjynjhgpgqop.supabase.co'||!env.SUPABASE_PUBLISHABLE_KEY)throw new Error();await applicationStore.check();res.writeHead(200);res.end(JSON.stringify({status:'application_runtime_ready',environment:'development',squareEnabled:false}));}catch{res.writeHead(503);res.end(JSON.stringify({status:'application_runtime_unavailable',squareEnabled:false}));}})();return;
+      void(async()=>{try{if(!applicationStore||env.SUPABASE_URL!=='https://cjdoczrxcjynjhgpgqop.supabase.co'||!env.SUPABASE_PUBLISHABLE_KEY)throw new Error();await applicationStore.check();res.writeHead(200);res.end(JSON.stringify({status:'application_runtime_ready',environment:'development',squareEnabled:sandboxPaymentEnabled(env)}));}catch{res.writeHead(503);res.end(JSON.stringify({status:'application_runtime_unavailable',squareEnabled:sandboxPaymentEnabled(env)}));}})();return;
     }
     if(req.url.startsWith('/api/')){void api(req,res);return;}
     const files={'/entitlements-ui.js':['entitlements-ui.js','text/javascript; charset=utf-8'],'/cancellation-ui.js':['cancellation-ui.js','text/javascript; charset=utf-8'],'/session.js':['session.js','text/javascript; charset=utf-8'],'/':['index.html','text/html; charset=utf-8'],'/app.js':['app.js','text/javascript; charset=utf-8'],'/integration.js':['integration.js','text/javascript; charset=utf-8'],'/styles.css':['styles.css','text/css; charset=utf-8']};
@@ -33,6 +34,7 @@ export function createDevelopmentServer(env = process.env, persistSquareEvent, c
     files['/occurrence-history.js']=['occurrence-history.js','text/javascript; charset=utf-8'];
     files['/reservation-history.js']=['reservation-history.js','text/javascript; charset=utf-8'];
     files['/commerce-ui.js']=['commerce-ui.js','text/javascript; charset=utf-8'];
+    files['/payment-status.js']=['payment-status.js','text/javascript; charset=utf-8'];
     files['/roster-navigation.js']=['roster-navigation.js','text/javascript; charset=utf-8'];
     files['/schedule-navigation.js']=['schedule-navigation.js','text/javascript; charset=utf-8'];
     files['/staff-waitlist.js']=['staff-waitlist.js','text/javascript; charset=utf-8'];

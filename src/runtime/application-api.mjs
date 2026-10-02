@@ -1,5 +1,6 @@
 import { ApplicationError } from '../application.mjs';
 import {revokeSession} from './sign-out.mjs';
+import {createDirectPayments,sandboxPaymentEnabled} from './direct-payments.mjs';
 
 const origin='https://cjdoczrxcjynjhgpgqop.supabase.co';
 export async function readJson(req){
@@ -8,6 +9,7 @@ export async function readJson(req){
  try{const value=JSON.parse(Buffer.concat(chunks).toString());if(!value||Array.isArray(value)||typeof value!=='object')throw new Error();return value;}catch{throw new ApplicationError('Invalid JSON');}
 }
 export function createApplicationApi(env,store,fetcher=fetch){
+ const payments=createDirectPayments(env,store,fetcher);
  const key=env.SUPABASE_PUBLISHABLE_KEY;
  const configured=()=>{if(!key||env.SUPABASE_URL!==origin)throw new ApplicationError('Application authentication is not configured',503);};
  async function principal(req){
@@ -21,7 +23,7 @@ export function createApplicationApi(env,store,fetcher=fetch){
   const url=new URL(req.url,'http://vega.local');if(!url.pathname.startsWith('/api/'))return false;
   const send=(status,data)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(data));};
   try{
-   if(url.pathname==='/api/config'&&req.method==='GET'){send(200,{environment:'development',squareEnabled:false,externalEffects:'disabled',authenticationConfigured:!!key,applicationConfigured:!!store});return true;}
+   if(url.pathname==='/api/config'&&req.method==='GET'){send(200,{environment:'development',squareEnabled:sandboxPaymentEnabled(env),paymentMode:sandboxPaymentEnabled(env)?'sandbox_direct_only':'disabled',externalEffects:'disabled',authenticationConfigured:!!key,applicationConfigured:!!store});return true;}
    if(['/api/auth/sign-in','/api/auth/refresh'].includes(url.pathname)&&req.method==='POST'){
     configured();const body=await readJson(req);
     const refreshing=url.pathname==='/api/auth/refresh';
@@ -43,10 +45,15 @@ export function createApplicationApi(env,store,fetcher=fetch){
    }
    const userId=await principal(req);
    if(!store)throw new ApplicationError('Application database handoff is pending',503);
-   if(url.pathname==='/api/app'&&req.method==='GET'){send(200,await store.read(userId));return true;}
+   if(url.pathname==='/api/app'&&req.method==='GET'){const view=await store.read(userId);send(200,{...view,squareEnabled:sandboxPaymentEnabled(env),paymentExecution:{enabled:sandboxPaymentEnabled(env),purchaseId:sandboxPaymentEnabled(env)?env.VEGA_SANDBOX_PURCHASE_ID:null}});return true;}
    const operation=url.pathname.match(/^\/api\/recovery\/operations\/([a-f0-9]{64})$/);
    if(operation&&req.method==='GET'){const result=await store.operation(userId,operation[1]);send(result.pending?202:200,result);return true;}
    if(req.method!=='POST')throw new ApplicationError('Method not allowed',405);
+   if(['/api/commerce/payments','/api/commerce/payments/resume'].includes(url.pathname)){
+    if(!sandboxPaymentEnabled(env))throw new ApplicationError('Operation unavailable',404);
+    const input=await readJson(req),result=await (url.pathname.endsWith('/resume')?payments.resume(userId,input):payments.start(userId,input));
+    send(result.status==='succeeded'&&result.fulfillmentStatus==='issued'?200:202,result);return true;
+   }
    const body=await readJson(req),routes={'/api/entitlements/products':'entitlement-product','/api/entitlements/issue':'issue-entitlement','/api/credits/issue':'issue-credit','/api/classes/cancel':'cancel-class','/api/classes/policy':'class-policy','/api/reservations':'reserve','/api/classes':'class','/api/participants':'participant','/api/preferences':'preferences','/api/notifications':'notification'};
    if(url.pathname==='/api/classes/edit/review'){send(200,await store.reviewClassEdit(userId,body));return true;}
    if(url.pathname==='/api/classes/duplicate/review'){send(200,await store.reviewClassDuplicate(userId,body));return true;}

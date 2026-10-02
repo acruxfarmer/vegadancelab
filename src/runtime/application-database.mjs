@@ -2,6 +2,8 @@ import pg from 'pg';
 import { createHash } from 'node:crypto';
 import { databaseTls } from './database-tls.mjs';
 import { ApplicationError,transition,visibleState } from '../application.mjs';
+import {PAYMENT_BINDING,purchaseForPayment,canonical} from '../payments.mjs';
+import {isDeepStrictEqual} from 'node:util';
 import {reviewClassEdit} from '../class-editing.mjs';
 import {reviewClassDuplicate} from '../class-duplication.mjs';
 import {buildRecoveryReceipt,buildRevocationReceipt,receiptKey} from '../recovery-receipt.mjs';
@@ -13,6 +15,7 @@ export function applicationDatabaseOptions(value){
  return {host:u.hostname,port:Number(u.port||5432),database:'postgres',user:decodeURIComponent(u.username),password:decodeURIComponent(u.password),ssl:databaseTls(u.hostname),connectionTimeoutMillis:10000,statement_timeout:10000,application_name:'vega-development-application'};
 }
 export function createApplicationStore(pool,{receiptPublicKey=process.env.RECEIPT_PUBLIC_KEY}={}){
+ const paymentCapability=Symbol('server payment command');
  async function transaction(userId,fn){
   const client=await pool.connect();
   try{
@@ -28,7 +31,17 @@ export function createApplicationStore(pool,{receiptPublicKey=process.env.RECEIP
   const {rows}=await client.query(`select state,revision from vega_private.app_state where tenant_id=$1 and business_id=$2${lock?' for update':''}`,[a.tenantId,a.businessId]);
   if(rows.length!==1)throw new ApplicationError('Studio application data is not initialized',503);return rows[0];
  }
- return {
+ const store={
+  paymentRead:(userId,purchaseId,attemptId)=>transaction(userId,async(c,a)=>{
+   const row=await stateRow(c,a);
+   const draft=purchaseForPayment(row.state,a,purchaseId,(m,s)=>{throw new ApplicationError(m,s);});
+   const attempt=(row.state.paymentAttempts||[]).find(p=>p.id===attemptId&&p.purchaseId===draft.id);
+   if(!attempt)throw new ApplicationError('Payment attempt unavailable',404);
+   const binding=await c.query('select binding from vega_private.commerce_provider_binding where tenant_id=$1 and business_id=$2',[a.tenantId,a.businessId]);
+   if(binding.rows.length!==1||!isDeepStrictEqual(binding.rows[0].binding,PAYMENT_BINDING))throw new ApplicationError('Payment binding unavailable',503);
+   return {draft,attempt};
+  }),
+  paymentCommand:(userId,command)=>store.command(userId,command,paymentCapability),
   recordRevocation:({userId,sessionId,outcome})=>transaction(userId,async(c,a)=>{
    const receipt=buildRevocationReceipt({authority:a,sessionId,outcome,occurredAt:new Date().toISOString(),publicKey:receiptPublicKey});
    // Duplicate sign-out must retain the original encrypted payload, not reseal it.
@@ -68,14 +81,20 @@ export function createApplicationStore(pool,{receiptPublicKey=process.env.RECEIP
    const row=await stateRow(c,a);
    return reviewClassEdit(row.state,body,a,new Date().toISOString(),(message,status)=>{throw new ApplicationError(message,status);});
   }),
-  command:(userId,command)=>transaction(userId,async(c,a)=>{
+  command:(userId,command,capability)=>transaction(userId,async(c,a)=>{
+   const trustedPayment=capability===paymentCapability;
+   if(command.action.startsWith('payment-')){
+    if(!trustedPayment)throw new ApplicationError('Internal payment operation only',403);
+    const binding=await c.query('select binding from vega_private.commerce_provider_binding where tenant_id=$1 and business_id=$2',[a.tenantId,a.businessId]);
+    if(binding.rows.length!==1||!isDeepStrictEqual(binding.rows[0].binding,PAYMENT_BINDING))throw new ApplicationError('Payment binding unavailable',503);
+   }
    const row=await stateRow(c,a,true),requestId=command.body?.requestId;
    // A command may wait behind another transaction. Recheck authority after the wait.
    const assigned=await c.query('select tenant_id,business_id,role,participant_ids from vega_private.app_members where user_id=$1',[userId]);
    const latest=assigned.rows[0];
    if(assigned.rows.length!==1||latest.tenant_id!==a.tenantId||latest.business_id!==a.businessId||latest.role!==a.role||JSON.stringify(latest.participant_ids)!==JSON.stringify(a.participantIds))throw new ApplicationError('Access changed. Reload your account before continuing.',403);
    if(typeof requestId!=='string'||!requestId.trim()||requestId.length>128)throw new ApplicationError('A request identifier is required');
-   const fingerprint=createHash('sha256').update(JSON.stringify(command)).digest('hex');
+   const fingerprint=createHash('sha256').update(trustedPayment?canonical(command):JSON.stringify(command)).digest('hex');
    const {rows}=await c.query('select fingerprint,response from vega_private.app_commands where tenant_id=$1 and business_id=$2 and actor_id=$3 and request_id=$4',[a.tenantId,a.businessId,userId,requestId]);
    if(rows.length){
     if(rows[0].fingerprint!==fingerprint)throw new ApplicationError('Request identifier already used for another operation',409);
@@ -84,7 +103,7 @@ export function createApplicationStore(pool,{receiptPublicKey=process.env.RECEIP
     return {...rows[0].response,independentReceipt:{operationId:delivered.rows[0].event_id,state:delivered.rows[0].state}};
    }
    if(!receiptPublicKey)throw new ApplicationError('Independent recovery capture is unavailable. No change was committed.',503);
-   const next=transition(row.state,command,a);
+   const next=transition(row.state,command,a,{trustedPayment});
    const receipt=buildRecoveryReceipt({before:row.state,after:next.state,revision:row.revision,authority:a,command,result:next.result,occurredAt:new Date().toISOString(),publicKey:receiptPublicKey});
    await c.query('update vega_private.app_state set state=$1,revision=revision+1,updated_at=now() where tenant_id=$2 and business_id=$3',[JSON.stringify(next.state),a.tenantId,a.businessId]);
    await c.query('insert into vega_private.app_commands(tenant_id,business_id,actor_id,request_id,fingerprint,response) values($1,$2,$3,$4,$5,$6)',[a.tenantId,a.businessId,userId,requestId,fingerprint,JSON.stringify(next.result)]);
@@ -93,5 +112,6 @@ export function createApplicationStore(pool,{receiptPublicKey=process.env.RECEIP
   }),
   close:()=>pool.end()
  };
+ return store;
 }
 export function createApplicationDatabase(value){const pool=new pg.Pool({...applicationDatabaseOptions(value),max:5});pool.on('error',()=>{});return createApplicationStore(pool);}

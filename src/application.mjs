@@ -1,5 +1,6 @@
 import {bookingAccounting,cancelBooking} from './cancellation.mjs';
 import {commerceView,createPurchaseDraft} from './commerce.mjs';
+import {paymentTransition} from './payments.mjs';
 import {classCancellationOption,cancelClass} from './class-cancellation.mjs';
 import {createClass} from './class-creation.mjs';
 import {classDuplicateOption,duplicateClass} from './class-duplication.mjs';
@@ -57,9 +58,13 @@ export function visibleState(state,authority,at=new Date().toISOString()){
  Object.assign(result,commerceView(state,authority));
  return result;
 }
-export function transition(original, command, authority, {id=randomUUID,now=()=>new Date().toISOString()}={}){
+export function transition(original, command, authority, {id=randomUUID,now=()=>new Date().toISOString(),trustedPayment=false}={}){
  const state=structuredClone(original), body=command.body||{};
  if(!text(body.requestId,128))fail('A request identifier is required');
+ if(command.action.startsWith('payment-')){
+  if(!trustedPayment)fail('Internal payment operation only',403);
+  return {state,result:paymentTransition(state,command,authority,{id,now},fail)};
+ }
  const staff=()=>{if(authority.role!=='staff')fail('Staff access required',403);};
  const own=participantId=>{if(!authority.participantIds.includes(participantId)&&authority.role!=='staff')fail('Participant authority required',403); if(!state.participants.some(p=>p.id===participantId))fail('Participant unavailable',404);};
  if(command.action==='purchase-draft')return {state,result:createPurchaseDraft(state,body,authority,{id,now},fail)};
