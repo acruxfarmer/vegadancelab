@@ -1,0 +1,310 @@
+{
+  "creditEvents": [
+    {
+      "id": "fe238bae-8060-452f-b789-3a088c998181",
+      "type": "issue",
+      "passId": "0f6df0e1-fb79-4117-9814-1c8560bae983",
+      "reason": "Verified purchase payment",
+      "source": "sandbox_purchase",
+      "unitId": "91e89646-bae7-4001-b0c8-dba049436a55",
+      "actorId": "e5946b40-9839-4a96-99d5-93262d9573f0",
+      "bookingId": null,
+      "createdAt": "2026-10-02T22:22:38.284Z",
+      "requestId": "fulfill:c5ddcda0-5d3f-4e1a-9916-03c6a990a2b1",
+      "issuanceId": "9c37ecaa-a707-4d78-b477-33f8e3a78cb8",
+      "participantId": "vega-member-test-joe"
+    },
+    {
+      "id": "1d639544-57cd-40ff-b290-dbcf27899d8b",
+      "type": "issue",
+      "passId": "0f6df0e1-fb79-4117-9814-1c8560bae983",
+      "reason": "Verified purchase payment",
+      "source": "sandbox_purchase",
+      "unitId": "02842d00-cbcc-4ead-b3bb-a2bbf2d364bf",
+      "actorId": "e5946b40-9839-4a96-99d5-93262d9573f0",
+      "bookingId": null,
+      "createdAt": "2026-10-02T22:22:38.284Z",
+      "requestId": "fulfill:c5ddcda0-5d3f-4e1a-9916-03c6a990a2b1",
+      "issuanceId": "9c37ecaa-a707-4d78-b477-33f8e3a78cb8",
+      "participantId": "vega-member-test-joe"
+    },
+    {
+      "id": "2cc27542-3a16-43fb-8883-5f8fd37d8683",
+      "type": "issue",
+      "passId": "0f6df0e1-fb79-4117-9814-1c8560bae983",
+      "reason": "Verified purchase payment",
+      "source": "sandbox_purchase",
+      "unitId": "9d9f8120-cd94-40b1-93cb-7b805f874a98",
+      "actorId": "e5946b40-9839-4a96-99d5-93262d9573f0",
+      "bookingId": null,
+      "createdAt": "2026-10-02T22:22:38.284Z",
+      "requestId": "fulfill:c5ddcda0-5d3f-4e1a-9916-03c6a990a2b1",
+      "issuanceId": "9c37ecaa-a707-4d78-b477-33f8e3a78cb8",
+      "participantId": "vega-member-test-joe"
+    }
+  ],
+  "reservations": [],
+  "purchaseDrafts": [
+    {
+      "id": "3609b576-10f1-4d16-94df-e46e10ec7a96",
+      "terms": {
+        "id": "development-three-class-pack-usd60-v1",
+        "tax": {
+          "treatment": "non_taxable",
+          "amountMinor": 0,
+          "jurisdiction": "Oregon Development",
+          "productionReconfirmationRequired": true
+        },
+        "version": 1,
+        "classIds": [],
+        "currency": "USD",
+        "quantity": 3,
+        "tenantId": "vega-development",
+        "productId": "5dcc7d89-2398-4b29-ba6e-f4e549d4e4f1",
+        "validDays": 30,
+        "businessId": "vega-dance-lab",
+        "categories": [
+          "Pack verification"
+        ],
+        "priceLabel": "DEVELOPMENT TEST PRICE ONLY",
+        "priceMinor": 6000,
+        "environment": "development",
+        "productName": "DEV TEST — Three-class pack",
+        "productType": "class_pack",
+        "refundPolicy": {
+          "kind": "full_only",
+          "approval": "staff",
+          "whollyUnused": true,
+          "windowStartsAt": "confirmed_payment_successful_purchase_completion",
+          "requestWithinDays": 30,
+          "noActiveReservations": true
+        },
+        "validityStart": "confirmed_payment"
+      },
+      "status": "paid",
+      "buyerId": "e5946b40-9839-4a96-99d5-93262d9573f0",
+      "offerId": "development-three-class-pack-usd60-v1",
+      "currency": "USD",
+      "taxMinor": 0,
+      "tenantId": "vega-development",
+      "createdAt": "2026-10-02T17:43:43.689Z",
+      "expiresAt": "2026-11-01T22:22:38.284Z",
+      "requestId": "fresh69-20261002-draft",
+      "validFrom": "2026-10-02T22:22:38.284Z",
+      "businessId": "vega-dance-lab",
+      "issuanceId": "9c37ecaa-a707-4d78-b477-33f8e3a78cb8",
+      "totalMinor": 6000,
+      "offerVersion": 1,
+      "participantId": "vega-member-test-joe",
+      "paymentStatus": "succeeded",
+      "subtotalMinor": 6000,
+      "activeAttemptId": "c5ddcda0-5d3f-4e1a-9916-03c6a990a2b1",
+      "fulfillmentStatus": "issued",
+      "paymentConfirmedAt": "2026-10-02T22:22:38.284Z",
+      "refundWindowStartsAt": "2026-10-02T22:22:38.284Z"
+    }
+  ],
+  "entitlementIssuances": [
+    {
+      "id": "9c37ecaa-a707-4d78-b477-33f8e3a78cb8",
+      "intent": "{\"productId\":\"5dcc7d89-2398-4b29-ba6e-f4e549d4e4f1\",\"participantId\":\"vega-member-test-joe\",\"membershipRef\":null,\"periodStart\":null}",
+      "passId": "0f6df0e1-fb79-4117-9814-1c8560bae983",
+      "reason": "Verified purchase payment",
+      "source": "sandbox_purchase",
+      "actorId": "e5946b40-9839-4a96-99d5-93262d9573f0",
+      "quantity": 3,
+      "createdAt": "2026-10-02T22:22:38.284Z",
+      "expiresAt": "2026-11-01T22:22:38.284Z",
+      "productId": "5dcc7d89-2398-4b29-ba6e-f4e549d4e4f1",
+      "reference": "purchase:3609b576-10f1-4d16-94df-e46e10ec7a96",
+      "validFrom": "2026-10-02T22:22:38.284Z",
+      "membershipId": null,
+      "participantId": "vega-member-test-joe",
+      "productSnapshot": {
+        "id": "5dcc7d89-2398-4b29-ba6e-f4e549d4e4f1",
+        "name": "DEV TEST — Three-class pack",
+        "type": "class_pack",
+        "classIds": [],
+        "quantity": 3,
+        "validDays": 30,
+        "categories": [
+          "Pack verification"
+        ]
+      }
+    }
+  ],
+  "paymentAttempts": [
+    {
+      "id": "c5ddcda0-5d3f-4e1a-9916-03c6a990a2b1",
+      "reason": "provider_succeeded",
+      "status": "succeeded",
+      "buyerId": "e5946b40-9839-4a96-99d5-93262d9573f0",
+      "evidence": {
+        "amount": 6000,
+        "reason": "provider_succeeded",
+        "status": "succeeded",
+        "currency": "USD",
+        "verified": true,
+        "paymentId": "8VcoKhYwBs2FzSVqIjZjCD8yqyAZY",
+        "referenceId": "c5ddcda0-5d3f-4e1a-9916-03c6a990a2b1",
+        "verification": {
+          "method": "authenticated_lookup",
+          "observedAt": "2026-10-02T22:22:38.133Z",
+          "evidenceDigest": "0993361f85e99d0f27a5f054b305a9c7e017b8c153f7ed28716fe9e204f7e95f"
+        },
+        "integrationRef": {
+          "id": "vega-development-card",
+          "version": 1,
+          "provider": "square",
+          "tenantId": "vega-development",
+          "businessId": "vega-dance-lab",
+          "environment": "sandbox"
+        },
+        "transactionRef": {
+          "id": "8VcoKhYwBs2FzSVqIjZjCD8yqyAZY",
+          "provider": "square",
+          "tenantId": "vega-development",
+          "businessId": "vega-dance-lab",
+          "environment": "sandbox",
+          "integrationId": "vega-development-card",
+          "integrationVersion": 1
+        },
+        "providerEvidence": {
+          "status": "COMPLETED",
+          "provider": "square",
+          "createdAt": "2026-10-02T22:22:37.22Z",
+          "updatedAt": "2026-10-02T22:22:37.465Z",
+          "locationId": "L7EMFD4DPV27P",
+          "merchantId": "MLJGVWY9QZ66R",
+          "environment": "sandbox",
+          "applicationId": "sandbox-sq0idb-iQmG15i6Pe5yMJMLmu_miw"
+        },
+        "normalizationVersion": 1
+      },
+      "createdAt": "2026-10-02T17:44:35.513Z",
+      "paymentId": "8VcoKhYwBs2FzSVqIjZjCD8yqyAZY",
+      "purchaseId": "3609b576-10f1-4d16-94df-e46e10ec7a96",
+      "offerDigest": "5774a6c42989d2f65fd2aaf48fca1cbbb98369734d85f4285ccaa8bed477b62e",
+      "referenceId": "c5ddcda0-5d3f-4e1a-9916-03c6a990a2b1",
+      "sourceDigest": "8d93e083d69269e7ba5831a56b5f62a98d969cc45b530fef3396c0537d22b57e",
+      "participantId": "vega-member-test-joe",
+      "requestDigest": "38e4860a42f3777761d99ce2696be164e316a391305bae501b97dcf2341ee7dd",
+      "idempotencyKey": "c5ddcda0-5d3f-4e1a-9916-03c6a990a2b1",
+      "integrationRef": {
+        "id": "vega-development-card",
+        "version": 1,
+        "provider": "square",
+        "tenantId": "vega-development",
+        "businessId": "vega-dance-lab",
+        "environment": "sandbox"
+      },
+      "transactionRef": {
+        "id": "8VcoKhYwBs2FzSVqIjZjCD8yqyAZY",
+        "provider": "square",
+        "tenantId": "vega-development",
+        "businessId": "vega-dance-lab",
+        "environment": "sandbox",
+        "integrationId": "vega-development-card",
+        "integrationVersion": 1
+      },
+      "financialIntent": {
+        "method": "card",
+        "currency": "USD",
+        "collection": "immediate",
+        "amountMinor": 6000,
+        "tipsAllowed": false,
+        "partialAllowed": false
+      },
+      "prepareRequestId": "fresh69-20261002-shared",
+      "executionStartedAt": "2026-10-02T22:12:37.843Z",
+      "paymentConfirmedAt": "2026-10-02T22:22:38.284Z",
+      "prepareSourceDigest": null,
+      "executionRequestDigest": "c9b27236c0f8595f74b1eba37200e9401994ba90256ff7670738ca267bce4e27"
+    }
+  ],
+  "creditUnits": [
+    {
+      "id": "91e89646-bae7-4001-b0c8-dba049436a55",
+      "passId": "0f6df0e1-fb79-4117-9814-1c8560bae983",
+      "status": "available",
+      "entitlement": {
+        "source": "sandbox_purchase",
+        "classIds": [],
+        "expiresAt": "2026-11-01T22:22:38.284Z",
+        "productId": "5dcc7d89-2398-4b29-ba6e-f4e549d4e4f1",
+        "validFrom": "2026-10-02T22:22:38.284Z",
+        "categories": [
+          "Pack verification"
+        ],
+        "issuanceId": "9c37ecaa-a707-4d78-b477-33f8e3a78cb8",
+        "productName": "DEV TEST — Three-class pack",
+        "productType": "class_pack",
+        "membershipId": null
+      },
+      "participantId": "vega-member-test-joe"
+    },
+    {
+      "id": "02842d00-cbcc-4ead-b3bb-a2bbf2d364bf",
+      "passId": "0f6df0e1-fb79-4117-9814-1c8560bae983",
+      "status": "available",
+      "entitlement": {
+        "source": "sandbox_purchase",
+        "classIds": [],
+        "expiresAt": "2026-11-01T22:22:38.284Z",
+        "productId": "5dcc7d89-2398-4b29-ba6e-f4e549d4e4f1",
+        "validFrom": "2026-10-02T22:22:38.284Z",
+        "categories": [
+          "Pack verification"
+        ],
+        "issuanceId": "9c37ecaa-a707-4d78-b477-33f8e3a78cb8",
+        "productName": "DEV TEST — Three-class pack",
+        "productType": "class_pack",
+        "membershipId": null
+      },
+      "participantId": "vega-member-test-joe"
+    },
+    {
+      "id": "9d9f8120-cd94-40b1-93cb-7b805f874a98",
+      "passId": "0f6df0e1-fb79-4117-9814-1c8560bae983",
+      "status": "available",
+      "entitlement": {
+        "source": "sandbox_purchase",
+        "classIds": [],
+        "expiresAt": "2026-11-01T22:22:38.284Z",
+        "productId": "5dcc7d89-2398-4b29-ba6e-f4e549d4e4f1",
+        "validFrom": "2026-10-02T22:22:38.284Z",
+        "categories": [
+          "Pack verification"
+        ],
+        "issuanceId": "9c37ecaa-a707-4d78-b477-33f8e3a78cb8",
+        "productName": "DEV TEST — Three-class pack",
+        "productType": "class_pack",
+        "membershipId": null
+      },
+      "participantId": "vega-member-test-joe"
+    }
+  ],
+  "passes": [
+    {
+      "id": "0f6df0e1-fb79-4117-9814-1c8560bae983",
+      "label": "DEV TEST — Three-class pack",
+      "quantity": 3,
+      "createdAt": "2026-10-02T22:22:38.284Z",
+      "entitlement": {
+        "source": "sandbox_purchase",
+        "classIds": [],
+        "expiresAt": "2026-11-01T22:22:38.284Z",
+        "productId": "5dcc7d89-2398-4b29-ba6e-f4e549d4e4f1",
+        "validFrom": "2026-10-02T22:22:38.284Z",
+        "categories": [
+          "Pack verification"
+        ],
+        "issuanceId": "9c37ecaa-a707-4d78-b477-33f8e3a78cb8",
+        "productName": "DEV TEST — Three-class pack",
+        "productType": "class_pack",
+        "membershipId": null
+      },
+      "participantId": "vega-member-test-joe"
+    }
+  ]
+}

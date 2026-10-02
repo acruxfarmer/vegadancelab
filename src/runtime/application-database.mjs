@@ -7,6 +7,7 @@ import {resolveStoredIntegration} from './payment-integrations.mjs';
 import {reviewClassEdit} from '../class-editing.mjs';
 import {reviewClassDuplicate} from '../class-duplication.mjs';
 import {buildRecoveryReceipt,buildRevocationReceipt,receiptKey} from '../recovery-receipt.mjs';
+import {assessRefundEligibility} from '../refund-eligibility.mjs';
 
 export function applicationDatabaseOptions(value){
  const u=new URL(value),ref='cjdoczrxcjynjhgpgqop';
@@ -14,12 +15,12 @@ export function applicationDatabaseOptions(value){
  if(!['postgres:','postgresql:'].includes(u.protocol)||(!direct&&!pooler)||u.pathname!=='/postgres'||!['','5432','6543'].includes(u.port)||decodeURIComponent(u.username)!==(direct?'vega_app_runtime':`vega_app_runtime.${ref}`)||!u.password)throw new Error('Invalid application database configuration');
  return {host:u.hostname,port:Number(u.port||5432),database:'postgres',user:decodeURIComponent(u.username),password:decodeURIComponent(u.password),ssl:databaseTls(u.hostname),connectionTimeoutMillis:10000,statement_timeout:10000,application_name:'vega-development-application'};
 }
-export function createApplicationStore(pool,{receiptPublicKey=process.env.RECEIPT_PUBLIC_KEY,resolveIntegration=resolveStoredIntegration}={}){
+export function createApplicationStore(pool,{receiptPublicKey=process.env.RECEIPT_PUBLIC_KEY,resolveIntegration=resolveStoredIntegration,refundInventory=()=>undefined,assessmentNow=()=>new Date().toISOString()}={}){
  const paymentCapability=Symbol('server payment command');
- async function transaction(userId,fn){
+ async function transaction(userId,fn,readOnly=false){
   const client=await pool.connect();
   try{
-   await client.query('begin');
+   await client.query(readOnly?'begin isolation level repeatable read read only':'begin');
    await client.query("select set_config('vega.actor_id',$1,true),set_config('vega.receipt_discovery','v1',true)",[userId]);
    const {rows}=await client.query('select tenant_id,business_id,role,participant_ids from vega_private.app_members where user_id=$1',[userId]);
    if(rows.length!==1)throw new ApplicationError('No unambiguous Vega access assignment',403);
@@ -32,6 +33,21 @@ export function createApplicationStore(pool,{receiptPublicKey=process.env.RECEIP
   if(rows.length!==1)throw new ApplicationError('Studio application data is not initialized',503);return rows[0];
  }
  const store={
+  assessRefund:(userId,purchaseId)=>transaction(userId,async(c,a)=>{
+   const assessedAt=assessmentNow();
+   const denied=()=>({contractVersion:2,purchaseId,status:'denied',reasonCodes:['OWNERSHIP_SCOPE_DENIED'],assessedAt,revision:null,staffApprovalRequired:true,executionAuthorized:false});
+   // Deny non-staff before loading any business or purchase data.
+   if(a.role!=='staff')return denied();
+   const row=await stateRow(c,a);
+   const purchase=row.state.purchaseDrafts?.find(d=>d.id===purchaseId&&d.tenantId===a.tenantId&&d.businessId===a.businessId);
+   // Missing and out-of-scope purchases have identical responses.
+   if(!purchase)return denied();
+   // Only a server-configured inventory source may assert completeness. No
+   // source is installed by default: today's missing refund ledger stays blocked.
+   const inventory=await refundInventory({state:structuredClone(row.state),authority:{...a},revision:row.revision,purchaseId});
+   const complete=inventory?.complete===true&&inventory.tenantId===a.tenantId&&inventory.businessId===a.businessId&&inventory.purchaseId===purchaseId&&String(inventory.revision)===String(row.revision)&&Array.isArray(inventory.records)&&inventory.records.every(r=>r&&typeof r==='object'&&r.purchaseId===purchaseId);
+   return {purchaseId,...assessRefundEligibility({state:row.state,authority:a,purchaseId,at:assessedAt,refundRecords:complete?inventory.records:undefined}),assessedAt,revision:row.revision};
+  },true),
   paymentContext:(userId,purchaseId)=>transaction(userId,async(c,a)=>{
    const row=await stateRow(c,a);
    const draft=purchaseForPayment(row.state,a,purchaseId,(m,s)=>{throw new ApplicationError(m,s);});

@@ -45,6 +45,13 @@ export function createApplicationApi(env,store,fetcher=fetch){
    }
    const userId=await principal(req);
    if(!store)throw new ApplicationError('Application database handoff is pending',503);
+   const refundAssessment=url.pathname.match(/^\/api\/commerce\/purchases\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\/refund-assessment$/i);
+   if(refundAssessment){
+    if(req.method!=='GET')throw new ApplicationError('Method not allowed',405);
+    if(url.search)throw new ApplicationError('Assessment query parameters are not accepted',400);
+    const assessment=await store.assessRefund(userId,refundAssessment[1]);
+    send(assessment.status==='denied'?403:200,assessment);return true;
+   }
    if(url.pathname==='/api/app'&&req.method==='GET'){const view=await store.read(userId);send(200,{...view,squareEnabled:sandboxPaymentEnabled(env),paymentExecution:{enabled:sandboxPaymentEnabled(env),purchaseId:sandboxPaymentEnabled(env)?env.VEGA_SANDBOX_PURCHASE_ID:null}});return true;}
    const operation=url.pathname.match(/^\/api\/recovery\/operations\/([a-f0-9]{64})$/);
    if(operation&&req.method==='GET'){const result=await store.operation(userId,operation[1]);send(result.pending?202:200,result);return true;}
