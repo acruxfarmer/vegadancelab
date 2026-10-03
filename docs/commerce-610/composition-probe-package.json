@@ -1,0 +1,21 @@
+{
+  "status": "LOCAL PACKAGE VERIFIED — STOP FOR JOE + CHETT REVIEW",
+  "scope": "Fixed Development read-only inventory composition probe",
+  "serviceId": "srv-dao5cjbm8hqs73db51j0",
+  "tenantId": "vega-development",
+  "businessId": "vega-dance-lab",
+  "purchaseId": "3609b576-10f1-4d16-94df-e46e10ec7a96",
+  "attemptId": "c5ddcda0-5d3f-4e1a-9916-03c6a990a2b1",
+  "baselineRevision": "127",
+  "baselineDigests": "Unchanged constants in refund-composition-job-checks.mjs; MD5, canonical state SHA256, frozen terms SHA256 and projected payload SHA256 remain distinct",
+  "probes": ["staff", "unauthorized", "member", "missing-purchase", "foreign-business", "foreign-tenant"],
+  "expected": {"assessmentUnchanged": true, "provider": "provider_unknown", "owned": "incomplete", "requiredGap": "missing_provider_activity", "executionAuthorized": false},
+  "policies": ["REFUND_CUTOFF_POLICY_UNRESOLVED", "RESTORED_USAGE_POLICY_UNRESOLVED"],
+  "transaction": "restricted vega_app_runtime; REPEATABLE READ READ ONLY; rollback",
+  "operator": {"credential": "Vega Dev - Render Operator", "creationTimeoutSeconds": 60, "useBasicParsing": true, "automaticRetry": false, "singleUse": "atomic attempt marker under the dedicated package directory", "planId": "plan-srv-006", "commandTimeoutSeconds": 120, "killGraceSeconds": 5, "internalWatchdogSeconds": 110},
+  "tests": {"probe": "21/21", "composition": "33/33", "reporter": "70/70", "regressions": "753/753", "compositionOperatorMocks": "17/17", "originalOperatorMocks": "17/17"},
+  "earlierJobLimitation": {"jobId": "job-db0ll7dg1s2s73ekhdsg", "lastObservedStatus": "Pending", "classification": "Render status-lag / terminal-state-unconfirmed", "passedReceiptAndIndependentReconciliation": true, "freshStatusQueriedDuringPreparation": false, "rule": "Do not retry, replace or cancel the earlier job merely to change its label. Existing pending/running jobs block this package's dispatch preflight."},
+  "releasePrerequisites": ["Joe + Chett candidate review", "Separate publication/deployment approval and exact-build reconciliation", "Fresh independent PostgreSQL baseline comparison", "Read-only reconciliation of earlier job status", "Separate dispatch authorization"],
+  "effects": {"published": false, "deployed": false, "dispatched": false, "liveDatabaseRead": false, "providerCalls": false, "businessMutation": false, "productionAccess": false},
+  "trustLimits": ["Fixed trusted principal seam does not prove end-to-end authentication", "Coverage, attestations, freshness and policy authority remain external", "Provider completeness is not inferred", "Independent post-job state reconciliation is required"]
+}

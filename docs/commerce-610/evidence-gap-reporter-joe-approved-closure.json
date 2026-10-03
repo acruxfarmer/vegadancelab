@@ -1,0 +1,26 @@
+{
+  "status": "APPROVED / CLOSED",
+  "authority": "Joe explicit approval in this conversation",
+  "scope": "Bounded local read-only evidence-gap reporter",
+  "implementation": "src/refund-evidence-gaps.mjs",
+  "tests": "test/refund-evidence-gaps.test.mjs",
+  "results": {
+    "nineGapKindsImplemented": true,
+    "scopedContract": true,
+    "policyBlocksSeparateFromEvidenceGaps": true,
+    "executionAuthorizedInvariant": false,
+    "deterministicOutput": true,
+    "inputImmutability": true,
+    "targetedTests": "70/70",
+    "regressionTests": "699/699",
+    "businessOrProcessorSpecificBranches": false,
+    "databaseProviderProductionImpact": "none"
+  },
+  "trustLimits": [
+    "Reporter cannot discover omitted records or authenticate evidence.",
+    "Trusted attestations and coverage assertions remain infrastructure responsibilities.",
+    "Approved freshness rules remain external.",
+    "REFUND_CUTOFF_POLICY_UNRESOLVED and RESTORED_USAGE_POLICY_UNRESOLVED remain separate policy blocks."
+  ],
+  "immutabilityMeaning": "Input immutability and deterministic, side-effect-free reporting verified; returned JavaScript objects are not recursively frozen."
+}

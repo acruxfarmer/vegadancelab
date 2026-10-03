@@ -1,0 +1,21 @@
+{
+  "status": "LOCAL VERIFICATION PASS — awaiting review",
+  "scope": "Server-owned refund inventory composition plus evidence-gap reporter",
+  "implementation": "src/refund-inventory-composition.mjs",
+  "tests": "test/refund-inventory-composition.test.mjs",
+  "targetedTests": "33/33",
+  "regressionTests": "732/732",
+  "fixtureMatrix": "two businesses x two simulated processors; provider unknown, unresolved policy with complete evidence, incomplete owned history, stale provider, conflict, complete evidence; denial and loader integration",
+  "assessmentPreservedVerbatim": true,
+  "loaderAssemblerValidatorSemanticsChanged": false,
+  "denialDisclosesAssessmentOrGaps": false,
+  "executionAuthorized": false,
+  "determinismAndUnchangedInputsVerified": true,
+  "liveAccessDeploymentBusinessMutationProductionImpact": "none",
+  "limits": [
+    "Trusted server inputs only; not an HTTP authorization boundary.",
+    "Pre-inventory failures without a trusted envelope retain their original blocked assessment and do not produce detailed gaps.",
+    "Completeness, authentication, freshness and policy authority remain external dependencies."
+  ],
+  "nextRecommendation": "Separately review a single Development read-only hosted composition probe for the existing fixed purchase, with sanitized staff evidence and denial fixtures; no public route or provider acquisition required."
+}

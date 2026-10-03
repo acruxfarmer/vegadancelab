@@ -1,0 +1,38 @@
+{
+  "nextSlice": {
+    "authorization": "plan only",
+    "name": "Development read-only inventory composition probe",
+    "implementationStarted": false
+  },
+  "status": "APPROVED / CLOSED",
+  "recordedAt": "2026-10-03T20:14:43.3514873+00:00",
+  "results": {
+    "fixtureMatrix": "two businesses x two simulated processors",
+    "regressionTests": "732/732",
+    "integrationTests": "33/33",
+    "disclosureSafeDenial": "PASS",
+    "unchangedAssessmentSemantics": "PASS",
+    "databaseProviderProductionImpact": "none",
+    "staffScopedDetailedGaps": "PASS",
+    "providerUnknownGapReporting": "PASS",
+    "completeEvidenceUnresolvedPolicySeparation": "PASS",
+    "deterministicOutput": true,
+    "inputImmutability": true
+  },
+  "scope": "Bounded local server-owned refund inventory composition",
+  "authority": "Joe explicit approval",
+  "preserved": {
+    "executionAuthorized": false,
+    "authentication": "external",
+    "freshnessPolicy": "external",
+    "coverageAndAttestations": "external",
+    "policyBlocks": [
+      "REFUND_CUTOFF_POLICY_UNRESOLVED",
+      "RESTORED_USAGE_POLICY_UNRESOLVED"
+    ]
+  },
+  "evidence": {
+    "sha256": "47C3FE7EDFB0CA1AFA135B14ACD8652659EDBDA320655F361B19A1C48FAD227B",
+    "file": "inventory-composition-local-verification.json"
+  }
+}
