@@ -1,0 +1,15 @@
+{
+  "status": "prepared_for_review_not_dispatched",
+  "targetedNodeTests": {"passed": 51, "failed": 0},
+  "regressionNodeTests": {"passed": 629, "failed": 0},
+  "mockedOperatorScenarios": {"passed": 11, "failed": 0},
+  "operatorCases": ["success_and_duplicate_prevention", "wrong_service", "wrong_build", "existing_job", "execution_enabled", "ambiguous_dispatch", "status_failure_and_single_cancel", "job_failure", "changed_state", "unsafe_evidence", "unsealed_default_and_override_guards"],
+  "liveDatabaseVerification": "pending",
+  "renderManagementCallsDuringTesting": 0,
+  "deploymentsRequested": 0,
+  "jobsDispatched": 0,
+  "productionAccess": false,
+  "squareCalls": 0,
+  "revision127": "pinned_required_baseline_not_freshly_observed_by_this_package",
+  "independentDatabaseReconciliation": "required_after_authorized_live_run"
+}
