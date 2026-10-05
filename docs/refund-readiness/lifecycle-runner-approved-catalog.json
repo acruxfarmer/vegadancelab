@@ -1,0 +1,1005 @@
+{
+  "relations": [
+    {
+      "relname": "authorization_assignment_even_tenant_id_business_id_command_key",
+      "relkind": "i",
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "owner": "$OWNER",
+      "acl": null
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "relkind": "r",
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "owner": "$OWNER",
+      "acl": "{$OWNER=arwdDxtm/$OWNER}"
+    },
+    {
+      "relname": "authorization_assignment_events_pkey",
+      "relkind": "i",
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "owner": "$OWNER",
+      "acl": null
+    },
+    {
+      "relname": "authorization_assignment_heads",
+      "relkind": "r",
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "owner": "$OWNER",
+      "acl": "{$OWNER=arwdDxtm/$OWNER}"
+    },
+    {
+      "relname": "authorization_assignment_heads_pkey",
+      "relkind": "i",
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "owner": "$OWNER",
+      "acl": null
+    },
+    {
+      "relname": "authorization_commands",
+      "relkind": "r",
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "owner": "$OWNER",
+      "acl": "{$OWNER=arwdDxtm/$OWNER}"
+    },
+    {
+      "relname": "authorization_commands_pkey",
+      "relkind": "i",
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "owner": "$OWNER",
+      "acl": null
+    },
+    {
+      "relname": "authorization_migration_observations",
+      "relkind": "r",
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "owner": "$OWNER",
+      "acl": "{$OWNER=arwdDxtm/$OWNER}"
+    },
+    {
+      "relname": "authorization_migration_observations_pkey",
+      "relkind": "i",
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "owner": "$OWNER",
+      "acl": null
+    },
+    {
+      "relname": "authorization_origin_proofs",
+      "relkind": "r",
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "owner": "$OWNER",
+      "acl": "{$OWNER=arwdDxtm/$OWNER}"
+    },
+    {
+      "relname": "authorization_origin_proofs_pkey",
+      "relkind": "i",
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "owner": "$OWNER",
+      "acl": null
+    },
+    {
+      "relname": "authorization_policy_status_events",
+      "relkind": "r",
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "owner": "$OWNER",
+      "acl": "{$OWNER=arwdDxtm/$OWNER}"
+    },
+    {
+      "relname": "authorization_policy_status_events_pkey",
+      "relkind": "i",
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "owner": "$OWNER",
+      "acl": null
+    },
+    {
+      "relname": "authorization_policy_versions",
+      "relkind": "r",
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "owner": "$OWNER",
+      "acl": "{$OWNER=arwdDxtm/$OWNER}"
+    },
+    {
+      "relname": "authorization_policy_versions_pkey",
+      "relkind": "i",
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "owner": "$OWNER",
+      "acl": null
+    }
+  ],
+  "columns": [
+    {
+      "relname": "authorization_assignment_events",
+      "attname": "tenant_id",
+      "attnum": 1,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "attname": "business_id",
+      "attnum": 2,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "attname": "assignment_id",
+      "attnum": 3,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "attname": "version",
+      "attnum": 4,
+      "type": "bigint",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "attname": "previous_version",
+      "attnum": 5,
+      "type": "bigint",
+      "attnotnull": false,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "attname": "kind",
+      "attnum": 6,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "attname": "command_id",
+      "attnum": 7,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "attname": "recorded_at",
+      "attnum": 8,
+      "type": "timestamp with time zone",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "attname": "effective_from",
+      "attnum": 9,
+      "type": "timestamp with time zone",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "attname": "expires_at",
+      "attnum": 10,
+      "type": "timestamp with time zone",
+      "attnotnull": false,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "attname": "policy_id",
+      "attnum": 11,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "attname": "policy_version",
+      "attnum": 12,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "attname": "issuer_ref",
+      "attnum": 13,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "attname": "provenance_ref",
+      "attnum": 14,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "attname": "origin_proof_ref",
+      "attnum": 15,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "attname": "revoked_at",
+      "attnum": 16,
+      "type": "timestamp with time zone",
+      "attnotnull": false,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "attname": "revocation_reason",
+      "attnum": 17,
+      "type": "text",
+      "attnotnull": false,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "attname": "facts",
+      "attnum": 18,
+      "type": "jsonb",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_assignment_heads",
+      "attname": "tenant_id",
+      "attnum": 1,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_assignment_heads",
+      "attname": "business_id",
+      "attnum": 2,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_assignment_heads",
+      "attname": "assignment_id",
+      "attnum": 3,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_assignment_heads",
+      "attname": "principal_id",
+      "attnum": 4,
+      "type": "uuid",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_assignment_heads",
+      "attname": "head_version",
+      "attnum": 5,
+      "type": "bigint",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_assignment_heads",
+      "attname": "previous_assignment_id",
+      "attnum": 6,
+      "type": "text",
+      "attnotnull": false,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_commands",
+      "attname": "tenant_id",
+      "attnum": 1,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_commands",
+      "attname": "business_id",
+      "attnum": 2,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_commands",
+      "attname": "command_id",
+      "attnum": 3,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_commands",
+      "attname": "command",
+      "attnum": 4,
+      "type": "jsonb",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_commands",
+      "attname": "assignment_id",
+      "attnum": 5,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_commands",
+      "attname": "result_version",
+      "attnum": 6,
+      "type": "bigint",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_migration_observations",
+      "attname": "observation_id",
+      "attnum": 1,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_migration_observations",
+      "attname": "tenant_id",
+      "attnum": 2,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_migration_observations",
+      "attname": "business_id",
+      "attnum": 3,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_migration_observations",
+      "attname": "observed_at",
+      "attnum": 4,
+      "type": "timestamp with time zone",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_migration_observations",
+      "attname": "observed_membership",
+      "attnum": 5,
+      "type": "jsonb",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_migration_observations",
+      "attname": "provenance_ref",
+      "attnum": 6,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_migration_observations",
+      "attname": "unknown_pre_migration_history",
+      "attnum": 7,
+      "type": "boolean",
+      "attnotnull": true,
+      "default_expression": "true"
+    },
+    {
+      "relname": "authorization_migration_observations",
+      "attname": "grants_authority",
+      "attnum": 8,
+      "type": "boolean",
+      "attnotnull": true,
+      "default_expression": "false"
+    },
+    {
+      "relname": "authorization_origin_proofs",
+      "attname": "tenant_id",
+      "attnum": 1,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_origin_proofs",
+      "attname": "business_id",
+      "attnum": 2,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_origin_proofs",
+      "attname": "proof_ref",
+      "attnum": 3,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_origin_proofs",
+      "attname": "assignment_id",
+      "attnum": 4,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_origin_proofs",
+      "attname": "principal_id",
+      "attnum": 5,
+      "type": "uuid",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_origin_proofs",
+      "attname": "issuer_ref",
+      "attnum": 6,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_origin_proofs",
+      "attname": "command_id",
+      "attnum": 7,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_origin_proofs",
+      "attname": "authorized_at",
+      "attnum": 8,
+      "type": "timestamp with time zone",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_origin_proofs",
+      "attname": "expires_at",
+      "attnum": 9,
+      "type": "timestamp with time zone",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_origin_proofs",
+      "attname": "provenance_ref",
+      "attnum": 10,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_policy_status_events",
+      "attname": "tenant_id",
+      "attnum": 1,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_policy_status_events",
+      "attname": "business_id",
+      "attnum": 2,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_policy_status_events",
+      "attname": "policy_id",
+      "attnum": 3,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_policy_status_events",
+      "attname": "policy_version",
+      "attnum": 4,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_policy_status_events",
+      "attname": "kind",
+      "attnum": 5,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_policy_status_events",
+      "attname": "effective_at",
+      "attnum": 6,
+      "type": "timestamp with time zone",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_policy_status_events",
+      "attname": "recorded_at",
+      "attnum": 7,
+      "type": "timestamp with time zone",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_policy_status_events",
+      "attname": "reason",
+      "attnum": 8,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_policy_status_events",
+      "attname": "issuer_ref",
+      "attnum": 9,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_policy_status_events",
+      "attname": "provenance_ref",
+      "attnum": 10,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_policy_status_events",
+      "attname": "replacement_id",
+      "attnum": 11,
+      "type": "text",
+      "attnotnull": false,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_policy_status_events",
+      "attname": "replacement_version",
+      "attnum": 12,
+      "type": "text",
+      "attnotnull": false,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_policy_versions",
+      "attname": "tenant_id",
+      "attnum": 1,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_policy_versions",
+      "attname": "business_id",
+      "attnum": 2,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_policy_versions",
+      "attname": "policy_id",
+      "attnum": 3,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_policy_versions",
+      "attname": "policy_version",
+      "attnum": 4,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_policy_versions",
+      "attname": "owner_ref",
+      "attnum": 5,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_policy_versions",
+      "attname": "issuer_ref",
+      "attnum": 6,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_policy_versions",
+      "attname": "effective_from",
+      "attnum": 7,
+      "type": "timestamp with time zone",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_policy_versions",
+      "attname": "expires_at",
+      "attnum": 8,
+      "type": "timestamp with time zone",
+      "attnotnull": false,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_policy_versions",
+      "attname": "recorded_at",
+      "attnum": 9,
+      "type": "timestamp with time zone",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_policy_versions",
+      "attname": "provenance_ref",
+      "attnum": 10,
+      "type": "text",
+      "attnotnull": true,
+      "default_expression": null
+    },
+    {
+      "relname": "authorization_policy_versions",
+      "attname": "rules",
+      "attnum": 11,
+      "type": "jsonb",
+      "attnotnull": true,
+      "default_expression": null
+    }
+  ],
+  "constraints": [
+    {
+      "relname": "authorization_assignment_events",
+      "conname": "authorization_assignment_eve_tenant_id_business_id_assign_fkey1",
+      "definition": "FOREIGN KEY (tenant_id, business_id, assignment_id, previous_version) REFERENCES vega_private.authorization_assignment_events(tenant_id, business_id, assignment_id, version) DEFERRABLE INITIALLY DEFERRED"
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "conname": "authorization_assignment_even_tenant_id_business_id_assign_fkey",
+      "definition": "FOREIGN KEY (tenant_id, business_id, assignment_id) REFERENCES vega_private.authorization_assignment_heads(tenant_id, business_id, assignment_id)"
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "conname": "authorization_assignment_even_tenant_id_business_id_command_key",
+      "definition": "UNIQUE (tenant_id, business_id, command_id)"
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "conname": "authorization_assignment_even_tenant_id_business_id_policy_fkey",
+      "definition": "FOREIGN KEY (tenant_id, business_id, policy_id, policy_version) REFERENCES vega_private.authorization_policy_versions(tenant_id, business_id, policy_id, policy_version)"
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "conname": "authorization_assignment_events_check",
+      "definition": "CHECK (version = 1 AND previous_version IS NULL AND kind = 'grant'::text OR version > 1 AND previous_version = (version - 1) AND (kind = ANY (ARRAY['change'::text, 'revoke'::text])))"
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "conname": "authorization_assignment_events_check1",
+      "definition": "CHECK (effective_from = recorded_at)"
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "conname": "authorization_assignment_events_check2",
+      "definition": "CHECK (expires_at IS NULL OR expires_at > effective_from OR kind = 'revoke'::text)"
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "conname": "authorization_assignment_events_check3",
+      "definition": "CHECK (kind = 'revoke'::text AND revoked_at IS NOT NULL AND revocation_reason IS NOT NULL AND revoked_at = effective_from AND length(revocation_reason) > 0 OR kind <> 'revoke'::text AND revoked_at IS NULL AND revocation_reason IS NULL)"
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "conname": "authorization_assignment_events_facts_check",
+      "definition": "CHECK (jsonb_typeof(facts) = 'object'::text AND COALESCE(length(facts ->> 'role'::text), 0) > 0 AND COALESCE(length(facts ->> 'purchaseId'::text), 0) > 0 AND COALESCE(length(facts ->> 'attemptId'::text), 0) > 0 AND NOT jsonb_typeof(facts -> 'permissions'::text) IS DISTINCT FROM 'array'::text)"
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "conname": "authorization_assignment_events_kind_check",
+      "definition": "CHECK (kind = ANY (ARRAY['grant'::text, 'change'::text, 'revoke'::text]))"
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "conname": "authorization_assignment_events_pkey",
+      "definition": "PRIMARY KEY (tenant_id, business_id, assignment_id, version)"
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "conname": "authorization_assignment_events_version_check",
+      "definition": "CHECK (version > 0)"
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "conname": "authorization_event_head_consistency",
+      "definition": "TRIGGER DEFERRABLE INITIALLY DEFERRED"
+    },
+    {
+      "relname": "authorization_assignment_heads",
+      "conname": "authorization_assignment_head_tenant_id_business_id_previo_fkey",
+      "definition": "FOREIGN KEY (tenant_id, business_id, previous_assignment_id) REFERENCES vega_private.authorization_assignment_heads(tenant_id, business_id, assignment_id)"
+    },
+    {
+      "relname": "authorization_assignment_heads",
+      "conname": "authorization_assignment_heads_head_version_check",
+      "definition": "CHECK (head_version > 0)"
+    },
+    {
+      "relname": "authorization_assignment_heads",
+      "conname": "authorization_assignment_heads_pkey",
+      "definition": "PRIMARY KEY (tenant_id, business_id, assignment_id)"
+    },
+    {
+      "relname": "authorization_assignment_heads",
+      "conname": "authorization_head_event_consistency",
+      "definition": "TRIGGER DEFERRABLE INITIALLY DEFERRED"
+    },
+    {
+      "relname": "authorization_assignment_heads",
+      "conname": "authorization_head_event_fk",
+      "definition": "FOREIGN KEY (tenant_id, business_id, assignment_id, head_version) REFERENCES vega_private.authorization_assignment_events(tenant_id, business_id, assignment_id, version) DEFERRABLE INITIALLY DEFERRED"
+    },
+    {
+      "relname": "authorization_commands",
+      "conname": "authorization_commands_pkey",
+      "definition": "PRIMARY KEY (tenant_id, business_id, command_id)"
+    },
+    {
+      "relname": "authorization_commands",
+      "conname": "authorization_commands_tenant_id_business_id_assignment_id_fkey",
+      "definition": "FOREIGN KEY (tenant_id, business_id, assignment_id, result_version) REFERENCES vega_private.authorization_assignment_events(tenant_id, business_id, assignment_id, version) DEFERRABLE INITIALLY DEFERRED"
+    },
+    {
+      "relname": "authorization_migration_observations",
+      "conname": "authorization_migration_obse_unknown_pre_migration_histor_check",
+      "definition": "CHECK (unknown_pre_migration_history)"
+    },
+    {
+      "relname": "authorization_migration_observations",
+      "conname": "authorization_migration_observations_grants_authority_check",
+      "definition": "CHECK (NOT grants_authority)"
+    },
+    {
+      "relname": "authorization_migration_observations",
+      "conname": "authorization_migration_observations_pkey",
+      "definition": "PRIMARY KEY (observation_id)"
+    },
+    {
+      "relname": "authorization_origin_proofs",
+      "conname": "authorization_origin_proofs_check",
+      "definition": "CHECK (expires_at > authorized_at)"
+    },
+    {
+      "relname": "authorization_origin_proofs",
+      "conname": "authorization_origin_proofs_pkey",
+      "definition": "PRIMARY KEY (tenant_id, business_id, proof_ref)"
+    },
+    {
+      "relname": "authorization_policy_status_events",
+      "conname": "authorization_policy_status_e_tenant_id_business_id_policy_fkey",
+      "definition": "FOREIGN KEY (tenant_id, business_id, policy_id, policy_version) REFERENCES vega_private.authorization_policy_versions(tenant_id, business_id, policy_id, policy_version)"
+    },
+    {
+      "relname": "authorization_policy_status_events",
+      "conname": "authorization_policy_status_e_tenant_id_business_id_replac_fkey",
+      "definition": "FOREIGN KEY (tenant_id, business_id, replacement_id, replacement_version) REFERENCES vega_private.authorization_policy_versions(tenant_id, business_id, policy_id, policy_version)"
+    },
+    {
+      "relname": "authorization_policy_status_events",
+      "conname": "authorization_policy_status_events_check",
+      "definition": "CHECK (effective_at = recorded_at)"
+    },
+    {
+      "relname": "authorization_policy_status_events",
+      "conname": "authorization_policy_status_events_check1",
+      "definition": "CHECK (kind = 'withdraw'::text AND replacement_id IS NULL AND replacement_version IS NULL OR kind = 'supersede'::text AND replacement_id IS NOT NULL AND replacement_version IS NOT NULL AND (replacement_id <> policy_id OR replacement_version <> policy_version))"
+    },
+    {
+      "relname": "authorization_policy_status_events",
+      "conname": "authorization_policy_status_events_kind_check",
+      "definition": "CHECK (kind = ANY (ARRAY['withdraw'::text, 'supersede'::text]))"
+    },
+    {
+      "relname": "authorization_policy_status_events",
+      "conname": "authorization_policy_status_events_pkey",
+      "definition": "PRIMARY KEY (tenant_id, business_id, policy_id, policy_version)"
+    },
+    {
+      "relname": "authorization_policy_status_events",
+      "conname": "authorization_policy_status_events_reason_check",
+      "definition": "CHECK (length(reason) > 0)"
+    },
+    {
+      "relname": "authorization_policy_versions",
+      "conname": "authorization_policy_versions_check",
+      "definition": "CHECK (effective_from = recorded_at)"
+    },
+    {
+      "relname": "authorization_policy_versions",
+      "conname": "authorization_policy_versions_check1",
+      "definition": "CHECK (expires_at IS NULL OR expires_at > effective_from)"
+    },
+    {
+      "relname": "authorization_policy_versions",
+      "conname": "authorization_policy_versions_pkey",
+      "definition": "PRIMARY KEY (tenant_id, business_id, policy_id, policy_version)"
+    },
+    {
+      "relname": "authorization_policy_versions",
+      "conname": "authorization_policy_versions_rules_check",
+      "definition": "CHECK (jsonb_typeof(rules) = 'object'::text)"
+    }
+  ],
+  "functions": [
+    {
+      "proname": "authorization_append_assignment",
+      "arguments": "c jsonb",
+      "definition": "CREATE OR REPLACE FUNCTION vega_private.authorization_append_assignment(c jsonb)\n RETURNS bigint\n LANGUAGE plpgsql\n SET search_path TO 'pg_catalog'\nAS $function$\nDECLARE t text:=c->'scope'->>'tenantId'; b text:=c->'scope'->>'businessId';\n aid text:=c->>'assignmentId'; cid text:=c->>'commandId'; k text:=c->>'kind';\n expected bigint:=(c->>'expectedVersion')::bigint; v bigint;\n now_at timestamptz:=clock_timestamp(); old_event vega_private.authorization_assignment_events%ROWTYPE;\n replay vega_private.authorization_commands%ROWTYPE;\nBEGIN\n -- A business-scoped transaction lock also serializes conflicting command IDs.\n -- Hash collision only causes extra serialization, never loss of exclusion.\n PERFORM pg_advisory_xact_lock(hashtextextended(jsonb_build_array(t,b)::text,0));\n SELECT * INTO replay FROM vega_private.authorization_commands\n WHERE tenant_id=t AND business_id=b AND command_id=cid;\n IF FOUND THEN\n  IF replay.command IS DISTINCT FROM c THEN RAISE EXCEPTION 'Command replay conflict'; END IF;\n  RETURN replay.result_version;\n END IF;\n IF k NOT IN ('grant','change','revoke') OR expected IS NULL OR expected<0\n OR coalesce(c->>'issuerId','')='' OR coalesce(c->>'provenanceRef','')=''\n OR coalesce(c->>'originProofRef','')='' THEN RAISE EXCEPTION 'Invalid lifecycle command'; END IF;\n SELECT head_version INTO v FROM vega_private.authorization_assignment_heads\n WHERE tenant_id=t AND business_id=b AND assignment_id=aid FOR UPDATE;\n IF k='grant' THEN\n  IF FOUND OR expected<>0 THEN RAISE EXCEPTION 'Expected version conflict'; END IF;\n  IF NOT EXISTS(SELECT 1 FROM vega_private.authorization_origin_proofs o\n   WHERE o.tenant_id=t AND o.business_id=b AND o.proof_ref=c->>'originProofRef'\n   AND o.assignment_id=aid AND o.principal_id=(c->>'principalId')::uuid\n   AND o.issuer_ref=c->>'issuerId' AND o.command_id=cid\n   AND o.authorized_at<=now_at AND now_at<o.expires_at)\n   THEN RAISE EXCEPTION 'Origin proof unavailable'; END IF;\n  IF c->>'previousAssignmentId' IS NOT NULL AND NOT EXISTS(\n   SELECT 1 FROM vega_private.authorization_assignment_heads h\n   JOIN vega_private.authorization_assignment_events e ON e.tenant_id=h.tenant_id AND e.business_id=h.business_id AND e.assignment_id=h.assignment_id AND e.version=h.head_version\n   WHERE h.tenant_id=t AND h.business_id=b AND h.assignment_id=c->>'previousAssignmentId'\n    AND h.principal_id=(c->>'principalId')::uuid AND e.kind='revoke'\n    AND e.facts->>'purchaseId'=c->'facts'->>'purchaseId' AND e.facts->>'attemptId'=c->'facts'->>'attemptId')\n   THEN RAISE EXCEPTION 'Regrant lineage invalid'; END IF;\n  IF EXISTS(SELECT 1 FROM vega_private.authorization_assignment_heads h\n   JOIN vega_private.authorization_assignment_events e ON e.tenant_id=h.tenant_id AND e.business_id=h.business_id AND e.assignment_id=h.assignment_id AND e.version=h.head_version\n   WHERE h.tenant_id=t AND h.business_id=b AND h.principal_id=(c->>'principalId')::uuid AND e.kind<>'revoke'\n    AND (e.expires_at IS NULL OR now_at<e.expires_at)\n    AND e.facts->>'purchaseId'=c->'facts'->>'purchaseId' AND e.facts->>'attemptId'=c->'facts'->>'attemptId')\n   THEN RAISE EXCEPTION 'Overlapping assignment'; END IF;\n  INSERT INTO vega_private.authorization_assignment_heads VALUES\n   (t,b,aid,(c->>'principalId')::uuid,1,c->>'previousAssignmentId');\n  v:=0;\n ELSE\n  IF NOT FOUND OR v<>expected THEN RAISE EXCEPTION 'Expected version conflict'; END IF;\n  SELECT * INTO old_event FROM vega_private.authorization_assignment_events\n   WHERE tenant_id=t AND business_id=b AND assignment_id=aid AND version=v;\n  IF old_event.kind='revoke' OR now_at<=old_event.recorded_at THEN RAISE EXCEPTION 'Terminal or invalid lineage'; END IF;\n  IF k='change' AND (old_event.facts->>'purchaseId',old_event.facts->>'attemptId')\n   IS DISTINCT FROM (c->'facts'->>'purchaseId',c->'facts'->>'attemptId')\n   THEN RAISE EXCEPTION 'Assignment scope immutable'; END IF;\n END IF;\n -- Exact policy version only; withdrawal never edits the original interval.\n IF k<>'revoke' AND NOT EXISTS(\n  SELECT 1 FROM vega_private.authorization_policy_versions p\n  WHERE p.tenant_id=t AND p.business_id=b AND p.policy_id=c->>'policyId' AND p.policy_version=c->>'policyVersion'\n   AND p.effective_from<=now_at AND (p.expires_at IS NULL OR now_at<p.expires_at)\n   AND p.rules->'roles' ? (c->'facts'->>'role')\n   AND jsonb_typeof(c->'facts'->'permissions')='array'\n   AND (p.rules->'roles'->(c->'facts'->>'role')->'permissions') @> (c->'facts'->'permissions')\n   AND NOT EXISTS(SELECT 1 FROM vega_private.authorization_policy_status_events z\n    WHERE z.tenant_id=t AND z.business_id=b AND z.policy_id=p.policy_id AND z.policy_version=p.policy_version AND z.effective_at<=now_at)\n ) THEN RAISE EXCEPTION 'Policy unavailable'; END IF;\n INSERT INTO vega_private.authorization_assignment_events VALUES\n (t,b,aid,v+1,CASE WHEN v=0 THEN NULL ELSE v END,k,cid,now_at,now_at,\n CASE WHEN k='revoke' THEN old_event.expires_at ELSE (c->>'expiresAt')::timestamptz END,\n CASE WHEN k='revoke' THEN old_event.policy_id ELSE c->>'policyId' END,\n CASE WHEN k='revoke' THEN old_event.policy_version ELSE c->>'policyVersion' END,\n c->>'issuerId',c->>'provenanceRef',CASE WHEN v=0 THEN c->>'originProofRef' ELSE old_event.origin_proof_ref END,\n CASE WHEN k='revoke' THEN now_at ELSE NULL END,CASE WHEN k='revoke' THEN c->>'reason' ELSE NULL END,\n CASE WHEN k='revoke' THEN old_event.facts ELSE c->'facts' END);\n UPDATE vega_private.authorization_assignment_heads SET head_version=v+1\n WHERE tenant_id=t AND business_id=b AND assignment_id=aid AND head_version=CASE WHEN v=0 THEN 1 ELSE v END;\n IF NOT FOUND THEN RAISE EXCEPTION 'Head advancement conflict'; END IF;\n INSERT INTO vega_private.authorization_commands VALUES(t,b,cid,c,aid,v+1);\n RETURN v+1;\nEND $function$\n",
+      "acl": "{$OWNER=X/$OWNER}",
+      "owner": "$OWNER"
+    },
+    {
+      "proname": "authorization_check_head",
+      "arguments": "",
+      "definition": "CREATE OR REPLACE FUNCTION vega_private.authorization_check_head()\n RETURNS trigger\n LANGUAGE plpgsql\n SET search_path TO 'pg_catalog'\nAS $function$\nDECLARE h bigint; n bigint; top bigint;\nBEGIN\n SELECT head_version INTO h FROM vega_private.authorization_assignment_heads\n WHERE tenant_id=NEW.tenant_id AND business_id=NEW.business_id AND assignment_id=NEW.assignment_id;\n SELECT count(*),max(version) INTO n,top FROM vega_private.authorization_assignment_events\n WHERE tenant_id=NEW.tenant_id AND business_id=NEW.business_id AND assignment_id=NEW.assignment_id;\n IF h IS NULL OR top IS NULL OR h<>top OR n<>top THEN RAISE EXCEPTION 'Event/head divergence'; END IF;\n RETURN NULL;\nEND $function$\n",
+      "acl": "{$OWNER=X/$OWNER}",
+      "owner": "$OWNER"
+    },
+    {
+      "proname": "authorization_head_identity_immutable",
+      "arguments": "",
+      "definition": "CREATE OR REPLACE FUNCTION vega_private.authorization_head_identity_immutable()\n RETURNS trigger\n LANGUAGE plpgsql\n SET search_path TO 'pg_catalog'\nAS $function$\nBEGIN\n IF (NEW.tenant_id,NEW.business_id,NEW.assignment_id,NEW.principal_id,NEW.previous_assignment_id)\n IS DISTINCT FROM (OLD.tenant_id,OLD.business_id,OLD.assignment_id,OLD.principal_id,OLD.previous_assignment_id)\n THEN RAISE EXCEPTION 'Assignment identity immutable'; END IF;\n RETURN NEW;\nEND $function$\n",
+      "acl": "{$OWNER=X/$OWNER}",
+      "owner": "$OWNER"
+    },
+    {
+      "proname": "authorization_immutable",
+      "arguments": "",
+      "definition": "CREATE OR REPLACE FUNCTION vega_private.authorization_immutable()\n RETURNS trigger\n LANGUAGE plpgsql\n SET search_path TO 'pg_catalog'\nAS $function$\nBEGIN RAISE EXCEPTION 'Immutable authorization evidence'; END $function$\n",
+      "acl": "{$OWNER=X/$OWNER}",
+      "owner": "$OWNER"
+    }
+  ],
+  "triggers": [
+    {
+      "relname": "authorization_assignment_events",
+      "tgname": "authorization_event_head_consistency",
+      "tgenabled": "O",
+      "definition": "CREATE CONSTRAINT TRIGGER authorization_event_head_consistency AFTER INSERT ON vega_private.authorization_assignment_events DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION vega_private.authorization_check_head()"
+    },
+    {
+      "relname": "authorization_assignment_events",
+      "tgname": "authorization_event_immutable",
+      "tgenabled": "O",
+      "definition": "CREATE TRIGGER authorization_event_immutable BEFORE DELETE OR UPDATE ON vega_private.authorization_assignment_events FOR EACH ROW EXECUTE FUNCTION vega_private.authorization_immutable()"
+    },
+    {
+      "relname": "authorization_assignment_heads",
+      "tgname": "authorization_head_event_consistency",
+      "tgenabled": "O",
+      "definition": "CREATE CONSTRAINT TRIGGER authorization_head_event_consistency AFTER INSERT OR UPDATE ON vega_private.authorization_assignment_heads DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION vega_private.authorization_check_head()"
+    },
+    {
+      "relname": "authorization_assignment_heads",
+      "tgname": "authorization_head_identity",
+      "tgenabled": "O",
+      "definition": "CREATE TRIGGER authorization_head_identity BEFORE UPDATE ON vega_private.authorization_assignment_heads FOR EACH ROW EXECUTE FUNCTION vega_private.authorization_head_identity_immutable()"
+    },
+    {
+      "relname": "authorization_commands",
+      "tgname": "authorization_command_immutable",
+      "tgenabled": "O",
+      "definition": "CREATE TRIGGER authorization_command_immutable BEFORE DELETE OR UPDATE ON vega_private.authorization_commands FOR EACH ROW EXECUTE FUNCTION vega_private.authorization_immutable()"
+    },
+    {
+      "relname": "authorization_migration_observations",
+      "tgname": "authorization_observation_immutable",
+      "tgenabled": "O",
+      "definition": "CREATE TRIGGER authorization_observation_immutable BEFORE DELETE OR UPDATE ON vega_private.authorization_migration_observations FOR EACH ROW EXECUTE FUNCTION vega_private.authorization_immutable()"
+    },
+    {
+      "relname": "authorization_origin_proofs",
+      "tgname": "authorization_origin_immutable",
+      "tgenabled": "O",
+      "definition": "CREATE TRIGGER authorization_origin_immutable BEFORE DELETE OR UPDATE ON vega_private.authorization_origin_proofs FOR EACH ROW EXECUTE FUNCTION vega_private.authorization_immutable()"
+    },
+    {
+      "relname": "authorization_policy_status_events",
+      "tgname": "authorization_policy_status_immutable",
+      "tgenabled": "O",
+      "definition": "CREATE TRIGGER authorization_policy_status_immutable BEFORE DELETE OR UPDATE ON vega_private.authorization_policy_status_events FOR EACH ROW EXECUTE FUNCTION vega_private.authorization_immutable()"
+    },
+    {
+      "relname": "authorization_policy_versions",
+      "tgname": "authorization_policy_immutable",
+      "tgenabled": "O",
+      "definition": "CREATE TRIGGER authorization_policy_immutable BEFORE DELETE OR UPDATE ON vega_private.authorization_policy_versions FOR EACH ROW EXECUTE FUNCTION vega_private.authorization_immutable()"
+    }
+  ],
+  "indexes": [
+    {
+      "indexname": "authorization_assignment_even_tenant_id_business_id_command_key",
+      "indexdef": "CREATE UNIQUE INDEX authorization_assignment_even_tenant_id_business_id_command_key ON vega_private.authorization_assignment_events USING btree (tenant_id, business_id, command_id)"
+    },
+    {
+      "indexname": "authorization_assignment_events_pkey",
+      "indexdef": "CREATE UNIQUE INDEX authorization_assignment_events_pkey ON vega_private.authorization_assignment_events USING btree (tenant_id, business_id, assignment_id, version)"
+    },
+    {
+      "indexname": "authorization_assignment_heads_pkey",
+      "indexdef": "CREATE UNIQUE INDEX authorization_assignment_heads_pkey ON vega_private.authorization_assignment_heads USING btree (tenant_id, business_id, assignment_id)"
+    },
+    {
+      "indexname": "authorization_commands_pkey",
+      "indexdef": "CREATE UNIQUE INDEX authorization_commands_pkey ON vega_private.authorization_commands USING btree (tenant_id, business_id, command_id)"
+    },
+    {
+      "indexname": "authorization_migration_observations_pkey",
+      "indexdef": "CREATE UNIQUE INDEX authorization_migration_observations_pkey ON vega_private.authorization_migration_observations USING btree (observation_id)"
+    },
+    {
+      "indexname": "authorization_origin_proofs_pkey",
+      "indexdef": "CREATE UNIQUE INDEX authorization_origin_proofs_pkey ON vega_private.authorization_origin_proofs USING btree (tenant_id, business_id, proof_ref)"
+    },
+    {
+      "indexname": "authorization_policy_status_events_pkey",
+      "indexdef": "CREATE UNIQUE INDEX authorization_policy_status_events_pkey ON vega_private.authorization_policy_status_events USING btree (tenant_id, business_id, policy_id, policy_version)"
+    },
+    {
+      "indexname": "authorization_policy_versions_pkey",
+      "indexdef": "CREATE UNIQUE INDEX authorization_policy_versions_pkey ON vega_private.authorization_policy_versions USING btree (tenant_id, business_id, policy_id, policy_version)"
+    }
+  ],
+  "counts": {
+    "authorization_assignment_events": 0,
+    "authorization_assignment_heads": 0,
+    "authorization_commands": 0,
+    "authorization_migration_observations": 0,
+    "authorization_origin_proofs": 0,
+    "authorization_policy_status_events": 0,
+    "authorization_policy_versions": 0
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "contract": "acrux-administrative-artifact/1",
+  "files": {
+    "admin-plane/contract.mjs": "ff4d061589c4c93697e2184b54ff2b912b5312c022a9e14b6322875c4c54a9d5",
+    "admin-plane/journal.mjs": "2c3c08e5ab319f4285add1f327c0f9932579f3d42ecab27b33d9f7b8f7afe819",
+    "admin-plane/service.mjs": "70c197974e948b41f8b33b621b05ab6b91700e93628fd358d5337c5139a8dc6c",
+    "admin-plane/approve.mjs": "c3ab476749815a0484097acddffc4c1a3c21cb1cfcc15807c53639e2bd42ffc3",
+    "admin-plane/job.mjs": "9dddda8bc6e71e9ee3f7f472fb0e5fcb09678b26b8c1736d9fb0c4121ee51cff",
+    "admin-plane/render-adapter.mjs": "75e0ebf9065b453d322d65a8ec690222e2e6c949275504eecb0783181bda583a",
+    "admin-plane/bootstrap.mjs": "508b0b12755d7505d58fee1177539137692e9bf6a95cbaecb536449799374b31",
+    "admin-plane/targets/vega-development.mjs": "7f6534d9b4896b6594e472546c021b10a1599411984043360f0689aff439973d",
+    "admin-plane/seal-artifact.mjs": "bb1664164d5bf09bb8513d4ce82fc23268e157c0404b34817883598e34a65d41",
+    "scripts/qualify-development-admin-route.mjs": "e94bdc0f51fe1cda9b92a7c3e19f3e318ddcad6a020293b5b9079ec65815ef58",
+    "src/lifecycle-migration-runner.mjs": "0b53accec4d95e5df8be099ee9cef3ebe0bd46b9d1dd96d44023f2893e90438a",
+    "src/lifecycle-migration-catalog.mjs": "18d88f16275b29d32daed77f9eacd6b9060b28aa9922491f4206921dfd8948aa",
+    "src/runtime/database-tls.mjs": "9fab0911884d61c93a978efe32980ff45d230463fab6d967ff7fe015ff04f197",
+    "config/certificates/supabase-prod-ca-2021.crt": "1dcaafbf6fda7f21e34ff35825c1a1354408ea11e5839157e690af851c73453a",
+    "db/proposals/authorization-lifecycle-v1.sql": "a8412f7102bedcbe6d3033fdfe1be6232f7cc3d86232676106382686a02f3072",
+    "docs/refund-readiness/lifecycle-runner-approved-catalog.json": "0573070d7d64a46be7fae5ede08d0ea2599a43496568d570a4b1ef5c3ddf4d27",
+    "package.json": "d0de5f9b54a5b248b235f7a125e0b265d446d8c98eefbfa3518a20b257fc7344",
+    "pnpm-lock.yaml": "e637ed6c57025cda31a2f8b51d4a84e5342d60ae195ef908554540a599b80642"
+  },
+  "artifactDigest": "408fbd7e359d5b016633a5d2898e57cbbc9b24865ffc1ad8d2cca949459596a1",
+  "executionAuthorized": false
+}
