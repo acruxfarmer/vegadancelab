@@ -1,5 +1,6 @@
 import {staffCan,staffRolesUI} from './staff-roles-ui.js';
 import {frontDeskOperationsUI} from './front-desk-operations.js';
+import {attendanceReportUI} from './attendance-report-ui.js';
 import {entitlementsUI} from './entitlements-ui.js';
 import {commerceUI} from './commerce-ui.js';
 import {frontDeskUI} from './front-desk-ui.js';
@@ -202,4 +203,15 @@ render=function(){
   if(data.recovery?.pendingCount>0)$('#main').insertAdjacentHTML('afterbegin','<p class="notice warning" role="status">Your update is still being confirmed. Refresh before continuing.</p>');
   if(!$('#sign-out'))document.querySelector('header').insertAdjacentHTML('beforeend','<button id="sign-out" class="text-button">Leave workspace</button>');
  }else beforeFrontDesk();
+};
+
+const utilizationReports=attendanceReportUI({getData:()=>data,escape,render:()=>render()});
+const beforeUtilizationReports=render;
+render=function(){
+ if(data&&!localDemo&&view==='staff'&&page==='reports'&&staffCan(data,'reports.read')){
+  attendance.reconcile('');nav();$('#environment').textContent='Authenticated Development workspace · '+data.staffAccess.label;
+  $('#main').innerHTML=(businessChoices.length>1?businessSelector():'')+utilizationReports.render()+'<details><summary>Existing detailed operational history</summary>'+reportingAudit.render()+'</details>';
+  if(data.recovery?.pendingCount>0)$('#main').insertAdjacentHTML('afterbegin','<p class="notice warning" role="status">Some updates are still being confirmed. Refresh before using these figures as final.</p>');
+  if(!$('#sign-out'))document.querySelector('header').insertAdjacentHTML('beforeend','<button id="sign-out" class="text-button">Leave workspace</button>');
+ }else beforeUtilizationReports();
 };
