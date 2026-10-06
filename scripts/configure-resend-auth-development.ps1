@@ -8,27 +8,15 @@ $priorDebug=$env:BITWARDENCLI_DEBUG;$env:BITWARDENCLI_DEBUG='false'
 $stage='vault status'
 $report=[ordered]@{status='blocked';projectRef='cjdoczrxcjynjhgpgqop';provider='Resend';sender='admin@acrux.co';secretsPersisted=$false}
 $reportPath=Join-Path $PSScriptRoot '../docs/public-entry/resend-operator-result.json'
-function Select-ExistingRecord($Candidates,[string]$Purpose){
- $choices=@($Candidates)
- if($choices.Count -eq 0){throw 'No matching existing record'}
- Write-Host "Existing Dev Stack records for ${Purpose}:"
- for($i=0;$i -lt $choices.Count;$i++){Write-Host ('{0}: {1}' -f ($i+1),$choices[$i].name)}
- $selection=Read-Host 'Select the existing record number (blank stops)'
- $number=0
- if(-not [int]::TryParse($selection,[ref]$number) -or $number -lt 1 -or $number -gt $choices.Count){throw 'No explicit record selection'}
- return $choices[$number-1]
+function ExactRecord($Items,[string]$Name){
+ $matches=@($Items|Where-Object name -CEQ $Name)
+ if($matches.Count -ne 1){throw 'Established record not unique'}
+ return $matches[0]
 }
-function Select-ExistingSecret($Record,[string]$Purpose){
- $slots=@()
- foreach($f in @($Record.fields)){if($null -ne $f -and -not [string]::IsNullOrWhiteSpace([string]$f.value)){$slots+=,[pscustomobject]@{label=('custom field: '+$f.name);value=[string]$f.value}}}
- if(-not [string]::IsNullOrWhiteSpace([string]$Record.login.password)){$slots+=,[pscustomobject]@{label='login password';value=[string]$Record.login.password}}
- if(-not [string]::IsNullOrWhiteSpace([string]$Record.notes)){$slots+=,[pscustomobject]@{label='secure note (only if the entire note is the token)';value=[string]$Record.notes}}
- if($slots.Count -eq 0){throw 'No existing secret slots'}
- Write-Host "Select the stored ${Purpose}. Values are hidden."
- for($i=0;$i -lt $slots.Count;$i++){Write-Host ('{0}: {1}' -f ($i+1),$slots[$i].label)}
- $selection=Read-Host 'Select the exact secret field number (blank stops)';$number=0
- if(-not [int]::TryParse($selection,[ref]$number) -or $number -lt 1 -or $number -gt $slots.Count){throw 'No explicit field selection'}
- return $slots[$number-1]
+function ExactSecret($Record,[string]$Name){
+ $matches=@($Record.fields|Where-Object name -CEQ $Name)
+ if($matches.Count -ne 1 -or [string]::IsNullOrWhiteSpace([string]$matches[0].value)){throw 'Established secret field not unique'}
+ return [pscustomobject]@{label=('custom field: '+$Name);value=[string]$matches[0].value}
 }
 try{
  $bw='C:/Users/Joe Graham/Tools/BitwardenCLI/bw.exe'
@@ -44,16 +32,15 @@ try{
  $raw=& $bw list items --folderid $folders[0].id --nointeraction 2>$null
  if($LASTEXITCODE -ne 0){throw 'Record lookup failed'}
  $items=@(($raw|ConvertFrom-Json)|Where-Object {$_.folderId -ceq $folders[0].id -and -not $_.deletedDate});$raw=$null
- $stage='existing Resend record and field selection'
- $resendCandidates=@($items|Where-Object {$_.name -match '(?i)resend' -or (@($_.login.uris|ForEach-Object {$_.uri}) -join ' ') -match '(?i)resend\.com' -or (@($_.fields|ForEach-Object {$_.name}) -join ' ') -match '(?i)resend'})
- $resendRecord=Select-ExistingRecord $resendCandidates 'Resend'
- $resendSecret=Select-ExistingSecret $resendRecord 'Resend API key used as SMTP password'
+ # These exact labels were established by Joe's completed private operator run.
+ $stage='established Resend record and field'
+ $resendRecord=ExactRecord $items 'Vega Dev - Resend'
+ $resendSecret=ExactSecret $resendRecord 'RESEND_API_KEY'
  if($resendSecret.value -cnotmatch '^re_[A-Za-z0-9_\-]+$'){throw 'Selected value is not a complete Resend API key'}
  $report.resendRecord=$resendRecord.name;$report.resendField=$resendSecret.label
- $stage='existing Supabase management credential selection'
- $supabaseCandidates=@($items|Where-Object {$_.name -match '(?i)supabase' -or (@($_.fields|ForEach-Object {$_.name}) -join ' ') -match '(?i)supabase.*(access|management).*token'})
- $supabaseRecord=Select-ExistingRecord $supabaseCandidates 'Supabase Management API access (not the database password or publishable/service-role key)'
- $supabaseSecret=Select-ExistingSecret $supabaseRecord 'Supabase personal/management access token'
+ $stage='established Supabase management credential'
+ $supabaseRecord=ExactRecord $items 'Vega Dev - Supabase Operator'
+ $supabaseSecret=ExactSecret $supabaseRecord 'SUPABASE_ACCESS_TOKEN'
  if($supabaseSecret.value -cnotmatch '^sbp_[A-Za-z0-9_\-]+$'){throw 'Selected value is not a complete Supabase management token'}
  $report.supabaseRecord=$supabaseRecord.name;$report.supabaseField=$supabaseSecret.label
  $stage='Development project identity'
@@ -64,13 +51,11 @@ try{
  $before=Invoke-RestMethod -Uri $configUrl -Headers $authHeaders -Method Get -TimeoutSec 30
  if($before.mailer_autoconfirm -ne $false -or $before.external_email_enabled -ne $true){throw 'Unexpected confirmation policy'}
  if($before.smtp_host -and $before.smtp_host -cne 'smtp.resend.com'){throw 'Different existing SMTP provider; no replacement performed'}
- $stage='approved Resend sender domain verification'
- # This read verifies that the selected existing key belongs to a workspace
- # with the approved sending domain. A sending-only key may deny this read;
- # in that case stop for a separate workspace-domain check, never broaden it.
- $domains=Invoke-RestMethod -Uri 'https://api.resend.com/domains' -Headers @{Authorization='Bearer '+$resendSecret.value} -Method Get -TimeoutSec 30
- $approved=@($domains.data|Where-Object {$_.name -ceq 'acrux.co' -and $_.status -ceq 'verified'})
- if($approved.Count -ne 1){throw 'Approved sender domain not uniquely verified'}
+ # Joe verified acrux.co in the existing Resend dashboard on 2026-10-06:
+ # vega-development key active, Sending access, recently used. No administrative
+ # domain-list request is appropriate for that least-privilege sending key.
+ $report.domainVerificationSource='Joe dashboard verification 2026-10-06'
+ $report.resendKeyName='vega-development';$report.resendPermission='Sending access'
  $stage='Supabase Development SMTP configuration'
  $body=@{smtp_admin_email='admin@acrux.co';smtp_host='smtp.resend.com';smtp_port=465;smtp_user='resend';smtp_pass=$resendSecret.value;smtp_sender_name='Acrux';mailer_autoconfirm=$false}|ConvertTo-Json -Compress
  $null=Invoke-RestMethod -Uri $configUrl -Headers $authHeaders -Method Patch -ContentType 'application/json' -Body $body -TimeoutSec 30

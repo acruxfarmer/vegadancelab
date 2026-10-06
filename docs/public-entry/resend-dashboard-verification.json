@@ -1,0 +1,22 @@
+{
+  "source": "Joe's explicit dashboard verification in this Layer 3 conversation",
+  "date": "2026-10-06",
+  "provider": "Resend",
+  "sender": "admin@acrux.co",
+  "domain": "acrux.co",
+  "domainStatus": "Verified",
+  "keyName": "vega-development",
+  "keyStatus": "Active",
+  "keyPermission": "Sending access",
+  "recentlyUsed": true,
+  "permissionExpansionAuthorized": false,
+  "resendRecord": "Vega Dev - Resend",
+  "resendField": "RESEND_API_KEY",
+  "supabaseRecord": "Vega Dev - Supabase Operator",
+  "supabaseField": "SUPABASE_ACCESS_TOKEN",
+  "initialPreflightIssue": "Administrative GET /domains returned 401 for the sending-only key. This was not a failed domain verification.",
+  "correction": "Remove the administrative domain request; use the existing sending credential with separately verified dashboard evidence.",
+  "testRecipient": "admin@vegadancelab.com",
+  "confirmationLinkOperator": "Joe",
+  "smtpConfigurationStatus": "Awaiting corrected private operator execution"
+}
