@@ -18,5 +18,5 @@
   "correction": "Remove the administrative domain request; use the existing sending credential with separately verified dashboard evidence.",
   "testRecipient": "admin@vegadancelab.com",
   "confirmationLinkOperator": "Joe",
-  "smtpConfigurationStatus": "Awaiting corrected private operator execution"
+  "smtpConfigurationStatus": "Configured and hosted email confirmation verified; see resend-smtp-dashboard-result.json"
 }

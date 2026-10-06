@@ -1,6 +1,6 @@
 # Layer 3 — public discovery + sign-up/onboarding
 
-Status: BLOCKED — existing Supabase default email sender cannot confirm arbitrary public visitors. Product implementation and Development deployment are complete; the entire signup-to-booking browser journey is not yet verified and the dragon is not closed.
+Status: PRODUCT COMPLETE — public discovery, email-confirmed signup, business/member linkage, existing profile/test waiver and selected booking step verified in Development.
 
 ## Implemented journey
 
@@ -16,9 +16,9 @@ Public calls ignore forged business headers. Authenticated calls remain scoped t
 
 ## Development deployment and hosted checks
 
-- Runtime application commit: `2118f5015fde2f08f631a1be9fc6ff2e89469f8f`; Render reported Live, 41.5-second deployment, 2026-10-06 14:33 PDT.
+- Runtime application commit: `629e13066c101d1ae8badfe1b88fd1974064360a`; Render Live, 53.9-second deployment, 2026-10-06 15:15 PDT.
 - Runtime: https://vega-development-web.onrender.com
-- Vercel Preview: https://vega-development-32pthpnza-acruxfarmer.vercel.app (`dpl_DKHXjNWyCmLrKvNqhi4ZosDpjRWi`, READY, source same commit, Git preview target). Existing protection preserved; browser's existing Vercel session accessed front door. No application member session was present.
+- Vercel Preview: https://vega-development-8b3cwjc2i-acruxfarmer.vercel.app (`dpl_GveRuj5ztTwfDzLa231c8FEDXaGk`, READY, source same commit, Git preview target). Existing protection preserved; browser's existing Vercel session accessed front door. No application member session was present.
 - Browser verified Vega overview, three current classes, cancelled state, instructor/time/availability, exact $60/3 classes/30 days offer, matching credit-required class, retained class selection on signup and signin screens, and no browser console errors.
 - Browser verified Willow branding, America/New_York times, available/full/cancelled classes, absence of Vega passes, no matching search result, and cancelled detail without booking continuation.
 - Empty schedule was browser verified before publishing the three new Vega fixture classes.
@@ -39,11 +39,15 @@ Willow is a separate explicit Development fixture (`layer3-reuse-fixture` / `wil
 - Real PostgreSQL rollback fixture: public/private isolation, publication allowlist, matching source prices, ambiguous review, retry and second-business linkage passed.
 - An earlier exploratory run including pre-existing untracked work: 2,782 tests, 2,776 pass, six fail. All six are unrelated historical source-hash assertions expecting `0a777...` for untouched `src/application.mjs`, whose pre-existing hash is `fb564...`. The untracked work and its expectations were preserved; this is not a green all-workspace result. See `../layer-3-full-regressions.txt`.
 
-## Remaining blocker and completion gate
+## Hosted email-confirmed onboarding completion
 
-Supabase currently uses its built-in SMTP sender. Dashboard and provider settings confirm email signup enabled, confirmation required, custom SMTP disabled. Supabase documents that the default sender only sends to project-team addresses: https://supabase.com/docs/guides/auth/auth-smtp . A public visitor cannot reliably finish confirmation. The user has been asked to identify an existing approved SMTP sender/Bitwarden record; no new provider or infrastructure has been created and confirmation has not been weakened.
+Existing Resend sending-only credential configured in Supabase Development custom SMTP: smtp.resend.com:465, user resend, sender admin@acrux.co (Acrux). Joe entered the credential in the existing dashboard session. Sender domain verified by Joe; no administrative /domains preflight or permission expansion. Management API PATCH returned 403 before configuration; dashboard save and reload confirmed configuration. No new provider or communications automation.
 
-After that dependency is resolved: verify delivery and callback with an approved test inbox; sign in; create the business relationship; complete the existing profile and required waiver through an authorized test flow; reach the selected supported booking step; verify retry and Needs Staff Review through the hosted authenticated UI. Then issue product completion. The current database checks must not be described as full end-to-end signup verification.
+Joe created and confirmed admin@vegadancelab.com and signed into the shared Codex tab. Provider confirmation and last-sign-in facts were verified without reading passwords or confirmation tokens. Hosted profile showed Joe Graham and the accepted synthetic Development waiver (explicitly no legal effect). The selected class opened in the existing member booking dialog: Movement foundations — preview, 12 spaces, eligible to book, no credit required, Confirm booking available. No booking or payment was submitted.
+
+The confirmed actor has exactly one Vega member relationship and one self participant. Retrying onboarding reused it. Four independent recovery receipts are acknowledged. The Willow synthetic-name ambiguity produced Needs Staff Review and no Willow membership. Vega revision is 163; Willow remains 0. Unrelated business fields (excluding participants, customerProfiles, waiverAcceptances and activity) retain before/after digests 16cc7056863b0a3722b16dc30da79baf (Vega) and 1f2c5528cec954d3a8687e0334d4d03c (Willow).
+
+Password UI polish adds required confirmation, independently accessible show/hide eye buttons, unchanged 12-character minimum and a simple mismatch message before the authentication request. Confirmation is excluded from the authentication payload. Passwords are not added to logs, receipts or diagnostics. Existing authentication architecture is unchanged. Hosted browser checks passed: both fields required, masked by default, each toggle shows/hides independently, mismatch blocked with a clear message, editing clears the mismatch, short password rejected. Synthetic inputs were cleared and no test account was created. Profile navigation links were verified to open the existing member screens; the final selected-class dialog again showed the confirmed member eligible to book.
 
 ## Intentionally deferred
 

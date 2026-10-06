@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-06",
+  "projectRef": "cjdoczrxcjynjhgpgqop",
+  "projectName": "vega-development",
+  "status": "configured",
+  "method": "Existing signed-in Supabase dashboard; Joe entered the existing Resend credential and saved",
+  "readback": "Page reloaded; custom SMTP enabled, configured host and port preserved, stored password hidden, Save changes disabled",
+  "provider": "Resend",
+  "sender": "admin@acrux.co",
+  "senderName": "Acrux",
+  "smtpHost": "smtp.resend.com",
+  "smtpPort": 465,
+  "smtpUsername": "resend",
+  "keyPermission": "Sending access",
+  "keyPermissionChanged": false,
+  "secretsPersistedInProject": false,
+  "managementApiAttempt": "403 before configuration; preserved separately in resend-smtp-api-result.json",
+  "deliveryVerification": "Verified: one account created, confirmation_sent_at populated, email_confirmed_at populated, last_sign_in_at populated; Joe confirmed receiving and opening the link"
+}

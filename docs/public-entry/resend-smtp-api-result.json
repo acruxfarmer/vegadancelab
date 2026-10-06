@@ -1,0 +1,17 @@
+﻿{
+    "status":  "blocked",
+    "projectRef":  "cjdoczrxcjynjhgpgqop",
+    "provider":  "Resend",
+    "sender":  "admin@acrux.co",
+    "secretsPersisted":  false,
+    "resendRecord":  "Vega Dev - Resend",
+    "resendField":  "custom field: RESEND_API_KEY",
+    "supabaseRecord":  "Vega Dev - Supabase Operator",
+    "supabaseField":  "custom field: SUPABASE_ACCESS_TOKEN",
+    "domainVerificationSource":  "Joe dashboard verification 2026-10-06",
+    "resendKeyName":  "vega-development",
+    "resendPermission":  "Sending access",
+    "stage":  "Supabase Development SMTP configuration",
+    "httpStatus":  403,
+    "checkedAt":  "2026-10-06T21:59:17.1340334Z"
+}
