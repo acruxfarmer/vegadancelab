@@ -4,7 +4,7 @@ import {cancellationOutcome} from './member-cancellation.js';
 
 export function staffBookingUI({getData,isStaff,escape:e,modal,load,mutate,notify,render,date,time}){
  let selected='',search='',opening=0;
- const d=()=>getData(),actor=()=>isStaff()?d()?.context?.userId:null;
+ const d=()=>getData(),actor=()=>isStaff()?JSON.stringify([d()?.context?.userId,d()?.context?.tenantId,d()?.context?.businessId]):null;
  const stamp=s=>Number.isFinite(Date.parse(s))?`${date(s)} · ${time(s)} Pacific`:'Date unavailable';
  function scoped(){
   const source=d(),own=x=>x.participantId===selected;
@@ -27,7 +27,7 @@ export function staffBookingUI({getData,isStaff,escape:e,modal,load,mutate,notif
  }
  function bookingForm(participantId,classId){
   const classes=d().classes.filter(c=>Date.parse(c.startsAt)>Date.now()),c=classes.find(c=>c.id===classId)||classes[0],o=d().bookingOptions?.find(o=>o.participantId===participantId&&o.classId===c?.id),p=d().participants.find(p=>p.id===participantId);
-  return `<h2>Book for ${e(p?.name||'member')}</h2><form id="staff-reserve" data-participant="${e(participantId)}"><label class="field">Class<select name="classId">${classes.map(x=>`<option value="${e(x.id)}" ${x.id===c?.id?'selected':''}>${e(x.title)} · ${e(stamp(x.startsAt))}</option>`).join('')}</select></label>${c?`<p>${e(c.instructor)} · ${e(c.location)} · ${Math.max(0,c.capacity-c.reservedCount)} places available</p>`:'<p>No upcoming classes.</p>'}<p role="status">${e(o?.reason||'Eligibility unavailable. Refresh before booking.')}</p>${o?.passId?`<input type="hidden" name="passId" value="${e(o.passId)}"><p>Confirming consumes 1 credit from <strong>${e(o.passLabel)}</strong>. ${o.eligibleCredits} eligible credits in this pass. ${o.expiresAt?`Expires ${e(stamp(o.expiresAt))}.`:'No expiration.'}</p>`:c&&!c.creditRequired?'<p>No class credit will be consumed.</p>':''}<p>Capacity and entitlement eligibility are checked again at confirmation. A full class will be rejected.</p><button class="button" ${o?.eligible?'':'disabled'}>Confirm staff booking</button><p role="alert"></p></form>`;
+  return `<h2>Book for ${e(p?.name||'member')}</h2><form id="staff-reserve" data-participant="${e(participantId)}" data-waitlist="${o?.waitlistEligible===true}"><label class="field">Class<select name="classId">${classes.map(x=>`<option value="${e(x.id)}" ${x.id===c?.id?'selected':''}>${e(x.title)} · ${e(stamp(x.startsAt))}</option>`).join('')}</select></label>${c?`<p>${e(c.instructor)} · ${e(c.location)} · ${Math.max(0,c.capacity-c.reservedCount)} places available</p>`:'<p>No upcoming classes.</p>'}<p role="status">${e(o?.reason||'Eligibility unavailable. Refresh before booking.')}</p>${o?.passId?`<input type="hidden" name="passId" value="${e(o.passId)}"><p>Confirming consumes 1 credit from <strong>${e(o.passLabel)}</strong>. ${o.eligibleCredits} eligible credits in this pass. ${o.expiresAt?`Expires ${e(stamp(o.expiresAt))}.`:'No expiration.'}</p>`:c&&!c.creditRequired?'<p>No class credit will be consumed.</p>':''}<p>Capacity and entitlement eligibility are checked again at confirmation. A waitlist entry reserves no seat and consumes no credit.</p><button class="button" ${o?.eligible||o?.waitlistEligible?'':'disabled'}>${o?.waitlistEligible?'Confirm waitlist entry':'Confirm staff booking'}</button><p role="alert"></p></form>`;
  }
  function cancelForm(id){
   const r=d().reservations.find(r=>r.id===id),c=d().classes.find(c=>c.id===r?.classId),p=d().participants.find(p=>p.id===r?.participantId),pass=d().passes.find(p=>p.id===r?.creditConsumption?.passId);
@@ -43,10 +43,11 @@ export function staffBookingUI({getData,isStaff,escape:e,modal,load,mutate,notif
   if(!isStaff()||form.dataset.pending)return;form.dataset.pending='true';const identity=actor(),button=form.querySelector('button');button.disabled=true;
   try{
    const values=Object.fromEntries(new FormData(form)),cancel=form.id==='staff-cancel';
-   const result=await mutate(cancel?`/api/reservations/${encodeURIComponent(form.dataset.id)}/cancel`:'/api/reservations',cancel?values:{...values,participantId:form.dataset.participant,reservationOnly:true},()=>{});
+   const reply=await mutate(cancel?`/api/reservations/${encodeURIComponent(form.dataset.id)}/cancel`:'/api/reservations',cancel?values:{...values,participantId:form.dataset.participant,...(form.dataset.waitlist==='true'?{waitlistOnly:true}:{reservationOnly:true})},()=>{});
    if(!isStaff()||actor()!==identity)return;
+   const result=d().reservations.find(r=>cancel?r.id===form.dataset.id:r.participantId===form.dataset.participant&&r.classId===values.classId&&['reserved','waitlisted'].includes(r.status))||reply;
    const pass=d().passes.find(p=>p.id===result.creditConsumption?.passId);
-   modal(`<h2>${cancel?'Staff cancellation recorded':'Staff booking confirmed'}</h2><p>${e(d().participants.find(p=>p.id===result.participantId)?.name)} · ${e(d().classes.find(c=>c.id===result.classId)?.title)}</p>${cancel?`<p>${e(result.cancellation?.classification)} cancellation</p>`:''}<p>${cancel?e(cancellationOutcome(result,pass?.label)):result.creditConsumption?`1 credit consumed from ${e(pass?.label||'class credits')}.`:'No class credit consumed.'}</p><p>The member account and audit are updated.</p><button class="button" data-staff-done>Return to member account</button>`);
+   modal(`<h2>${cancel?'Staff cancellation recorded':result.status==='waitlisted'?'Waitlist entry confirmed':'Staff booking confirmed'}</h2><p>${e(d().participants.find(p=>p.id===result.participantId)?.name)} · ${e(d().classes.find(c=>c.id===result.classId)?.title)}</p>${cancel?`<p>${e(result.cancellation?.classification)} cancellation</p>`:''}<p>${cancel?e(cancellationOutcome(result,pass?.label)):result.creditConsumption?`1 credit consumed from ${e(pass?.label||'class credits')}.`:'No class credit consumed.'}</p><p>The member account and audit are updated.</p><button class="button" data-staff-done>Return to member account</button>`);
   }catch(error){if(form.isConnected&&actor()===identity)form.querySelector('[role="alert"]').textContent=`${error.message} Close this dialog and refresh the member account before retrying.`;}
   finally{delete form.dataset.pending;}
  }

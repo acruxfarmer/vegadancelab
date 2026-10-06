@@ -1,4 +1,5 @@
 import {staffCan,staffRolesUI} from './staff-roles-ui.js';
+import {frontDeskOperationsUI} from './front-desk-operations.js';
 import {entitlementsUI} from './entitlements-ui.js';
 import {commerceUI} from './commerce-ui.js';
 import {frontDeskUI} from './front-desk-ui.js';
@@ -103,7 +104,8 @@ document.addEventListener('change',event=>{if(event.target.id==='view'){if(!loca
 window.addEventListener('hashchange',()=>{page=location.hash.slice(1)||'today';if(data&&!localDemo&&view!=='staff'&&staffNav.some(x=>x[0]===page)){page='today';location.hash=page}render();$('#main').focus()});
 const integration=extend({$,getData:()=>data,isDemo:()=>localDemo,escape,heading,empty,modal,mutate,notify,render:()=>render(),key});
 const entitlements=entitlementsUI({escape,mutate,notify,getData:()=>data});
-const commerce=commerceUI({escape,mutate,notify,getData:()=>data});
+const operationalData=()=>page==='front-desk'&&data?desk.scoped():data;
+const commerce=commerceUI({escape,mutate,notify,getData:operationalData});
 const memberBooking=memberBookingUI({getData:()=>data,escape,modal,mutate,load,notify,date,time});
 const staffBooking=staffBookingUI({getData:()=>data,isStaff:()=>!!data&&!localDemo&&view==='staff'&&data.context?.role==='staff'&&staffCan(data,'bookings.manage'),escape,modal,mutate,load,notify,render:()=>render(),date,time});
 const reportingAudit=reportingAuditUI({getData:()=>data,isStaff:()=>!!data&&!localDemo&&view==='staff'&&data.context?.role==='staff'&&staffCan(data,'reports.read'),escape,render:()=>render()});
@@ -142,7 +144,7 @@ document.addEventListener('submit',async event=>{const form=event.target;if(!['e
 
 // Independent acknowledgment governs confirmation, including reload/read views.
 const renderBeforeCommerce=render;
-const frontDesk=frontDeskUI({getData:()=>data,escape,modal,mutate,notify,close:()=>$('#dialog').close()});
+const frontDesk=frontDeskUI({getData:operationalData,escape,modal,mutate,notify,close:()=>$('#dialog').close()});
 render=function(){renderBeforeCommerce();if(data&&!localDemo){if(data.paymentExecution?.enabled)$('#environment').textContent='Authenticated development workspace · Designated Sandbox payment only';if(page==='passes'||(view==='staff'&&page==='people'))$('#main').insertAdjacentHTML('beforeend',frontDesk.render()+commerce.render());}};
 document.addEventListener('submit',event=>{if(event.target.id==='front-desk-select'){event.preventDefault();frontDesk.review(event.target);}if(event.target.id==='front-desk-confirm'){event.preventDefault();void frontDesk.submit(event.target);}});
 document.addEventListener('submit',event=>{if(event.target.id==='commerce-draft'){event.preventDefault();void commerce.submit(event.target);}});
@@ -151,7 +153,7 @@ const renderBeforeRecoveryNotice=render;
 render=function(){renderBeforeRecoveryNotice();if(data?.recovery?.pendingCount>0){const notice=document.createElement('div');notice.className='notice warning';notice.setAttribute('role','status');notice.textContent='Recovery confirmation pending. The current view includes provisional changes. Do not treat them as finally confirmed until independent recovery acknowledgment completes.';document.querySelector('#main').prepend(notice);}};
 import {refundUI,refundProgramUI} from './refund-ui.js';
 const refunds=refundUI({getData:()=>data,escape,mutate,notify});
-const refundProgram=refundProgramUI({getData:()=>data,escape,api,mutate,notify});
+const refundProgram=refundProgramUI({getData:operationalData,escape,api,mutate,notify});
 const renderBeforeRefund=render;
 render=function(){renderBeforeRefund();if(data&&!localDemo){if(view==='staff'&&page==='people')$('#main').insertAdjacentHTML('beforeend',refunds.render()+refundProgram.render());else if(view==='member'&&page==='passes')$('#main').insertAdjacentHTML('beforeend',refundProgram.render());}};
 document.addEventListener('submit',event=>{if(event.target.hasAttribute('data-refund-action')){event.preventDefault();void refunds.submit(event.target);}});
@@ -169,7 +171,7 @@ document.addEventListener('submit',event=>{if(['customer-profile-edit','customer
 
 function businessSelector(){return `<label class="field">Business<select id="business-choice"><option value="">Choose business</option>${businessChoices.map((b,i)=>`<option value="${i}" ${selectedBusiness?.tenantId===b.tenantId&&selectedBusiness?.businessId===b.businessId?'selected':''}>${escape(b.name)}</option>`).join('')}</select></label>`;}
 document.addEventListener('change',async event=>{if(event.target.id==='business-choice'&&event.target.value!==''){businessGeneration++;selectedBusiness=businessChoices[Number(event.target.value)];selectedClass='';hideProtected();try{await load();}catch(error){notify(error.message);}}if(event.target.matches('[data-staff-role] select[name="role"]'))event.target.form.querySelector('[data-staff-classes]').hidden=event.target.value!=='instructor';});
-function staffPageAllowed(id){const map={overview:'schedule.read',schedule:'schedule.read',people:'customers.read',communications:'customers.manage',operations:'finance.read',reports:'reports.read'};return id==='staff-access'||staffCan(data,map[id]);}
+function staffPageAllowed(id){const map={'front-desk':'attendance.read',overview:'schedule.read',schedule:'schedule.read',people:'customers.read',communications:'customers.manage',operations:'finance.read',reports:'reports.read'};return id==='staff-access'||staffCan(data,map[id]);}
 const staffRoles=staffRolesUI({getData:()=>data,escape,mutate,notify});
 const beforeStaffRoles=render;
 render=function(){
@@ -189,3 +191,15 @@ render=function(){
  if(data&&!localDemo&&businessChoices.length>1)$('#main').insertAdjacentHTML('afterbegin',businessSelector());
 };
 document.addEventListener('submit',event=>{if(event.target.id==='staff-register'||event.target.hasAttribute('data-staff-role')){event.preventDefault();void staffRoles.submit(event.target);}});
+
+staffNav.splice(1,0,['front-desk','◇','Front desk']);
+const desk=frontDeskOperationsUI({getData:()=>data,escape,load,render:()=>render(),notify,date,time,saleHTML:()=>frontDesk.render(),commerceHTML:()=>commerce.render(),refundHTML:()=>refundProgram.render(),openAttendance:id=>{selectedClass=data.reservations.find(r=>r.id===id)?.classId||'';attendance.openReservation(id);}});
+const beforeFrontDesk=render;
+render=function(){
+ if(data&&!localDemo&&view==='staff'&&page==='front-desk'&&staffPageAllowed(page)){
+  attendance.reconcile(selectedClass);nav();$('#environment').textContent='Authenticated Development workspace · '+data.staffAccess.label;
+  $('#main').innerHTML=(businessChoices.length>1?businessSelector():'')+desk.render();
+  if(data.recovery?.pendingCount>0)$('#main').insertAdjacentHTML('afterbegin','<p class="notice warning" role="status">Your update is still being confirmed. Refresh before continuing.</p>');
+  if(!$('#sign-out'))document.querySelector('header').insertAdjacentHTML('beforeend','<button id="sign-out" class="text-button">Leave workspace</button>');
+ }else beforeFrontDesk();
+};

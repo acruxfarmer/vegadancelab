@@ -42,6 +42,7 @@ export function createDevelopmentServer(env = process.env, persistSquareEvent, c
     files['/front-desk-ui.js']=['front-desk-ui.js','text/javascript; charset=utf-8'];
     files['/staff-waitlist.js']=['staff-waitlist.js','text/javascript; charset=utf-8'];
     files['/request-journal.js']=['request-journal.js','text/javascript; charset=utf-8'];
+    files['/front-desk-operations.js']=['front-desk-operations.js','text/javascript; charset=utf-8'];
     files['/staff-roles-ui.js']=['staff-roles-ui.js','text/javascript; charset=utf-8'];
     const asset=files[req.url.split('?')[0]];
     if(asset&&req.method==='GET'){

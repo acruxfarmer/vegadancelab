@@ -59,5 +59,5 @@ export function attendanceUI({getData,isStaff,escape:e,modal,mutate,notify,date,
   if(!event.target.closest('[data-reset-history-filters]')||!isStaff()||!scope||!historySelection)return;
   historySelection.filters=defaultHistoryFilters();render();document.querySelector('[data-reset-history-filters]')?.focus();
  });
- return {render:roster,reconcile};
+ return {render:roster,reconcile,openReservation(id){const r=getData()?.reservations.find(r=>r.id===id);if(!r)return;filters=defaultRosterFilters();roster(r.classId);open(id);}};
 }
