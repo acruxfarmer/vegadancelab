@@ -1,0 +1,22 @@
+{
+  "verifiedAt": "2026-10-06T22:35:31.302Z",
+  "environment": "Development",
+  "reservationId": "908c7601-5fb9-4811-99a9-4e63cf21c9c3",
+  "memberStaffAgree": true,
+  "staffEvidence": "Authenticated runtime projection",
+  "capacityAgrees": true,
+  "publicPlacesLeft": 11,
+  "creditsIssued": 3,
+  "currentBookingDebits": 1,
+  "creditsRemaining": 2,
+  "earlyCancellationRestorationVerified": true,
+  "duplicateRejectedWithoutMutation": true,
+  "recoveryPending": 0,
+  "revision": 167,
+  "willowRevision": 0,
+  "unrelatedBusinessStateUnchanged": true,
+  "privateDataAbsentFromPublic": true,
+  "actualPaymentExecuted": false,
+  "hostedBrowserConfirmation": true,
+  "memberHistoryVerified": true
+}
