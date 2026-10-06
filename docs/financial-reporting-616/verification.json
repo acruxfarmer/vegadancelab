@@ -1,0 +1,95 @@
+{
+  "experience": [
+    "Summary",
+    "Sales by offer/version",
+    "Daily and weekly trends",
+    "Explicit sales channels",
+    "Payment/refund statuses",
+    "Preserved purchase history",
+    "Refund history",
+    "Needs attention"
+  ],
+  "full": {
+    "passed": 1014,
+    "failed": 0
+  },
+  "reuse": "Pure read-only business-scoped projector; two-business runtime fixture; configurable timezone; no provider execution or new authority",
+  "status": "6.16 FINANCIAL REPORTING — PRODUCT COMPLETE",
+  "deferred": [
+    "Accounting integration",
+    "Settlement/payouts",
+    "Provider fees",
+    "Tax filing",
+    "Payroll",
+    "Forecasting",
+    "Profit/loss",
+    "Lifetime value",
+    "BI and warehouse"
+  ],
+  "exceptions": "Pending/unresolved payments, pending/review refunds, missing dates, invalid amounts, duplicates, mismatches, over-refunds and paid-but-unfulfilled purchases",
+  "branch": "commerce/financial-reporting-v1",
+  "definitions": {
+    "channel": "Explicit recorded channel only; missing legacy provenance remains Not recorded",
+    "net": "Period confirmed sales minus period completed refunds; may be negative",
+    "purchaseCount": "Purchases created in period, including unpaid drafts; confirmed-sale count separate",
+    "gross": "Confirmed purchase total, including stored transaction tax, by business payment confirmation date",
+    "currency": "Separate totals; no exchange rate inference",
+    "refunds": "Completed refund operations at first recorded completion observation"
+  },
+  "localBrowser": [
+    "Manager sale/refund/net",
+    "Refund-only date range preserves original sale",
+    "Unauthorized business switch removes reporting"
+  ],
+  "build": "836c54f301c54aa969a01018b948977354d4f415",
+  "targeted": {
+    "passed": 21,
+    "failed": 0
+  },
+  "production": "Untouched",
+  "access": {
+    "instructor": "No financial report",
+    "frontDesk": "Existing own-sale receipts only; financial report denied",
+    "server": "Existing authoritative visibleStaffData and membership scope remain enforced",
+    "owner": "Existing finance.read",
+    "manager": "Existing finance.read"
+  },
+  "product": "6.16 Financial Reporting",
+  "hostedBuild": {
+    "failed": 0,
+    "passed": 1017,
+    "deployment": "dep-db2ls4qd0e5s73bjmcj0",
+    "build": "836c54f301c54aa969a01018b948977354d4f415"
+  },
+  "hostedBrowser": {
+    "checks": [
+      "Authenticated Owner/Admin financial report matches authoritative totals",
+      "Weekly trends reconcile across periods",
+      "Custom October 5 period shows USD 60 sales, USD 120 refunds, USD -60 net",
+      "All-dates refresh restores USD 180 sales, USD 120 refunds, USD 60 net",
+      "No browser runtime errors"
+    ],
+    "failed": 0,
+    "passed": 5
+  },
+  "reconciliation": {
+    "pendingPayments": 1,
+    "refundMinor": 12000,
+    "revision": 155,
+    "purchaseCount": 9,
+    "completedRefunds": 3,
+    "pendingRefunds": 0,
+    "stateDigest": "e8f54bb7504d8cbfa76a32e5753defdd8995110ba0c7e1fc7c26b5ceba7a5b69",
+    "unchangedBusinessState": true,
+    "paymentExecutionDisabled": true,
+    "foreignBusinessDenied": true,
+    "unresolvedPayments": 0,
+    "grossMinor": 18000,
+    "missingDates": 0,
+    "netMinor": 6000,
+    "confirmedSales": 3,
+    "memberManagementReportDenied": true,
+    "currency": "USD"
+  },
+  "crashRecovery": "Session interruption after completed hosted verification; branch and source commit intact; preexisting unrelated work preserved; closure resumed without broad re-verification."
+}
