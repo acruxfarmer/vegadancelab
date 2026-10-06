@@ -1,22 +1,23 @@
-✔ staff sale concurrent payment and recovery retain actor, customer and exactly one charge/grant (29.8273ms)
-✔ staff sale lookup uncertainty and lost submission response retain one payment and no premature credit (21.3492ms)
-✔ staff sale pending, failed and cancelled payments issue no credits (25.3043ms)
-✔ staff paid/unfulfilled transaction rollback is recoverable without recharging or changed terms (11.0552ms)
-✔ staff sale keeps independent receipt and execution gates (7.8051ms)
-✔ staff sale rejects cross-scope staff and client-forged confirmation (1.1994ms)
-✔ staff payment controls apply only to a designated front-desk sale and distinguish pending fulfillment (0.4144ms)
-✔ staff sale freezes business terms, separates identities and leaves fulfillment and bookings unchanged (2.676ms)
-✔ server rejects forged identity, price, terms, stale offers, unknown customers and foreign scope (1.0254ms)
-✔ changed customer with same staff request conflicts; different staff attribution remains explicit (0.2974ms)
-✔ staff views expose only configured eligible customers; member receives owned sale projection (2.4091ms)
-✔ same owned sale/payment/fulfillment contract works for two businesses and two simulated providers (5.1313ms)
-✔ deployed API routes staff sale through authenticated existing store and preserves recovery status (4.1946ms)
-✔ front-desk presentation discloses Sandbox scope, disabled collection and escapes customer data (19.134ms)
-ℹ tests 14
+✔ staff sale concurrent payment and recovery retain actor, customer and exactly one charge/grant (30.3698ms)
+✔ staff sale lookup uncertainty and lost submission response retain one payment and no premature credit (22.3455ms)
+✔ staff sale pending, failed and cancelled payments issue no credits (24.8798ms)
+✔ staff paid/unfulfilled transaction rollback is recoverable without recharging or changed terms (11.1093ms)
+✔ staff sale keeps independent receipt and execution gates (7.5281ms)
+✔ fulfilled staff sale is compatible with unchanged full and whole-credit refund readiness (20.9687ms)
+✔ staff sale rejects cross-scope staff and client-forged confirmation (1.4844ms)
+✔ staff payment controls apply only to a designated front-desk sale and distinguish pending fulfillment (0.4125ms)
+✔ staff sale freezes business terms, separates identities and leaves fulfillment and bookings unchanged (2.7644ms)
+✔ server rejects forged identity, price, terms, stale offers, unknown customers and foreign scope (1.0161ms)
+✔ changed customer with same staff request conflicts; different staff attribution remains explicit (0.2751ms)
+✔ staff views expose only configured eligible customers; member receives owned sale projection (2.4832ms)
+✔ same owned sale/payment/fulfillment contract works for two businesses and two simulated providers (5.0582ms)
+✔ deployed API routes staff sale through authenticated existing store and preserves recovery status (3.824ms)
+✔ front-desk presentation discloses Sandbox scope, disabled collection and escapes customer data (19.0075ms)
+ℹ tests 15
 ℹ suites 0
-ℹ pass 14
+ℹ pass 15
 ℹ fail 0
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 364.3432
+ℹ duration_ms 502.6127

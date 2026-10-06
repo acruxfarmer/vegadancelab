@@ -11,6 +11,8 @@ import {paymentStatusHTML} from '../public/payment-status.js';
 import {Readable} from 'node:stream';
 import {createApplicationApi} from '../src/runtime/application-api.mjs';
 import {paymentPreparationEnabled} from '../src/runtime/direct-payments.mjs';
+import {refundProgramFacts} from '../src/refund-program.mjs';
+import {boundedRefundReadiness} from '../src/bounded-refund-readiness.mjs';
 
 const member={userId:'e5946b40-9839-4a96-99d5-93262d9573f0',tenantId:B.tenantId,businessId:B.businessId,role:'member',participantIds:['vega-member-test-joe']};
 const receiptPublicKey=generateKeyPairSync('rsa',{modulusLength:3072}).publicKey.export({type:'spki',format:'pem'});
@@ -100,6 +102,14 @@ test('staff sale keeps independent receipt and execution gates',async()=>{
  const h=harness();h.ack=false;await h.start();assert.equal(h.calls.length,0);assert.equal(h.state().passes.length,0);
  h.ack=true;await h.resume();assert.equal(h.providerPayments.size,1);
  const disabled=harness();disabled.env.VEGA_SANDBOX_PAYMENT_EXECUTION='disabled';await assert.rejects(disabled.start());assert.equal(disabled.calls.length,0);
+});
+test('fulfilled staff sale is compatible with unchanged full and whole-credit refund readiness',async()=>{
+ const h=harness();await h.start();const s=h.state(),at=new Date().toISOString();
+ const full=boundedRefundReadiness({state:s,authority:staff,purchaseId:h.purchaseId,at});
+ assert.equal(full.status,'ready',JSON.stringify(full.reasonCodes));
+ const partial=refundProgramFacts(s,staff,h.purchaseId,at);
+ assert.equal(partial.status,'ready',JSON.stringify(partial.reasonCodes));assert.equal(partial.units.length,3);
+ assert.equal(partial.remainingBusinessMinor,6000);assert.equal(partial.executionAuthorized,false);
 });
 test('staff sale rejects cross-scope staff and client-forged confirmation',async()=>{
  for(const delta of [{role:'other'},{businessId:'other'},{tenantId:'other'},{role:'member',participantIds:['another']},{...member}]){

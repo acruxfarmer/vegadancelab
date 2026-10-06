@@ -21,8 +21,8 @@
   ],
   "proofConfiguration": "Existing approved Development member binding and three-class pack; shared policy contract tested with another business and simulated providers",
   "tests": {
-    "targeted": 14,
-    "activeApplicationRegression": 952,
+    "targeted": 15,
+    "activeApplicationRegression": 953,
     "failed": 0,
     "broadWorkspace": {
       "passed": 2688,
@@ -35,7 +35,7 @@
     "production": false,
     "migration": false,
     "adminPlane": false,
-    "hosted": "pending"
+    "hosted": "Development deployed; authenticated staff browser and actual provider execution pending"
   },
   "limitations": [
     "Physical card-present terminal capability not implemented",
@@ -51,5 +51,26 @@
     "merchandise inventory",
     "event admission",
     "physical card terminal"
-  ]
+  ],
+  "deployment": {
+    "commit": "792cf1f09998118c883b859a257210cb2264f4cc",
+    "service": "srv-dao5cjbm8hqs73db51j0",
+    "deployment": "dep-db2i8rh7lnhs73f21ce0",
+    "status": "live",
+    "url": "https://vega-development-web.onrender.com",
+    "hostedBuildTests": {
+      "passed": 954,
+      "failed": 0
+    },
+    "applicationHealth": "application_runtime_ready",
+    "paymentMode": "disabled",
+    "externalEffects": "disabled",
+    "frontDeskAssetHTTP": 200
+  },
+  "pending": [
+    "Existing staff session sign-in for browser verification",
+    "Joe approval for one actual USD 60 Square Sandbox class-pack sale",
+    "Actual payment, fulfillment and persisted staff/customer history verification"
+  ],
+  "latestAdditionalTest": "A fulfilled staff sale passes unchanged bounded full-refund and Refund Program whole-credit readiness; local fixture only"
 }
