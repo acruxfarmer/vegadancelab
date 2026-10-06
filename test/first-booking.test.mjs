@@ -4,6 +4,7 @@ import {transition,visibleState} from '../src/first-booking.mjs';
 import {emptyState} from '../src/application.mjs';
 import {createApplicationStore} from '../src/runtime/refund-application-database.mjs';
 import {generateKeyPairSync} from 'node:crypto';
+import {memberBookingUI} from '../public/member-booking.js';
 const at='2030-01-01T12:00:00Z',options={now:()=>at};
 const actor=(business='vega')=>({role:'member',userId:'member',tenantId:business,businessId:business,participantIds:['self']});
 function fixture(business='vega'){
@@ -36,11 +37,23 @@ test('waitlist intent never silently becomes a credit-consuming booking',()=>{as
 test('missing credits route to existing offers; waiver routes to existing profile',()=>{const s=fixture();s.creditUnits=[];assert.equal(visibleState(s,actor(),at).bookingOptions[0].nextStep,'passes');s.waiverAcceptances=[];assert.equal(visibleState(s,actor(),at).bookingOptions[0].nextStep,'profile');});
 test('foreign profile/waiver and forged participant cannot grant booking eligibility',()=>{const s=fixture('willow');assert.throws(()=>book(s,actor()),/Complete your profile/);assert.throws(()=>book(fixture(),actor(),{participantId:'other'}),/Participant authority/);});
 
+test('member UI routes missing prerequisites to existing screens and preserves selected class',()=>{
+ const state=fixture();state.classes[0].startsAt=new Date(Date.now()+86400000).toISOString();state.waiverVersions=[];state.creditUnits=[];
+ let data=visibleState(state,actor()),body={innerHTML:''};const previous=globalThis.document;
+ globalThis.document={querySelector:()=>body};
+ try{
+  const ui=memberBookingUI({getData:()=>data,escape:String});ui.show('class');
+  assert.match(body.innerHTML,/data-booking-resolve="passes" data-return-class="class"/);assert.match(body.innerHTML,/disabled>Confirm booking/);
+  state.customerProfiles=[];data=visibleState(state,actor());ui.show('class');
+  assert.match(body.innerHTML,/data-booking-resolve="profile"/);assert.match(body.innerHTML,/Complete profile & waiver/);
+ }finally{globalThis.document=previous;}
+});
+
 test('runtime serializes last-seat contenders, replays lost responses, and captures one receipt/debit',async()=>{
- let state=fixture(),revision=0,tail=Promise.resolve();state.classes[0].startsAt=new Date(Date.now()+86400000).toISOString();state.waiverVersions=[];
+ let state=fixture(),revision=0,tail=Promise.resolve();state.classes[0].startsAt=new Date(Date.now()+86400000).toISOString();state.waiverVersions=[];state.customerProfiles.push({...state.customerProfiles[0],accountId:'other-member',participantId:'other'});state.passes.push({id:'other-pass',participantId:'other'});state.creditUnits.push({...state.creditUnits[0],id:'other-unit',passId:'other-pass',participantId:'other'});
  const commands=new Map(),outbox=new Map();
  const pool={async connect(){let unlock;return {release(){},async query(sql,args=[]){
-  if(sql.startsWith('select tenant_id'))return {rows:[{tenant_id:'vega',business_id:'vega',role:'member',participant_ids:['self']}]};
+  if(sql.startsWith('select tenant_id'))return {rows:[{tenant_id:'vega',business_id:'vega',role:'member',participant_ids:[args[0]==='other-member'?'other':'self']}]};
   if(sql.startsWith('select state')){assert.match(sql,/for update$/);const previous=tail;tail=new Promise(r=>unlock=r);await previous;return {rows:[{state:structuredClone(state),revision}]};}
   if(sql.startsWith('select fingerprint'))return {rows:commands.has(args[3])?[commands.get(args[3])]:[]};
   if(sql.startsWith('select event_id,discovery_state'))return {rows:[outbox.get(args[3])]};
@@ -51,8 +64,8 @@ test('runtime serializes last-seat contenders, replays lost responses, and captu
  }}}};
  const receiptPublicKey=generateKeyPairSync('rsa',{modulusLength:3072}).publicKey.export({type:'spki',format:'pem'}),store=createApplicationStore(pool,{receiptPublicKey});
  const command={action:'reserve',body:{requestId:'same',classId:'class',participantId:'self'}};
- const results=await Promise.allSettled([store.command('member',command),store.command('member',command),store.command('member',{...command,body:{...command.body,requestId:'competing'}})]);
- assert.equal(results.filter(r=>r.status==='fulfilled').length,2);assert.deepEqual(results[0].value,results[1].value);assert.equal(results[2].status,'rejected');assert.equal(revision,1);assert.equal(outbox.size,1);assert.equal(state.reservations.length,1);assert.equal(state.creditEvents.filter(e=>e.type==='consume').length,1);
+ const results=await Promise.allSettled([store.command('member',command),store.command('member',command),store.command('other-member',{...command,body:{...command.body,participantId:'other',requestId:'competing'}})]);
+ assert.equal(results.filter(r=>r.status==='fulfilled').length,2);assert.deepEqual(results[0].value,results[1].value);assert.equal(results[2].status,'rejected');assert.match(results[2].reason.message,/Class full/);assert.equal(revision,1);assert.equal(outbox.size,1);assert.equal(state.reservations.length,1);assert.equal(state.creditEvents.filter(e=>e.type==='consume').length,1);
  await assert.rejects(store.command({userId:'member',tenantId:'foreign',businessId:'foreign'},command),e=>e.status===403);
 });
 
