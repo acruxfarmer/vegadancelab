@@ -7,7 +7,7 @@ export async function onboardPublicMember(pool,userId,body,publicKey,verifiedEma
  const c=await pool.connect();
  try{
   await c.query('begin');
-  await c.query("select set_config('vega.actor_id',$1,true)",[userId]);
+  await c.query("select set_config('vega.actor_id',$1,true),set_config('vega.receipt_discovery','v1',true)",[userId]);
   const {rows}=await c.query('select vega_private.onboard_public_member($1,$2,$3) as result',[body.studio,body.displayName,verifiedEmail]);
   const r=rows[0]?.result;
   if(!r)throw new ApplicationError('Account setup unavailable',503);
