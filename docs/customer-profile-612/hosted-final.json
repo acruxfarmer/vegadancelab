@@ -1,0 +1,250 @@
+{
+  "phase": "final",
+  "build": "08743ba11b7d44f9e106ea245bac355365168be2",
+  "revision": "154",
+  "stateDigest": "4f63de07fac41b25dddfb09350df6fcb9501873937e3b8d6c484b79b942eeb3e",
+  "profile": {
+    "status": "ready",
+    "accountId": "e5946b40-9839-4a96-99d5-93262d9573f0",
+    "tenantId": "vega-development",
+    "businessId": "vega-dance-lab",
+    "participantId": "vega-member-test-joe",
+    "businessName": "Joe — Member Test",
+    "revision": 1,
+    "fields": {
+      "phone": "+1 503 555 0100",
+      "displayName": "Joe — Profile Test",
+      "contactEmail": "joe-profile-test@example.com"
+    },
+    "currentWaiver": {
+      "id": "67df3d88-218f-41c9-b230-0cb105707767",
+      "text": "This is a synthetic Development verification document. Accepting it records a test acknowledgment only. It does not waive rights, impose obligations, authorize payment or replace Vega’s real waiver. Version 2 verifies reacceptance while retaining the prior version and its acceptance history.",
+      "title": "Development test waiver — no legal effect",
+      "version": 2,
+      "tenantId": "vega-development",
+      "businessId": "vega-dance-lab",
+      "effectiveAt": "2026-10-06T17:01:00.000Z",
+      "publishedAt": "2026-10-06T18:10:21.134Z",
+      "publishedBy": "4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124",
+      "contentDigest": "f68f47e2b1b95dd8858de9d6a313877722f4b1916190c061ed3fb271ebc6e33d"
+    },
+    "waiverStatus": "Accepted",
+    "acceptances": [
+      {
+        "id": "ea56bad7-1d43-4c03-861d-d4792f2ffdee",
+        "version": 1,
+        "tenantId": "vega-development",
+        "waiverId": "556ba6ae-e108-4cbf-a116-bc1e037e7a3b",
+        "accountId": "e5946b40-9839-4a96-99d5-93262d9573f0",
+        "acceptedAt": "2026-10-06T18:09:39.267Z",
+        "businessId": "vega-dance-lab",
+        "effectiveAt": "2026-10-06T17:00:00.000Z",
+        "contentDigest": "cba718d790ade038d83cd891aebde2fcc7d1fca232e0c20b7e4de356d81ebb02",
+        "participantId": "vega-member-test-joe"
+      },
+      {
+        "id": "c1491772-bb37-42aa-bd18-6147aaa7aa34",
+        "version": 2,
+        "tenantId": "vega-development",
+        "waiverId": "67df3d88-218f-41c9-b230-0cb105707767",
+        "accountId": "e5946b40-9839-4a96-99d5-93262d9573f0",
+        "acceptedAt": "2026-10-06T18:10:55.491Z",
+        "businessId": "vega-dance-lab",
+        "effectiveAt": "2026-10-06T17:01:00.000Z",
+        "contentDigest": "f68f47e2b1b95dd8858de9d6a313877722f4b1916190c061ed3fb271ebc6e33d",
+        "participantId": "vega-member-test-joe"
+      }
+    ],
+    "acceptedVersions": [
+      {
+        "id": "556ba6ae-e108-4cbf-a116-bc1e037e7a3b",
+        "text": "This is a synthetic Development verification document. Accepting it records a test acknowledgment only. It does not waive rights, impose obligations, authorize payment or replace Vega’s real waiver. Version 1 verifies member profile self-service.",
+        "title": "Development test waiver — no legal effect",
+        "version": 1,
+        "tenantId": "vega-development",
+        "businessId": "vega-dance-lab",
+        "effectiveAt": "2026-10-06T17:00:00.000Z",
+        "publishedAt": "2026-10-06T18:01:01.860Z",
+        "publishedBy": "4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124",
+        "contentDigest": "cba718d790ade038d83cd891aebde2fcc7d1fca232e0c20b7e4de356d81ebb02"
+      },
+      {
+        "id": "67df3d88-218f-41c9-b230-0cb105707767",
+        "text": "This is a synthetic Development verification document. Accepting it records a test acknowledgment only. It does not waive rights, impose obligations, authorize payment or replace Vega’s real waiver. Version 2 verifies reacceptance while retaining the prior version and its acceptance history.",
+        "title": "Development test waiver — no legal effect",
+        "version": 2,
+        "tenantId": "vega-development",
+        "businessId": "vega-dance-lab",
+        "effectiveAt": "2026-10-06T17:01:00.000Z",
+        "publishedAt": "2026-10-06T18:10:21.134Z",
+        "publishedBy": "4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124",
+        "contentDigest": "f68f47e2b1b95dd8858de9d6a313877722f4b1916190c061ed3fb271ebc6e33d"
+      }
+    ]
+  },
+  "staffProfile": {
+    "participantId": "vega-member-test-joe",
+    "name": "Joe — Member Test",
+    "profile": {
+      "fields": {
+        "phone": "+1 503 555 0100",
+        "displayName": "Joe — Profile Test",
+        "contactEmail": "joe-profile-test@example.com"
+      },
+      "revision": 1,
+      "tenantId": "vega-development",
+      "accountId": "e5946b40-9839-4a96-99d5-93262d9573f0",
+      "updatedAt": "2026-10-06T18:09:19.339Z",
+      "businessId": "vega-dance-lab",
+      "participantId": "vega-member-test-joe"
+    },
+    "status": "Profile saved",
+    "waiverStatus": "Accepted",
+    "acceptances": [
+      {
+        "id": "ea56bad7-1d43-4c03-861d-d4792f2ffdee",
+        "version": 1,
+        "tenantId": "vega-development",
+        "waiverId": "556ba6ae-e108-4cbf-a116-bc1e037e7a3b",
+        "accountId": "e5946b40-9839-4a96-99d5-93262d9573f0",
+        "acceptedAt": "2026-10-06T18:09:39.267Z",
+        "businessId": "vega-dance-lab",
+        "effectiveAt": "2026-10-06T17:00:00.000Z",
+        "contentDigest": "cba718d790ade038d83cd891aebde2fcc7d1fca232e0c20b7e4de356d81ebb02",
+        "participantId": "vega-member-test-joe"
+      },
+      {
+        "id": "c1491772-bb37-42aa-bd18-6147aaa7aa34",
+        "version": 2,
+        "tenantId": "vega-development",
+        "waiverId": "67df3d88-218f-41c9-b230-0cb105707767",
+        "accountId": "e5946b40-9839-4a96-99d5-93262d9573f0",
+        "acceptedAt": "2026-10-06T18:10:55.491Z",
+        "businessId": "vega-dance-lab",
+        "effectiveAt": "2026-10-06T17:01:00.000Z",
+        "contentDigest": "f68f47e2b1b95dd8858de9d6a313877722f4b1916190c061ed3fb271ebc6e33d",
+        "participantId": "vega-member-test-joe"
+      }
+    ]
+  },
+  "recordCounts": {
+    "passes": 9,
+    "credits": 37,
+    "bookings": 25,
+    "purchases": 9,
+    "refunds": 3
+  },
+  "staffMemberBusinessFactsAgree": true,
+  "foreignScopeDeniedByHostedTransition": true,
+  "protectedFieldsRejectedByHostedTransition": true,
+  "unrelatedStateMatchesRevision149": true,
+  "unrelatedStateDigest": "7325506535514b911ff8f775e8faa877cfb416d0d233db33c6da0d8d7af8baa5",
+  "receipts": [
+    {
+      "event_id": "95fa9d4d6bd09e2a6bc78b1d6c25547116b9c1fb6069518169b46bd0c38e2a30",
+      "actor_id": "4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124",
+      "request_id": "b1a20ba7-ebb7-48e2-8ee1-243f694b16da",
+      "discovery_state": "acknowledged",
+      "revision": "150"
+    },
+    {
+      "event_id": "d60620cfccf7900361e3df3a1d815657eee145fad06c99f12a6da55b11daccbf",
+      "actor_id": "4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124",
+      "request_id": "4480fce7-e798-4ae9-99a0-fc5cc2f12c6a",
+      "discovery_state": "acknowledged",
+      "revision": "153"
+    },
+    {
+      "event_id": "51764aeb816713ee11fea100b9e6bda9fb51503a49038822832cd1a7f4865453",
+      "actor_id": "e5946b40-9839-4a96-99d5-93262d9573f0",
+      "request_id": "2a6430a1-8a17-4220-bff4-943cc4678181",
+      "discovery_state": "acknowledged",
+      "revision": "151"
+    },
+    {
+      "event_id": "a0f155d85e63fde42220361e613c91f37b7ee52cf6db3e3299c8ab22c103ce60",
+      "actor_id": "e5946b40-9839-4a96-99d5-93262d9573f0",
+      "request_id": "f6b971d0-afee-4a29-8762-4c939eb14f65",
+      "discovery_state": "acknowledged",
+      "revision": "152"
+    },
+    {
+      "event_id": "a5ee0c610af521e69fa38f2721e1b54aacf3ed8da1c4d26684b897a644ba4447",
+      "actor_id": "e5946b40-9839-4a96-99d5-93262d9573f0",
+      "request_id": "5aeea9d1-9724-455c-aad8-e1c1b5badf8d",
+      "discovery_state": "acknowledged",
+      "revision": "154"
+    }
+  ],
+  "audit": [
+    {
+      "id": "14402af4-ae8e-4b82-883c-a457a4da0426",
+      "action": "waiver-publish",
+      "actorId": "4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124",
+      "version": 1,
+      "tenantId": "vega-development",
+      "createdAt": "2026-10-06T18:01:01.860Z",
+      "requestId": "b1a20ba7-ebb7-48e2-8ee1-243f694b16da",
+      "subjectId": "556ba6ae-e108-4cbf-a116-bc1e037e7a3b",
+      "businessId": "vega-dance-lab",
+      "contentDigest": "cba718d790ade038d83cd891aebde2fcc7d1fca232e0c20b7e4de356d81ebb02"
+    },
+    {
+      "id": "82ac0c00-606c-4847-b9fc-21803330acc4",
+      "action": "profile-update",
+      "actorId": "e5946b40-9839-4a96-99d5-93262d9573f0",
+      "revision": 1,
+      "tenantId": "vega-development",
+      "createdAt": "2026-10-06T18:09:19.339Z",
+      "requestId": "2a6430a1-8a17-4220-bff4-943cc4678181",
+      "subjectId": "vega-member-test-joe",
+      "businessId": "vega-dance-lab",
+      "changedFields": [
+        "displayName",
+        "contactEmail",
+        "phone"
+      ]
+    },
+    {
+      "id": "bb071f66-2f9b-4fc7-adb8-d81867a11a9b",
+      "action": "waiver-accept",
+      "actorId": "e5946b40-9839-4a96-99d5-93262d9573f0",
+      "version": 1,
+      "tenantId": "vega-development",
+      "waiverId": "556ba6ae-e108-4cbf-a116-bc1e037e7a3b",
+      "createdAt": "2026-10-06T18:09:39.267Z",
+      "requestId": "f6b971d0-afee-4a29-8762-4c939eb14f65",
+      "subjectId": "vega-member-test-joe",
+      "businessId": "vega-dance-lab",
+      "acceptanceId": "ea56bad7-1d43-4c03-861d-d4792f2ffdee",
+      "contentDigest": "cba718d790ade038d83cd891aebde2fcc7d1fca232e0c20b7e4de356d81ebb02"
+    },
+    {
+      "id": "661a1613-2acd-4f38-b009-ed31daa6e656",
+      "action": "waiver-publish",
+      "actorId": "4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124",
+      "version": 2,
+      "tenantId": "vega-development",
+      "createdAt": "2026-10-06T18:10:21.134Z",
+      "requestId": "4480fce7-e798-4ae9-99a0-fc5cc2f12c6a",
+      "subjectId": "67df3d88-218f-41c9-b230-0cb105707767",
+      "businessId": "vega-dance-lab",
+      "contentDigest": "f68f47e2b1b95dd8858de9d6a313877722f4b1916190c061ed3fb271ebc6e33d"
+    },
+    {
+      "id": "865444f2-cc22-47ef-bc5d-a9813bccd600",
+      "action": "waiver-accept",
+      "actorId": "e5946b40-9839-4a96-99d5-93262d9573f0",
+      "version": 2,
+      "tenantId": "vega-development",
+      "waiverId": "67df3d88-218f-41c9-b230-0cb105707767",
+      "createdAt": "2026-10-06T18:10:55.491Z",
+      "requestId": "5aeea9d1-9724-455c-aad8-e1c1b5badf8d",
+      "subjectId": "vega-member-test-joe",
+      "businessId": "vega-dance-lab",
+      "acceptanceId": "c1491772-bb37-42aa-bd18-6147aaa7aa34",
+      "contentDigest": "f68f47e2b1b95dd8858de9d6a313877722f4b1916190c061ed3fb271ebc6e33d"
+    }
+  ],
+  "paymentExecution": "disabled"
+}

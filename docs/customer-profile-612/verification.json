@@ -1,5 +1,5 @@
 {
-  "status": "BLOCKED — existing Development member sign-in required for hosted completion",
+  "status": "6.12 CUSTOMER PROFILE / WAIVER SELF-SERVICE — PRODUCT COMPLETE",
   "product": "6.12 Customer Profile / Waiver Self-Service",
   "build": "08743ba11b7d44f9e106ea245bac355365168be2",
   "branch": "commerce/customer-profile-waiver-v1",
@@ -43,22 +43,23 @@
     "staffAuthenticated": true,
     "staffPublishedVersion": 1,
     "waiverText": "Synthetic Development test acknowledgment; explicitly no legal effect",
-    "revision": 150,
+    "revision": 154,
     "recoveryAcknowledged": true,
     "staffMemberProjectionAgreement": true,
     "foreignScopeAndProtectedFieldRejections": "Verified against hosted pure transition and local authenticated API tests, not a separate foreign-account browser login",
     "unrelatedMatchesClosedRevision149": true,
     "paymentExecution": "disabled",
     "productionUntouched": true,
-    "memberBrowserSignIn": false
+    "memberBrowserSignIn": true,
+    "memberProfileEditsPersisted": true,
+    "currentWaiverAccepted": true,
+    "reacceptanceRequiredAndVerified": true,
+    "acceptanceHistoryCount": 2,
+    "staffBrowserAgreement": true,
+    "stateDigest": "4f63de07fac41b25dddfb09350df6fcb9501873937e3b8d6c484b79b942eeb3e",
+    "recoveryReceiptsAcknowledged": 5
   },
-  "pending": [
-    "Joe signs in to tab 7 with existing Joe — Member Test Development member account",
-    "Reload member tab after deployment; save display name Joe — Profile Test with synthetic phone/contact fields",
-    "Accept nonbinding test version 1, verify persistence",
-    "Publish nonbinding test version 2 with same or later effective time, verify reacceptance then accept",
-    "Run reconcile-hosted.mjs final phase through existing read-only hosted role; save final screenshots and close product"
-  ],
+  "pending": [],
   "deferred": [
     "New account/customer onboarding",
     "Account recovery or sign-in email change",
@@ -67,5 +68,16 @@
     "Legal waiver wording and Production publication",
     "Waiver enforcement changes to booking eligibility",
     "Document management or signature platform"
+  ],
+  "completedAt": "2026-10-06T18:12:04.715Z",
+  "evidence": [
+    "hosted-before.json",
+    "hosted-published.json",
+    "hosted-accepted-one.json",
+    "hosted-reacceptance.json",
+    "hosted-final.json",
+    "member-reacceptance.png",
+    "member-complete.png",
+    "staff-complete.png"
   ]
 }

@@ -1,0 +1,16 @@
+{
+  "status": "6.12 CUSTOMER PROFILE / WAIVER SELF-SERVICE — PRODUCT COMPLETE",
+  "completedAt": "2026-10-06T18:12:04.715Z",
+  "build": "08743ba11b7d44f9e106ea245bac355365168be2",
+  "branch": "commerce/customer-profile-waiver-v1",
+  "deployment": "dep-db2jdtpsrm7s73bl737g",
+  "revision": 154,
+  "stateDigest": "4f63de07fac41b25dddfb09350df6fcb9501873937e3b8d6c484b79b942eeb3e",
+  "priorClosedCheckpoint": "6.11 V1, revision 149",
+  "verification": "verification.json",
+  "waiverTestScope": "Two nonbinding Development test versions; no real legal waiver published",
+  "unrelatedBusinessStateUnchanged": true,
+  "productionUntouched": true,
+  "paymentExecution": "disabled",
+  "providerMutations": 0
+}

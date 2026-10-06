@@ -1,13 +1,13 @@
 {
-  "status": "6.11 FRONT-DESK POS V1 — PRODUCT COMPLETE",
+  "status": "6.12 CUSTOMER PROFILE / WAIVER SELF-SERVICE — PRODUCT COMPLETE",
   "recordedLocalDate": "2026-10-06",
   "timezone": "America/Los_Angeles",
   "nextSessionDate": "2026-10-06",
   "authority": "Joe end-of-day roadmap refresh; current sequencing guide supersedes earlier next-product recommendations",
   "roadmap": "D:/JOES WIP/ACRUX/Acrux System Tools/Vega Development Roadmap Dashboard.png",
   "workspace": "D:/JOES WIP/ACRUX/Codex Projects/vega-commerce-68a",
-  "verifiedBuild": "792cf1f09998118c883b859a257210cb2264f4cc",
-  "recordedDevelopmentRevision": 149,
+  "verifiedBuild": "08743ba11b7d44f9e106ea245bac355365168be2",
+  "recordedDevelopmentRevision": 154,
   "completed": [
     "Sections 1–5",
     "Section 6 studio operating core",
@@ -15,14 +15,15 @@
     "6.9 Payments workflow",
     "6.10 Refund system & reconciliation",
     "Canonical Refund System / Refund Program closure: full, partial and remaining-balance Sandbox execution verified",
-    "6.11 V1 staff-assisted front-desk sale"
+    "6.11 V1 staff-assisted front-desk sale",
+    "6.12 Customer Profile / Waiver Self-Service"
   ],
   "refundClosure": "docs/refund-program/canonical-closure.json",
   "executionGates": "Payment and refund execution disabled at final verified checkpoint",
   "production": "Untouched; launch not authorized",
   "architecture": "Acrux ecosystem first. Vega is the proving business.",
   "nextDragon": "Await Joe + Chett next product selection",
-  "firstTask": "Re-anchor on the closed 6.11 V1 checkpoint; do not repeat payment execution.",
+  "firstTask": "Re-anchor on the closed 6.12 checkpoint; do not repeat waiver test publication or acceptance.",
   "intendedJourney": "Customer walks in -> staff selects product/service -> payment -> fulfillment -> customer/business history updated",
   "principles": [
     "Reuse existing purchase/payment/fulfillment/refund architecture",
@@ -64,14 +65,13 @@
     "nextDragon": "6.11 — Front-Desk POS",
     "firstTask": "Inspect current staff commerce/front-desk capabilities and return one bounded product-level 6.11 build plan for Joe + Chett review."
   },
-  "latestClosedCheckpoint": "6.11 V1 staff-assisted front-desk sale: one USD 60 Sandbox payment, exactly three credits, histories reconciled, execution disabled",
-  "latestClosure": "docs/commerce-611/canonical-closure.json",
+  "latestClosedCheckpoint": "6.12 Customer Profile / Waiver Self-Service: hosted member edits, exact waiver acceptance, version reacceptance and staff agreement verified",
+  "latestClosure": "docs/customer-profile-612/canonical-closure.json",
   "activeProduct": {
     "name": "6.12 Customer Profile / Waiver Self-Service",
-    "status": "BLOCKED — existing Development member sign-in required for hosted completion",
+    "status": "6.12 CUSTOMER PROFILE / WAIVER SELF-SERVICE — PRODUCT COMPLETE",
     "build": "08743ba11b7d44f9e106ea245bac355365168be2",
     "branch": "commerce/customer-profile-waiver-v1",
-    "verification": "docs/customer-profile-612/verification.json",
-    "resume": "Continue hosted member verification after genuine member sign-in. Staff test waiver version 1 is already published; do not publish it again."
+    "verification": "docs/customer-profile-612/verification.json"
   }
 }
