@@ -232,3 +232,8 @@ render=function(){
   if(!$('#sign-out'))document.querySelector('header').insertAdjacentHTML('beforeend','<button id="sign-out" class="text-button">Leave workspace</button>');
  }else beforeFinancialReports();
 };
+// Keep the selected occurrence while the member completes existing prerequisites.
+let bookingReturn=null;
+const renderBeforeBookingReturn=render;
+render=function(){renderBeforeBookingReturn();if(!data||localDemo||view!=='member'||!bookingReturn)return;if(bookingReturn.tenantId!==data.context.tenantId||bookingReturn.businessId!==data.context.businessId){bookingReturn=null;return;}if(['profile','passes'].includes(page))$('#main').insertAdjacentHTML('afterbegin','<section class="card"><h2>Continue your booking</h2><p>When you are ready, return to your selected class to review current availability.</p><button class="button" data-class="'+escape(bookingReturn.classId)+'">Return to selected class</button></section>');};
+document.addEventListener('click',event=>{const b=event.target.closest('[data-booking-resolve]');if(!b)return;bookingReturn={tenantId:data.context.tenantId,businessId:data.context.businessId,classId:b.dataset.returnClass};$('#dialog').close();location.hash=b.dataset.bookingResolve;render();});

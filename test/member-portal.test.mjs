@@ -27,7 +27,7 @@ test('validity boundaries agree with booking selector, including class date beyo
 test('portal history distinguishes attendance from booking and includes clear cancellation outcomes',()=>{
  const s=fixture();s.classes.forEach(c=>{c.startsAt=c.id==='next'?'2099-01-01T00:00:00Z':'2020-01-01T00:00:00Z'});
  const html=render(s,'today');
- for(const text of ['Your Vega account','Upcoming dance','Attended','Marked absent','attendance not recorded','Early cancellation','Late cancellation','1 credit was restored','remains spent','Recent booking & cancellation activity']){
+ for(const text of ['Your studio account','Upcoming dance','Attended','Marked absent','attendance not recorded','Early cancellation','Late cancellation','1 credit was restored','remains spent','Recent booking & cancellation activity']){
   assert.ok(html.includes(text),text);
  }
  assert.match(html,/2 credits available now/);assert.match(html,/1 expired/);assert.match(html,/1 not yet valid/);assert.match(html,/restored after cancellation/);
