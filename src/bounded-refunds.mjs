@@ -1,5 +1,5 @@
 import {digest} from './payments.mjs';
-import {assessRefundEligibility} from './refund-eligibility.mjs';
+import {boundedRefundReadiness} from './bounded-refund-readiness.mjs';
 
 const held = new Set(['intent','dispatching','pending','unknown','failed','rejected']);
 export const refundHolding = op => held.has(op.status);
@@ -21,8 +21,11 @@ export function refundTransition(state,command,a,{now,id,evidence},fail){
  if(command.action==='refund-intent'){
   if(typeof b.reason!=='string'||!b.reason.trim()||b.reason.length>120)fail('Refund reason required');
   if(existing){if(existing.reason!==b.reason.trim())fail('Refund already exists with different intent',409);return output(existing);}
-  if(!evidence||evidence.stateDigest!==digest(state)||!fresh(evidence,at)||evidence.ownedComplete!==true||evidence.providerClear!==true||evidence.purchaseId!==p.id||!sameScope(evidence,a))fail('Fresh refund evidence unavailable',409);
-  const assessment=assessRefundEligibility({state,authority:a,purchaseId:p.id,at,refundRecords:operations});
+  if(!evidence||evidence.stateDigest!==digest(state)||!fresh(evidence,at)||evidence.businessReadiness?.contract!=='bounded-full-refund-readiness/1'||evidence.businessReadiness?.stateDigest!==digest(state)||evidence.businessReadiness?.purchaseId!==p.id||!sameScope(evidence.businessReadiness,a)||evidence.providerClear!==true||evidence.purchaseId!==p.id||!sameScope(evidence,a))fail('Fresh refund evidence unavailable',409);
+  const checked=boundedRefundReadiness({state,authority:a,purchaseId:p.id,at});
+  if(checked.status!=='ready')fail(checked.reasonCodes.join(', '),409);
+  if(evidence.businessReadiness.status!=='ready')fail('Fresh refund evidence unavailable',409);
+  const assessment=checked.assessment;
   if(assessment.status!=='eligible')fail(assessment.reasonCodes.join(', '),409);
   const attempt=state.paymentAttempts.find(x=>x.id===p.activeAttemptId);
   if(evidence.paymentId!==attempt.paymentId||evidence.amountMinor!==p.totalMinor||evidence.currency!==p.currency||!evidence.paymentVersion)fail('Provider evidence mismatch',409);

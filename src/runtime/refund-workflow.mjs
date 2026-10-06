@@ -18,7 +18,7 @@ export function createRefundWorkflow({store,adapter,enabled=()=>false,id=randomU
    const c=await context(userId,body);
    if(c.operation)return command(userId,'refund-intent',body);
    const evidence=await adapter.readiness(c.purchase);
-   return command(userId,'refund-intent',body,{...evidence,stateDigest:c.stateDigest,ownedComplete:c.ownedComplete});
+   return command(userId,'refund-intent',body,{...evidence,stateDigest:c.stateDigest,businessReadiness:c.businessReadiness});
   },
   async execute(userId,body){
    const c=await context(userId,body),op=c.operation;

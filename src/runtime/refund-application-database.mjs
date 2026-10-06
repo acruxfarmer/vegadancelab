@@ -8,6 +8,7 @@ import {reviewClassEdit} from '../class-editing.mjs';
 import {reviewClassDuplicate} from '../class-duplication.mjs';
 import {buildRecoveryReceipt,buildRevocationReceipt,receiptKey} from '../recovery-receipt.mjs';
 import {assessRefundEligibility} from '../refund-eligibility.mjs';
+import {boundedRefundReadiness} from '../bounded-refund-readiness.mjs';
 
 export function applicationDatabaseOptions(value){
  const u=new URL(value),ref='cjdoczrxcjynjhgpgqop';
@@ -43,13 +44,9 @@ export function createApplicationStore(pool,{receiptPublicKey=process.env.RECEIP
    if(!attempt)throw new ApplicationError('Payment evidence unavailable',409);
    const registered=await resolveIntegration(c,a,attempt);
    if(digest(registered)!==digest(attempt.integrationRef))throw new ApplicationError('Refund integration changed',409);
-   const events=state.activity?.filter(e=>e.subjectId===p.id&&e.tenantId===a.tenantId&&e.businessId===a.businessId)??[];
-   const allowed=['purchase-draft','payment-intent','payment-source-bound','payment-observation','purchase-fulfilled'];
-   const {rows:proof}=await c.query("select c.request_id,c.actor_id,c.response,o.discovery_state from vega_private.app_commands c join vega_private.recovery_outbox o using(tenant_id,business_id,actor_id,request_id) where c.tenant_id=$1 and c.business_id=$2 and c.request_id=any($3::text[])",[a.tenantId,a.businessId,events.map(e=>e.requestId)]);
-   const original=proof.find(r=>r.request_id===p.requestId&&String(r.actor_id)===p.buyerId)?.response;
-   const ownedComplete=original?.id===p.id&&original.buyerId===p.buyerId&&original.participantId===p.participantId&&digest(original.terms)===digest(p.terms)&&events.length===6&&allowed.every(k=>events.some(e=>e.action===k))&&events.every(e=>allowed.includes(e.action)&&proof.some(r=>r.request_id===e.requestId&&String(r.actor_id)===e.actorId&&r.discovery_state==='acknowledged'));
+   const businessReadiness=boundedRefundReadiness({state,authority:a,purchaseId:p.id,at:refundNow()});
    const operation=state.refundOperations?.find(o=>o.purchaseId===p.id&&o.tenantId===a.tenantId&&o.businessId===a.businessId);
-   return {stateDigest:digest(state),revision:row.revision,ownedComplete:!!ownedComplete,operation:operation?structuredClone(operation):null,purchase:{purchaseId:p.id,tenantId:a.tenantId,businessId:a.businessId,paymentId:attempt.paymentId,attemptId:attempt.id,integrationRef:attempt.integrationRef,amountMinor:p.totalMinor,currency:p.currency,quantity:p.terms.quantity}};
+   return {stateDigest:digest(state),revision:row.revision,businessReadiness,operation:operation?structuredClone(operation):null,purchase:{purchaseId:p.id,tenantId:a.tenantId,businessId:a.businessId,paymentId:attempt.paymentId,attemptId:attempt.id,integrationRef:attempt.integrationRef,amountMinor:p.totalMinor,currency:p.currency,quantity:p.terms.quantity}};
   },true),
   refundCommand:(userId,command,evidence)=>store.command(userId,command,refundCapability,evidence),
   assessRefund:(userId,purchaseId)=>transaction(userId,async(c,a)=>{

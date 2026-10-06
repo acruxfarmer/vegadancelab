@@ -1,3 +1,4 @@
+import {boundedRefundReadiness} from '../src/bounded-refund-readiness.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -11,7 +12,7 @@ const stamp='2026-10-05T23:00:00Z';
 function setup(){
  let state=structuredClone(fixture),n=0;
  const a={userId:'staff',role:'staff',tenantId:'vega-development',businessId:'vega-dance-lab',participantIds:[]},p=state.purchaseDrafts[0],pid=p.id;
- const proof=()=>({tenantId:a.tenantId,businessId:a.businessId,purchaseId:pid,paymentId:state.paymentAttempts[0].paymentId,amountMinor:p.totalMinor,currency:p.currency,stateDigest:digest(state),ownedComplete:true,providerClear:true,paymentVersion:'version-1',observedAt:stamp});
+ const proof=()=>({tenantId:a.tenantId,businessId:a.businessId,purchaseId:pid,paymentId:state.paymentAttempts[0].paymentId,amountMinor:p.totalMinor,currency:p.currency,stateDigest:digest(state),businessReadiness:boundedRefundReadiness({state,authority:a,purchaseId:pid,at:stamp}),providerClear:true,paymentVersion:'version-1',observedAt:stamp});
  const run=(action,body={},evidence,authority=a,at=stamp)=>{
   const before=structuredClone(state),r=transition(state,{action,body:{requestId:`r${++n}`,purchaseId:pid,reason:'Customer request',...body}},authority,{trustedRefund:true,refundEvidence:evidence,now:()=>at,id:()=>`e${++n}`});assert.deepEqual(state,before);state=r.state;return r.result.refund;
  };
@@ -35,7 +36,7 @@ for(const status of ['pending','unknown','completed'])test(`cannot release ${sta
 test('held credit cannot be consumed by booking accounting',()=>{const h=setup();h.intent();assert.throws(()=>bookingAccounting(h.state,h.a,{id:()=>'',now:()=>stamp},m=>{throw Error(m);}).consume({id:'booking',participantId:h.p.participantId,passId:h.state.passes[0].id},{creditRequired:true,startsAt:stamp,category:'Pack verification'}),/No eligible/);});
 test('held participant cannot create a reservation, including no-credit reservation',()=>{const h=setup();h.intent();assert.throws(()=>h.run('reserve',{participantId:h.p.participantId,classId:'any'}),/booking is held/);});
 for(const [name,change] of [
- ['missing provider',e=>e.providerClear=false],['incomplete owned evidence',e=>e.ownedComplete=false],['stale',e=>e.observedAt='2026-10-05T22:59:00Z'],['future',e=>e.observedAt='2026-10-05T23:00:01Z'],['wrong purchase',e=>e.purchaseId='foreign'],['changed state',e=>e.stateDigest='wrong'],['wrong amount',e=>e.amountMinor=1],['missing version',e=>delete e.paymentVersion]
+ ['missing provider',e=>e.providerClear=false],['blocked business readiness',e=>e.businessReadiness.status='blocked'],['stale',e=>e.observedAt='2026-10-05T22:59:00Z'],['future',e=>e.observedAt='2026-10-05T23:00:01Z'],['wrong purchase',e=>e.purchaseId='foreign'],['changed state',e=>e.stateDigest='wrong'],['wrong amount',e=>e.amountMinor=1],['missing version',e=>delete e.paymentVersion]
 ])test(`intent rejects ${name}`,()=>{const h=setup(),e=h.proof();change(e);assert.throws(()=>h.run('refund-intent',{},e));assert.equal(h.state.refundOperations,undefined);});
 for(const a of [{role:'member'},{businessId:'foreign'},{tenantId:'foreign'}])test(`denied authority ${JSON.stringify(a)}`,()=>{const h=setup();assert.throws(()=>h.run('refund-intent',{},h.proof(),{...h.a,...a}));});
 test('untrusted command cannot inject evidence',()=>{const h=setup();assert.throws(()=>transition(h.state,{action:'refund-intent',body:{purchaseId:h.pid,requestId:'x'}},h.a),/Internal refund/);});
@@ -53,7 +54,7 @@ test('closed assessment is unchanged before intent; members cannot see refund op
 
 function coordinator({outcome='completed',lost=false}={}){
  const h=setup();let tail=Promise.resolve(),calls=0;
- const store={async refundContext(){return {purchase:{purchaseId:h.pid},stateDigest:digest(h.state),ownedComplete:true,operation:h.state.refundOperations?.[0]};},async operation(){return {independentReceipt:{state:'acknowledged'}};},refundCommand(user,cmd,e){
+ const store={async refundContext(){return {purchase:{purchaseId:h.pid},stateDigest:digest(h.state),businessReadiness:boundedRefundReadiness({state:h.state,authority:h.a,purchaseId:h.pid,at:stamp}),operation:h.state.refundOperations?.[0]};},async operation(){return {independentReceipt:{state:'acknowledged'}};},refundCommand(user,cmd,e){
   const job=tail.then(()=>{const op=h.run(cmd.action,cmd.body,e);if(cmd.action==='refund-intent'){h.state.refundOperations[0].intentReceiptId='receipt';op.intentReceiptId='receipt';}return {refund:op,independentReceipt:{operationId:'receipt',state:'pending'}};});tail=job.catch(()=>{});return job;
  }};
  const adapter={readiness:async()=>h.proof(),async submit(op){calls++;if(lost)throw Error('transport lost');return {...h.proof(),operationId:op.id,status:outcome,refundId:'refund-1',verified:true};},inspect:async op=>({...h.proof(),operationId:op.id,status:'unknown'})};

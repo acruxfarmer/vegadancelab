@@ -1,3 +1,4 @@
+import {boundedRefundReadiness} from '../src/bounded-refund-readiness.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -27,7 +28,7 @@ function harness(){
  }};}};
  h.store=createApplicationStore(pool,{receiptPublicKey:publicKey,refundNow:()=>stamp,resolveIntegration:async(c,a,attempt)=>{if(h.integrationChanged)throw Error('Integration unavailable');return attempt.integrationRef;}});
  Object.defineProperty(h,'data',{get:()=>data});
- h.proof=()=>({tenantId:'vega-development',businessId:'vega-dance-lab',purchaseId:data.state.purchaseDrafts[0].id,paymentId:data.state.paymentAttempts[0].paymentId,amountMinor:6000,currency:'USD',providerClear:true,ownedComplete:true,observedAt:stamp,paymentVersion:'v1',stateDigest:digest(data.state)});
+ h.proof=()=>({tenantId:'vega-development',businessId:'vega-dance-lab',purchaseId:data.state.purchaseDrafts[0].id,paymentId:data.state.paymentAttempts[0].paymentId,amountMinor:6000,currency:'USD',providerClear:true,businessReadiness:boundedRefundReadiness({state:data.state,authority:{role:'staff',tenantId:'vega-development',businessId:'vega-dance-lab'},purchaseId:data.state.purchaseDrafts[0].id,at:stamp}),observedAt:stamp,paymentVersion:'v1',stateDigest:digest(data.state)});
  h.cmd=(action,request='intent',body={})=>({action,body:{requestId:request,purchaseId:data.state.purchaseDrafts[0].id,reason:'Customer request',...body}});
  return h;
 }
