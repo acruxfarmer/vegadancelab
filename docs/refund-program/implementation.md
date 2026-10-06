@@ -33,4 +33,10 @@ Provider submission requires a separate disabled-by-default `VEGA_REFUND_PROGRAM
 
 ## Verification boundary
 
+## Robust product scope
+
+The robustness review confirms the supported workflows above as the product boundary. Disputes, complex correction/restoration chains, amended terms, unproven allocation and contradictory history require staff review; there is no automated adjudication or historical repair. Detecting these conditions protects normal refunds and does not require implementing their resolution before the product is complete.
+
+No new business dependency or edge-case automation was needed or removed. Existing identity, amount, lineage, duplicate, concurrency, hold and outcome checks remain financial/data safeguards. UI cleanup presents unsupported evidence as **Needs Staff Review**, gives ordinary blockers actionable wording, and keeps internal reason codes out of the presentation. Provider and business authority remain separate. No infrastructure, schema, permission or execution-gate changes are part of this cleanup.
+
 Local tests cover domain, provider fixtures, concurrency, store rollback/outbox, API denial and safe projections. Hosted verification uses the deployed tests, current authenticated staff UI, actual read-only Square inventory and before/after revision/digest inspection. New partial/refund scenarios are not represented as actual Square executions. Final Sandbox execution of new scenarios requires a fresh approved purchase and separate authorization; the already-refunded purchase is never reused for another refund.
