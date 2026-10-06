@@ -1,0 +1,90 @@
+{
+  "contract": "acrux-layer-closure/1",
+  "layer": 3,
+  "name": "Digital Front Door",
+  "status": "COMPLETE / VERIFIED / CLOSED",
+  "recordedLocalDate": "2026-10-06",
+  "timezone": "America/Los_Angeles",
+  "authority": "Joe explicit Layer 3 canonical closure and Layer 4 transition-review instruction in this conversation",
+  "architecture": "Acrux ecosystem first. Vega is the proving business.",
+  "capabilities": [
+    "Public Studio & Class Discovery",
+    "Sign-Up / Onboarding",
+    "Discovery → First Booking",
+    "Email-confirmed account creation through existing Supabase Auth and approved Resend",
+    "Existing profile and versioned waiver integration",
+    "Booking, early cancellation, credit restoration and rebooking using existing engine",
+    "Read-only public projections and authenticated business/member actions",
+    "Vega + Willow reusable discovery and booking contracts"
+  ],
+  "verifiedBuild": "8b799ae233ecffcb6c5a88a25639f185aec304e6",
+  "developmentRevision": 167,
+  "verificationBasis": "Existing recorded verification plus explicit user closure; no new runtime changes or re-audit in this closure task",
+  "evidence": [
+    {
+      "path": "docs/public-entry/verification.md",
+      "sha256": "125e330f968d058fa87e72572ea254525018f9b386b3dd989a9eb9bc900253d3"
+    },
+    {
+      "path": "docs/public-entry/hosted-email-onboarding.json",
+      "sha256": "af560119386d25d986536623d223b811ef56ffe4b572de8de57ced9337b54d65"
+    },
+    {
+      "path": "docs/public-entry/resend-smtp-dashboard-result.json",
+      "sha256": "13a66700cb4b6421f9dc2efa7b870fbbfa7cce5d3e0d333c9db1c08dc7d15dbc"
+    },
+    {
+      "path": "docs/public-entry/hosted-public-api.json",
+      "sha256": "a2b165d858e95e9ec58eb6ba11ac2e88deb38943ea5ac460d7bbac8934d9e896"
+    },
+    {
+      "path": "docs/first-booking-verification.md",
+      "sha256": "cb5633cd8627c74fa2be4025ad6f220e047d9890c06904804116633f040caa30"
+    },
+    {
+      "path": "docs/first-booking-hosted-result.json",
+      "sha256": "ea694af1131fa600d78addb6dc9d7b0de32f2f65c1190fd83dfcfc06687420d9"
+    },
+    {
+      "path": "docs/first-booking-targeted.txt",
+      "sha256": "2719cfb2934215b02cd785d8bccc89eb8c98cf5cd670ae559069e3928ffd2a79"
+    },
+    {
+      "path": "docs/first-booking-regressions.txt",
+      "sha256": "d3c371e63454a6dbb19c32dabb0eaf28b16810762eec98e76cb3676977a71757"
+    }
+  ],
+  "coverageLimits": [
+    "Development verification only; no Production launch qualification",
+    "Public entry: 26 targeted and 1,040 tracked tests at that checkpoint; first booking: 19 targeted and 1,059 tracked tests at its final checkpoint; counts are not combined",
+    "Waivers were nonbinding Development fixtures",
+    "Staff/member agreement verified through authenticated runtime projections; member journey verified in hosted browser",
+    "Vega and Willow domain fixtures prove reuse; hosted Willow public discovery verified; hosted confirmed booking used Vega",
+    "Concurrency verification uses a locking database double, not a hosted load test",
+    "Six earlier exploratory failures in unrelated pre-existing untracked tests remain outside the green tracked-suite result",
+    "Existing self-purchase availability retains Development-specific commerce bindings; no new payment flows claimed"
+  ],
+  "deferred": [
+    "Guest checkout",
+    "Households / dependents",
+    "Group booking",
+    "New payment flows",
+    "Identity merging / federation"
+  ],
+  "deferredAreBlockers": false,
+  "boundaries": [
+    "Existing identity, profile, waiver, booking, credit/pass and commerce systems remain authoritative",
+    "Ambiguous linkage remains Needs Staff Review",
+    "Public discovery exposes no private member records",
+    "Authentication email is not Layer 4 application communications automation"
+  ],
+  "layer2": {
+    "closure": "docs/layer-2/canonical-closure.json",
+    "status": "COMPLETE / VERIFIED / CLOSED",
+    "reopened": false
+  },
+  "roadmap": "docs/roadmap-state.json",
+  "transitionReview": "docs/layer-3/layer-4-transition-review.json",
+  "layer4ImplementationAuthorized": false,
+  "production": "Untouched; not authorized"
+}

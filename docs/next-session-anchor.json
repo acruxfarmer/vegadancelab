@@ -1,13 +1,13 @@
 {
-  "status": "LAYER 2 — COMPLETE / VERIFIED / CLOSED",
+  "status": "LAYER 3 — COMPLETE / VERIFIED / CLOSED",
   "recordedLocalDate": "2026-10-06",
   "timezone": "America/Los_Angeles",
   "nextSessionDate": "2026-10-06",
-  "authority": "Joe Layer 2 canonical closure and roadmap transition instruction",
+  "authority": "Joe Layer 3 canonical closure and Layer 4 transition-review instruction",
   "roadmap": "docs/roadmap-state.json",
   "workspace": "D:/JOES WIP/ACRUX/Codex Projects/vega-commerce-68a",
-  "verifiedBuild": "836c54f301c54aa969a01018b948977354d4f415",
-  "recordedDevelopmentRevision": 155,
+  "verifiedBuild": "8b799ae233ecffcb6c5a88a25639f185aec304e6",
+  "recordedDevelopmentRevision": 167,
   "completed": [
     "Sections 1–5",
     "Section 6 studio operating core",
@@ -20,15 +20,16 @@
     "6.13 Granular Staff Roles & Permissions",
     "6.14 Expanded Front-Desk Operations",
     "6.15 Attendance / Utilization Reporting",
-    "6.16 Financial Reporting"
+    "6.16 Financial Reporting",
+    "Layer 3 — Digital Front Door: public discovery, email-confirmed onboarding, profile/waiver integration and confirmed booking/cancellation/rebooking"
   ],
   "refundClosure": "docs/refund-program/canonical-closure.json",
   "executionGates": "Payment and refund execution disabled at final verified checkpoint",
   "production": "Untouched; launch not authorized",
   "architecture": "Acrux ecosystem first. Vega is the proving business.",
-  "nextDragon": "Layer 3 — DIGITAL FRONT DOOR; recommended first: Public Studio & Class Discovery",
-  "firstTask": "Joe + Chett transition review and selection; do not begin Layer 3 implementation until approved.",
-  "intendedJourney": "Staff signs in -> selects authorized business -> sees role-appropriate actions -> performs permitted work -> audit and recovery preserve attributable changes",
+  "nextDragon": "Layer 4 — COMMUNICATIONS; recommended first: Booking Lifecycle Transactional Email",
+  "firstTask": "Joe + Chett review the Layer 4 transition and approve a bounded first-dragon brief. Do not implement or send messages before approval.",
+  "intendedJourney": "Authoritative booking outcome → business-scoped transactional message → delivery evidence visible to member/staff (proposed Layer 4 journey only)",
   "principles": [
     "Reuse existing purchase/payment/fulfillment/refund architecture",
     "Keep money, fulfillment, entitlement and business policy separate",
@@ -43,7 +44,7 @@
     "Merchandise",
     "Service purchases where existing commerce architecture applies"
   ],
-  "scopeNote": "Candidate types guide reuse, not authorization to implement every type in the first build; select a bounded meaningful workflow during review.",
+  "scopeNote": "Communications dragons are review proposals only. Layer 2 and Layer 3 remain closed; historical nested checkpoints do not authorize current work.",
   "deferredPlatform": "DEFERRED ACRUX PLATFORM HARDENING — REFERENCE ONLY — NOT ACTIVE RUNTIME DEPENDENCY",
   "prohibited": [
     "Admin-plane work",
@@ -59,7 +60,8 @@
     "earlierClosedFoundation": "Commerce 6.10",
     "authority": "Joe approved 6.11 V1 build; Chett review PASS",
     "activeSlice": "6.11 V1 staff-assisted front-desk sale workflow",
-    "release": "Implement, test, deploy and hosted verify; actual provider execution requires Joe approval"
+    "release": "Implement, test, deploy and hosted verify; actual provider execution requires Joe approval",
+    "historicalOnly": true
   },
   "previousAnchor": {
     "status": "CLEAN SHUTDOWN — NEXT DRAGON 6.11 FRONT-DESK POS",
@@ -69,14 +71,14 @@
     "nextDragon": "6.11 — Front-Desk POS",
     "firstTask": "Inspect current staff commerce/front-desk capabilities and return one bounded product-level 6.11 build plan for Joe + Chett review."
   },
-  "latestClosedCheckpoint": "LAYER 2 — COMPLETE / VERIFIED / CLOSED",
-  "latestClosure": "docs/layer-2/canonical-closure.json",
+  "latestClosedCheckpoint": "LAYER 3 — COMPLETE / VERIFIED / CLOSED",
+  "latestClosure": "docs/layer-3/canonical-closure.json",
   "activeProduct": {
-    "verification": "docs/financial-reporting-616/verification.json",
-    "build": "836c54f301c54aa969a01018b948977354d4f415",
-    "branch": "commerce/financial-reporting-v1",
-    "status": "6.16 FINANCIAL REPORTING — PRODUCT COMPLETE",
-    "name": "6.16 Financial Reporting"
+    "name": "Layer 3 — Digital Front Door",
+    "status": "COMPLETE / VERIFIED / CLOSED",
+    "verification": "docs/layer-3/canonical-closure.json",
+    "build": "8b799ae233ecffcb6c5a88a25639f185aec304e6",
+    "branch": "product/layer3-public-entry"
   },
   "previousProductCheckpoint": {
     "status": "6.12 CUSTOMER PROFILE / WAIVER SELF-SERVICE — PRODUCT COMPLETE",
@@ -84,5 +86,19 @@
     "revision": 154,
     "closure": "docs/customer-profile-612/canonical-closure.json"
   },
-  "layer3TransitionReview": "docs/layer-2/layer-3-transition-review.json"
+  "layer3TransitionReview": "docs/layer-2/layer-3-transition-review.json",
+  "previousLayerCheckpoint": {
+    "status": "LAYER 2 — COMPLETE / VERIFIED / CLOSED",
+    "verifiedBuild": "836c54f301c54aa969a01018b948977354d4f415",
+    "recordedDevelopmentRevision": 155,
+    "closure": "docs/layer-2/canonical-closure.json"
+  },
+  "layer4TransitionReview": "docs/layer-3/layer-4-transition-review.json",
+  "layer3Deferred": [
+    "Guest checkout",
+    "Households / dependents",
+    "Group booking",
+    "New payment flows",
+    "Identity merging / federation"
+  ]
 }

@@ -1,0 +1,91 @@
+{
+  "contract": "acrux-layer-transition-review/1",
+  "recordedLocalDate": "2026-10-06",
+  "timezone": "America/Los_Angeles",
+  "architecture": "Acrux ecosystem first. Vega is the proving business.",
+  "from": "Layer 3 — DIGITAL FRONT DOOR — COMPLETE / VERIFIED / CLOSED",
+  "nextLayer": "Layer 4 — COMMUNICATIONS",
+  "status": "RECOMMENDATIONS ONLY — AWAIT JOE + CHETT REVIEW",
+  "implementationAuthorized": false,
+  "approvalGate": "Stop for Joe + Chett review and approval of a bounded first-dragon brief before implementation or external message execution.",
+  "inspection": {
+    "sources": [
+      "src/promotion-notice.mjs",
+      "public/integration.js",
+      "docs/public-entry/resend-smtp-dashboard-result.json",
+      "docs/first-booking-hosted-result.json"
+    ],
+    "findings": [
+      "Existing business-scoped in-app promotion notices are separate from external delivery.",
+      "Existing studio-update preferences and staff drafts exist; external delivery remains disabled.",
+      "Resend is already approved and used for Supabase email confirmation with Sending access. This does not establish application booking email delivery.",
+      "Booking, cancellation, rebooking, member history and recovery evidence are verified."
+    ]
+  },
+  "topThree": [
+    {
+      "rank": 1,
+      "name": "Booking Lifecycle Transactional Email",
+      "journey": "Confirmed booking or member cancellation → accurate business-owned message → existing Resend delivery → member/staff delivery status",
+      "scope": [
+        "Booking confirmation and member cancellation email using authoritative committed outcomes",
+        "Reusable business-scoped templates, sender configuration and validated recipient rules",
+        "Reuse existing events, jobs, audit and recovery contracts; deduplicate retries without changing booking state",
+        "Show pending, sent, delivered, bounced or failed only when supported by evidence; ambiguous provider outcomes require reconciliation"
+      ],
+      "reviewDecisions": [
+        "Recipient authority and purpose-specific preference/suppression rules",
+        "Sender/reply-to identity per business and approved message content",
+        "Bounded Development recipient list and explicit provider-execution approval"
+      ],
+      "why": "Closes the immediate gap after a successful booking, proves the smallest useful communications journey, and establishes delivery handling reusable by later dragons."
+    },
+    {
+      "rank": 2,
+      "name": "Class Changes & Waitlist Updates",
+      "journey": "Staff changes or cancels an occurrence, or promotes a waitlist entry → affected member receives accurate update",
+      "scope": [
+        "Reuse existing occurrence and promotion records and in-app notices",
+        "Notify only affected business-owned participants with change details and next action",
+        "Preserve staff promotion, cancellation and credit rules; delivery must never change those outcomes",
+        "Deduplicate overlapping changes and retain event-specific delivery evidence"
+      ]
+    },
+    {
+      "rank": 3,
+      "name": "Class Reminders & Communication Preferences",
+      "journey": "Upcoming valid booking → eligible reminder at the approved time → member manages communication preferences",
+      "scope": [
+        "Business-timezone-aware reminders from current booking records",
+        "Recheck cancellation, rescheduling and recipient eligibility before sending",
+        "Reuse existing preferences while making message purposes explicit",
+        "Prevent stale or duplicate reminders and expose understandable staff delivery history"
+      ],
+      "reviewDecisions": [
+        "Reminder timing, quiet hours and eligible channels",
+        "Required service messages versus optional studio updates; do not infer marketing consent"
+      ]
+    }
+  ],
+  "recommendedFirst": "Booking Lifecycle Transactional Email",
+  "providerBoundary": "Reuse approved Resend; no provider evaluation, credential permission expansion or delivery activation in this review.",
+  "preservedDeferred": [
+    "Guest checkout",
+    "Households / dependents",
+    "Group booking",
+    "New payment flows",
+    "Identity merging / federation"
+  ],
+  "notAuthorized": [
+    "Implementation",
+    "External message sends",
+    "Reminder schedules or automation",
+    "New channels/providers",
+    "Production access"
+  ],
+  "laterLayers": [
+    "Media system",
+    "Native apps"
+  ],
+  "layer2": "COMPLETE / VERIFIED / CLOSED — unchanged"
+}
