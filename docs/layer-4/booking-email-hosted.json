@@ -8,7 +8,10 @@
     "commit": "0fabbdd6b34c6215bab238d14a2226e5bd4c3090",
     "status": "Live",
     "durationSeconds": 41.3,
-    "hostedBuildTests": {"passed": 1079, "failed": 0}
+    "hostedBuildTests": {
+      "passed": 1079,
+      "failed": 0
+    }
   },
   "restrictedRuntime": {
     "role": "vega_app_runtime",
@@ -46,10 +49,22 @@
     "credentialHandoffScript": "scripts/configure-booking-email-development.ps1",
     "oneMessageRunner": "scripts/send-one-booking-email-development.mjs"
   },
-  "publicBoundary": {"unauthenticatedAppStatus": 401, "publicProjectionContainsMemberOrEmailData": false},
+  "publicBoundary": {
+    "unauthenticatedAppStatus": 401,
+    "publicProjectionContainsMemberOrEmailData": false,
+    "browserStylePrivateRpcStatus": 406
+  },
   "businessBaselineBeforeSend": [
-    {"business":"vega-dance-lab","revision":168,"stateDigest":"1f2801f444fb91ce54f927f418b9fb48"},
-    {"business":"willow-movement","revision":0,"stateDigest":"1e8a823a955d74251b2a56b2cff77cfd"}
+    {
+      "business": "vega-dance-lab",
+      "revision": 168,
+      "stateDigest": "1f2801f444fb91ce54f927f418b9fb48"
+    },
+    {
+      "business": "willow-movement",
+      "revision": 0,
+      "stateDigest": "1e8a823a955d74251b2a56b2cff77cfd"
+    }
   ],
   "permissionEvidence": "docs/layer-4/booking-email-permission-evidence.json"
 }

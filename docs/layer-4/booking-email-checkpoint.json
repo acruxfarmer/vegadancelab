@@ -1,6 +1,6 @@
 {
   "dragon": "Layer 4 — Booking Lifecycle Transactional Email",
-  "status": "BLOCKED — Development database permission correction requires Joe approval",
+  "status": "BLOCKED — Existing Resend credential handoff to Development web runtime required",
   "recordedLocalDate": "2026-10-06",
   "layer3": "COMPLETE / VERIFIED / CLOSED — unchanged",
   "layer2": "COMPLETE / VERIFIED / CLOSED — unchanged",
@@ -14,35 +14,47 @@
     "Five bounded attempts, 23-hour safety cutoff, uncertain outcomes stop for review"
   ],
   "verification": {
-    "targetedTests": {"passed": 17, "failed": 0},
-    "trackedRegression": {"passed": 1076, "failed": 0, "evidence": "docs/layer-4/booking-email-regression.txt"},
+    "targetedTests": {
+      "passed": 17,
+      "failed": 0
+    },
+    "trackedRegression": {
+      "passed": 1076,
+      "failed": 0,
+      "evidence": "docs/layer-4/booking-email-regression.txt"
+    },
     "includesSecondBusiness": true,
-    "databaseFunctionalTests": "Pending corrected privileges; rollback-only fixtures prepared",
-    "databaseRestrictedRoleTests": "Pending existing Development runtime verification; no application-role grant to postgres authorized",
-    "hostedEmailVerification": "Not performed",
-    "applicationDeployment": "Not performed"
+    "databaseFunctionalTests": "Passed: rollback-only two-business verification",
+    "databaseRestrictedRoleTests": "Passed through deployed vega_app_runtime: all four lifecycle kinds, member/staff agreement, 11 receipt checks, direct writes/Auth lookup denied; all test mutations rolled back",
+    "hostedEmailVerification": "Browser booking confirmed; one verified-recipient intent queued; zero provider attempts",
+    "applicationDeployment": "Development Live at 0fabbdd6b34c6215bab238d14a2226e5bd4c3090; final helper/UI build awaits credential installation",
+    "hostedBuildTests": {
+      "passed": 1079,
+      "failed": 0
+    }
   },
   "developmentDatabase": {
     "project": "cjdoczrxcjynjhgpgqop",
     "schemaApplied": "Initial additive booking-email tables/functions only",
-    "intents": 0,
+    "intents": 1,
     "enabledBusinesses": 0,
     "externalMessages": 0,
     "anonymousPrivateSchemaAccess": false,
     "authenticatedPrivateSchemaAccess": false,
-    "correctionRequired": "Ownership/ACL ordering left default function EXECUTE and prevented the restricted owner from reading Auth. Prepared correction revokes public execution, uses a private migration-owner verified-address lookup callable only by the NOLOGIN email owner, and grants application runtime only the bounded outbox functions.",
+    "correctionRequired": null,
     "correctionFile": "db/booking-email-permission-correction.sql",
-    "automaticApprovalReview": "Rejected temporary role grants and persistent function permission changes without explicit Joe approval. No rejected action was executed. Approval question pending.",
-    "securityAdvisors": "Only pre-existing mutable-search-path and leaked-password-protection warnings returned; direct privilege checks detected the new ACL issue. No Layer 2 changes made."
+    "automaticApprovalReview": "Prior rejection resolved by explicit Joe + Chett approval; approved correction applied and verified. Temporary effective elevation removed; original unrelated permissions and business state unchanged during correction.",
+    "securityAdvisors": "Only pre-existing mutable-search-path and leaked-password-protection warnings returned; direct privilege checks detected the new ACL issue. No Layer 2 changes made.",
+    "correctionVerified": true,
+    "evidence": "docs/layer-4/booking-email-permission-evidence.json"
   },
   "resume": [
-    "Obtain explicit approval for the prepared narrow permission correction; do not request application-role membership in postgres",
-    "Apply correction and rollback-only functional tests; verify public/runtime/helper privileges",
-    "Verify actual restricted Development runtime and database isolation",
-    "Commit/deploy application to Development and verify member/staff UI",
-    "Prepare exact bounded provider activation and test sends to existing verified admin@vegadancelab.com, using existing Resend sending credential through Joe's private operator boundary",
-    "Obtain provider-side execution approval as required by the user; never widen Resend key permissions",
-    "Verify hosted lifecycle messages and truthful acceptance/delivery evidence, then return consolidated completion"
+    "Joe runs the prepared private credential script; no additional approval requested and no secrets shared in chat",
+    "Inspect non-secret result and deploy final committed Development build",
+    "Enable only the approved Development configuration for the existing queued intent; keep unattended delivery disabled",
+    "Run send-one-booking-email-development.mjs with exact approved intent c10c1894d59e8c098a71f73c7c184f398e9835c99d21ac299bda1300c24b0ae9",
+    "Disable the test configuration after the bounded attempt; reconcile any uncertainty without a new send identity",
+    "Verify provider acceptance/delivery only against actual evidence, member/staff status, and unchanged booking/payment/refund/entitlement state"
   ],
   "recoveryRules": [
     "Never repeat a booking to resend an email",
@@ -51,10 +63,17 @@
     "Provider accepted is not delivered; delivered requires concrete provider evidence",
     "Preserve provider identifiers internally, never include them in customer content"
   ],
-  "deferred": ["Reminders", "Marketing", "Broad preferences/subscription management", "New providers/channels", "Production activation"],
+  "deferred": [
+    "Reminders",
+    "Marketing",
+    "Broad preferences/subscription management",
+    "New providers/channels",
+    "Production activation"
+  ],
   "references": [
     "https://resend.com/docs/dashboard/emails/idempotency-keys",
     "https://resend.com/docs/api-reference/emails/send-email",
     "https://supabase.com/docs/guides/auth/users"
-  ]
+  ],
+  "permissionApproval": "Joe + Chett explicitly approved the bounded correction on 2026-10-06"
 }
