@@ -1,0 +1,43 @@
+{
+  "status": "LOCAL_IMPLEMENTATION_VERIFIED_HOSTED_QUALIFICATION_PENDING",
+  "targeted": {
+    "passed": 71,
+    "total": 71
+  },
+  "regressions": {
+    "passed": 2564,
+    "total": 2564
+  },
+  "closedBaseline": {
+    "path": "docs/refund-readiness/original-acceptance-baseline-hashes.json",
+    "checked": 74,
+    "mismatches": []
+  },
+  "artifacts": {
+    "src/bounded-refunds.mjs": "8c7b680b4a38c0e072f15daeeb29bfc3a9bb5b8bf60c90ae766a60da99ada17b",
+    "src/refund-application.mjs": "61da57b52b5114ce4af7d0ea7301399e756fa979eccabaf59eb20892ddde969a",
+    "src/runtime/refund-workflow.mjs": "f01efb189f2f67bbbe0378d919ddcfc10a7ba24b52b93d5ec073194d4e62e77c",
+    "src/runtime/refund-application-api.mjs": "e1dda16659de8d6ee995dda69989d70e9353136a7a8c7864b6c96e0152770e3d",
+    "src/runtime/refund-application-database.mjs": "8910e525aac7a26ceb905f84f778d8c90f72db4b3365a85ae2bc1ca15d3e7c3f",
+    "src/runtime/refund-web.mjs": "7cc3a19b58b78bae49b71ec281968c76667e6c592d1fce97d6897e6071aaa61b",
+    "src/runtime/providers/square-refunds.mjs": "e0624fe730e02f190c343f0bf43e6f3eefe8d8b876695b5be685754f7140ceb7",
+    "public/refund-ui.js": "ca92ff3c66156e96c9d951edefe347a89ef7cec93ab09572aedcc364af6fe2e4",
+    "public/app.js": "c7ecd636f7417997f2b916eb12c16c57dfa8d29d1194dc998ba8099950ceccd0",
+    "scripts/start-web.mjs": "e8baeab7289779e6810bf0a01be87697e958dfa0d5b40403ecca9d225c605afb"
+  },
+  "executionAuthorized": false,
+  "providerCalls": false,
+  "developmentMutation": false,
+  "deployment": false,
+  "migration": false,
+  "production": false,
+  "remaining": [
+    "Hosted deployment and verification of this product build",
+    "Fresh actual-adapter Sandbox readiness, including dispute-read access",
+    "Separate authorization before any refund submission"
+  ],
+  "limitations": [
+    "Lost provider response without captured refund ID remains held for staff reconciliation; no automatic retry",
+    "Local store concurrency fixture is not new PostgreSQL engine qualification"
+  ]
+}

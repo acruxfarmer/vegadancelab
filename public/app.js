@@ -138,3 +138,8 @@ document.addEventListener('submit',event=>{if(event.target.id==='commerce-draft'
 document.addEventListener('submit',event=>{if(event.target.hasAttribute('data-commerce-payment')){event.preventDefault();void commerce.submitPayment(event.target);}});
 const renderBeforeRecoveryNotice=render;
 render=function(){renderBeforeRecoveryNotice();if(data?.recovery?.pendingCount>0){const notice=document.createElement('div');notice.className='notice warning';notice.setAttribute('role','status');notice.textContent='Recovery confirmation pending. The current view includes provisional changes. Do not treat them as finally confirmed until independent recovery acknowledgment completes.';document.querySelector('#main').prepend(notice);}};
+import {refundUI} from './refund-ui.js';
+const refunds=refundUI({getData:()=>data,escape,mutate,notify});
+const renderBeforeRefund=render;
+render=function(){renderBeforeRefund();if(data&&!localDemo&&view==='staff'&&page==='people')$('#main').insertAdjacentHTML('beforeend',refunds.render());};
+document.addEventListener('submit',event=>{if(event.target.hasAttribute('data-refund-action')){event.preventDefault();void refunds.submit(event.target);}});

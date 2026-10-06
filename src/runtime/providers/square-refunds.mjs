@@ -1,0 +1,61 @@
+import {digest} from '../../payments.mjs';
+import {PAYMENT_BINDING as B,SQUARE_INTEGRATION,squareConfigurationMatches} from './square-configuration.mjs';
+
+export const REFUND_CANDIDATE='3609b576-10f1-4d16-94df-e46e10ec7a96';
+const paymentId='8VcoKhYwBs2FzSVqIjZjCD8yqyAZY';
+export const refundTransportEnabled=e=>e.VEGA_ENV==='development'&&e.VEGA_EXTERNAL_EFFECTS==='disabled'&&e.VEGA_SANDBOX_REFUND_EXECUTION==='authorized'&&e.VEGA_SANDBOX_REFUND_PURCHASE_ID===REFUND_CANDIDATE&&squareConfigurationMatches(e)&&!!e.SQUARE_ACCESS_TOKEN;
+export function createSquareRefundAdapter(env,fetcher=fetch,now=()=>new Date().toISOString()){
+ const configured=()=>env.VEGA_ENV==='development'&&squareConfigurationMatches(env)&&!!env.SQUARE_ACCESS_TOKEN;
+ const bounded=o=>o.purchaseId===REFUND_CANDIDATE&&o.paymentId===paymentId&&o.tenantId===B.tenantId&&o.businessId===B.businessId&&o.amountMinor===6000&&o.currency==='USD'&&o.quantity===3&&digest(o.integrationRef)===digest(SQUARE_INTEGRATION);
+ async function request(path,method='GET',body){
+  if(!configured())throw Error('Sandbox refund integration unavailable');
+  const r=await fetcher(`https://${B.host}${path}`,{method,redirect:'error',headers:{Authorization:`Bearer ${env.SQUARE_ACCESS_TOKEN}`,'Square-Version':'2026-09-16','Content-Type':'application/json'},...(body?{body:JSON.stringify(body)}:{}),signal:AbortSignal.timeout(10000)});
+  if(!r.ok)throw Error('Square evidence unavailable');
+  const value=await r.json();if(!value||value.errors?.length)throw Error('Square evidence unavailable');return value;
+ }
+ async function identity(){
+  const token=await request('/oauth2/token/status','POST');
+  if(token.client_id!==B.applicationId||token.merchant_id!==B.merchantId)throw Error('Sandbox identity mismatch');
+  const {location}=await request(`/v2/locations/${B.locationId}`);
+  if(location?.merchant_id!==B.merchantId||location?.id!==B.locationId||location?.currency!=='USD'||location?.status!=='ACTIVE')throw Error('Sandbox location mismatch');
+ }
+ async function all(path,key){
+  const rows=[],seen=new Set();let cursor;
+  for(let page=0;page<20;page++){
+   const r=await request(path+(cursor?`&cursor=${encodeURIComponent(cursor)}`:''));
+   if(r[key]!==undefined&&!Array.isArray(r[key]))throw Error('Provider coverage invalid');rows.push(...(r[key]??[]));
+   if(!r.cursor)return rows;if(typeof r.cursor!=='string'||seen.has(r.cursor))throw Error('Provider coverage incomplete');seen.add(r.cursor);cursor=r.cursor;
+  }
+  throw Error('Provider coverage incomplete');
+ }
+ const binding=o=>({tenantId:o.tenantId,businessId:o.businessId,purchaseId:o.purchaseId,paymentId:o.paymentId,operationId:o.id,amountMinor:o.amountMinor,currency:o.currency,observedAt:now()});
+ async function readiness(o){
+  if(!bounded(o))throw Error('Unsupported Sandbox purchase');await identity();
+  const cutoff=now(),{payment:p}=await request(`/v2/payments/${paymentId}`);
+  if(p?.id!==paymentId||p.status!=='COMPLETED'||p.location_id!==B.locationId||p.application_details?.application_id!==B.applicationId||p.reference_id!==o.attemptId||p.source_type!=='CARD'||p.amount_money?.amount!==6000||p.total_money?.amount!==6000||p.amount_money?.currency!=='USD'||p.total_money?.currency!=='USD'||(p.refunded_money?.amount??0)!==0||(p.refund_ids?.length??0)!==0||(p.tip_money?.amount??0)!==0||(p.app_fee_money?.amount??0)!==0||typeof p.version_token!=='string'||!p.version_token||!Number.isFinite(Date.parse(p.created_at)))throw Error('Payment not wholly refundable');
+  const refunds=await all(`/v2/refunds?location_id=${B.locationId}&begin_time=${encodeURIComponent(p.created_at)}&end_time=${encodeURIComponent(cutoff)}&limit=100`,'refunds');
+  if(refunds.some(r=>r.payment_id===paymentId))throw Error('Existing provider refund');
+  const disputes=await all(`/v2/disputes?location_id=${B.locationId}`,'disputes');
+  if(disputes.some(d=>d.disputed_payment?.payment_id===paymentId))throw Error('Conflicting provider dispute');
+  // Re-read to detect changes across paginated acquisition. The opaque token is
+  // also supplied on submission; it is compared for equality, never ordered.
+  const {payment:after}=await request(`/v2/payments/${paymentId}`);
+  if(digest(after)!==digest(p))throw Error('Payment changed during readiness');
+  return {...binding(o),observedAt:cutoff,providerClear:true,paymentVersion:p.version_token,providerEvidenceDigest:digest({p,refunds,disputes,cutoff}),coverage:{from:p.created_at,through:cutoff,locationId:B.locationId,allRefundStatuses:true,paginationExhausted:true},provider:'square',environment:'sandbox'};
+ }
+ function normalize(o,r){
+  if(!r||!r.id||r.payment_id!==paymentId||r.location_id!==B.locationId||r.amount_money?.amount!==6000||r.amount_money?.currency!=='USD'||!['PENDING','COMPLETED','FAILED','REJECTED'].includes(r.status)||r.reason!==`Refund ${o.id}: ${o.reason}`||(o.providerRefundId&&r.id!==o.providerRefundId))throw Error('Refund evidence mismatch');
+  return {...binding(o),status:r.status.toLowerCase(),refundId:r.id,verified:true,providerEvidenceDigest:digest(r)};
+ }
+ return {readiness,async submit(o){
+  if(!refundTransportEnabled(env)||!bounded(o)||o.status!=='dispatching'||!o.paymentVersion)throw Error('Refund execution disabled');
+  try{await identity();const r=await request('/v2/refunds','POST',{idempotency_key:o.providerKey,payment_id:paymentId,amount_money:{amount:6000,currency:'USD'},payment_version_token:o.paymentVersion,reason:`Refund ${o.id}: ${o.reason}`});return normalize(o,r.refund);}
+  catch{return {...binding(o),status:'unknown'};}
+ },async inspect(o){
+  if(!bounded(o))throw Error('Unsupported Sandbox purchase');
+  // A lost response with no refund ID is not interpreted as proof of absence.
+  if(!o.providerRefundId)return {...binding(o),status:'unknown'};
+  try{await identity();return normalize(o,(await request(`/v2/refunds/${encodeURIComponent(o.providerRefundId)}`)).refund);}
+  catch{return {...binding(o),status:'unknown'};}
+ }};
+}
