@@ -1,0 +1,71 @@
+{
+  "status": "BLOCKED — existing Development member sign-in required for hosted completion",
+  "product": "6.12 Customer Profile / Waiver Self-Service",
+  "build": "08743ba11b7d44f9e106ea245bac355365168be2",
+  "branch": "commerce/customer-profile-waiver-v1",
+  "deployment": "dep-db2jdtpsrm7s73bl737g",
+  "url": "https://vega-development-web.onrender.com/#profile",
+  "editable": [
+    "Display name (profile only; historical participant name unchanged)",
+    "Contact email (not sign-in email)",
+    "Phone",
+    "Existing scoped communication preferences"
+  ],
+  "businessOwned": [
+    "Participant linkage",
+    "Purchases",
+    "Payment/refund status",
+    "Passes and credits",
+    "Bookings and attendance",
+    "Roles and audit"
+  ],
+  "waiver": "Staff publishes immutable title/text/version/effective date; member explicit acceptance binds account, participant, business, exact version digest and server time; new effective version requires reacceptance; previous acceptances retained",
+  "needsStaffReview": "Missing, multiple, duplicate or conflicting participant/profile/acceptance linkage blocks self-service",
+  "reusable": "Tenant/business-scoped records and transitions; existing authenticated membership and command/recovery contracts; no provider call or new identity/schema",
+  "targeted": {
+    "passed": 25,
+    "failed": 0
+  },
+  "activeFullRegression": {
+    "passed": 963,
+    "failed": 0
+  },
+  "hostedBuild": {
+    "passed": 964,
+    "failed": 0
+  },
+  "broadWorkspace": {
+    "passed": 2699,
+    "failed": 6,
+    "note": "Same six preexisting deferred-platform historical source hash guards as 6.11; not active deployment dependencies."
+  },
+  "hosted": {
+    "staffAuthenticated": true,
+    "staffPublishedVersion": 1,
+    "waiverText": "Synthetic Development test acknowledgment; explicitly no legal effect",
+    "revision": 150,
+    "recoveryAcknowledged": true,
+    "staffMemberProjectionAgreement": true,
+    "foreignScopeAndProtectedFieldRejections": "Verified against hosted pure transition and local authenticated API tests, not a separate foreign-account browser login",
+    "unrelatedMatchesClosedRevision149": true,
+    "paymentExecution": "disabled",
+    "productionUntouched": true,
+    "memberBrowserSignIn": false
+  },
+  "pending": [
+    "Joe signs in to tab 7 with existing Joe — Member Test Development member account",
+    "Reload member tab after deployment; save display name Joe — Profile Test with synthetic phone/contact fields",
+    "Accept nonbinding test version 1, verify persistence",
+    "Publish nonbinding test version 2 with same or later effective time, verify reacceptance then accept",
+    "Run reconcile-hosted.mjs final phase through existing read-only hosted role; save final screenshots and close product"
+  ],
+  "deferred": [
+    "New account/customer onboarding",
+    "Account recovery or sign-in email change",
+    "Dependent/guardian and multi-participant self-service",
+    "Emergency contact fields (not in existing model)",
+    "Legal waiver wording and Production publication",
+    "Waiver enforcement changes to booking eligibility",
+    "Document management or signature platform"
+  ]
+}

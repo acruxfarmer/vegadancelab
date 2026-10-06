@@ -65,5 +65,13 @@
     "firstTask": "Inspect current staff commerce/front-desk capabilities and return one bounded product-level 6.11 build plan for Joe + Chett review."
   },
   "latestClosedCheckpoint": "6.11 V1 staff-assisted front-desk sale: one USD 60 Sandbox payment, exactly three credits, histories reconciled, execution disabled",
-  "latestClosure": "docs/commerce-611/canonical-closure.json"
+  "latestClosure": "docs/commerce-611/canonical-closure.json",
+  "activeProduct": {
+    "name": "6.12 Customer Profile / Waiver Self-Service",
+    "status": "BLOCKED — existing Development member sign-in required for hosted completion",
+    "build": "08743ba11b7d44f9e106ea245bac355365168be2",
+    "branch": "commerce/customer-profile-waiver-v1",
+    "verification": "docs/customer-profile-612/verification.json",
+    "resume": "Continue hosted member verification after genuine member sign-in. Staff test waiver version 1 is already published; do not publish it again."
+  }
 }

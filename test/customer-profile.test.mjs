@@ -1,10 +1,11 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {randomUUID} from 'node:crypto';
+import {randomUUID,generateKeyPairSync} from 'node:crypto';
 import {Readable} from 'node:stream';
 import {emptyState,transition,visibleState} from '../src/refund-application.mjs';
 import {createApplicationApi} from '../src/runtime/refund-application-api.mjs';
 import {customerProfileUI} from '../public/customer-profile-ui.js';
+import {createApplicationStore} from '../src/runtime/refund-application-database.mjs';
 const member={userId:'e5946b40-9839-4a96-99d5-93262d9573f0',role:'member',tenantId:'business-tenant',businessId:'dance',participantIds:['person']};
 const staff={...member,userId:randomUUID(),role:'staff',participantIds:[]};
 const at='2026-10-06T18:00:00.000Z',clock={id:randomUUID,now:()=>at};
@@ -68,4 +69,27 @@ test('authenticated HTTP routes use the existing command path and reject member 
  const api=createApplicationApi({SUPABASE_URL:'https://cjdoczrxcjynjhgpgqop.supabase.co',SUPABASE_PUBLISHABLE_KEY:'test'},store,async()=>({ok:true,json:async()=>({id:member.userId})}));
  async function request(path,body){let status,value;const req=Readable.from([Buffer.from(JSON.stringify({...body,requestId:randomUUID()}))]);Object.assign(req,{url:path,method:'POST',headers:{authorization:'Bearer test','content-type':'application/json'}});await api(req,{writeHead:s=>status=s,end:b=>value=JSON.parse(b)});return {status,value};}
  assert.equal((await request('/api/profile',update)).status,200);assert.equal((await request('/api/profile',{...update,expectedRevision:1,credits:50})).status,400);assert.equal((await request('/api/waivers/publish',publish)).status,403);
+});
+test('existing transactional store serializes concurrent profile edits, replays receipts and rolls back interrupted saves',async()=>{
+ let state=seed(),revision=0,commands=new Map(),outbox=new Map(),tail=Promise.resolve(),failWrite=false;
+ const pool={async connect(){let unlock,snapshot;return {release(){},async query(sql,args=[]){
+  if(sql==='begin'){const previous=tail;tail=new Promise(r=>unlock=r);await previous;snapshot=structuredClone({state,revision,commands,outbox});}
+  if(sql==='commit')unlock();
+  if(sql==='rollback'){({state,revision,commands,outbox}=snapshot);unlock();}
+  if(sql.startsWith('select tenant_id'))return {rows:[{tenant_id:member.tenantId,business_id:member.businessId,role:member.role,participant_ids:member.participantIds}]};
+  if(sql.startsWith('select state'))return {rows:[{state:structuredClone(state),revision}]};
+  if(sql.startsWith('select fingerprint'))return {rows:commands.has(args[3])?[commands.get(args[3])]:[]};
+  if(sql.startsWith('select event_id,discovery_state'))return {rows:[{...outbox.get(args[3]),state:'acknowledged'}]};
+  if(sql.startsWith('update vega_private.app_state')){state=JSON.parse(args[0]);revision++;if(failWrite){failWrite=false;throw Error('interrupted');}}
+  if(sql.startsWith('insert into vega_private.app_commands'))commands.set(args[3],{fingerprint:args[4],response:JSON.parse(args[5])});
+  if(sql.startsWith('insert into vega_private.recovery_outbox'))outbox.set(args[4],{event_id:args[0]});
+  return {rows:[]};
+ }}}};
+ const receiptPublicKey=generateKeyPairSync('rsa',{modulusLength:3072}).publicKey.export({type:'spki',format:'pem'}),store=createApplicationStore(pool,{receiptPublicKey});
+ const command={action:'profile-update',body:{...update,requestId:'one'}};
+ const results=await Promise.all([store.command(member.userId,command),store.command(member.userId,command)]);
+ assert.equal(revision,1);assert.equal(state.customerProfiles.length,1);assert.equal(state.activity.length,1);assert.equal(outbox.size,1);assert.equal(results[0].independentReceipt.state,'pending');assert.equal(results[1].independentReceipt.state,'acknowledged');
+ await assert.rejects(store.command(member.userId,{...command,body:{...command.body,phone:'changed'}}),/Request identifier/);
+ await assert.rejects(store.command(member.userId,{...command,body:{...command.body,requestId:'stale'}}),/Profile changed/);
+ failWrite=true;await assert.rejects(store.command(member.userId,{...command,body:{...command.body,requestId:'interrupt',expectedRevision:1,phone:'changed'}}),/interrupted/);assert.equal(revision,1);assert.equal(state.customerProfiles[0].fields.phone,update.phone);
 });

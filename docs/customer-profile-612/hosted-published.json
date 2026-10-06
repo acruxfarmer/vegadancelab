@@ -1,0 +1,79 @@
+{
+  "phase": "published",
+  "build": "08743ba11b7d44f9e106ea245bac355365168be2",
+  "revision": "150",
+  "stateDigest": "9831ae7addaa52b2604dd6c129d2cf1f90e04afd934224d673074607acbc9ae2",
+  "profile": {
+    "status": "ready",
+    "accountId": "e5946b40-9839-4a96-99d5-93262d9573f0",
+    "tenantId": "vega-development",
+    "businessId": "vega-dance-lab",
+    "participantId": "vega-member-test-joe",
+    "businessName": "Joe — Member Test",
+    "revision": 0,
+    "fields": {
+      "displayName": "Joe — Member Test",
+      "contactEmail": "",
+      "phone": ""
+    },
+    "currentWaiver": {
+      "id": "556ba6ae-e108-4cbf-a116-bc1e037e7a3b",
+      "text": "This is a synthetic Development verification document. Accepting it records a test acknowledgment only. It does not waive rights, impose obligations, authorize payment or replace Vega’s real waiver. Version 1 verifies member profile self-service.",
+      "title": "Development test waiver — no legal effect",
+      "version": 1,
+      "tenantId": "vega-development",
+      "businessId": "vega-dance-lab",
+      "effectiveAt": "2026-10-06T17:00:00.000Z",
+      "publishedAt": "2026-10-06T18:01:01.860Z",
+      "publishedBy": "4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124",
+      "contentDigest": "cba718d790ade038d83cd891aebde2fcc7d1fca232e0c20b7e4de356d81ebb02"
+    },
+    "waiverStatus": "Acceptance required",
+    "acceptances": [],
+    "acceptedVersions": []
+  },
+  "staffProfile": {
+    "participantId": "vega-member-test-joe",
+    "name": "Joe — Member Test",
+    "profile": null,
+    "status": "Profile not yet saved",
+    "waiverStatus": "Acceptance required",
+    "acceptances": []
+  },
+  "recordCounts": {
+    "passes": 9,
+    "credits": 37,
+    "bookings": 25,
+    "purchases": 9,
+    "refunds": 3
+  },
+  "staffMemberBusinessFactsAgree": true,
+  "foreignScopeDeniedByHostedTransition": true,
+  "protectedFieldsRejectedByHostedTransition": true,
+  "unrelatedStateMatchesRevision149": true,
+  "unrelatedStateDigest": "7325506535514b911ff8f775e8faa877cfb416d0d233db33c6da0d8d7af8baa5",
+  "receipts": [
+    {
+      "event_id": "95fa9d4d6bd09e2a6bc78b1d6c25547116b9c1fb6069518169b46bd0c38e2a30",
+      "actor_id": "4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124",
+      "request_id": "b1a20ba7-ebb7-48e2-8ee1-243f694b16da",
+      "discovery_state": "acknowledged",
+      "revision": "150"
+    }
+  ],
+  "audit": [
+    {
+      "id": "14402af4-ae8e-4b82-883c-a457a4da0426",
+      "action": "waiver-publish",
+      "actorId": "4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124",
+      "version": 1,
+      "tenantId": "vega-development",
+      "createdAt": "2026-10-06T18:01:01.860Z",
+      "requestId": "b1a20ba7-ebb7-48e2-8ee1-243f694b16da",
+      "subjectId": "556ba6ae-e108-4cbf-a116-bc1e037e7a3b",
+      "businessId": "vega-dance-lab",
+      "contentDigest": "cba718d790ade038d83cd891aebde2fcc7d1fca232e0c20b7e4de356d81ebb02"
+    }
+  ],
+  "paymentExecution": "disabled"
+}

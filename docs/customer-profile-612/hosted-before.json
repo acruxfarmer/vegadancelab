@@ -1,0 +1,47 @@
+{
+  "phase": "before",
+  "build": "08743ba11b7d44f9e106ea245bac355365168be2",
+  "revision": "149",
+  "stateDigest": "7325506535514b911ff8f775e8faa877cfb416d0d233db33c6da0d8d7af8baa5",
+  "profile": {
+    "status": "ready",
+    "accountId": "e5946b40-9839-4a96-99d5-93262d9573f0",
+    "tenantId": "vega-development",
+    "businessId": "vega-dance-lab",
+    "participantId": "vega-member-test-joe",
+    "businessName": "Joe — Member Test",
+    "revision": 0,
+    "fields": {
+      "displayName": "Joe — Member Test",
+      "contactEmail": "",
+      "phone": ""
+    },
+    "currentWaiver": null,
+    "waiverStatus": "No current waiver",
+    "acceptances": [],
+    "acceptedVersions": []
+  },
+  "staffProfile": {
+    "participantId": "vega-member-test-joe",
+    "name": "Joe — Member Test",
+    "profile": null,
+    "status": "Profile not yet saved",
+    "waiverStatus": "No current waiver",
+    "acceptances": []
+  },
+  "recordCounts": {
+    "passes": 9,
+    "credits": 37,
+    "bookings": 25,
+    "purchases": 9,
+    "refunds": 3
+  },
+  "staffMemberBusinessFactsAgree": true,
+  "foreignScopeDeniedByHostedTransition": true,
+  "protectedFieldsRejectedByHostedTransition": true,
+  "unrelatedStateMatchesRevision149": true,
+  "unrelatedStateDigest": "7325506535514b911ff8f775e8faa877cfb416d0d233db33c6da0d8d7af8baa5",
+  "receipts": [],
+  "audit": [],
+  "paymentExecution": "disabled"
+}
