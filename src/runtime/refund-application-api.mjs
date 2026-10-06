@@ -109,6 +109,9 @@ export function createApplicationApi(env,store,fetcher=fetch){
    routes['/api/classes/duplicate']='duplicate-class';
    routes['/api/commerce/drafts']='purchase-draft';
    routes['/api/commerce/front-desk/sales']='front-desk-sale';
+   routes['/api/profile']='profile-update';
+   routes['/api/waivers/publish']='waiver-publish';
+   routes['/api/waivers/accept']='waiver-accept';
    let action=url.pathname==='/api/classes/edit'?'edit-class':routes[url.pathname],id;
    const match=url.pathname.match(/^\/api\/reservations\/([A-Za-z0-9-]{1,128})\/(cancel|correct-cancellation|attendance|promote)$/);
    if(match){id=match[1];action=match[2];}

@@ -19,3 +19,5 @@ await copyFile(new URL('public/reservation-history.js',root),new URL('dist-front
 
 await copyFile(new URL('public/promotion-notices.js',root),new URL('dist-frontdoor/promotion-notices.js',root));
 await copyFile(new URL('public/cancellation-notices.js',root),new URL('dist-frontdoor/cancellation-notices.js',root));
+
+await copyFile(new URL('public/customer-profile-ui.js',root),new URL('dist-frontdoor/customer-profile-ui.js',root));

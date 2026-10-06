@@ -148,3 +148,13 @@ const renderBeforeRefund=render;
 render=function(){renderBeforeRefund();if(data&&!localDemo){if(view==='staff'&&page==='people')$('#main').insertAdjacentHTML('beforeend',refunds.render()+refundProgram.render());else if(view==='member'&&page==='passes')$('#main').insertAdjacentHTML('beforeend',refundProgram.render());}};
 document.addEventListener('submit',event=>{if(event.target.hasAttribute('data-refund-action')){event.preventDefault();void refunds.submit(event.target);}});
 document.addEventListener('submit',event=>{if(event.target.hasAttribute('data-refund-program')){event.preventDefault();void refundProgram.submit(event.target);}});
+
+import {customerProfileUI} from './customer-profile-ui.js';
+const customerProfile=customerProfileUI({getData:()=>data,escape,mutate,notify,modal});
+const beforeCustomerProfile=render;
+render=function(){beforeCustomerProfile();if(!data||localDemo)return;if(view==='member'&&page==='profile'){
+ $('#main').innerHTML=customerProfile.member();
+ if(data.customerProfile?.status==='ready')$('#main').insertAdjacentHTML('beforeend','<section class="card"><h2>Communication preferences</h2>'+integration.preferences()+'</section>'+memberBooking.render('passes')+memberBooking.render('bookings')+commerce.render()+refundProgram.render());
+ if(data.recovery?.pendingCount>0)$('#main').insertAdjacentHTML('afterbegin','<p role="status" class="notice warning">Recovery confirmation pending. Refresh before treating changes as final.</p>');
+}if(view==='staff'&&page==='people')$('#main').insertAdjacentHTML('beforeend',customerProfile.staff());};
+document.addEventListener('submit',event=>{if(['customer-profile-edit','customer-waiver-publish','customer-waiver-confirm','customer-waiver-accept'].includes(event.target.id)){event.preventDefault();void customerProfile.submit(event.target);}});
