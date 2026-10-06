@@ -1,26 +1,27 @@
-✔ vega: first booking consumes once; member and staff history and capacity agree (8.2861ms)
-✔ willow: first booking consumes once; member and staff history and capacity agree (0.8193ms)
-✔ missing profile is checked on confirmation without mutation (0.5674ms)
-✔ waiver required is checked on confirmation without mutation (0.3436ms)
-✔ new waiver is checked on confirmation without mutation (0.4149ms)
-✔ ambiguous linkage is checked on confirmation without mutation (0.3217ms)
-✔ no pass is checked on confirmation without mutation (0.3624ms)
-✔ expired credit is checked on confirmation without mutation (0.3673ms)
-✔ ineligible category is checked on confirmation without mutation (0.3967ms)
-✔ cancelled occurrence is checked on confirmation without mutation (0.4019ms)
-✔ stale capacity is checked on confirmation without mutation (0.3598ms)
-✔ current waiver completion restores booking eligibility through existing waiver flow (0.6307ms)
-✔ full class requires explicit waitlist; waitlist uses no credit and prevents duplicates (0.6217ms)
-✔ waitlist intent never silently becomes a credit-consuming booking (0.1532ms)
-✔ missing credits route to existing offers; waiver routes to existing profile (0.2829ms)
-✔ foreign profile/waiver and forged participant cannot grant booking eligibility (0.2393ms)
-✔ member UI routes missing prerequisites to existing screens and preserves selected class (21.103ms)
-✔ runtime serializes last-seat contenders, replays lost responses, and captures one receipt/debit (87.0139ms)
-ℹ tests 18
+✔ vega: first booking consumes once; member and staff history and capacity agree (8.2272ms)
+✔ willow: first booking consumes once; member and staff history and capacity agree (0.8548ms)
+✔ missing profile is checked on confirmation without mutation (0.5359ms)
+✔ waiver required is checked on confirmation without mutation (0.3425ms)
+✔ new waiver is checked on confirmation without mutation (0.4058ms)
+✔ ambiguous linkage is checked on confirmation without mutation (0.3482ms)
+✔ no pass is checked on confirmation without mutation (0.3972ms)
+✔ expired credit is checked on confirmation without mutation (0.3711ms)
+✔ ineligible category is checked on confirmation without mutation (0.3876ms)
+✔ cancelled occurrence is checked on confirmation without mutation (0.4097ms)
+✔ stale capacity is checked on confirmation without mutation (0.3612ms)
+✔ current waiver completion restores booking eligibility through existing waiver flow (0.6682ms)
+✔ full class requires explicit waitlist; waitlist uses no credit and prevents duplicates (0.5838ms)
+✔ waitlist intent never silently becomes a credit-consuming booking (0.1514ms)
+✔ missing credits route to existing offers; waiver routes to existing profile (0.2966ms)
+✔ foreign profile/waiver and forged participant cannot grant booking eligibility (0.2287ms)
+✔ member UI routes missing prerequisites to existing screens and preserves selected class (19.4863ms)
+✔ browser mutation recovers booking details after acknowledgment with the same durable request (2.1733ms)
+✔ runtime serializes last-seat contenders, replays lost responses, and captures one receipt/debit (170.9695ms)
+ℹ tests 19
 ℹ suites 0
-ℹ pass 18
+ℹ pass 19
 ℹ fail 0
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 305.8608
+ℹ duration_ms 391.0289

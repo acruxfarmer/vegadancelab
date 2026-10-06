@@ -5,6 +5,8 @@ import {emptyState} from '../src/application.mjs';
 import {createApplicationStore} from '../src/runtime/refund-application-database.mjs';
 import {generateKeyPairSync} from 'node:crypto';
 import {memberBookingUI} from '../public/member-booking.js';
+import {readFileSync} from 'node:fs';
+import {runInNewContext} from 'node:vm';
 const at='2030-01-01T12:00:00Z',options={now:()=>at};
 const actor=(business='vega')=>({role:'member',userId:'member',tenantId:business,businessId:business,participantIds:['self']});
 function fixture(business='vega'){
@@ -47,6 +49,20 @@ test('member UI routes missing prerequisites to existing screens and preserves s
   state.customerProfiles=[];data=visibleState(state,actor());ui.show('class');
   assert.match(body.innerHTML,/data-booking-resolve="profile"/);assert.match(body.innerHTML,/Complete profile & waiver/);
  }finally{globalThis.document=previous;}
+});
+
+test('browser mutation recovers booking details after acknowledgment with the same durable request',async()=>{
+ const source=readFileSync(new URL('../public/app.js',import.meta.url),'utf8');
+ const implementation=source.slice(source.indexOf('async function mutate('),source.indexOf('let discoveryOpened='));
+ const posts=[];let loaded=false,completed=false;
+ const booking={id:'booking',status:'reserved',participantId:'self',creditConsumption:{passId:'pass'}};
+ const context={localDemo:false,businessGeneration:1,data:{context:{userId:'member',tenantId:'vega',businessId:'vega'}},session:{generation:()=>1,active:()=>true},pendingRequests:{acquire:async()=>({requestId:'durable'}),complete:()=>{assert.ok(loaded);completed=true;}},notify:()=>{},load:async()=>{loaded=true;},setTimeout:cb=>cb(),api:async(path,options)=>{
+  if(path.startsWith('/api/recovery/'))return {confirmed:true,independentReceipt:{state:'acknowledged'}};
+  posts.push(JSON.parse(options.body));return posts.length===1?{pending:true,independentReceipt:{operationId:'receipt'}}:booking;
+ }};
+ const mutate=runInNewContext(implementation+'\nmutate',context);
+ const result=await mutate('/api/reservations',{classId:'class',participantId:'self'},()=>{});
+ assert.equal(result.id,'booking');assert.equal(result.creditConsumption.passId,'pass');assert.deepEqual(posts[0],posts[1]);assert.equal(posts.length,2);assert.ok(completed);
 });
 
 test('runtime serializes last-seat contenders, replays lost responses, and captures one receipt/debit',async()=>{

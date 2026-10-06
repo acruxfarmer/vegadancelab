@@ -18,7 +18,7 @@ try{
   const [m,s]=await Promise.all([store.read(member),store.read(owner)]),rows=m.reservations.filter(r=>r.classId===classId&&r.participantId===participantId&&r.status==='reserved');
   assert.equal(rows.length,1);const r=rows[0];assert.ok(r.creditConsumption);
   assert.deepEqual(s.reservations.find(x=>x.id===r.id),r);
-  const units=m.creditUnits.filter(u=>u.passId===r.creditConsumption.passId);assert.equal(units.length,3);assert.equal(units.filter(u=>u.status==='spent').length,1);assert.equal(units.filter(u=>u.status==='available').length,2);
+  const units=m.creditUnits.filter(u=>u.passId===r.creditConsumption.passId);assert.equal(units.filter(u=>!u.sourceUnitId).length,3);assert.equal(units.filter(u=>u.status==='spent'&&u.spentByBookingId===r.id).length,1);assert.equal(units.filter(u=>u.status==='available').length,2);
   assert.equal(s.creditEvents.filter(e=>e.type==='consume'&&e.bookingId===r.id).length,1);
   assert.equal(m.classes.find(c=>c.id===classId).reservedCount,s.reservations.filter(r=>r.classId===classId&&r.status==='reserved').length);
   const revision=s.revision;
