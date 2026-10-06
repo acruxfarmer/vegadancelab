@@ -19,12 +19,13 @@ export function createApplicationApi(env,store,fetcher=fetch){
  const program=createRefundProgram({store,adapter:refundAdapter,enabled:purchaseId=>refundProgramTransportEnabled(env)&&env.VEGA_REFUND_PROGRAM_PURCHASE_ID===purchaseId});
  const key=env.SUPABASE_PUBLISHABLE_KEY;
  const configured=()=>{if(!key||env.SUPABASE_URL!==origin)throw new ApplicationError('Application authentication is not configured',503);};
- async function principal(req){
+ async function principal(req,unscoped=false){
   configured();const token=req.headers.authorization;
   if(typeof token!=='string'||!/^Bearer [A-Za-z0-9._-]+$/.test(token)||token.length>8192)throw new ApplicationError('Sign in to continue',401);
   const response=await fetcher(`${origin}/auth/v1/user`,{headers:{apikey:key,Authorization:token},signal:AbortSignal.timeout(10000)});
   if(!response.ok)throw new ApplicationError(response.status>=500?'Authentication unavailable':'Session expired or invalid',response.status>=500?503:401);
   const user=await response.json();if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(user.id||''))throw new ApplicationError('Invalid session',401);const tenantId=req.headers['x-vega-tenant'],businessId=req.headers['x-vega-business'];
+  if(unscoped)return {userId:user.id,email:user.email,confirmed:!!user.email_confirmed_at&&user.is_anonymous!==true};
   if(tenantId===undefined&&businessId===undefined)return user.id;
   if(typeof tenantId!=='string'||typeof businessId!=='string'||!tenantId.length||!businessId.length||tenantId.length>128||businessId.length>128)throw new ApplicationError('Choose an authorized business',403);
   return {userId:user.id,tenantId,businessId};
@@ -33,7 +34,33 @@ export function createApplicationApi(env,store,fetcher=fetch){
   const url=new URL(req.url,'http://vega.local');if(!url.pathname.startsWith('/api/'))return false;
   const send=(status,data)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(data));};
   try{
+   if(url.pathname.startsWith('/api/public/')){
+    if(req.method!=='GET')throw new ApplicationError('Method not allowed',405);
+    const match=url.pathname.match(/^\/api\/public\/studios\/([a-z0-9][a-z0-9-]{0,79})$/);
+    if(!match||url.search)throw new ApplicationError('Studio not found',404);
+    if(!store?.publicDiscovery)throw new ApplicationError('Public schedule temporarily unavailable',503);
+    send(200,await store.publicDiscovery(match[1]));return true;
+   }
    if(url.pathname==='/api/config'&&req.method==='GET'){send(200,{environment:'development',squareEnabled:sandboxPaymentEnabled(env),paymentMode:sandboxPaymentEnabled(env)?'sandbox_direct_only':'disabled',externalEffects:'disabled',authenticationConfigured:!!key,applicationConfigured:!!store});return true;}
+   if(url.pathname==='/api/auth/sign-up'&&req.method==='POST'){
+    configured();const body=await readJson(req);
+    if(Object.keys(body).some(k=>!['email','password','studio','classId'].includes(k))||typeof body.email!=='string'||body.email.length>254||! /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)||typeof body.password!=='string'||body.password.length<12||body.password.length>1024||! /^[a-z0-9][a-z0-9-]{0,79}$/.test(body.studio||'')||body.classId!==undefined&&(typeof body.classId!=='string'||! /^[A-Za-z0-9-]{1,128}$/.test(body.classId)))throw new ApplicationError('Enter a valid email and a password of at least 12 characters',400);
+    if(!store?.publicDiscovery)throw new ApplicationError('Account setup unavailable',503);
+    await store.publicDiscovery(body.studio);
+    // Fixed application origin, never a caller-supplied redirect or role claim.
+    const redirect=new URL('https://vega-development-web.onrender.com/join.html');redirect.searchParams.set('studio',body.studio);if(body.classId)redirect.searchParams.set('class',body.classId);
+    const response=await fetcher(`${origin}/auth/v1/signup?redirect_to=${encodeURIComponent(redirect.href)}`,{method:'POST',headers:{apikey:key,'Content-Type':'application/json'},body:JSON.stringify({email:body.email.trim(),password:body.password}),signal:AbortSignal.timeout(15000)});
+    if(!response.ok)throw new ApplicationError(response.status===429?'Please wait before trying again.':'Account creation could not be completed. Try signing in if you already have an account.',response.status===429?429:response.status>=500?503:400);
+    const result=await response.json();
+    if(typeof result.access_token==='string'&&typeof result.refresh_token==='string'&&Number.isFinite(result.expires_in)&&result.expires_in>60)send(200,{accessToken:result.access_token,refreshToken:result.refresh_token,expiresIn:result.expires_in});
+    else send(200,{verificationRequired:true,message:'Check your email to confirm your account, then return here to sign in. If you already have an account, sign in.'});return true;
+   }
+   if(url.pathname==='/api/onboarding'&&req.method==='POST'){
+    const actor=await principal(req,true);
+    if(!actor.confirmed||typeof actor.email!=='string'){send(200,{status:'verification_required'});return true;}
+    if(!store?.onboard)throw new ApplicationError('Account setup unavailable',503);
+    send(200,await store.onboard(actor.userId,await readJson(req),actor.email));return true;
+   }
    if(['/api/auth/sign-in','/api/auth/refresh'].includes(url.pathname)&&req.method==='POST'){
     configured();const body=await readJson(req);
     const refreshing=url.pathname==='/api/auth/refresh';

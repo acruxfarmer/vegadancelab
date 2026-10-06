@@ -1,6 +1,8 @@
 import {resolveStaffAccess,hasStaffPermission,requireStaffPermission,requireStaffCommand,visibleStaffData,staffCommandResult} from '../staff-permissions.mjs';
 import {DEVELOPMENT_INITIAL_OWNERS,staffManagementView,staffManagementTransition} from '../staff-role-management.mjs';
 import pg from 'pg';
+import {readPublicDiscovery} from './public-discovery-store.mjs';
+import {onboardPublicMember} from './public-onboarding.mjs';
 import { createHash } from 'node:crypto';
 import { databaseTls } from './database-tls.mjs';
 import { ApplicationError,transition,visibleState } from '../refund-application.mjs';
@@ -51,6 +53,8 @@ export function createApplicationStore(pool,{initialOwners=[],receiptPublicKey=p
   if(rows.length!==1)throw new ApplicationError('Studio application data is not initialized',503);return rows[0];
  }
  const store={
+  publicDiscovery:slug=>readPublicDiscovery(pool,slug),
+  onboard:(userId,body,verifiedEmail)=>onboardPublicMember(pool,userId,body,receiptPublicKey,verifiedEmail),
   memberships:async identity=>{
    const userId=typeof identity==='string'?identity:identity.userId,c=await pool.connect();
    try{await c.query('begin isolation level repeatable read read only');await c.query("select set_config('vega.actor_id',$1,true)",[userId]);
