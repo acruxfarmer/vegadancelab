@@ -1,0 +1,101 @@
+{
+  "status": "BLOCKED — initial Owner/Admin designation and owner-only refund policy await Joe decision",
+  "active": false,
+  "branch": "commerce/staff-permissions-v1",
+  "closedRuntime": "08743ba11b7d44f9e106ea245bac355365168be2",
+  "decisionRequested": "Designate Joe existing Development staff account as initial Owner/Admin; reserve refund execution and role management to Owner/Admin",
+  "reason": "Existing app_members records contain member/staff only and no authoritative owner designation. Staff membership cannot be automatically promoted to owner.",
+  "candidateOwner": {
+    "tenantId": "vega-development",
+    "businessId": "vega-dance-lab",
+    "userId": "4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124"
+  },
+  "inventory": {
+    "attendance": [
+      "roster viewing",
+      "record/correct attendance"
+    ],
+    "bookings": [
+      "reserve",
+      "cancel",
+      "correct cancellation",
+      "waitlist promotion"
+    ],
+    "schedule": [
+      "create",
+      "edit",
+      "duplicate",
+      "cancel occurrence",
+      "set cancellation policy"
+    ],
+    "history": [
+      "occurrence history",
+      "reservation history"
+    ],
+    "commerce": [
+      "front-desk sale",
+      "designated payment preparation/confirmation/fulfillment"
+    ],
+    "refunds": [
+      "assessment",
+      "readiness",
+      "prepare",
+      "execute",
+      "reconcile",
+      "release",
+      "external recovery and binding"
+    ],
+    "customers": [
+      "profile and waiver status",
+      "participant creation",
+      "communication preferences and drafts"
+    ],
+    "waivers": [
+      "publish required version"
+    ],
+    "entitlements": [
+      "product provisioning",
+      "issue entitlement",
+      "manual credit issue"
+    ],
+    "reports": [
+      "operational report",
+      "business audit",
+      "purchase/payment/refund history"
+    ]
+  },
+  "proposedRoles": {
+    "owner": "All supported staff actions including refunds and staff role management",
+    "manager": "Operations, schedules, customers, waivers, sales, entitlements and financial reporting; no refund execution or role management",
+    "front_desk": "Rosters, attendance, bookings/waitlists, customers and sales; only own sale receipts, no general financial/refund history",
+    "instructor": "Explicitly assigned class rosters, attendance and occurrence/reservation history; no contact/financial/credit records"
+  },
+  "prepared": [
+    "Pure business-scoped role resolution; no membership-only grants",
+    "Explicit supported-action permission map",
+    "Staff command denial explanations",
+    "Assigned-class restriction",
+    "Projection filtering for unauthorized financial/customer data",
+    "Second-business and role-change tests"
+  ],
+  "remaining": [
+    "Joe business-authority decision",
+    "Integrate authorization into locked application store, read views, workflow boundaries and UI",
+    "Implement bounded owner staff-role management and business selection as needed",
+    "Full final regressions, Development deployment and hosted verification"
+  ],
+  "tests": {
+    "targetedPassed": 7,
+    "activeRegressionPassed": 970,
+    "failed": 0
+  },
+  "hostedVerification": "Not run; no 6.13 runtime deployed or authority changed",
+  "deferred": [
+    "Deferred authorization-lifecycle/migration work",
+    "Enterprise policy engines",
+    "Nested inheritance",
+    "Historical permission reconstruction",
+    "Provider-role changes",
+    "Production access"
+  ]
+}
