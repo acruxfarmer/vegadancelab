@@ -18,7 +18,7 @@ function setup(change=()=>{}){
   if(sql.startsWith('select state,revision')){assert.deepEqual(args,['vega-development',x.business]);return {rows:[{state:x.state,revision:'127'}]};}
   assert.fail('Unexpected SQL: '+sql);
  }})};
- const options={assessmentNow:()=>x.at};
+ const options={assessmentNow:()=>x.at,initialOwners:[{userId:uid,tenantId:'vega-development',businessId:'vega-dance-lab'}]};
  if(x.inventory)options.refundInventory=({authority,revision,purchaseId})=>{inventoryCalls++;return {complete:!x.incomplete,tenantId:authority.tenantId,businessId:authority.businessId,purchaseId,revision:x.stale?'126':revision,records:x.records};};
  const store=createApplicationStore(pool,options);
  const api=createApplicationApi({SUPABASE_URL:'https://cjdoczrxcjynjhgpgqop.supabase.co',SUPABASE_PUBLISHABLE_KEY:'test'},store,async url=>{assert.equal(url,'https://cjdoczrxcjynjhgpgqop.supabase.co/auth/v1/user');return {ok:true,json:async()=>({id:uid})};});

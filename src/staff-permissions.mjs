@@ -18,8 +18,8 @@ export const PERMISSIONS=Object.freeze({
  'reports.read':'View operational reports and audit history',
  'roles.manage':'Manage staff roles and class assignments'
 });
-// Proposed V1 product policy. Activation and the initial owner require an
-// explicit business decision; importing this module does not grant access.
+// Approved V1 product policy. Refund authority is an explicit permission;
+// the role mapping may vary in future business policy without changing checks.
 export const ROLE_MODEL=Object.freeze({
  owner:{label:'Owner / Admin',permissions:Object.keys(PERMISSIONS)},
  manager:{label:'Manager',permissions:['attendance.read','attendance.write','bookings.manage','schedule.read','schedule.edit','schedule.cancel','history.read','sales.manage','finance.read','customers.read','customers.manage','waivers.publish','entitlements.manage','reports.read']},
@@ -33,7 +33,7 @@ export function resolveStaffAccess(state,authority,{initialOwners=[]}={}){
  const initial=initialOwners.filter(r=>same(r,authority)&&r.userId===authority.userId);
  const assigned=assignments.length===1?assignments[0]:null;
  const role=assignments.length>1?null:assigned?.role??(assignments.length===0&&initial.length===1?'owner':null);
- const policy=ROLE_MODEL[role];
+ const policy=Object.hasOwn(ROLE_MODEL,role)?ROLE_MODEL[role]:null;
  return {role:policy?role:null,label:policy?.label||'Access needs review',permissions:policy?[...policy.permissions]:[],classIds:role==='instructor'&&Array.isArray(assigned?.classIds)?[...new Set(assigned.classIds)]:[],revision:assigned?.revision||0,tenantId:authority.tenantId,businessId:authority.businessId,userId:authority.userId};
 }
 export function hasStaffPermission(access,authority,permission){return !!access&&same(access,authority)&&access.userId===authority.userId&&access.permissions.includes(permission);}
@@ -47,7 +47,10 @@ const commandPermissions={
  participant:'customers.manage',preferences:'customers.manage',notification:'customers.manage','waiver-publish':'waivers.publish','staff-role-set':'roles.manage'
 };
 export function requireStaffCommand(state,command,authority,access,fail){
- if(authority.role!=='staff')return;
+ if(authority.role!=='staff'){
+  if(!['reserve','cancel','preferences','purchase-draft','profile-update','waiver-accept'].includes(command.action)&&!command.action.startsWith('payment-'))fail('Staff access required',403);
+  return;
+ }
  const permission=command.action.startsWith('refund-')?'refunds.manage':command.action.startsWith('payment-')?'sales.manage':commandPermissions[command.action];
  requireStaffPermission(access,authority,permission,fail);
  if(access.role==='instructor'){
@@ -78,8 +81,27 @@ export function visibleStaffData(view,authority,access){
   result.refundHistory=[];result.refundOperations=[];result.orders=[];result.jobs=[];
  }
  if(!allowed('reports.read'))result.activity=[];
+ if(!allowed('sales.manage'))result.commerceOffers=[];
+ if(!allowed('customers.manage')){result.preferences=[];result.notifications=[];}
+ if(!allowed('finance.read')){
+  result.reservations=result.reservations.map(({paymentStatus,refundStatus,...r})=>r);
+  result.entitlementIssuances=[];
+ }
+ if(!access?.role){result.videos=[];result.events=[];result.products=[];}
  if(!allowed('sales.manage'))result.paymentExecution={enabled:false,purchaseId:null};
  if(!allowed('refunds.manage')){result.refundWorkflow={enabled:false,purchaseId:null};result.refundProgram={enabled:false,purchaseId:null};}
  if(!allowed('roles.manage')){delete result.staffRoleAssignments;delete result.staffDirectory;}
  return result;
+}
+// Command replies are another projection boundary, including idempotent replay.
+// Attendance does not authorize returning a full reservation's financial facts.
+export function staffCommandResult(result,a,access){
+ if(a.role!=='staff'||hasStaffPermission(access,a,'finance.read'))return result;
+ if(access?.role==='instructor'){
+  const {id,classId,participantId,status,attendanceStatus,attendanceRevision,attendanceHistory,outcome}=result;
+  return {id,classId,participantId,status,attendanceStatus,attendanceRevision,attendanceHistory,outcome};
+ }
+ const {paymentStatus,refundStatus,...rest}=result;
+ // Own front-desk purchase/payment results are legitimate sale receipts.
+ return result.saleChannel==='front_desk'||result.purchaseId?result:rest;
 }

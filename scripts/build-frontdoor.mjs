@@ -21,3 +21,5 @@ await copyFile(new URL('public/promotion-notices.js',root),new URL('dist-frontdo
 await copyFile(new URL('public/cancellation-notices.js',root),new URL('dist-frontdoor/cancellation-notices.js',root));
 
 await copyFile(new URL('public/customer-profile-ui.js',root),new URL('dist-frontdoor/customer-profile-ui.js',root));
+
+await copyFile(new URL('public/staff-roles-ui.js',root),new URL('dist-frontdoor/staff-roles-ui.js',root));

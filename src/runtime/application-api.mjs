@@ -17,7 +17,10 @@ export function createApplicationApi(env,store,fetcher=fetch){
   if(typeof token!=='string'||!/^Bearer [A-Za-z0-9._-]+$/.test(token)||token.length>8192)throw new ApplicationError('Sign in to continue',401);
   const response=await fetcher(`${origin}/auth/v1/user`,{headers:{apikey:key,Authorization:token},signal:AbortSignal.timeout(10000)});
   if(!response.ok)throw new ApplicationError(response.status>=500?'Authentication unavailable':'Session expired or invalid',response.status>=500?503:401);
-  const user=await response.json();if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(user.id||''))throw new ApplicationError('Invalid session',401);return user.id;
+  const user=await response.json();if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(user.id||''))throw new ApplicationError('Invalid session',401);const tenantId=req.headers['x-vega-tenant'],businessId=req.headers['x-vega-business'];
+  if(tenantId===undefined&&businessId===undefined)return user.id;
+  if(typeof tenantId!=='string'||typeof businessId!=='string'||!tenantId.length||!businessId.length||tenantId.length>128||businessId.length>128)throw new ApplicationError('Choose an authorized business',403);
+  return {userId:user.id,tenantId,businessId};
  }
  return async(req,res)=>{
   const url=new URL(req.url,'http://vega.local');if(!url.pathname.startsWith('/api/'))return false;
@@ -40,11 +43,12 @@ export function createApplicationApi(env,store,fetcher=fetch){
     const termination=await revokeSession({origin,key,authorization:req.headers.authorization,refreshToken:body.refreshToken,fetcher});
     // Security termination has already completed. Neither DB nor B2 may delay
     // its response. Persist evidence asynchronously; report capture gaps safely.
-    if(store?.recordRevocation)void Promise.resolve().then(()=>store.recordRevocation(termination)).catch(()=>console.error('Revocation evidence capture uncertain; provider termination remains effective'));
+    if(store?.recordRevocation)void Promise.resolve().then(()=>store.recordRevocation({...termination,userId:req.headers['x-vega-tenant']&&req.headers['x-vega-business']?{userId:termination.userId,tenantId:req.headers['x-vega-tenant'],businessId:req.headers['x-vega-business']}:termination.userId})).catch(()=>console.error('Revocation evidence capture uncertain; provider termination remains effective'));
     send(200,{signedOut:true});return true;
    }
    const userId=await principal(req);
    if(!store)throw new ApplicationError('Application database handoff is pending',503);
+   if(url.pathname==='/api/businesses'&&req.method==='GET'){send(200,{businesses:await store.memberships(userId)});return true;}
    const refundAssessment=url.pathname.match(/^\/api\/commerce\/purchases\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\/refund-assessment$/i);
    if(refundAssessment){
     if(req.method!=='GET')throw new ApplicationError('Method not allowed',405);
@@ -52,7 +56,11 @@ export function createApplicationApi(env,store,fetcher=fetch){
     const assessment=await store.assessRefund(userId,refundAssessment[1]);
     send(assessment.status==='denied'?403:200,assessment);return true;
    }
-   if(url.pathname==='/api/app'&&req.method==='GET'){const view=await store.read(userId);send(200,{...view,squareEnabled:sandboxPaymentEnabled(env),paymentExecution:{enabled:sandboxPaymentEnabled(env),purchaseId:sandboxPaymentEnabled(env)?env.VEGA_SANDBOX_PURCHASE_ID:null}});return true;}
+   if(url.pathname==='/api/app'&&req.method==='GET'){
+    const view=await store.read(userId),staff=view.context?.role==='staff';
+    const allowed=p=>!staff||view.staffAccess?.permissions?.includes(p)===true;
+    const pay=allowed('sales.manage')&&sandboxPaymentEnabled(env),refund=staff&&allowed('refunds.manage');
+    send(200,{...view,squareEnabled:pay,paymentExecution:{enabled:pay,purchaseId:pay?env.VEGA_SANDBOX_PURCHASE_ID:null},});return true;}
    const operation=url.pathname.match(/^\/api\/recovery\/operations\/([a-f0-9]{64})$/);
    if(operation&&req.method==='GET'){const result=await store.operation(userId,operation[1]);send(result.pending?202:200,result);return true;}
    if(req.method!=='POST')throw new ApplicationError('Method not allowed',405);
@@ -71,6 +79,8 @@ export function createApplicationApi(env,store,fetcher=fetch){
    routes['/api/classes/duplicate']='duplicate-class';
    routes['/api/commerce/drafts']='purchase-draft';
    routes['/api/commerce/front-desk/sales']='front-desk-sale';
+   routes['/api/staff/register']='staff-register';
+   routes['/api/staff/roles']='staff-role-set';
    routes['/api/profile']='profile-update';
    routes['/api/waivers/publish']='waiver-publish';
    routes['/api/waivers/accept']='waiver-accept';

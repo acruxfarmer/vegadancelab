@@ -1,5 +1,5 @@
 {
-  "status": "BLOCKED — initial Owner/Admin designation and owner-only refund policy await Joe decision",
+  "status": "Initial policy APPROVED by Joe + Chett; build implemented, pending Development deployment verification",
   "active": false,
   "branch": "commerce/staff-permissions-v1",
   "closedRuntime": "08743ba11b7d44f9e106ea245bac355365168be2",
@@ -64,12 +64,6 @@
       "purchase/payment/refund history"
     ]
   },
-  "proposedRoles": {
-    "owner": "All supported staff actions including refunds and staff role management",
-    "manager": "Operations, schedules, customers, waivers, sales, entitlements and financial reporting; no refund execution or role management",
-    "front_desk": "Rosters, attendance, bookings/waitlists, customers and sales; only own sale receipts, no general financial/refund history",
-    "instructor": "Explicitly assigned class rosters, attendance and occurrence/reservation history; no contact/financial/credit records"
-  },
   "prepared": [
     "Pure business-scoped role resolution; no membership-only grants",
     "Explicit supported-action permission map",
@@ -79,17 +73,17 @@
     "Second-business and role-change tests"
   ],
   "remaining": [
-    "Joe business-authority decision",
-    "Integrate authorization into locked application store, read views, workflow boundaries and UI",
-    "Implement bounded owner staff-role management and business selection as needed",
-    "Full final regressions, Development deployment and hosted verification"
+    "Development deployment",
+    "Hosted owner/member verification and recovery reconciliation"
   ],
   "tests": {
-    "targetedPassed": 7,
-    "activeRegressionPassed": 970,
-    "failed": 0
+    "targetedPassed": 48,
+    "activeRegressionPassed": 979,
+    "broadPassed": 2716,
+    "broadFailed": 6,
+    "broadFailureScope": "Same six pre-existing historical source-hash guards as 6.12"
   },
-  "hostedVerification": "Not run; no 6.13 runtime deployed or authority changed",
+  "hostedVerification": "Pending",
   "deferred": [
     "Deferred authorization-lifecycle/migration work",
     "Enterprise policy engines",
@@ -97,5 +91,14 @@
     "Historical permission reconstruction",
     "Provider-role changes",
     "Production access"
-  ]
+  ],
+  "decisionApproved": true,
+  "approvedPolicy": {
+    "owner": "All supported staff actions including refunds and staff role management",
+    "manager": "Operations, schedules, customers, waivers, sales, entitlements and financial reporting; no refund execution or role management",
+    "front_desk": "Rosters, attendance, bookings/waitlists, customers and sales; only own sale receipts, no general financial/refund history",
+    "instructor": "Explicitly assigned class rosters, attendance and occurrence/reservation history; no contact/financial/credit records"
+  },
+  "refundAuthority": "Explicit refunds.manage business permission; only owner role maps to it in V1",
+  "staffManagement": "Existing staff register their name without authority; Owner assigns business role and Instructor class occurrences; changes use existing command/audit/recovery transaction"
 }

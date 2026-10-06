@@ -1,6 +1,6 @@
 export function refundUI({getData,escape:e,mutate,notify}){
  return {render(){
-  const d=getData();if(d.context.role!=='staff')return '';
+  const d=getData();if(d.context.role!=='staff'||(d.staffAccess&&!d.staffAccess.permissions.includes('refunds.manage')))return '';
   const p=d.purchaseDrafts?.find(p=>p.id===d.refundWorkflow?.purchaseId);if(!p)return '';
   const op=d.refundOperations?.find(o=>o.purchaseId===p.id),enabled=d.refundWorkflow?.enabled===true;
   const form=(action,label,reason=false)=>`<form data-refund-action="${action}" data-purchase="${e(p.id)}" data-operation="${e(op?.id??'')}">${reason?'<label>Reason <input name="reason" required maxlength="120"></label>':''}<button ${enabled?'':'disabled'}>${label}</button><p role="alert"></p></form>`;
@@ -25,6 +25,7 @@ export function refundProgramUI({getData,escape:e,api,mutate,notify}){
  return {render(){
   const d=getData(),rows=d.refundHistory??[];
   if(d.context?.role!=='staff')return rows.length?`<section aria-label="Your refund history"><h2>Your refunds</h2>${history(rows)}<p>Pending or uncertain outcomes keep affected credits unavailable. Contact the studio about a refund needing review.</p></section>`:'';
+  if(d.staffAccess&&!d.staffAccess.permissions.includes('refunds.manage'))return d.staffAccess.permissions.includes('finance.read')?`<section aria-label="Refund history"><h2>Refund history</h2>${history(rows)}<p>Your role can view refund history. Refund execution requires additional authority.</p></section>`:'';
   const purchases=(d.purchaseDrafts??[]).filter(p=>p.paymentStatus==='succeeded');
   return `<section aria-label="Refund management"><h2>Refund management</h2><p>${d.refundProgram?.enabled?'Designated Sandbox execution only.':'Refund execution is disabled.'} Checks and reviewed recovery never submit another refund.</p>${purchases.map(p=>`<section class="card" data-refund-purchase="${e(p.id)}"><h3>${money(p.totalMinor,p.currency)} purchase</h3><p>${e(p.id)}</p>${history(rows.filter(o=>o.purchaseId===p.id))}${form(p.id,'preview','Check refund readiness and Square history')}<div data-refund-preview></div>${rows.filter(o=>o.purchaseId===p.id&&o.contract==='refund-program/1').map(o=>{
    if(o.origin==='external'&&o.status==='needs-review')return form(p.id,'preview','Review external refund allocation',o.id);

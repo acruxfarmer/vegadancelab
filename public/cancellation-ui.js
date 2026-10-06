@@ -4,6 +4,7 @@ export function cancellationUI({escape:e,mutate,notify,getData}){
  return {
   render(page,{includeCredits=true,occurrenceId}={}){
    let source=getData();const staff=source.context.role==='staff';
+   if(staff&&source.staffAccess&&!source.staffAccess.permissions.includes('bookings.manage'))return '';
    if(staff&&page==='schedule'&&occurrenceId!==undefined){if(!occurrenceId)return '';source={...source,classes:source.classes.filter(c=>c.id===occurrenceId),reservations:source.reservations.filter(r=>r.classId===occurrenceId)};}
    // Present member outcomes in plain language without modifying persisted records.
    const d=staff?source:{...source,reservations:source.reservations.map(r=>r.cancellation?{...r,cancellation:{...r.cancellation,creditOutcome:cancellationOutcome(r,source.passes?.find(p=>p.id===r.creditConsumption?.passId)?.label)}}:r)};let html='';

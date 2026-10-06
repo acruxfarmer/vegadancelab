@@ -41,6 +41,7 @@ export function createDevelopmentServer(env = process.env, persistSquareEvent, c
     files['/front-desk-ui.js']=['front-desk-ui.js','text/javascript; charset=utf-8'];
     files['/staff-waitlist.js']=['staff-waitlist.js','text/javascript; charset=utf-8'];
     files['/request-journal.js']=['request-journal.js','text/javascript; charset=utf-8'];
+    files['/staff-roles-ui.js']=['staff-roles-ui.js','text/javascript; charset=utf-8'];
     const asset=files[req.url.split('?')[0]];
     if(asset&&req.method==='GET'){
       void readFile(new URL(`../../public/${asset[0]}`,import.meta.url)).then(body=>{res.writeHead(200,{'Content-Type':asset[1]});res.end(body);}).catch(()=>{res.writeHead(503);res.end(JSON.stringify({error:'Application assets unavailable'}));});return;

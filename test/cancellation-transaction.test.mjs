@@ -21,7 +21,7 @@ test('locked store replays cancellation commands and commits blocked correction 
   if(sql.startsWith('select event_id,discovery_state as state'))return {rows:[outbox.get(args[2]+args[3])]};
   return {rows:[]};
  }};
- const store=createApplicationStore({connect:async()=>client},{receiptPublicKey});let n=0;
+ const store=createApplicationStore({connect:async()=>client},{receiptPublicKey,initialOwners:[{userId:'desk',tenantId:'dev',businessId:'dev'}]});let n=0;
  const run=(action,body={},id,user='member')=>store.command(user,{action,id,body:{requestId:`r${++n}`,...body}});
  await run('issue-credit',{participantId:'p',quantity:1,reason:'Test'},undefined,'desk');
  const bookingCommand={action:'reserve',body:{requestId:'book-one',participantId:'p',classId:'c'}};

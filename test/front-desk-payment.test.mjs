@@ -17,9 +17,10 @@ import {boundedRefundReadiness} from '../src/bounded-refund-readiness.mjs';
 const member={userId:'e5946b40-9839-4a96-99d5-93262d9573f0',tenantId:B.tenantId,businessId:B.businessId,role:'member',participantIds:['vega-member-test-joe']};
 const receiptPublicKey=generateKeyPairSync('rsa',{modulusLength:3072}).publicKey.export({type:'spki',format:'pem'});
 const staff={...member,userId:'f42715d4-a601-43f8-a02e-33eb8f9021d6',role:'staff',participantIds:[]};
-function harness(){
+function harness(role='owner'){
  const offer=developmentOffer();let state={...emptyState(),participants:[{id:'vega-member-test-joe'}],entitlementProducts:[{id:PRODUCT_ID,name:offer.productName,type:'class_pack',quantity:3,validDays:30,categories:offer.categories,classIds:[]}]};
  state=transition(state,{action:'front-desk-sale',body:{requestId:'draft',offerId:OFFER_ID,offerVersion:1,customerId:'development-member-joe'}},staff).state;
+ state.staffRoleAssignments=[{tenantId:staff.tenantId,businessId:staff.businessId,userId:staff.userId,role,classIds:[],revision:1}];
  const purchaseId=state.purchaseDrafts[0].id;
  let revision=0,commands=new Map(),outbox=new Map(),tail=Promise.resolve();
  const h={authority:{...staff},ack:true,binding:{...B},failUpdate:false};
@@ -40,7 +41,7 @@ function harness(){
    return {rows:[]};
   }};
  }};
- const raw=createApplicationStore(pool,{receiptPublicKey});
+ const raw=createApplicationStore(pool,{receiptPublicKey,initialOwners:[staff]});
  // New receipts begin pending in the real store. Tests simulate the existing independent acknowledgment.
  const store={...raw,paymentCommand:async(...args)=>{const r=await raw.paymentCommand(...args);return {...r,independentReceipt:{...r.independentReceipt,state:h.ack?'acknowledged':'pending'}};}};
  const env={VEGA_ENV:'development',VEGA_EXTERNAL_EFFECTS:'disabled',VEGA_SANDBOX_PAYMENT_EXECUTION:'authorized',SQUARE_ENVIRONMENT:'sandbox',SQUARE_APPLICATION_ID:B.applicationId,SQUARE_MERCHANT_ID:B.merchantId,SQUARE_LOCATION_ID:B.locationId,VEGA_SANDBOX_PURCHASE_ID:purchaseId,SQUARE_ACCESS_TOKEN:randomUUID(),SQUARE_SANDBOX_SOURCE_ID:`cnon:${randomUUID()}`};
@@ -67,6 +68,13 @@ function harness(){
  const service=()=>createDirectPayments(env,store,fetcher);
  return Object.assign(h,{env,purchaseId,store,raw,service,calls,providerPayments,state:()=>structuredClone(state),edit:f=>f(state),start:(requestId='intent')=>service().start(staff.userId,{purchaseId,requestId}),resume:()=>service().resume(staff.userId,{purchaseId,attemptId:state.paymentAttempts[0].id})});
 }
+
+test('Front Desk permission completes own sale once; other staff receipts and Instructor provider access are denied',async()=>{
+ const h=harness('front_desk');await h.start();await h.resume();assert.equal(h.providerPayments.size,1);assert.equal(h.state().creditUnits.length,3);
+ h.edit(s=>{s.purchaseDrafts[0].createdByStaffId='different-staff';});const calls=h.calls.length;
+ await assert.rejects(h.resume(),e=>e.status===403);assert.equal(h.calls.length,calls);
+ const instructor=harness('instructor');await assert.rejects(instructor.start(),e=>e.status===403);assert.equal(instructor.calls.length,0);
+});
 
 test('staff sale concurrent payment and recovery retain actor, customer and exactly one charge/grant',async()=>{
  const h=harness();await Promise.all([h.start(),h.start(),h.start('new-http-request')]);await h.resume();
