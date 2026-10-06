@@ -1,0 +1,158 @@
+{
+  "providerExecution": "Disabled; no new execution authorized",
+  "developmentRevision": 155,
+  "contract": "acrux-layer-closure/1",
+  "authority": "Joe explicitly approved 6.16 and all Layer 2 slices and requested canonical Layer 2 closure",
+  "transitionReview": "docs/layer-2/layer-3-transition-review.json",
+  "individualRecords": [
+    {
+      "slice": "6.8 Paid acquisition",
+      "storage": "Versioned repository record",
+      "sha256": "12b8768a6000ea9010d58f35d0a2d9f522ce387d27cf696ac587428d4e29b91c",
+      "preservation": "Original record and coverage limits unchanged",
+      "path": "docs/commerce-68a/verification.json"
+    },
+    {
+      "slice": "6.9 Payments workflow",
+      "storage": "Existing local record; preserved in place, not newly published",
+      "sha256": "bfba480c63f371422288a9705c66cb2020f9423aa3b0ac79b36f537e6e07e62d",
+      "preservation": "Original record and coverage limits unchanged",
+      "path": "docs/commerce-69-fresh/sandbox-joe-approved-closure.json"
+    },
+    {
+      "slice": "6.10 earlier refund foundation",
+      "storage": "Existing local record; preserved in place, not newly published",
+      "sha256": "acacd7c6852fa4e0946d5ac8ee061414aadc0556c630fb89182a0cfef6e42c86",
+      "preservation": "Original record and coverage limits unchanged",
+      "path": "docs/commerce-610/commerce-610-canonical-closure.json"
+    },
+    {
+      "slice": "Canonical Refund System / Refund Program",
+      "storage": "Existing local record; preserved in place, not newly published",
+      "sha256": "2166ed9668b2689c8c333832b6a78bf8a1208df48bc911cdb7413238ed49d1cd",
+      "preservation": "Original record and coverage limits unchanged",
+      "path": "docs/refund-program/canonical-closure.json"
+    },
+    {
+      "slice": "6.11 Front-Desk POS V1",
+      "storage": "Versioned repository record",
+      "sha256": "2a9f38c92edb2f1e46328eace01a997c58e95eb72343923dcd7ef999551d2630",
+      "preservation": "Original record and coverage limits unchanged",
+      "path": "docs/commerce-611/canonical-closure.json"
+    },
+    {
+      "slice": "6.12 Customer Profile / Waiver Self-Service",
+      "storage": "Versioned repository record",
+      "sha256": "730ed54f75d95aa4ca47c401954bbe7b9b0ad9c25edcc72345226ae5d2d3a7a2",
+      "preservation": "Original record and coverage limits unchanged",
+      "path": "docs/customer-profile-612/canonical-closure.json"
+    },
+    {
+      "slice": "6.13 Granular Staff Roles & Permissions",
+      "storage": "Versioned repository record",
+      "sha256": "0897296e160ea4b878a44ad0baec33deaa500fc8d6af79e4cb7aa616b465446d",
+      "preservation": "Original record and coverage limits unchanged",
+      "path": "docs/staff-permissions-613/canonical-closure.json"
+    },
+    {
+      "slice": "6.14 Expanded Front-Desk Operations",
+      "storage": "Versioned repository record",
+      "sha256": "0f3e6fa1c100f7e67109d2a0537e0a77a23121fc0a8b3ef8df66ce7cb649b2ec",
+      "preservation": "Original record and coverage limits unchanged",
+      "path": "docs/front-desk-614/canonical-closure.json"
+    },
+    {
+      "slice": "6.15 Attendance / Utilization Reporting",
+      "storage": "Versioned repository record",
+      "sha256": "81a562ba3d63f57d1347395bb69b6813a28d801470d5caf8c9b404882044f9cb",
+      "preservation": "Original record and coverage limits unchanged",
+      "path": "docs/attendance-utilization-615/canonical-closure.json"
+    },
+    {
+      "slice": "6.16 Financial Reporting",
+      "storage": "Versioned repository record",
+      "sha256": "636b2083e0db49414b875aa985b4de0f450d87e115a4cc74de90c744efede09b",
+      "preservation": "Original record and coverage limits unchanged",
+      "path": "docs/financial-reporting-616/canonical-closure.json"
+    }
+  ],
+  "layer3ImplementationAuthorized": false,
+  "deferredAreBlockers": false,
+  "architecture": "Acrux ecosystem first. Vega is the proving business.",
+  "production": "Untouched; launch not authorized",
+  "coverageLimits": [
+    "Development / Square Sandbox; no Production launch qualification",
+    "Each original evidence record retains its own limits; counts from distinct suites are not combined",
+    "6.8 acquisition evidence is an unpaid-draft foundation; downstream payment and fulfillment proof belongs to 6.9 and later closures",
+    "Commerce 6.10 is an earlier foundation; canonical refund-program closure includes actual full, partial and remaining-balance Sandbox execution",
+    "6.11 is staff-assisted selling, not physical card-present terminal support",
+    "6.12 covers existing authenticated members; hosted waiver versions were nonbinding Development fixtures",
+    "Reports are current business-record projections, not historical completeness, bank settlement or accounting revenue"
+  ],
+  "roadmap": "docs/roadmap-state.json",
+  "layer": 2,
+  "verifiedBuild": "836c54f301c54aa969a01018b948977354d4f415",
+  "boundaries": [
+    "Authentication is distinct from business-scoped authorization",
+    "Money, fulfillment, entitlement, booking, attendance and business policy remain separate",
+    "Square owns provider transaction status; Acrux business records own authorization, purchases, fulfillment, entitlements and refund policy/disposition",
+    "Member and reporting views are projections, not new transaction authorities",
+    "Generic contracts are reusable; Vega configuration and Development-specific offer/account bindings do not imply universal onboarding"
+  ],
+  "verificationBasis": "Existing individual closure evidence and explicit user approval; no new transaction, regression rerun or scope expansion",
+  "deferred": [
+    "Physical card terminals",
+    "Cash / split tender",
+    "Merchandise inventory",
+    "Event admission",
+    "Advanced identity/household workflows",
+    "Chargebacks/disputes automation",
+    "Accounting integrations",
+    "Advanced BI/forecasting",
+    "Deferred platform-hardening/admin-plane artifacts"
+  ],
+  "status": "COMPLETE / VERIFIED / CLOSED",
+  "capabilities": [
+    {
+      "capability": "Purchase",
+      "description": "Server-owned offers and frozen purchase terms preserve buyer, participant and staff actor distinctions."
+    },
+    {
+      "capability": "Payment",
+      "description": "Provider-neutral attempts and Square Sandbox confirmation separate pending, failed and unresolved outcomes from confirmed payment."
+    },
+    {
+      "capability": "Fulfillment",
+      "description": "Confirmed payment precedes exactly-once class-pack issuance; paid-but-unfulfilled outcomes retain recovery paths."
+    },
+    {
+      "capability": "Refunds",
+      "description": "Full, whole-credit partial and successive refunds preserve original sales and separate provider outcomes from business entitlement disposition."
+    },
+    {
+      "capability": "Front-desk sales",
+      "description": "Authorized staff sell one eligible class pack to an existing customer without impersonation or creating attendance/bookings."
+    },
+    {
+      "capability": "Customer self-service",
+      "description": "Existing members edit permitted profile fields, accept versioned waivers and see business-owned passes, bookings, purchases and refunds."
+    },
+    {
+      "capability": "Staff authority",
+      "description": "Owner/Admin, Manager, Front Desk and Instructor use explicit business-scoped permissions; refund authority is an explicit permission."
+    },
+    {
+      "capability": "Unified operations",
+      "description": "One customer workspace composes existing profile, status, booking, attendance and sale workflows with role-aware actions."
+    },
+    {
+      "capability": "Attendance/utilization",
+      "description": "Read-only class, capacity, attendance, cancellation, waitlist and trend projections distinguish missing data from zero."
+    },
+    {
+      "capability": "Financial reporting",
+      "description": "Confirmed sales, completed refunds and net transaction activity by period, offer and recorded channel; exceptions remain visible."
+    }
+  ],
+  "recordedLocalDate": "2026-10-06"
+}

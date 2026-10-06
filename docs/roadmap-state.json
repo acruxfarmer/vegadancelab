@@ -1,0 +1,33 @@
+{
+  "recordedLocalDate": "2026-10-06",
+  "laterLayers": [
+    "Communications automation",
+    "Media system",
+    "Native apps"
+  ],
+  "nextLayer": {
+    "status": "TRANSITION REVIEW — IMPLEMENTATION NOT AUTHORIZED",
+    "recommendedFirstDragon": "Public Studio & Class Discovery",
+    "review": "docs/layer-2/layer-3-transition-review.json",
+    "name": "Layer 3 — DIGITAL FRONT DOOR"
+  },
+  "precedence": "This machine-readable checkpoint updates current roadmap status; the historical image is preserved unchanged.",
+  "historicalVisualRoadmap": "D:/JOES WIP/ACRUX/Acrux System Tools/Vega Development Roadmap Dashboard.png",
+  "authority": "Joe Layer 2 canonical closure and roadmap transition instruction",
+  "layer2": {
+    "slices": "6.8 through 6.16",
+    "closure": "docs/layer-2/canonical-closure.json",
+    "status": "COMPLETE / VERIFIED / CLOSED"
+  },
+  "deferred": [
+    "Physical card terminals",
+    "Cash / split tender",
+    "Merchandise inventory",
+    "Event admission",
+    "Advanced identity/household workflows",
+    "Chargebacks/disputes automation",
+    "Accounting integrations",
+    "Advanced BI/forecasting",
+    "Deferred platform-hardening/admin-plane artifacts"
+  ]
+}

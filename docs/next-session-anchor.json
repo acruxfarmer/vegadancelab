@@ -1,10 +1,10 @@
 {
-  "status": "6.16 FINANCIAL REPORTING — PRODUCT COMPLETE",
+  "status": "LAYER 2 — COMPLETE / VERIFIED / CLOSED",
   "recordedLocalDate": "2026-10-06",
   "timezone": "America/Los_Angeles",
   "nextSessionDate": "2026-10-06",
-  "authority": "Joe end-of-day roadmap refresh; current sequencing guide supersedes earlier next-product recommendations",
-  "roadmap": "D:/JOES WIP/ACRUX/Acrux System Tools/Vega Development Roadmap Dashboard.png",
+  "authority": "Joe Layer 2 canonical closure and roadmap transition instruction",
+  "roadmap": "docs/roadmap-state.json",
   "workspace": "D:/JOES WIP/ACRUX/Codex Projects/vega-commerce-68a",
   "verifiedBuild": "836c54f301c54aa969a01018b948977354d4f415",
   "recordedDevelopmentRevision": 155,
@@ -26,8 +26,8 @@
   "executionGates": "Payment and refund execution disabled at final verified checkpoint",
   "production": "Untouched; launch not authorized",
   "architecture": "Acrux ecosystem first. Vega is the proving business.",
-  "nextDragon": "Await Joe + Chett next product selection",
-  "firstTask": "Re-anchor on closed 6.16. Do not repeat completed verification or provider execution.",
+  "nextDragon": "Layer 3 — DIGITAL FRONT DOOR; recommended first: Public Studio & Class Discovery",
+  "firstTask": "Joe + Chett transition review and selection; do not begin Layer 3 implementation until approved.",
   "intendedJourney": "Staff signs in -> selects authorized business -> sees role-appropriate actions -> performs permitted work -> audit and recovery preserve attributable changes",
   "principles": [
     "Reuse existing purchase/payment/fulfillment/refund architecture",
@@ -69,8 +69,8 @@
     "nextDragon": "6.11 — Front-Desk POS",
     "firstTask": "Inspect current staff commerce/front-desk capabilities and return one bounded product-level 6.11 build plan for Joe + Chett review."
   },
-  "latestClosedCheckpoint": "6.16 Financial Reporting: deployed 836c54f; targeted, full, hosted build and authenticated browser verification passed; business state unchanged",
-  "latestClosure": "docs/financial-reporting-616/canonical-closure.json",
+  "latestClosedCheckpoint": "LAYER 2 — COMPLETE / VERIFIED / CLOSED",
+  "latestClosure": "docs/layer-2/canonical-closure.json",
   "activeProduct": {
     "verification": "docs/financial-reporting-616/verification.json",
     "build": "836c54f301c54aa969a01018b948977354d4f415",
@@ -83,5 +83,6 @@
     "verifiedBuild": "08743ba11b7d44f9e106ea245bac355365168be2",
     "revision": 154,
     "closure": "docs/customer-profile-612/canonical-closure.json"
-  }
+  },
+  "layer3TransitionReview": "docs/layer-2/layer-3-transition-review.json"
 }

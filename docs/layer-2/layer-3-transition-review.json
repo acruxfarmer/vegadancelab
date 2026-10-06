@@ -1,0 +1,76 @@
+{
+  "inspection": {
+    "method": "Focused inspection of current application source and existing closure records; no live mutation or broad re-audit",
+    "sources": [
+      "public/app.js: login and member navigation",
+      "public/member-portal.js: credits and booking activity",
+      "src/runtime/refund-application-api.mjs: sign-in/refresh/sign-out and protected application routes",
+      "src/commerce.mjs: existing Development self-purchase binding"
+    ],
+    "findings": [
+      "Unauthenticated application entry offers Development sign-in and synthetic wireframe exploration",
+      "Inspected application exposes sign-in, refresh and sign-out, with no application sign-up/onboarding route",
+      "Existing authenticated member journeys already expose classes, credits, bookings, profile, waiver and commerce history",
+      "Current acquisition self-purchase binding is Development-specific; broader entry must reuse authority contracts without claiming generic onboarding exists",
+      "Demo library/events/shop presentation does not establish completed media, admission or inventory products"
+    ]
+  },
+  "laterLayers": [
+    "Communications automation",
+    "Media system",
+    "Native apps"
+  ],
+  "recommendedFirst": "Public Studio & Class Discovery",
+  "nextLayer": "Layer 3 — DIGITAL FRONT DOOR",
+  "approvalGate": "Joe + Chett select and approve the first bounded Layer 3 brief before implementation",
+  "recordedLocalDate": "2026-10-06",
+  "status": "RECOMMENDATIONS ONLY — AWAIT JOE + CHETT REVIEW",
+  "implementationAuthorized": false,
+  "topThree": [
+    {
+      "scope": [
+        "Readable public studio pages and practical location/visit information",
+        "Read-only published class schedule, class details and supported offer information",
+        "Mobile-friendly navigation and clear sign-in/start actions",
+        "Explicit public projections excluding customer rosters and private business data"
+      ],
+      "rank": 1,
+      "why": "Creates the missing public entry point and establishes discovery context that sign-up and first-booking flows can preserve.",
+      "journey": "Visitor arrives -> understands the studio -> browses public classes and eligible offers -> chooses a next step",
+      "name": "Public Studio & Class Discovery"
+    },
+    {
+      "scope": [
+        "Existing authentication provider sign-up/verification and return-to-journey behavior",
+        "Business-scoped customer/participant linkage with no inferred staff authority",
+        "Reuse profile and waiver version acceptance",
+        "Ambiguous existing records become Needs Staff Review; no household identity platform"
+      ],
+      "rank": 2,
+      "journey": "Visitor creates or accesses an account -> establishes one unambiguous business/customer relationship -> completes profile and required waiver",
+      "name": "Self-Service Sign-Up & First-Visit Onboarding"
+    },
+    {
+      "scope": [
+        "Preserve selected class through sign-in and onboarding",
+        "Reuse existing booking/capacity/waitlist and class-pack eligibility contracts",
+        "Keep purchase success separate from booking success",
+        "Handle full classes, unresolved payments and changed availability clearly; no new payment architecture"
+      ],
+      "rank": 3,
+      "journey": "Visitor selects class -> signs in or completes onboarding -> sees eligibility and frozen offer terms -> uses existing purchase/payment/fulfillment if needed -> explicitly books -> sees confirmation and history",
+      "name": "Discovery-to-First-Booking Journey"
+    }
+  ],
+  "preservedDeferred": [
+    "Physical card terminals",
+    "Cash / split tender",
+    "Merchandise inventory",
+    "Event admission",
+    "Advanced identity/household workflows",
+    "Chargebacks/disputes automation",
+    "Accounting integrations",
+    "Advanced BI/forecasting",
+    "Deferred platform-hardening/admin-plane artifacts"
+  ]
+}
