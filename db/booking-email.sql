@@ -121,7 +121,8 @@ begin
 end $$;
 
 -- Restricted owner can read linkage but cannot modify any booking/member record.
-grant acrux_booking_email to postgres;
+grant acrux_booking_email to postgres with inherit true;
+grant acrux_booking_email to postgres with set true;
 grant create on schema vega_private to acrux_booking_email;
 alter function vega_private.enqueue_booking_email(text,text,jsonb) owner to acrux_booking_email;
 alter function vega_private.pending_booking_email_messages() owner to acrux_booking_email;
@@ -132,5 +133,6 @@ revoke create on schema vega_private from acrux_booking_email;
 revoke all on function vega_private.booking_email_recipient(text,text,text),vega_private.enqueue_booking_email(text,text,jsonb),vega_private.pending_booking_email_messages(),vega_private.prepare_booking_email(text,jsonb),vega_private.claim_booking_email(uuid),vega_private.finish_booking_email(text,uuid,text,text,text) from public,anon,authenticated;
 grant execute on function vega_private.booking_email_recipient(text,text,text) to acrux_booking_email;
 grant execute on function vega_private.enqueue_booking_email(text,text,jsonb),vega_private.pending_booking_email_messages(),vega_private.prepare_booking_email(text,jsonb),vega_private.claim_booking_email(uuid),vega_private.finish_booking_email(text,uuid,text,text,text) to vega_app_runtime;
-revoke acrux_booking_email from postgres;
+revoke acrux_booking_email from postgres granted by postgres;
+do $$ begin if pg_has_role('postgres','acrux_booking_email','USAGE') or pg_has_role('postgres','acrux_booking_email','SET') then raise exception 'Temporary elevation not removed'; end if; end $$;
 commit;

@@ -1,6 +1,7 @@
--- Pending Joe authorization: bounded Development correction + rollback-only verification.
+-- Joe + Chett approved 2026-10-06: bounded Development correction + rollback-only verification.
 begin;
-grant acrux_booking_email to postgres;
+grant acrux_booking_email to postgres with inherit true;
+grant acrux_booking_email to postgres with set true;
 alter function vega_private.booking_email_recipient(text,text,text) owner to postgres;
 create or replace function vega_private.booking_email_recipient(t text,b text,p text) returns table(account_id uuid,email text)
 language sql stable security definer set search_path=pg_catalog,vega_private as $$
@@ -88,6 +89,7 @@ end $$;
 select 'PASS: duplicate, verified linkage, two businesses, foreign scope, lease, uncertain retry, accepted terminal, expired window, missing recipient, read-only booking authority, unrelated state' as result;
 rollback to savepoint email_verification;
 
-revoke acrux_booking_email from postgres;
+revoke acrux_booking_email from postgres granted by postgres;
+do $$ begin if pg_has_role('postgres','acrux_booking_email','USAGE') or pg_has_role('postgres','acrux_booking_email','SET') then raise exception 'Temporary elevation not removed'; end if; end $$;
 commit;
 select has_function_privilege('anon','vega_private.claim_booking_email(uuid)','execute') as public_dispatch,has_function_privilege('vega_app_runtime','vega_private.claim_booking_email(uuid)','execute') as runtime_dispatch,has_function_privilege('vega_app_runtime','vega_private.booking_email_recipient(text,text,text)','execute') as runtime_direct_auth_lookup;

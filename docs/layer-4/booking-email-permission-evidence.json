@@ -1,0 +1,224 @@
+{
+  "approvedBy": "Joe + Chett; explicit Development-only instruction 2026-10-06",
+  "before": {
+    "tables": [
+      {
+        "acl": "{postgres=arwdDxtm/postgres,acrux_booking_email=r/postgres}",
+        "rls": true,
+        "name": "booking_email_configuration",
+        "forceRls": true,
+        "anonAccess": false,
+        "publicGrant": false,
+        "authenticatedAccess": false
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,acrux_booking_email=arw/postgres}",
+        "rls": true,
+        "name": "booking_email_intents",
+        "forceRls": true,
+        "anonAccess": false,
+        "publicGrant": false,
+        "authenticatedAccess": false
+      }
+    ],
+    "intents": 0,
+    "functions": [
+      {
+        "acl": "{=X/acrux_booking_email,acrux_booking_email=X/acrux_booking_email}",
+        "name": "booking_email_recipient",
+        "owner": "acrux_booking_email",
+        "anonExecute": true,
+        "publicExecute": true,
+        "runtimeExecute": true,
+        "authenticatedExecute": true
+      },
+      {
+        "acl": "{=X/acrux_booking_email,acrux_booking_email=X/acrux_booking_email}",
+        "name": "claim_booking_email",
+        "owner": "acrux_booking_email",
+        "anonExecute": true,
+        "publicExecute": true,
+        "runtimeExecute": true,
+        "authenticatedExecute": true
+      },
+      {
+        "acl": "{=X/acrux_booking_email,acrux_booking_email=X/acrux_booking_email}",
+        "name": "enqueue_booking_email",
+        "owner": "acrux_booking_email",
+        "anonExecute": true,
+        "publicExecute": true,
+        "runtimeExecute": true,
+        "authenticatedExecute": true
+      },
+      {
+        "acl": "{=X/acrux_booking_email,acrux_booking_email=X/acrux_booking_email}",
+        "name": "finish_booking_email",
+        "owner": "acrux_booking_email",
+        "anonExecute": true,
+        "publicExecute": true,
+        "runtimeExecute": true,
+        "authenticatedExecute": true
+      },
+      {
+        "acl": "{=X/acrux_booking_email,acrux_booking_email=X/acrux_booking_email}",
+        "name": "pending_booking_email_messages",
+        "owner": "acrux_booking_email",
+        "anonExecute": true,
+        "publicExecute": true,
+        "runtimeExecute": true,
+        "authenticatedExecute": true
+      },
+      {
+        "acl": "{=X/acrux_booking_email,acrux_booking_email=X/acrux_booking_email}",
+        "name": "prepare_booking_email",
+        "owner": "acrux_booking_email",
+        "anonExecute": true,
+        "publicExecute": true,
+        "runtimeExecute": true,
+        "authenticatedExecute": true
+      }
+    ],
+    "schemaAcl": "{postgres=UC/postgres,vega_webhook_ingest=U/postgres,vega_app_runtime=U/postgres,vega_worker_runtime=U/postgres,vega_receipt_runtime=U/postgres,acrux_public_projection=U/postgres,acrux_member_onboarding=U/postgres,acrux_booking_email=U/postgres}",
+    "anonSchema": false,
+    "businesses": [
+      {
+        "digest": "4e1eebac0e101f1f786100e4954e32b7",
+        "tenant": "vega-development",
+        "business": "vega-dance-lab",
+        "revision": 167
+      },
+      {
+        "digest": "1e8a823a955d74251b2a56b2cff77cfd",
+        "tenant": "layer3-reuse-fixture",
+        "business": "willow-movement",
+        "revision": 0
+      }
+    ],
+    "roleMemberships": [
+      {
+        "role": "acrux_booking_email",
+        "member": "postgres"
+      }
+    ],
+    "elevationPresent": true,
+    "enabledBusinesses": 0,
+    "otherObjectsDigest": "4b4bd3414ec78e799017bb500b00f2ec",
+    "authenticatedSchema": false
+  },
+  "after": {
+    "tables": [
+      {
+        "acl": "{postgres=arwdDxtm/postgres,acrux_booking_email=r/postgres}",
+        "rls": true,
+        "name": "booking_email_configuration",
+        "forceRls": true,
+        "anonAccess": false,
+        "publicGrant": false,
+        "authenticatedAccess": false
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,acrux_booking_email=arw/postgres}",
+        "rls": true,
+        "name": "booking_email_intents",
+        "forceRls": true,
+        "anonAccess": false,
+        "publicGrant": false,
+        "authenticatedAccess": false
+      }
+    ],
+    "intents": 0,
+    "functions": [
+      {
+        "acl": "{postgres=X/postgres,acrux_booking_email=X/postgres}",
+        "name": "booking_email_recipient",
+        "owner": "postgres",
+        "anonExecute": false,
+        "publicExecute": false,
+        "runtimeExecute": false,
+        "authenticatedExecute": false
+      },
+      {
+        "acl": "{acrux_booking_email=X/acrux_booking_email,vega_app_runtime=X/acrux_booking_email}",
+        "name": "claim_booking_email",
+        "owner": "acrux_booking_email",
+        "anonExecute": false,
+        "publicExecute": false,
+        "runtimeExecute": true,
+        "authenticatedExecute": false
+      },
+      {
+        "acl": "{acrux_booking_email=X/acrux_booking_email,vega_app_runtime=X/acrux_booking_email}",
+        "name": "enqueue_booking_email",
+        "owner": "acrux_booking_email",
+        "anonExecute": false,
+        "publicExecute": false,
+        "runtimeExecute": true,
+        "authenticatedExecute": false
+      },
+      {
+        "acl": "{acrux_booking_email=X/acrux_booking_email,vega_app_runtime=X/acrux_booking_email}",
+        "name": "finish_booking_email",
+        "owner": "acrux_booking_email",
+        "anonExecute": false,
+        "publicExecute": false,
+        "runtimeExecute": true,
+        "authenticatedExecute": false
+      },
+      {
+        "acl": "{acrux_booking_email=X/acrux_booking_email,vega_app_runtime=X/acrux_booking_email}",
+        "name": "pending_booking_email_messages",
+        "owner": "acrux_booking_email",
+        "anonExecute": false,
+        "publicExecute": false,
+        "runtimeExecute": true,
+        "authenticatedExecute": false
+      },
+      {
+        "acl": "{acrux_booking_email=X/acrux_booking_email,vega_app_runtime=X/acrux_booking_email}",
+        "name": "prepare_booking_email",
+        "owner": "acrux_booking_email",
+        "anonExecute": false,
+        "publicExecute": false,
+        "runtimeExecute": true,
+        "authenticatedExecute": false
+      }
+    ],
+    "schemaAcl": "{postgres=UC/postgres,vega_webhook_ingest=U/postgres,vega_app_runtime=U/postgres,vega_worker_runtime=U/postgres,vega_receipt_runtime=U/postgres,acrux_public_projection=U/postgres,acrux_member_onboarding=U/postgres,acrux_booking_email=U/postgres}",
+    "anonSchema": false,
+    "businesses": [
+      {
+        "digest": "4e1eebac0e101f1f786100e4954e32b7",
+        "tenant": "vega-development",
+        "business": "vega-dance-lab",
+        "revision": 167
+      },
+      {
+        "digest": "1e8a823a955d74251b2a56b2cff77cfd",
+        "tenant": "layer3-reuse-fixture",
+        "business": "willow-movement",
+        "revision": 0
+      }
+    ],
+    "roleMemberships": [
+      {
+        "role": "acrux_booking_email",
+        "member": "postgres"
+      }
+    ],
+    "temporaryInherit": false,
+    "temporarySetRole": false,
+    "enabledBusinesses": 0,
+    "otherObjectsDigest": "4b4bd3414ec78e799017bb500b00f2ec",
+    "authenticatedSchema": false,
+    "ownerMembershipPresent": true
+  },
+  "checks": {
+    "businessStateUnchanged": true,
+    "otherObjectPermissionsUnchanged": true,
+    "noPublicFunctionAccess": true,
+    "temporaryEffectiveElevationRemoved": true,
+    "deliveryDisabled": true,
+    "rollbackOnlyDatabaseFunctionalTestsPassed": true
+  },
+  "note": "Supabase's pre-existing admin-only creator membership remains with INHERIT false and SET false; the temporary postgres-granted effective membership was removed."
+}
