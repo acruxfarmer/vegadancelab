@@ -1,5 +1,5 @@
 {
-  "status": "BLOCKED — Development Owner/Admin sign-in required for final hosted browser walkthrough",
+  "status": "6.14 EXPANDED FRONT-DESK OPERATIONS — PRODUCT COMPLETE",
   "recordedLocalDate": "2026-10-06",
   "timezone": "America/Los_Angeles",
   "nextSessionDate": "2026-10-06",
@@ -17,14 +17,15 @@
     "Canonical Refund System / Refund Program closure: full, partial and remaining-balance Sandbox execution verified",
     "6.11 V1 staff-assisted front-desk sale",
     "6.12 Customer Profile / Waiver Self-Service",
-    "6.13 Granular Staff Roles & Permissions"
+    "6.13 Granular Staff Roles & Permissions",
+    "6.14 Expanded Front-Desk Operations"
   ],
   "refundClosure": "docs/refund-program/canonical-closure.json",
   "executionGates": "Payment and refund execution disabled at final verified checkpoint",
   "production": "Untouched; launch not authorized",
   "architecture": "Acrux ecosystem first. Vega is the proving business.",
-  "nextDragon": "6.14 Expanded Front-Desk Operations — final hosted staff browser verification pending",
-  "firstTask": "After Joe signs in with the existing Development Owner/Admin account, open Front desk, select the existing member, verify profile/waiver/credits/bookings/purchases/refunds and sale review, then close 6.14. Do not repeat passed regressions or execute a payment/refund.",
+  "nextDragon": "Await Joe + Chett next product selection",
+  "firstTask": "Re-anchor on closed 6.14. Do not repeat completed verification or provider execution.",
   "intendedJourney": "Staff signs in -> selects authorized business -> sees role-appropriate actions -> performs permitted work -> audit and recovery preserve attributable changes",
   "principles": [
     "Reuse existing purchase/payment/fulfillment/refund architecture",
@@ -49,7 +50,7 @@
     "Additional provider execution without new Joe approval"
   ],
   "historicalNumbering": "Use refreshed roadmap for forward sequencing; preserve original closure identifiers and historical numbering without rewriting them.",
-  "nextBuildAuthorized": true,
+  "nextBuildAuthorized": false,
   "wakeCorrection": {
     "recordedLocalDate": "2026-10-06",
     "latestClosedCheckpoint": "Canonical Refund System / Refund Program closure: full, partial and remaining-balance Sandbox execution verified",
@@ -66,11 +67,11 @@
     "nextDragon": "6.11 — Front-Desk POS",
     "firstTask": "Inspect current staff commerce/front-desk capabilities and return one bounded product-level 6.11 build plan for Joe + Chett review."
   },
-  "latestClosedCheckpoint": "6.13 Granular Staff Roles & Permissions: approved role policy implemented, deployed, and verified; Joe Owner assignment recorded and recovered",
-  "latestClosure": "docs/staff-permissions-613/canonical-closure.json",
+  "latestClosedCheckpoint": "6.14 Expanded Front-Desk Operations: deployed build 7edc673; authenticated hosted walkthrough completed; business state unchanged",
+  "latestClosure": "docs/front-desk-614/canonical-closure.json",
   "activeProduct": {
     "name": "6.14 Expanded Front-Desk Operations",
-    "status": "BLOCKED — Development Owner/Admin sign-in required for final hosted browser walkthrough",
+    "status": "6.14 EXPANDED FRONT-DESK OPERATIONS — PRODUCT COMPLETE",
     "build": "7edc6736c989c7b76baee7be494b7601b7db5476",
     "branch": "commerce/front-desk-operations-v1",
     "verification": "docs/front-desk-614/verification.json"
