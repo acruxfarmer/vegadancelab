@@ -83,13 +83,13 @@ async function mutate(path,body,local){
  if((generation!==session.generation()||scopedGeneration!==businessGeneration)||!session.active())throw new Error('Session changed. Sign in and review your account.');
  try{
   let result=await api(path,{method:'POST',body:JSON.stringify({...body,requestId:pending.requestId})});
-  if(result.pending)notify('Your change is recorded. Waiting for independent recovery confirmation.');
+  if(result.pending)notify(path==='/api/reservations'?'Saving your booking. Please wait for confirmation.':'Your change is recorded. Waiting for independent recovery confirmation.');
   for(let attempt=0;result.pending&&attempt<8;attempt++){
    await new Promise(resolve=>setTimeout(resolve,750));
    if((generation!==session.generation()||scopedGeneration!==businessGeneration)||!session.active())throw new Error('Session changed.');
    result=await api('/api/recovery/operations/'+result.independentReceipt.operationId);
   }
-  if(result.pending){await load();throw new Error('Your change is recorded locally but remains pending independent recovery confirmation.');}
+  if(result.pending){await load();throw new Error(path==='/api/reservations'?'Your booking is still being confirmed. Check My bookings before trying again.':'Your change is recorded locally but remains pending independent recovery confirmation.');}
   // Recovery acknowledgment identifies the operation, not its booking result.
   // Replay the same durable request to retrieve its authoritative response.
   if(path==='/api/reservations'&&!result.id){
@@ -163,7 +163,7 @@ document.addEventListener('submit',event=>{if(event.target.id==='front-desk-sele
 document.addEventListener('submit',event=>{if(event.target.id==='commerce-draft'){event.preventDefault();void commerce.submit(event.target);}});
 document.addEventListener('submit',event=>{if(event.target.hasAttribute('data-commerce-payment')){event.preventDefault();void commerce.submitPayment(event.target);}});
 const renderBeforeRecoveryNotice=render;
-render=function(){renderBeforeRecoveryNotice();if(data?.recovery?.pendingCount>0){const notice=document.createElement('div');notice.className='notice warning';notice.setAttribute('role','status');notice.textContent='Recovery confirmation pending. The current view includes provisional changes. Do not treat them as finally confirmed until independent recovery acknowledgment completes.';document.querySelector('#main').prepend(notice);}};
+render=function(){renderBeforeRecoveryNotice();if(data?.recovery?.pendingCount>0){const notice=document.createElement('div');notice.className='notice warning';notice.setAttribute('role','status');notice.textContent=view==='member'?'Your latest changes are still being confirmed. Refresh to check their current status.':'Recovery confirmation pending. The current view includes provisional changes. Do not treat them as finally confirmed until independent recovery acknowledgment completes.';document.querySelector('#main').prepend(notice);}};
 import {refundUI,refundProgramUI} from './refund-ui.js';
 const refunds=refundUI({getData:()=>data,escape,mutate,notify});
 const refundProgram=refundProgramUI({getData:operationalData,escape,api,mutate,notify});
