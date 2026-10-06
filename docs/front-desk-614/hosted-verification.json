@@ -1,0 +1,28 @@
+{
+  "build": "7edc6736c989c7b76baee7be494b7601b7db5476",
+  "revision": 155,
+  "stateDigest": "e8f54bb7504d8cbfa76a32e5753defdd8995110ba0c7e1fc7c26b5ceba7a5b69",
+  "checks": {
+    "owner": true,
+    "linkedCustomer": true,
+    "waiverAgreement": true,
+    "creditAgreement": true,
+    "purchaseAgreement": true,
+    "refundAgreement": true,
+    "passAgreement": true,
+    "bookingAttendanceAgreement": true,
+    "foreignBusinessDenied": true,
+    "foreignTenantDenied": true,
+    "unchangedBusinessState": true,
+    "paymentExecutionDisabled": true
+  },
+  "customer": {
+    "passes": 9,
+    "availableCredits": 8,
+    "bookings": 25,
+    "purchases": 9,
+    "refunds": 3,
+    "waiver": "Accepted"
+  },
+  "production": "untouched"
+}

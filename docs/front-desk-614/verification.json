@@ -1,0 +1,31 @@
+{
+  "product": "6.14 Expanded Front-Desk Operations",
+  "status": "BLOCKED — Development Owner/Admin sign-in required for final hosted browser walkthrough",
+  "build": "7edc6736c989c7b76baee7be494b7601b7db5476",
+  "branch": "commerce/front-desk-operations-v1",
+  "targeted": {
+    "failed": 0,
+    "passed": 25
+  },
+  "fullTrackedProductSuite": {
+    "failed": 0,
+    "passed": 987
+  },
+  "renderBuildSuite": {
+    "failed": 0,
+    "passed": 990
+  },
+  "browserSynthetic": [
+    "Front Desk sign-in and business selection",
+    "Unified customer lookup and customer view",
+    "Attendance save reflected as Checked in",
+    "Cancellation confirmed with current customer/class",
+    "Rebooking confirmed through existing action",
+    "Business switch clears customer and denies unassigned scope"
+  ],
+  "providerExecution": "No new payment or refund execution",
+  "production": "Untouched",
+  "architecture": "Existing authorized application projection and action modules; no new transaction engine or permissions",
+  "hostedReconciliation": "12 checks passed; revision 155 and complete business state digest unchanged; staff/member facts agree",
+  "deployment": "dep-db2l5uqd0e5s73bh4r9g — live"
+}

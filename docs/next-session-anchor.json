@@ -1,12 +1,12 @@
 {
-  "status": "6.13 GRANULAR STAFF ROLES & PERMISSIONS — PRODUCT COMPLETE",
+  "status": "BLOCKED — Development Owner/Admin sign-in required for final hosted browser walkthrough",
   "recordedLocalDate": "2026-10-06",
   "timezone": "America/Los_Angeles",
   "nextSessionDate": "2026-10-06",
   "authority": "Joe end-of-day roadmap refresh; current sequencing guide supersedes earlier next-product recommendations",
   "roadmap": "D:/JOES WIP/ACRUX/Acrux System Tools/Vega Development Roadmap Dashboard.png",
   "workspace": "D:/JOES WIP/ACRUX/Codex Projects/vega-commerce-68a",
-  "verifiedBuild": "002a65ed03b85ab5db121121068288cb56fc7cac",
+  "verifiedBuild": "7edc6736c989c7b76baee7be494b7601b7db5476",
   "recordedDevelopmentRevision": 155,
   "completed": [
     "Sections 1–5",
@@ -23,8 +23,8 @@
   "executionGates": "Payment and refund execution disabled at final verified checkpoint",
   "production": "Untouched; launch not authorized",
   "architecture": "Acrux ecosystem first. Vega is the proving business.",
-  "nextDragon": "Await Joe + Chett next product selection",
-  "firstTask": "Re-anchor on completed 6.13; await Joe + Chett next product selection. Do not repeat the Owner assignment or prior payment/refund/waiver proofs.",
+  "nextDragon": "6.14 Expanded Front-Desk Operations — final hosted staff browser verification pending",
+  "firstTask": "After Joe signs in with the existing Development Owner/Admin account, open Front desk, select the existing member, verify profile/waiver/credits/bookings/purchases/refunds and sale review, then close 6.14. Do not repeat passed regressions or execute a payment/refund.",
   "intendedJourney": "Staff signs in -> selects authorized business -> sees role-appropriate actions -> performs permitted work -> audit and recovery preserve attributable changes",
   "principles": [
     "Reuse existing purchase/payment/fulfillment/refund architecture",
@@ -49,7 +49,7 @@
     "Additional provider execution without new Joe approval"
   ],
   "historicalNumbering": "Use refreshed roadmap for forward sequencing; preserve original closure identifiers and historical numbering without rewriting them.",
-  "nextBuildAuthorized": false,
+  "nextBuildAuthorized": true,
   "wakeCorrection": {
     "recordedLocalDate": "2026-10-06",
     "latestClosedCheckpoint": "Canonical Refund System / Refund Program closure: full, partial and remaining-balance Sandbox execution verified",
@@ -69,11 +69,11 @@
   "latestClosedCheckpoint": "6.13 Granular Staff Roles & Permissions: approved role policy implemented, deployed, and verified; Joe Owner assignment recorded and recovered",
   "latestClosure": "docs/staff-permissions-613/canonical-closure.json",
   "activeProduct": {
-    "name": "6.13 Granular Staff Roles & Permissions",
-    "status": "6.13 GRANULAR STAFF ROLES & PERMISSIONS — PRODUCT COMPLETE",
-    "build": "002a65ed03b85ab5db121121068288cb56fc7cac",
-    "branch": "commerce/staff-permissions-v1",
-    "verification": "docs/staff-permissions-613/verification.json"
+    "name": "6.14 Expanded Front-Desk Operations",
+    "status": "BLOCKED — Development Owner/Admin sign-in required for final hosted browser walkthrough",
+    "build": "7edc6736c989c7b76baee7be494b7601b7db5476",
+    "branch": "commerce/front-desk-operations-v1",
+    "verification": "docs/front-desk-614/verification.json"
   },
   "previousProductCheckpoint": {
     "status": "6.12 CUSTOMER PROFILE / WAIVER SELF-SERVICE — PRODUCT COMPLETE",
