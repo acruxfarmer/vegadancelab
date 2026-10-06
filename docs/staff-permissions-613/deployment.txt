@@ -1,0 +1,329 @@
+- banner:
+  - link "Render":
+    - /url: /
+    - img "Render"
+  - button "A Acrux System":
+    - generic: A
+    - generic "Acrux System"
+  - navigation "Breadcrumbs":
+    - list:
+      - link "Projects":
+        - /url: /
+        - generic: Projects
+      - link "vega":
+        - /url: /project/prj-dao55pijnfac73akca00
+        - generic: vega
+      - button "Switch Project":
+      - link "development":
+        - /url: /project/prj-dao55pijnfac73akca00/environment/evm-dao55pijnfac73akca10
+        - generic: development
+      - button "Switch Environment":
+      - link "vega-development-web":
+        - /url: /web/srv-dao5cjbm8hqs73db51j0
+        - generic: vega-development-web
+      - button "Switch Service":
+      - link "Deploys":
+        - /url: /web/srv-dao5cjbm8hqs73db51j0/deploys
+        - generic: Deploys
+      - button "Switch page":
+      - generic: dep-db2kmq7lk1mc73cj76h0
+      - button "Switch Deploy":
+  - button "Search Ctrl + K":
+    - text: Search
+    - generic: Ctrl
+    - generic: +
+    - generic: K
+    - generic: K
+  - button "New":
+    - generic: New
+  - button "Help":
+    - img "Help"
+  - button "Account menu":
+    - generic: j
+- navigation:
+  - separator "Resize sidebar"
+  - link "Environment":
+    - /url: /project/prj-dao55pijnfac73akca00/environment/evm-dao55pijnfac73akca10
+    - generic: Environment
+  - generic: vega-development-web
+  - list:
+    - link "Deploys":
+      - /url: /web/srv-dao5cjbm8hqs73db51j0/deploys
+      - generic: Deploys
+    - link "Settings":
+      - /url: /web/srv-dao5cjbm8hqs73db51j0/settings
+      - generic: Settings
+  - generic: Monitor
+  - list "Monitor":
+    - link "Events":
+      - /url: /web/srv-dao5cjbm8hqs73db51j0/events
+      - generic: Events
+    - link "Logs":
+      - /url: /web/srv-dao5cjbm8hqs73db51j0/logs
+      - generic: Logs
+    - link "Metrics":
+      - /url: /web/srv-dao5cjbm8hqs73db51j0/metrics
+      - generic: Metrics
+  - generic: Manage
+  - list "Manage":
+    - link "Compute":
+      - /url: /web/srv-dao5cjbm8hqs73db51j0/compute
+      - generic: Compute
+    - link "Environment":
+      - /url: /web/srv-dao5cjbm8hqs73db51j0/env
+      - generic: Environment
+    - link "Shell":
+      - /url: /web/srv-dao5cjbm8hqs73db51j0/shell
+      - generic: Shell
+    - link "Previews":
+      - /url: /web/srv-dao5cjbm8hqs73db51j0/previews
+      - generic: Previews
+    - link "Disk":
+      - /url: /web/srv-dao5cjbm8hqs73db51j0/disks
+      - generic: Disk
+    - link "One-Off Jobs":
+      - /url: /web/srv-dao5cjbm8hqs73db51j0/jobs
+      - generic: One-Off Jobs
+  - alert:
+    - generic: Introducing Workflows
+    - generic: An orchestration and execution engine for long-running, distributed tasks.
+    - link "Learn more":
+      - /url: https://render.com/workflows
+      - text: Learn more
+    - button "Close notification":
+  - list "Footer navigation":
+    - link "Changelog":
+      - /url: https://render.com/changelog
+      - generic: Changelog
+  - link "Status":
+    - /url: https://status.render.com
+    - generic: Status
+  - button "Collapse":
+    - generic: Collapse
+- main:
+  - heading "Build business-scoped staff roles and permission enforcement" [level=1]
+  - term: Status
+  - definition: Deploy succeeded|Live
+  - term: Duration
+  - definition:
+    - time: 46.5s
+  - term: Deployed
+  - definition:
+    - paragraph:
+      - generic: Oct 6, 2026
+      - generic: at
+      - generic: 12:26:32 PM
+      - generic: PDT
+  - term: Trigger
+  - definition: Manually deployed by you via Dashboard
+  - term: Source
+  - definition:
+    - link "002a65e":
+      - /url: https://github.com/acruxfarmer/vegadancelab/commit/002a65ed03b85ab5db121121068288cb56fc7cac
+  - list
+  - button "All logs":
+    - generic: All logs
+  - generic: Search
+  - searchbox "Search"
+  - button "Live tail":
+    - generic: Live tail
+  - button "Maximize":
+    - img "Maximize"
+  - button "Options":
+    - img "Options"
+  - button "Return to Bottom":
+  - listbox:
+    - generic: Oct 6
+    - option "12:26:57 PM ✔ Square signature binds exact raw body and subscription URL (1.258393ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ Square signature binds exact raw body and subscription URL (1.258393ms)
+    - option "12:26:57 PM ✔ webhook rejects unsigned requests and never acknowledges unstored events (37.154508ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ webhook rejects unsigned requests and never acknowledges unstored events (37.154508ms)
+    - option "12:26:57 PM ✔ staff explanation uses the same eligible pass as reserve and refuses stale selected pass (4.30495ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ staff explanation uses the same eligible pass as reserve and refuses stale selected pass (4.30495ms)
+    - option "12:26:57 PM ✔ reservation-only staff intent blocks a capacity race without creating a waitlist or consuming credit (1.31132ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ reservation-only staff intent blocks a capacity race without creating a waitlist or consuming credit (1.31132ms)
+    - option "12:26:57 PM ✔ staff initial explicit classification preserves original record and actor/reason; members cannot use it (1.18836ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ staff initial explicit classification preserves original record and actor/reason; members cannot use it (1.18836ms)
+    - option "12:26:57 PM ✔ staff summary remains staff-only and member option scope is unchanged (0.669872ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ staff summary remains staff-only and member option scope is unchanged (0.669872ms)
+    - option "12:26:57 PM ✔ membership alone grants no staff permission; approved initial owner is exact tenant/business/account (1.504222ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ membership alone grants no staff permission; approved initial owner is exact tenant/business/account (1.504222ms)
+    - option "12:26:57 PM ✔ four roles express supported actions with owner-only refunds and role administration (1.068681ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ four roles express supported actions with owner-only refunds and role administration (1.068681ms)
+    - option "12:26:57 PM ✔ denied staff commands fail with understandable explanations; member behavior unchanged (0.693096ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ denied staff commands fail with understandable explanations; member behavior unchanged (0.693096ms)
+    - option "12:26:57 PM ✔ instructors can modify only explicitly assigned class attendance (0.66925ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ instructors can modify only explicitly assigned class attendance (0.66925ms)
+    - option "12:26:57 PM ✔ front desk sees its own sale receipts but no financial history, refund records or reports (0.372741ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ front desk sees its own sale receipts but no financial history, refund records or reports (0.372741ms)
+    - option "12:26:57 PM ✔ one user has distinct roles in two businesses; roles cannot be carried across scopes (0.171781ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ one user has distinct roles in two businesses; roles cannot be carried across scopes (0.171781ms)
+    - option "12:26:57 PM ✔ role changes are read from current state; conflicting or unsupported assignments fail closed (0.15638ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ role changes are read from current state; conflicting or unsupported assignments fail closed (0.15638ms)
+    - option "12:26:57 PM ✔ existing staff membership has no business powers; self registration grants none and cannot register another identity (11.226441ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ existing staff membership has no business powers; self registration grants none and cannot register another identity (11.226441ms)
+    - option "12:26:57 PM ✔ owner assigns roles through audited atomic commands; manager has operational access but no refund or role powers (6.306878ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ owner assigns roles through audited atomic commands; manager has operational access but no refund or role powers (6.306878ms)
+    - option "12:26:57 PM ✔ front desk can book and record attendance, but schedule, financial, waiver and refund routes deny before provider reads (6.087805ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ front desk can book and record attendance, but schedule, financial, waiver and refund routes deny before provider reads (6.087805ms)
+    - option "12:26:57 PM ✔ instructor only sees assigned classes and attendance; replies and replay do not disclose payment data (5.737892ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ instructor only sees assigned classes and attendance; replies and replay do not disclose payment data (5.737892ms)
+    - option "12:26:57 PM ✔ latest role blocks replay and old sensitive receipts; last owner and stale role updates are protected (5.105293ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ latest role blocks replay and old sensitive receipts; last owner and stale role updates are protected (5.105293ms)
+    - option "12:26:57 PM ✔ same authenticated account selects two businesses with different roles; foreign selection fails; member behavior stays unchanged (7.621751ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ same authenticated account selects two businesses with different roles; foreign selection fails; member behavior stays unchanged (7.621751ms)
+    - option "12:26:57 PM ✔ role assignment and audit roll back together if recovery capture fails; duplicate assignments deny (3.636642ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ role assignment and audit roll back together if recovery capture fails; duplicate assignments deny (3.636642ms)
+    - option "12:26:57 PM ✔ HTTP membership and business headers are validated; forged roles do not enable staff actions or provider execution (8.616015ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ HTTP membership and business headers are validated; forged roles do not enable staff actions or provider execution (8.616015ms)
+    - option "12:26:57 PM ✔ member join and leave reserve no seat, spend no credit, preserve lineage and isolate other members (5.91138ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ member join and leave reserve no seat, spend no credit, preserve lineage and isolate other members (5.91138ms)
+    - option "12:26:57 PM ✔ waitlist intent never falls through to paid booking and invalid classes or malformed intent fail safely (1.503201ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ waitlist intent never falls through to paid booking and invalid classes or malformed intent fail safely (1.503201ms)
+    - option "12:26:57 PM ✔ deterministic earliest eligible promotion consumes exactly once, preserves identity and prevents stale leave (10.19721ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ deterministic earliest eligible promotion consumes exactly once, preserves identity and prevents stale leave (10.19721ms)
+    - option "12:26:57 PM ✔ promotion rechecks expired, future, restricted and spent credits and queue order at confirmation (4.186237ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ promotion rechecks expired, future, restricted and spent credits and queue order at confirmation (4.186237ms)
+    - option "12:26:57 PM ✔ member presentation distinguishes waiting from confirmed booking and exposes no staff promotion controls (9.965298ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ member presentation distinguishes waiting from confirmed booking and exposes no staff promotion controls (9.965298ms)
+    - option "12:26:57 PM ✔ worker connection is restricted and TLS remains verified despite query flags (1.123215ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ worker connection is restricted and TLS remains verified despite query flags (1.123215ms)
+    - option "12:26:57 PM ✔ normalization preserves independent provider observation and rejects malformed values (0.720025ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ normalization preserves independent provider observation and rejects malformed values (0.720025ms)
+    - option "12:26:57 PM ✔ receipt replay performs no duplicate observation; source remains unchanged (1.300628ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ receipt replay performs no duplicate observation; source remains unchanged (1.300628ms)
+    - option "12:26:57 PM ✔ crash between observation and receipt rolls back, retry commits once (0.659628ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ crash between observation and receipt rolls back, retry commits once (0.659628ms)
+    - option "12:26:57 PM ✔ malformed source has durable needs-review receipt and no financial observation (0.204617ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ malformed source has durable needs-review receipt and no financial observation (0.204617ms)
+    - option "12:26:57 PM ✔ another active transaction prevents concurrent processing (0.228259ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ another active transaction prevents concurrent processing (0.228259ms)
+    - option "12:26:57 PM ✔ polling waits for prior batch and shutdown drains without starting more work (15.78305ms)":
+      - time: 12:26:57 PM
+      - generic: ✔ polling waits for prior batch and shutdown drains without starting more work (15.78305ms)
+    - option "12:26:57 PM ℹ tests 982":
+      - time: 12:26:57 PM
+      - generic: ℹ tests 982
+    - option "12:26:57 PM ℹ suites 0":
+      - time: 12:26:57 PM
+      - generic: ℹ suites 0
+    - option "12:26:57 PM ℹ pass 982":
+      - time: 12:26:57 PM
+      - generic: ℹ pass 982
+    - option "12:26:57 PM ℹ fail 0":
+      - time: 12:26:57 PM
+      - generic: ℹ fail 0
+    - option "12:26:57 PM ℹ cancelled 0":
+      - time: 12:26:57 PM
+      - generic: ℹ cancelled 0
+    - option "12:26:57 PM ℹ skipped 0":
+      - time: 12:26:57 PM
+      - generic: ℹ skipped 0
+    - option "12:26:57 PM ℹ todo 0":
+      - time: 12:26:57 PM
+      - generic: ℹ todo 0
+    - option "12:26:57 PM ℹ duration_ms 11023.961075":
+      - time: 12:26:57 PM
+      - generic: ℹ duration_ms 11023.961075
+    - option "12:27:00 PM ==> Uploading build...":
+      - time: 12:27:00 PM
+      - generic: ==> Uploading build...
+    - option "12:27:03 PM ==> Uploaded in 1.8s. Compression took 1.1s":
+      - time: 12:27:03 PM
+      - generic: ==> Uploaded in 1.8s. Compression took 1.1s
+    - option "12:27:03 PM ==> Build successful 🎉":
+      - time: 12:27:03 PM
+      - generic: ==> Build successful 🎉
+    - option "12:27:04 PM ==> Deploying...":
+      - time: 12:27:04 PM
+      - generic: ==> Deploying...
+    - option "12:27:04 PM ==> Setting WEB_CONCURRENCY=1 by default, based on available CPUs in the instance":
+      - time: 12:27:04 PM
+      - generic: ==> Setting WEB_CONCURRENCY=1 by default, based on available CPUs in the instance
+    - option "12:27:13 PM [dr68f] ==> Running 'node scripts/start-web.mjs'":
+      - time: 12:27:13 PM
+      - generic: "[dr68f]"
+      - generic: ==> Running 'node scripts/start-web.mjs'
+    - 'option "12:27:13 PM [dr68f] {\"diagnostic\":\"vega-web-health\",\"event\":\"listening\",\"pid\":52,\"commit\":\"002a65ed03b85ab5db121121068288cb56fc7cac\",\"address\":\"0.0.0.0\",\"port\":10000,\"family\":\"IPv4\"}"':
+      - time: 12:27:13 PM
+      - generic: "[dr68f]"
+      - generic: "{\"diagnostic\":\"vega-web-health\",\"event\":\"listening\",\"pid\":52,\"commit\":\"002a65ed03b85ab5db121121068288cb56fc7cac\",\"address\":\"0.0.0.0\",\"port\":10000,\"family\":\"IPv4\"}"
+    - option "12:27:13 PM [dr68f] Vega development web runtime started; application readiness pending":
+      - time: 12:27:13 PM
+      - generic: "[dr68f]"
+      - generic: Vega development web runtime started; application readiness pending
+    - option "12:27:19 PM ==> Your service is live 🎉":
+      - time: 12:27:19 PM
+      - generic: ==> Your service is live 🎉
+    - option "12:27:19 PM ==>":
+      - time: 12:27:19 PM
+      - generic: ==>
+    - option "12:27:19 PM ==> ///////////////////////////////////////////////////////////":
+      - time: 12:27:19 PM
+      - generic: ==> ///////////////////////////////////////////////////////////
+    - option "12:27:19 PM ==>":
+      - time: 12:27:19 PM
+      - generic: ==>
+    - option "12:27:19 PM ==> Available at your primary URL https://vega-development-web.onrender.com":
+      - time: 12:27:19 PM
+      - text: ==>
+      - text: Available at your primary URL
+      - link "https://vega-development-web.onrender.com":
+        - /url: https://vega-development-web.onrender.com
+    - option "12:27:19 PM ==>":
+      - time: 12:27:19 PM
+      - generic: ==>
+    - option "12:27:19 PM ==> ///////////////////////////////////////////////////////////":
+      - time: 12:27:19 PM
+      - generic: ==> ///////////////////////////////////////////////////////////
+  - paragraph:
+    - text: Need better ways to work with logs? Try the
+    - link "Render CLI":
+      - /url: https://render.com/docs/cli
+      - text: Render CLI
+    - text: ","
+    - link "Render MCP Server":
+      - /url: https://render.com/docs/mcp-server
+    - text: ", or set up a"
+    - link "log stream integration":
+      - /url: https://render.com/docs/log-streams
+      - text: log stream integration
+- generic: "0 services selected:"
+- button:
+  - generic: Move
+- separator
+- button:
+- iframe [id="intercom-frame"]
+- button "Open Intercom Messenger":

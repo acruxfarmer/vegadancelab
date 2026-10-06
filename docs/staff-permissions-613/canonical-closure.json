@@ -1,0 +1,13 @@
+{
+  "status": "6.13 GRANULAR STAFF ROLES & PERMISSIONS — PRODUCT COMPLETE",
+  "runtimeBuild": "002a65ed03b85ab5db121121068288cb56fc7cac",
+  "deployment": "dep-db2kmq7lk1mc73cj76h0",
+  "branch": "commerce/staff-permissions-v1",
+  "businessRevision": "155",
+  "stateDigest": "e8f54bb7504d8cbfa76a32e5753defdd8995110ba0c7e1fc7c26b5ceba7a5b69",
+  "verification": "docs/staff-permissions-613/verification.json",
+  "approvedPolicy": "Joe + Chett 6.13 INITIAL ROLE POLICY — APPROVED",
+  "refundAuthority": "Explicit refunds.manage permission; V1 Owner/Admin only",
+  "providerExecution": "disabled",
+  "production": "untouched"
+}

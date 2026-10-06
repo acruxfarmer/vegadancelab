@@ -1,0 +1,80 @@
+{
+  "phase": "before",
+  "build": "002a65ed03b85ab5db121121068288cb56fc7cac",
+  "revision": "154",
+  "stateDigest": "4f63de07fac41b25dddfb09350df6fcb9501873937e3b8d6c484b79b942eeb3e",
+  "ownerRole": {
+    "role": "owner",
+    "label": "Owner / Admin",
+    "permissions": [
+      "attendance.read",
+      "attendance.write",
+      "bookings.manage",
+      "schedule.read",
+      "schedule.edit",
+      "schedule.cancel",
+      "history.read",
+      "sales.manage",
+      "finance.read",
+      "refunds.manage",
+      "customers.read",
+      "customers.manage",
+      "waivers.publish",
+      "entitlements.manage",
+      "reports.read",
+      "roles.manage"
+    ],
+    "classIds": [],
+    "revision": 0,
+    "tenantId": "vega-development",
+    "businessId": "vega-dance-lab",
+    "userId": "4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124"
+  },
+  "staffAssignments": [
+    {
+      "userId": "4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124",
+      "name": "Joe Graham",
+      "registered": true,
+      "role": "owner",
+      "label": "Owner / Admin",
+      "permissions": [
+        "attendance.read",
+        "attendance.write",
+        "bookings.manage",
+        "schedule.read",
+        "schedule.edit",
+        "schedule.cancel",
+        "history.read",
+        "sales.manage",
+        "finance.read",
+        "refunds.manage",
+        "customers.read",
+        "customers.manage",
+        "waivers.publish",
+        "entitlements.manage",
+        "reports.read",
+        "roles.manage"
+      ],
+      "classIds": [],
+      "revision": 0,
+      "tenantId": "vega-development",
+      "businessId": "vega-dance-lab"
+    }
+  ],
+  "member": {
+    "waiverStatus": "Accepted",
+    "profileRevision": 1,
+    "passes": 9,
+    "credits": 37,
+    "bookings": 25,
+    "purchases": 9,
+    "refunds": 3
+  },
+  "foreignBusinessAndTenantDenied": true,
+  "staffMemberFactsAgree": true,
+  "unrelatedStateMatchesRevision154": true,
+  "unrelatedDigest": "4f63de07fac41b25dddfb09350df6fcb9501873937e3b8d6c484b79b942eeb3e",
+  "receipts": [],
+  "audit": [],
+  "paymentExecution": "disabled"
+}

@@ -1,0 +1,101 @@
+{
+  "phase": "final",
+  "build": "002a65ed03b85ab5db121121068288cb56fc7cac",
+  "revision": "155",
+  "stateDigest": "e8f54bb7504d8cbfa76a32e5753defdd8995110ba0c7e1fc7c26b5ceba7a5b69",
+  "ownerRole": {
+    "role": "owner",
+    "label": "Owner / Admin",
+    "permissions": [
+      "attendance.read",
+      "attendance.write",
+      "bookings.manage",
+      "schedule.read",
+      "schedule.edit",
+      "schedule.cancel",
+      "history.read",
+      "sales.manage",
+      "finance.read",
+      "refunds.manage",
+      "customers.read",
+      "customers.manage",
+      "waivers.publish",
+      "entitlements.manage",
+      "reports.read",
+      "roles.manage"
+    ],
+    "classIds": [],
+    "revision": 1,
+    "tenantId": "vega-development",
+    "businessId": "vega-dance-lab",
+    "userId": "4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124"
+  },
+  "staffAssignments": [
+    {
+      "userId": "4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124",
+      "name": "Joe Graham",
+      "registered": true,
+      "role": "owner",
+      "label": "Owner / Admin",
+      "permissions": [
+        "attendance.read",
+        "attendance.write",
+        "bookings.manage",
+        "schedule.read",
+        "schedule.edit",
+        "schedule.cancel",
+        "history.read",
+        "sales.manage",
+        "finance.read",
+        "refunds.manage",
+        "customers.read",
+        "customers.manage",
+        "waivers.publish",
+        "entitlements.manage",
+        "reports.read",
+        "roles.manage"
+      ],
+      "classIds": [],
+      "revision": 1,
+      "tenantId": "vega-development",
+      "businessId": "vega-dance-lab"
+    }
+  ],
+  "member": {
+    "waiverStatus": "Accepted",
+    "profileRevision": 1,
+    "passes": 9,
+    "credits": 37,
+    "bookings": 25,
+    "purchases": 9,
+    "refunds": 3
+  },
+  "foreignBusinessAndTenantDenied": true,
+  "staffMemberFactsAgree": true,
+  "unrelatedStateMatchesRevision154": true,
+  "unrelatedDigest": "4f63de07fac41b25dddfb09350df6fcb9501873937e3b8d6c484b79b942eeb3e",
+  "receipts": [
+    {
+      "event_id": "e128ad70a9be96b0a8bfefa61e068021e11630a113a54a714333251330e71f9e",
+      "discovery_state": "acknowledged",
+      "revision": "155"
+    }
+  ],
+  "audit": [
+    {
+      "id": "366f24f7-7138-4085-be72-26728c8664b9",
+      "to": "owner",
+      "from": "owner",
+      "action": "staff-role-set",
+      "actorId": "4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124",
+      "classIds": [],
+      "revision": 1,
+      "tenantId": "vega-development",
+      "createdAt": "2026-10-06T19:28:13.629Z",
+      "requestId": "436081f1-9ba6-4ec8-8f1a-882100bc9291",
+      "subjectId": "4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124",
+      "businessId": "vega-dance-lab"
+    }
+  ],
+  "paymentExecution": "disabled"
+}

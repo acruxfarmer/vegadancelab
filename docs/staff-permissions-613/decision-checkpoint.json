@@ -1,6 +1,6 @@
 {
-  "status": "Initial policy APPROVED by Joe + Chett; build implemented, pending Development deployment verification",
-  "active": false,
+  "status": "6.13 GRANULAR STAFF ROLES & PERMISSIONS — PRODUCT COMPLETE",
+  "active": true,
   "branch": "commerce/staff-permissions-v1",
   "closedRuntime": "08743ba11b7d44f9e106ea245bac355365168be2",
   "decisionRequested": "Designate Joe existing Development staff account as initial Owner/Admin; reserve refund execution and role management to Owner/Admin",
@@ -72,10 +72,7 @@
     "Projection filtering for unauthorized financial/customer data",
     "Second-business and role-change tests"
   ],
-  "remaining": [
-    "Development deployment",
-    "Hosted owner/member verification and recovery reconciliation"
-  ],
+  "remaining": [],
   "tests": {
     "targetedPassed": 48,
     "activeRegressionPassed": 979,
@@ -83,7 +80,7 @@
     "broadFailed": 6,
     "broadFailureScope": "Same six pre-existing historical source-hash guards as 6.12"
   },
-  "hostedVerification": "Pending",
+  "hostedVerification": "Complete; see verification.json and hosted-final.json",
   "deferred": [
     "Deferred authorization-lifecycle/migration work",
     "Enterprise policy engines",

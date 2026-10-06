@@ -1,0 +1,190 @@
+{
+  "status": "6.13 GRANULAR STAFF ROLES & PERMISSIONS — PRODUCT COMPLETE",
+  "recordedAt": "2026-10-06T19:31:11.334Z",
+  "architecture": "Acrux ecosystem first. Vega is the proving business.",
+  "workspace": "D:/JOES WIP/ACRUX/Codex Projects/vega-commerce-68a",
+  "branch": "commerce/staff-permissions-v1",
+  "runtimeBuild": "002a65ed03b85ab5db121121068288cb56fc7cac",
+  "deployment": "dep-db2kmq7lk1mc73cj76h0",
+  "url": "https://vega-development-web.onrender.com/#staff-access",
+  "initialAuthority": "Joe + Chett explicitly approved Joe existing Development staff account as initial Owner/Admin. Membership itself grants no staff permissions.",
+  "roleModel": {
+    "owner": {
+      "label": "Owner / Admin",
+      "permissions": [
+        "attendance.read",
+        "attendance.write",
+        "bookings.manage",
+        "schedule.read",
+        "schedule.edit",
+        "schedule.cancel",
+        "history.read",
+        "sales.manage",
+        "finance.read",
+        "refunds.manage",
+        "customers.read",
+        "customers.manage",
+        "waivers.publish",
+        "entitlements.manage",
+        "reports.read",
+        "roles.manage"
+      ]
+    },
+    "manager": {
+      "label": "Manager",
+      "permissions": [
+        "attendance.read",
+        "attendance.write",
+        "bookings.manage",
+        "schedule.read",
+        "schedule.edit",
+        "schedule.cancel",
+        "history.read",
+        "sales.manage",
+        "finance.read",
+        "customers.read",
+        "customers.manage",
+        "waivers.publish",
+        "entitlements.manage",
+        "reports.read"
+      ]
+    },
+    "front_desk": {
+      "label": "Front Desk",
+      "permissions": [
+        "attendance.read",
+        "attendance.write",
+        "bookings.manage",
+        "schedule.read",
+        "history.read",
+        "sales.manage",
+        "customers.read"
+      ]
+    },
+    "instructor": {
+      "label": "Instructor",
+      "permissions": [
+        "attendance.read",
+        "attendance.write",
+        "schedule.read",
+        "history.read"
+      ]
+    }
+  },
+  "permissionLabels": {
+    "attendance.read": "View class rosters and attendance",
+    "attendance.write": "Record and correct attendance",
+    "bookings.manage": "Book, cancel, correct and promote bookings",
+    "schedule.read": "View the schedule",
+    "schedule.edit": "Create, edit and duplicate classes and cancellation policies",
+    "schedule.cancel": "Cancel class occurrences",
+    "history.read": "View occurrence and reservation history",
+    "sales.manage": "Create and complete front-desk sales",
+    "finance.read": "View purchase, payment and refund history",
+    "refunds.manage": "Manage refunds and refund recovery",
+    "customers.read": "View customer profiles and waiver status",
+    "customers.manage": "Add participants and manage studio communications",
+    "waivers.publish": "Publish required waiver versions",
+    "entitlements.manage": "Configure products and issue or adjust credits",
+    "reports.read": "View operational reports and audit history",
+    "roles.manage": "Manage staff roles and class assignments"
+  },
+  "staffManagement": {
+    "entry": "Staff access",
+    "directory": "Existing staff register their name for owner review; registration grants no authority and does not create authentication or membership.",
+    "assignment": "Owner selects one role and explicit occurrence assignments for Instructor.",
+    "safeguards": [
+      "Exact tenant/business/account",
+      "Current assignment resolved per read and locked command before replay",
+      "Expected assignment revision",
+      "Last-owner protection",
+      "Atomic role, audit, journal and encrypted recovery receipt",
+      "Duplicate/missing/unknown assignments deny authority"
+    ]
+  },
+  "deniedActions": "Unavailable navigation and controls hidden; server returns an understandable 403 independently of UI. Sensitive read projections, workflow entry points, command replies and stale replay are guarded.",
+  "refundPermission": "refunds.manage is an explicit business permission. Only Owner/Admin receives it in the approved V1 mapping; enforcement does not compare a role name to owner.",
+  "finance": "Owner/Admin and Manager see financial history. Front Desk sees only its own front-desk purchase/payment receipts. Instructor sees no commerce or customer contact information. Unscoped provider inbox is not exposed as business history.",
+  "crossBusiness": "Explicit business selection is matched against the signed-in account memberships on every request. Independent role assignments, Instructor classes, stale responses and command journals remain scoped. Second tenant/business fixture proves different roles for the same account.",
+  "ecosystem": "Generic role resolution and assignment contracts are separate from the exact approved Development initial-owner binding. Existing authentication, restricted database role, membership RLS, transactions and recovery remain in use. No schema migration, provider permission changes or new identity system.",
+  "tests": {
+    "targeted": {
+      "passed": 48,
+      "failed": 0
+    },
+    "activeRegression": {
+      "passed": 979,
+      "failed": 0
+    },
+    "renderBuildRegression": {
+      "passed": 982,
+      "failed": 0
+    },
+    "broadWorkspace": {
+      "passed": 2716,
+      "failed": 6,
+      "failures": "The same six pre-existing historical closed-source hash guards recorded in 6.12; no new active failures."
+    }
+  },
+  "browserVerification": {
+    "synthetic": [
+      "Instructor sign-in and explicit business selection",
+      "Assigned-class roster only",
+      "Attendance save and persisted confirmation",
+      "Owner assignment UI and class reassignment",
+      "Instructor refresh sees new assigned class only",
+      "Same account in second business has no inherited authority",
+      "Front Desk customer page omits waiver publishing, general finance, refunds, roles and schedule editing"
+    ],
+    "hosted": [
+      "Existing authenticated Joe resolves Owner/Admin",
+      "Owner assignment saved through normal staff-management UI",
+      "Role history visible; recovery acknowledgment completes",
+      "Existing authenticated member profile, accepted waiver, passes, bookings, purchases and refunds unchanged",
+      "Foreign business and tenant denied through deployed restricted runtime store",
+      "Staff/member facts agree",
+      "No hosted browser console errors"
+    ],
+    "boundary": "Lower-role and second-business accounts are isolated synthetic fixtures, exercised locally and in the Render build tests. Real hosted browser sessions were Joe Owner and the existing member; no extra live identities were provisioned."
+  },
+  "reconciliation": {
+    "revision": "155",
+    "unrelatedStateMatchesRevision154": true,
+    "unrelatedDigest": "4f63de07fac41b25dddfb09350df6fcb9501873937e3b8d6c484b79b942eeb3e",
+    "acknowledgedReceipts": [
+      {
+        "event_id": "e128ad70a9be96b0a8bfefa61e068021e11630a113a54a714333251330e71f9e",
+        "discovery_state": "acknowledged",
+        "revision": "155"
+      }
+    ],
+    "staffMemberFactsAgree": true,
+    "memberCounts": {
+      "waiverStatus": "Accepted",
+      "profileRevision": 1,
+      "passes": 9,
+      "credits": 37,
+      "bookings": 25,
+      "purchases": 9,
+      "refunds": 3
+    }
+  },
+  "externalEffects": {
+    "paymentExecution": "disabled",
+    "refundExecution": "disabled",
+    "refundProgramExecution": "disabled",
+    "providerMutations": 0,
+    "production": "untouched"
+  },
+  "deferred": [
+    "New staff onboarding and membership lifecycle",
+    "Custom roles or per-person permission overrides",
+    "Future delegated refund role mappings",
+    "Nested inheritance and policy engines",
+    "Historical permission reconstruction",
+    "Deferred authorization-lifecycle migrations",
+    "Cross-business staff directories",
+    "Automatic assignment of future or duplicated classes",
+    "Unscoped provider/admin-plane processing controls"
+  ]
+}

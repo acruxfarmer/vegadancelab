@@ -2735,10 +2735,10 @@ test at test\authenticated-acquisition-trust-binding.test.mjs:64:1
 ✖ closed sources and closures unchanged (1.8579ms)
   AssertionError [ERR_ASSERTION]: src/application.mjs
   + actual - expected
-  
+
   + 'fb564bb24eed175a9cb8ec9c53fb3e4fe2f0d735b3ead29fbc897b697096bc83'
   - '0a777d8b14a5e90d07f94ee9daac82d15380b3752139d21eaa8b3709043ff745'
-  
+
       at TestContext.<anonymous> (file:///D:/JOES%20WIP/ACRUX/Codex%20Projects/vega-commerce-68a/test/authenticated-acquisition-trust-binding.test.mjs:64:216)
       at Test.runInAsyncScope (node:async_hooks:227:14)
       at Test.run (node:internal/test_runner/test:1382:25)
@@ -2758,10 +2758,10 @@ test at test\authorization-lifecycle-local.test.mjs:59:1
 ✖ closed sources and schema hashes unchanged (1.9455ms)
   AssertionError [ERR_ASSERTION]: src/application.mjs
   + actual - expected
-  
+
   + 'fb564bb24eed175a9cb8ec9c53fb3e4fe2f0d735b3ead29fbc897b697096bc83'
   - '0a777d8b14a5e90d07f94ee9daac82d15380b3752139d21eaa8b3709043ff745'
-  
+
       at TestContext.<anonymous> (file:///D:/JOES%20WIP/ACRUX/Codex%20Projects/vega-commerce-68a/test/authorization-lifecycle-local.test.mjs:59:203)
       at Test.runInAsyncScope (node:async_hooks:227:14)
       at Test.run (node:internal/test_runner/test:1382:25)
@@ -2781,10 +2781,10 @@ test at test\operational-acquisition-coordinator.test.mjs:65:1
 ✖ unchanged source and closure hashes (2.3632ms)
   AssertionError [ERR_ASSERTION]: src/application.mjs
   + actual - expected
-  
+
   + 'fb564bb24eed175a9cb8ec9c53fb3e4fe2f0d735b3ead29fbc897b697096bc83'
   - '0a777d8b14a5e90d07f94ee9daac82d15380b3752139d21eaa8b3709043ff745'
-  
+
       at TestContext.<anonymous> (file:///D:/JOES%20WIP/ACRUX/Codex%20Projects/vega-commerce-68a/test/operational-acquisition-coordinator.test.mjs:65:196)
       at Test.runInAsyncScope (node:async_hooks:227:14)
       at Test.run (node:internal/test_runner/test:1382:25)
@@ -2804,10 +2804,10 @@ test at test\original-acceptance-evidence-binding.test.mjs:70:1
 ✖ closed source and closure hashes preserved (2.0745ms)
   AssertionError [ERR_ASSERTION]: src/application.mjs
   + actual - expected
-  
+
   + 'fb564bb24eed175a9cb8ec9c53fb3e4fe2f0d735b3ead29fbc897b697096bc83'
   - '0a777d8b14a5e90d07f94ee9daac82d15380b3752139d21eaa8b3709043ff745'
-  
+
       at TestContext.<anonymous> (file:///D:/JOES%20WIP/ACRUX/Codex%20Projects/vega-commerce-68a/test/original-acceptance-evidence-binding.test.mjs:70:223)
       at Test.runInAsyncScope (node:async_hooks:227:14)
       at Test.run (node:internal/test_runner/test:1382:25)
@@ -2827,10 +2827,10 @@ test at test\purchase-acquisition-receipt.test.mjs:60:1
 ✖ closed 6.10 sources and canonical closure remain unchanged (2.2044ms)
   AssertionError [ERR_ASSERTION]: src/application.mjs
   + actual - expected
-  
+
   + 'fb564bb24eed175a9cb8ec9c53fb3e4fe2f0d735b3ead29fbc897b697096bc83'
   - '0a777d8b14a5e90d07f94ee9daac82d15380b3752139d21eaa8b3709043ff745'
-  
+
       at TestContext.<anonymous> (file:///D:/JOES%20WIP/ACRUX/Codex%20Projects/vega-commerce-68a/test/purchase-acquisition-receipt.test.mjs:60:279)
       at Test.runInAsyncScope (node:async_hooks:227:14)
       at Test.run (node:internal/test_runner/test:1382:25)
@@ -2850,10 +2850,10 @@ test at test\single-consumption-correction.test.mjs:57:1
 ✖ closed sources unchanged (1.4512ms)
   AssertionError [ERR_ASSERTION]: application.mjs
   + actual - expected
-  
+
   + 'fb564bb24eed175a9cb8ec9c53fb3e4fe2f0d735b3ead29fbc897b697096bc83'
   - '0a777d8b14a5e90d07f94ee9daac82d15380b3752139d21eaa8b3709043ff745'
-  
+
       at TestContext.<anonymous> (file:///D:/JOES%20WIP/ACRUX/Codex%20Projects/vega-commerce-68a/test/single-consumption-correction.test.mjs:57:238)
       at Test.runInAsyncScope (node:async_hooks:227:14)
       at Test.run (node:internal/test_runner/test:1382:25)
