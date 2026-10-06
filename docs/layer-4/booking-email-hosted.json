@@ -1,0 +1,55 @@
+{
+  "status": "HOSTED APPLICATION VERIFIED — ONE PROVIDER TEST AWAITS PRIVATE CREDENTIAL HANDOFF",
+  "environment": "Development",
+  "productionTouched": false,
+  "deployment": {
+    "serviceId": "srv-dao5cjbm8hqs73db51j0",
+    "deploymentId": "dep-db2o4mid0e5s73dprn5g",
+    "commit": "0fabbdd6b34c6215bab238d14a2226e5bd4c3090",
+    "status": "Live",
+    "durationSeconds": 41.3,
+    "hostedBuildTests": {"passed": 1079, "failed": 0}
+  },
+  "restrictedRuntime": {
+    "role": "vega_app_runtime",
+    "allFourLifecycleKinds": true,
+    "memberStaffEmailStateAgrees": true,
+    "privateAuthLookupDenied": true,
+    "directDeliveryRecordWritesDenied": true,
+    "recipientColumnReadDenied": true,
+    "recoveryConstraintsChecked": 11,
+    "verificationChangesRolledBack": true,
+    "originalBusinessRevision": 167,
+    "externalMessages": 0,
+    "testHarnessCorrection": "After checking deferred receipt constraints, restore deferred mode before the next simulated transaction. No business or recovery-engine change."
+  },
+  "browser": {
+    "account": "Existing email-confirmed Development test member",
+    "class": "Movement foundations — preview",
+    "bookingId": "d0802ae7-28d0-4007-a1a8-327a17c3bc2b",
+    "bookingConfirmed": true,
+    "myBookingsShowsEmailQueued": true,
+    "creditsConsumed": 0
+  },
+  "boundedProviderTest": {
+    "authorizedBy": "Joe + Chett 2026-10-06: one bounded transactional email test",
+    "intentId": "c10c1894d59e8c098a71f73c7c184f398e9835c99d21ac299bda1300c24b0ae9",
+    "kind": "booking_confirmation",
+    "recipient": "admin@vegadancelab.com",
+    "verifiedAuthAddressMatched": true,
+    "sender": "Vega Dance Lab <admin@acrux.co>",
+    "provider": "Existing Resend Sending-access credential",
+    "attempts": 0,
+    "status": "intent_created",
+    "unattendedDeliveryEnabled": false,
+    "credentialPresentInWebRuntime": false,
+    "credentialHandoffScript": "scripts/configure-booking-email-development.ps1",
+    "oneMessageRunner": "scripts/send-one-booking-email-development.mjs"
+  },
+  "publicBoundary": {"unauthenticatedAppStatus": 401, "publicProjectionContainsMemberOrEmailData": false},
+  "businessBaselineBeforeSend": [
+    {"business":"vega-dance-lab","revision":168,"stateDigest":"1f2801f444fb91ce54f927f418b9fb48"},
+    {"business":"willow-movement","revision":0,"stateDigest":"1e8a823a955d74251b2a56b2cff77cfd"}
+  ],
+  "permissionEvidence": "docs/layer-4/booking-email-permission-evidence.json"
+}
