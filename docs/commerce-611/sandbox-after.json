@@ -1,0 +1,333 @@
+{
+  "phase": "after",
+  "build": "792cf1f09998118c883b859a257210cb2264f4cc",
+  "revision": "149",
+  "stateDigest": "7325506535514b911ff8f775e8faa877cfb416d0d233db33c6da0d8d7af8baa5",
+  "purchase": {
+    "id": "547430a8-0d29-437a-920f-cd8c3e53d932",
+    "terms": {
+      "id": "development-three-class-pack-usd60-v1",
+      "tax": {
+        "treatment": "non_taxable",
+        "amountMinor": 0,
+        "jurisdiction": "Oregon Development",
+        "productionReconfirmationRequired": true
+      },
+      "version": 1,
+      "classIds": [],
+      "currency": "USD",
+      "quantity": 3,
+      "tenantId": "vega-development",
+      "productId": "5dcc7d89-2398-4b29-ba6e-f4e549d4e4f1",
+      "validDays": 30,
+      "businessId": "vega-dance-lab",
+      "categories": [
+        "Pack verification"
+      ],
+      "priceLabel": "DEVELOPMENT TEST PRICE ONLY",
+      "priceMinor": 6000,
+      "environment": "development",
+      "productName": "DEV TEST — Three-class pack",
+      "productType": "class_pack",
+      "refundPolicy": {
+        "kind": "full_only",
+        "approval": "staff",
+        "whollyUnused": true,
+        "windowStartsAt": "confirmed_payment_successful_purchase_completion",
+        "requestWithinDays": 30,
+        "noActiveReservations": true
+      },
+      "validityStart": "confirmed_payment"
+    },
+    "status": "paid",
+    "buyerId": "e5946b40-9839-4a96-99d5-93262d9573f0",
+    "offerId": "development-three-class-pack-usd60-v1",
+    "currency": "USD",
+    "taxMinor": 0,
+    "tenantId": "vega-development",
+    "createdAt": "2026-10-06T16:56:28.389Z",
+    "expiresAt": "2026-11-05T17:06:32.808Z",
+    "requestId": "15b198cf-8f8f-4167-ba7e-145ea0912276",
+    "validFrom": "2026-10-06T17:06:32.808Z",
+    "businessId": "vega-dance-lab",
+    "customerId": "development-member-joe",
+    "issuanceId": "3bcc454d-bc73-4a1e-8c77-1d8fce3bc9fa",
+    "totalMinor": 6000,
+    "saleChannel": "front_desk",
+    "offerVersion": 1,
+    "participantId": "vega-member-test-joe",
+    "paymentStatus": "succeeded",
+    "subtotalMinor": 6000,
+    "activeAttemptId": "ab976e61-6bc1-4eea-95dd-d6160f425d1c",
+    "createdByStaffId": "4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124",
+    "fulfillmentStatus": "issued",
+    "paymentConfirmedAt": "2026-10-06T17:06:32.808Z",
+    "refundWindowStartsAt": "2026-10-06T17:06:32.808Z"
+  },
+  "attempt": {
+    "id": "ab976e61-6bc1-4eea-95dd-d6160f425d1c",
+    "status": "succeeded",
+    "paymentId": "O872Bviv6lrjJLjVeEOX6UsbQuFZY",
+    "paymentConfirmedAt": "2026-10-06T17:06:32.808Z"
+  },
+  "grant": {
+    "id": "3bcc454d-bc73-4a1e-8c77-1d8fce3bc9fa",
+    "intent": "{\"productId\":\"5dcc7d89-2398-4b29-ba6e-f4e549d4e4f1\",\"participantId\":\"vega-member-test-joe\",\"membershipRef\":null,\"periodStart\":null}",
+    "passId": "168a9f30-eb71-45c5-a90a-7918d6f7c8ba",
+    "reason": "Verified purchase payment",
+    "source": "sandbox_purchase",
+    "actorId": "4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124",
+    "quantity": 3,
+    "createdAt": "2026-10-06T17:06:32.808Z",
+    "expiresAt": "2026-11-05T17:06:32.808Z",
+    "productId": "5dcc7d89-2398-4b29-ba6e-f4e549d4e4f1",
+    "reference": "purchase:547430a8-0d29-437a-920f-cd8c3e53d932",
+    "validFrom": "2026-10-06T17:06:32.808Z",
+    "membershipId": null,
+    "participantId": "vega-member-test-joe",
+    "productSnapshot": {
+      "id": "5dcc7d89-2398-4b29-ba6e-f4e549d4e4f1",
+      "name": "DEV TEST — Three-class pack",
+      "type": "class_pack",
+      "classIds": [],
+      "quantity": 3,
+      "validDays": 30,
+      "categories": [
+        "Pack verification"
+      ]
+    }
+  },
+  "units": [
+    {
+      "id": "5bb02808-8455-4940-9eb1-eac9e6793616",
+      "status": "available",
+      "passId": "168a9f30-eb71-45c5-a90a-7918d6f7c8ba"
+    },
+    {
+      "id": "40414fc1-ac9c-4460-a72d-72a5f6225125",
+      "status": "available",
+      "passId": "168a9f30-eb71-45c5-a90a-7918d6f7c8ba"
+    },
+    {
+      "id": "5cf5b25e-b491-42ad-b8c8-b4b7f99647a9",
+      "status": "available",
+      "passId": "168a9f30-eb71-45c5-a90a-7918d6f7c8ba"
+    }
+  ],
+  "issuanceEventCount": 3,
+  "audit": [
+    {
+      "id": "b5a5e788-d395-43da-9f5c-5b2b471edccc",
+      "action": "purchase-draft",
+      "actorId": "4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124",
+      "offerId": "development-three-class-pack-usd60-v1",
+      "tenantId": "vega-development",
+      "createdAt": "2026-10-06T16:56:28.389Z",
+      "requestId": "15b198cf-8f8f-4167-ba7e-145ea0912276",
+      "subjectId": "547430a8-0d29-437a-920f-cd8c3e53d932",
+      "businessId": "vega-dance-lab"
+    },
+    {
+      "id": "99ca8e58-0821-4b72-8245-aaaafe5df95a",
+      "action": "payment-intent",
+      "actorId": "4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124",
+      "tenantId": "vega-development",
+      "attemptId": "ab976e61-6bc1-4eea-95dd-d6160f425d1c",
+      "createdAt": "2026-10-06T17:05:56.019Z",
+      "paymentId": null,
+      "requestId": "ba047fe3-4892-4da4-841b-96383708e573",
+      "subjectId": "547430a8-0d29-437a-920f-cd8c3e53d932",
+      "businessId": "vega-dance-lab",
+      "offerDigest": "5774a6c42989d2f65fd2aaf48fca1cbbb98369734d85f4285ccaa8bed477b62e",
+      "requestDigest": "f6717668c62e3eff518c7efdd6e5cb44117a4a6a7a9916e16c9d50388c13cb0a",
+      "idempotencyKey": "ab976e61-6bc1-4eea-95dd-d6160f425d1c",
+      "integrationRef": {
+        "id": "vega-development-card",
+        "version": 1,
+        "provider": "square",
+        "tenantId": "vega-development",
+        "businessId": "vega-dance-lab",
+        "environment": "sandbox"
+      },
+      "transactionRef": null
+    },
+    {
+      "id": "41bdf219-2284-47bd-abae-bf84b2c9c7ae",
+      "to": "pending",
+      "from": "pending",
+      "action": "payment-observation",
+      "reason": "payment_id_received",
+      "actorId": "4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124",
+      "tenantId": "vega-development",
+      "attemptId": "ab976e61-6bc1-4eea-95dd-d6160f425d1c",
+      "createdAt": "2026-10-06T17:06:32.190Z",
+      "paymentId": "O872Bviv6lrjJLjVeEOX6UsbQuFZY",
+      "requestId": "observe:ab976e61-6bc1-4eea-95dd-d6160f425d1c:7f0f9a9d984928121c92ace175c80f051c7b86a2",
+      "subjectId": "547430a8-0d29-437a-920f-cd8c3e53d932",
+      "businessId": "vega-dance-lab",
+      "evidenceDigest": "7f0f9a9d984928121c92ace175c80f051c7b86a272ba4fd111866cdd4cc90ddc",
+      "integrationRef": {
+        "id": "vega-development-card",
+        "version": 1,
+        "provider": "square",
+        "tenantId": "vega-development",
+        "businessId": "vega-dance-lab",
+        "environment": "sandbox"
+      },
+      "transactionRef": {
+        "id": "O872Bviv6lrjJLjVeEOX6UsbQuFZY",
+        "provider": "square",
+        "tenantId": "vega-development",
+        "businessId": "vega-dance-lab",
+        "environment": "sandbox",
+        "integrationId": "vega-development-card",
+        "integrationVersion": 1
+      }
+    },
+    {
+      "id": "173d639c-6279-48ad-a8b6-d9d39678a119",
+      "to": "succeeded",
+      "from": "pending",
+      "action": "payment-observation",
+      "reason": "provider_succeeded",
+      "actorId": "4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124",
+      "tenantId": "vega-development",
+      "attemptId": "ab976e61-6bc1-4eea-95dd-d6160f425d1c",
+      "createdAt": "2026-10-06T17:06:32.808Z",
+      "paymentId": "O872Bviv6lrjJLjVeEOX6UsbQuFZY",
+      "requestId": "observe:ab976e61-6bc1-4eea-95dd-d6160f425d1c:fde5e8c9e35e0d269a5980ea6ebc0eed811a2e5d",
+      "subjectId": "547430a8-0d29-437a-920f-cd8c3e53d932",
+      "businessId": "vega-dance-lab",
+      "evidenceDigest": "fde5e8c9e35e0d269a5980ea6ebc0eed811a2e5db5eb7f9ce37ed9fc9102882f",
+      "integrationRef": {
+        "id": "vega-development-card",
+        "version": 1,
+        "provider": "square",
+        "tenantId": "vega-development",
+        "businessId": "vega-dance-lab",
+        "environment": "sandbox"
+      },
+      "transactionRef": {
+        "id": "O872Bviv6lrjJLjVeEOX6UsbQuFZY",
+        "provider": "square",
+        "tenantId": "vega-development",
+        "businessId": "vega-dance-lab",
+        "environment": "sandbox",
+        "integrationId": "vega-development-card",
+        "integrationVersion": 1
+      }
+    },
+    {
+      "id": "f6b97d68-42fe-4420-832a-da13c956d5a0",
+      "action": "purchase-fulfilled",
+      "passId": "168a9f30-eb71-45c5-a90a-7918d6f7c8ba",
+      "actorId": "4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124",
+      "tenantId": "vega-development",
+      "attemptId": "ab976e61-6bc1-4eea-95dd-d6160f425d1c",
+      "createdAt": "2026-10-06T17:07:30.861Z",
+      "paymentId": "O872Bviv6lrjJLjVeEOX6UsbQuFZY",
+      "requestId": "fulfill:ab976e61-6bc1-4eea-95dd-d6160f425d1c",
+      "subjectId": "547430a8-0d29-437a-920f-cd8c3e53d932",
+      "businessId": "vega-dance-lab",
+      "issuanceId": "3bcc454d-bc73-4a1e-8c77-1d8fce3bc9fa",
+      "integrationRef": {
+        "id": "vega-development-card",
+        "version": 1,
+        "provider": "square",
+        "tenantId": "vega-development",
+        "businessId": "vega-dance-lab",
+        "environment": "sandbox"
+      },
+      "transactionRef": {
+        "id": "O872Bviv6lrjJLjVeEOX6UsbQuFZY",
+        "provider": "square",
+        "tenantId": "vega-development",
+        "businessId": "vega-dance-lab",
+        "environment": "sandbox",
+        "integrationId": "vega-development-card",
+        "integrationVersion": 1
+      },
+      "paymentConfirmedAt": "2026-10-06T17:06:32.808Z"
+    }
+  ],
+  "receipts": [
+    {
+      "event_id": "0e237a1dddf026e1bc83d86c4b28ed2e9784246b17288122511e4ba063cb2c1c",
+      "request_id": "15b198cf-8f8f-4167-ba7e-145ea0912276",
+      "discovery_state": "acknowledged",
+      "revision": "145"
+    },
+    {
+      "event_id": "a80175d283ec52fad62d43dc17e45061137a1ff9a1fa031f89a4f86e8e73960e",
+      "request_id": "ba047fe3-4892-4da4-841b-96383708e573",
+      "discovery_state": "acknowledged",
+      "revision": "146"
+    },
+    {
+      "event_id": "37e937a40b30a473aaaecd53983e2c492fc3f131d93e7c52f748a54f20538e7b",
+      "request_id": "observe:ab976e61-6bc1-4eea-95dd-d6160f425d1c:7f0f9a9d984928121c92ace175c80f051c7b86a2",
+      "discovery_state": "acknowledged",
+      "revision": "147"
+    },
+    {
+      "event_id": "33a81882229e7a07e19ea1c190ea4c2c5cd25f6142b09d1a8f1629f244ffa298",
+      "request_id": "observe:ab976e61-6bc1-4eea-95dd-d6160f425d1c:fde5e8c9e35e0d269a5980ea6ebc0eed811a2e5d",
+      "discovery_state": "acknowledged",
+      "revision": "148"
+    },
+    {
+      "event_id": "771d316f0d93dbdf6d9dc700427040e9967d6037c934f923a4060c0d80f52eb0",
+      "request_id": "fulfill:ab976e61-6bc1-4eea-95dd-d6160f425d1c",
+      "discovery_state": "acknowledged",
+      "revision": "149"
+    }
+  ],
+  "staffCustomerProjectionEqual": true,
+  "customerAssignmentVerified": true,
+  "memberBrowserLogin": false,
+  "unrelatedStateDigest": "5cb653444cb21f92149ac609a4db7c912c9ba1328385d5ce5f0c1e4148f2837a",
+  "unrelatedMatchesRevision144": true,
+  "provider": {
+    "normalizationVersion": 1,
+    "status": "succeeded",
+    "reason": "provider_succeeded",
+    "verified": true,
+    "paymentId": "O872Bviv6lrjJLjVeEOX6UsbQuFZY",
+    "referenceId": "ab976e61-6bc1-4eea-95dd-d6160f425d1c",
+    "integrationRef": {
+      "id": "vega-development-card",
+      "version": 1,
+      "tenantId": "vega-development",
+      "businessId": "vega-dance-lab",
+      "provider": "square",
+      "environment": "sandbox"
+    },
+    "transactionRef": {
+      "provider": "square",
+      "environment": "sandbox",
+      "integrationId": "vega-development-card",
+      "integrationVersion": 1,
+      "tenantId": "vega-development",
+      "businessId": "vega-dance-lab",
+      "id": "O872Bviv6lrjJLjVeEOX6UsbQuFZY"
+    },
+    "amount": 6000,
+    "currency": "USD",
+    "verification": {
+      "method": "authenticated_lookup",
+      "observedAt": "2026-10-06T17:07:45.880Z",
+      "evidenceDigest": "ff8ed1f162db9072a836757f2410e381a83394105a6631164f707b857a758aa6"
+    },
+    "providerEvidence": {
+      "provider": "square",
+      "environment": "sandbox",
+      "applicationId": "sandbox-sq0idb-iQmG15i6Pe5yMJMLmu_miw",
+      "merchantId": "MLJGVWY9QZ66R",
+      "locationId": "L7EMFD4DPV27P",
+      "status": "COMPLETED",
+      "createdAt": "2026-10-06T17:06:31.658Z",
+      "updatedAt": "2026-10-06T17:06:32.870Z"
+    }
+  },
+  "paymentExecution": "authorized"
+}

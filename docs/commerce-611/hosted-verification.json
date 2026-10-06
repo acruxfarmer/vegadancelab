@@ -1,9 +1,9 @@
 {
-  "status": "live",
+  "status": "product_complete",
   "candidate": "792cf1f09998118c883b859a257210cb2264f4cc",
   "commit": "792cf1f09998118c883b859a257210cb2264f4cc",
   "service": "srv-dao5cjbm8hqs73db51j0",
-  "deployment": "dep-db2i8rh7lnhs73f21ce0",
+  "deployment": "dep-db2imd6gekts73c3v9tg",
   "url": "https://vega-development-web.onrender.com",
   "hostedBuildTests": {
     "passed": 954,
@@ -13,9 +13,9 @@
   "paymentMode": "disabled",
   "externalEffects": "disabled",
   "frontDeskAssetHTTP": 200,
-  "providerSubmission": false,
-  "staffBrowser": "Sign-in screen; no authenticated verification claimed",
-  "businessMutation": false,
+  "providerSubmission": true,
+  "staffBrowser": "Authenticated staff: selected existing customer and offer, reviewed frozen terms, saved sale, paid and fulfilled, final disabled state verified",
+  "businessMutation": true,
   "productionUntouched": true,
   "refundProgramUnchanged": true,
   "localVerification": {
@@ -28,9 +28,8 @@
       "explanation": "Six preserved untracked deferred-platform historical source-hash tests reject authorized changes to the old commerce snapshot. These are not active runtime/deployment dependencies; no deferred source, baseline or test changed."
     }
   },
-  "pending": [
-    "Existing staff session sign-in for browser verification",
-    "Joe approval for one actual USD 60 Square Sandbox class-pack sale",
-    "Actual payment, fulfillment and persisted staff/customer history verification"
-  ]
+  "pending": [],
+  "providerSubmissionCount": 1,
+  "executionClosure": "canonical-closure.json",
+  "finalDevelopmentRevision": 149
 }
