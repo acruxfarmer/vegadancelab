@@ -1,0 +1,14 @@
+{
+  "status": "6.15 ATTENDANCE / UTILIZATION REPORTING — PRODUCT COMPLETE",
+  "recordedLocalDate": "2026-10-06",
+  "nextBuildAuthorized": false,
+  "branch": "commerce/attendance-utilization-v1",
+  "product": "6.15 Attendance / Utilization Reporting",
+  "verification": "docs/attendance-utilization-615/verification.json",
+  "workspace": "D:\\JOES WIP\\ACRUX\\Codex Projects\\vega-commerce-68a",
+  "verifiedBuild": "3f8c77b92e17d441b993559f71bdd0aa12798a37",
+  "production": "Untouched",
+  "developmentRevision": 155,
+  "providerExecution": "Disabled; no execution performed",
+  "businessStateUnchanged": true
+}

@@ -1,12 +1,12 @@
 {
-  "status": "6.14 EXPANDED FRONT-DESK OPERATIONS — PRODUCT COMPLETE",
+  "status": "6.15 ATTENDANCE / UTILIZATION REPORTING — PRODUCT COMPLETE",
   "recordedLocalDate": "2026-10-06",
   "timezone": "America/Los_Angeles",
   "nextSessionDate": "2026-10-06",
   "authority": "Joe end-of-day roadmap refresh; current sequencing guide supersedes earlier next-product recommendations",
   "roadmap": "D:/JOES WIP/ACRUX/Acrux System Tools/Vega Development Roadmap Dashboard.png",
   "workspace": "D:/JOES WIP/ACRUX/Codex Projects/vega-commerce-68a",
-  "verifiedBuild": "7edc6736c989c7b76baee7be494b7601b7db5476",
+  "verifiedBuild": "3f8c77b92e17d441b993559f71bdd0aa12798a37",
   "recordedDevelopmentRevision": 155,
   "completed": [
     "Sections 1–5",
@@ -18,14 +18,15 @@
     "6.11 V1 staff-assisted front-desk sale",
     "6.12 Customer Profile / Waiver Self-Service",
     "6.13 Granular Staff Roles & Permissions",
-    "6.14 Expanded Front-Desk Operations"
+    "6.14 Expanded Front-Desk Operations",
+    "6.15 Attendance / Utilization Reporting"
   ],
   "refundClosure": "docs/refund-program/canonical-closure.json",
   "executionGates": "Payment and refund execution disabled at final verified checkpoint",
   "production": "Untouched; launch not authorized",
   "architecture": "Acrux ecosystem first. Vega is the proving business.",
-  "nextDragon": "Await Joe + Chett next product selection",
-  "firstTask": "Re-anchor on closed 6.14. Do not repeat completed verification or provider execution.",
+  "nextDragon": "6.16 financial reporting remains separate; await Joe + Chett build instruction",
+  "firstTask": "Re-anchor on closed 6.15. Do not repeat completed verification or provider execution.",
   "intendedJourney": "Staff signs in -> selects authorized business -> sees role-appropriate actions -> performs permitted work -> audit and recovery preserve attributable changes",
   "principles": [
     "Reuse existing purchase/payment/fulfillment/refund architecture",
@@ -67,14 +68,14 @@
     "nextDragon": "6.11 — Front-Desk POS",
     "firstTask": "Inspect current staff commerce/front-desk capabilities and return one bounded product-level 6.11 build plan for Joe + Chett review."
   },
-  "latestClosedCheckpoint": "6.14 Expanded Front-Desk Operations: deployed build 7edc673; authenticated hosted walkthrough completed; business state unchanged",
-  "latestClosure": "docs/front-desk-614/canonical-closure.json",
+  "latestClosedCheckpoint": "6.15 Attendance / Utilization Reporting: deployed 3f8c77b; targeted, full, hosted build and authenticated browser checks passed; business state unchanged",
+  "latestClosure": "docs/attendance-utilization-615/canonical-closure.json",
   "activeProduct": {
-    "name": "6.14 Expanded Front-Desk Operations",
-    "status": "6.14 EXPANDED FRONT-DESK OPERATIONS — PRODUCT COMPLETE",
-    "build": "7edc6736c989c7b76baee7be494b7601b7db5476",
-    "branch": "commerce/front-desk-operations-v1",
-    "verification": "docs/front-desk-614/verification.json"
+    "branch": "commerce/attendance-utilization-v1",
+    "status": "6.15 ATTENDANCE / UTILIZATION REPORTING — PRODUCT COMPLETE",
+    "build": "3f8c77b92e17d441b993559f71bdd0aa12798a37",
+    "name": "6.15 Attendance / Utilization Reporting",
+    "verification": "docs/attendance-utilization-615/verification.json"
   },
   "previousProductCheckpoint": {
     "status": "6.12 CUSTOMER PROFILE / WAIVER SELF-SERVICE — PRODUCT COMPLETE",
