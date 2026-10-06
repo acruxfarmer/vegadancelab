@@ -11,7 +11,7 @@ const original=await store.read(owner),profile=original.profileAdministration.pa
 assert.ok(profile?.accountId);const member={...owner,userId:profile.accountId},c=await pool.connect();let checked=0;
 const rollbackPool={connect:async()=>({release(){},query:async(sql,args)=>{
  if(sql==='begin')return {rows:[]};
- if(sql==='commit'){await c.query('set constraints all immediate');checked++;return {rows:[]};}
+ if(sql==='commit'){await c.query('set constraints all immediate');await c.query('set constraints all deferred');checked++;return {rows:[]};}
  return c.query(sql,args);
 }})};
 const testing=createApplicationStore(rollbackPool,{bookingEmails:true,initialOwners:DEVELOPMENT_INITIAL_OWNERS});
