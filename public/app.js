@@ -90,6 +90,12 @@ async function mutate(path,body,local){
    result=await api('/api/recovery/operations/'+result.independentReceipt.operationId);
   }
   if(result.pending){await load();throw new Error('Your change is recorded locally but remains pending independent recovery confirmation.');}
+  // Recovery acknowledgment identifies the operation, not its booking result.
+  // Replay the same durable request to retrieve its authoritative response.
+  if(path==='/api/reservations'&&!result.id){
+   result=await api(path,{method:'POST',body:JSON.stringify({...body,requestId:pending.requestId})});
+   if(result.pending||!result.id)throw new Error('Booking confirmation is still being checked. Review My bookings before trying again.');
+  }
   await load();pendingRequests.complete(pending);return result;
  }catch(error){throw new Error(`${error.message} Refresh to check the current state. If needed, retry the same details; the request will not be applied twice.`);}
 }
