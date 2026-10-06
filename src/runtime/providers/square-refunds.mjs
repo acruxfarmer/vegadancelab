@@ -64,7 +64,7 @@ export function createSquareRefundAdapter(env,fetcher=fetch,now=()=>new Date().t
   return {contract:'refund-provider-inventory/1',tenantId:o.tenantId,businessId:o.businessId,purchaseId:o.purchaseId,paymentId:o.paymentId,integrationDigest:digest(o.integrationRef),cutoff,observedAt:now(),
    payment:{id:p.id,status:p.status,amountMinor:p.amount_money.amount,currency:p.amount_money.currency,version:p.version_token,refundedMinor:p.refunded_money?.amount??0,refundIds:p.refund_ids??[]},
    refunds:rows.map(r=>({id:r.id,paymentId:r.payment_id,status:r.status?.toLowerCase(),amountMinor:r.amount_money?.amount,currency:r.amount_money?.currency,reason:r.reason??'',createdAt:r.created_at,updatedAt:r.updated_at})),
-   disputes:disputes.map(d=>({id:d.id,state:d.state})),coverage:{from:p.created_at,paginationExhausted:true,allRefundStatuses:true,paymentStable:true},provider:'square',environment:'sandbox'};
+   disputes:disputes.map(d=>({id:d.id,state:d.state})),remainingOperationCapacity:Math.max(0,20-rows.length),coverage:{from:p.created_at,paginationExhausted:true,allRefundStatuses:true,paymentStable:true},provider:'square',environment:'sandbox'};
  }
  const programBound=o=>o.contract==='refund-program/1'&&o.origin!=='external'&&o.tenantId===B.tenantId&&o.businessId===B.businessId&&digest(o.integrationRef)===digest(SQUARE_INTEGRATION)&&Number.isSafeInteger(o.amountMinor)&&o.amountMinor>0&&o.amountMinor<=o.paymentAmountMinor&&o.currency===B.currency&&typeof o.paymentId==='string'&&o.paymentId&&o.providerKey===o.id;
  function programNormalize(o,r){

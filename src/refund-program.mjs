@@ -89,7 +89,7 @@ export function refundProgramTransition(state,command,a,{now,id,evidence},fail){
   const prior=operations.find(o=>o.id===operationId);
   if(prior){if(prior.reason!==b.reason.trim()||digest(prior.unitIds)!==digest([...(b.unitIds??[])].sort()))fail('Refund request conflict',409);return output(prior);}
   const report=inventory();if(report.status!=='reconciled')fail(report.reasonCodes.join(', '),409);
-  if(evidence.inventory.refunds.length>=20)fail('Provider refund operation limit reached',409);
+  if(!pos(evidence.inventory.remainingOperationCapacity))fail('Provider refund operation capacity unavailable',409);
   const facts=refundProgramFacts(state,a,p.id,at),items=selected(facts,b.unitIds),amount=items.reduce((n,u)=>n+u.amountMinor,0);
   if(amount>report.remainingProviderMinor)fail('Remaining provider amount exceeded',409);
   const o={id:operationId,providerKey:operationId,contract:'refund-program/1',...purchase,attemptId:attempt.id,integrationRef:structuredClone(attempt.integrationRef),actorId:a.userId,participantId:p.participantId,issuanceId:p.issuanceId,amountMinor:amount,paymentAmountMinor:p.totalMinor,quantity:items.length,unitIds:items.map(u=>u.unitId).sort(),allocation:items,policy:structuredClone(REFUND_POLICY),frozenTermsDigest:facts.frozenTermsDigest,purchaseDigest:facts.purchaseDigest,attemptDigest:facts.attemptDigest,reason:b.reason.trim(),status:'intent',createdAt:at,history:[]};
@@ -154,7 +154,7 @@ export function refundProgramTransition(state,command,a,{now,id,evidence},fail){
   if(!evidence||evidence.stateDigest!==digest(state))fail('Fresh business state required',409);
   const report=reconcileRefundInventory({purchase,operations:operations.filter(o=>o.purchaseId===p.id&&o.id!==op.id),evidence:evidence.inventory,at});
   if(report.status!=='reconciled'||op.amountMinor>report.remainingProviderMinor)fail('Provider readiness changed',409);
-  if(evidence.inventory.refunds.length>=20)fail('Provider refund operation limit reached',409);
+  if(!pos(evidence.inventory.remainingOperationCapacity))fail('Provider refund operation capacity unavailable',409);
   op.paymentVersion=evidence.inventory.payment.version;op.status='dispatching';op.dispatchedAt=at;
   audit(op,'refund-dispatch',{evidenceDigest:report.evidenceDigest});return output(op);
  }
