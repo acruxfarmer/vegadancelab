@@ -1,3 +1,4 @@
+import {financialReportUI} from './financial-report-ui.js';
 import {staffCan,staffRolesUI} from './staff-roles-ui.js';
 import {frontDeskOperationsUI} from './front-desk-operations.js';
 import {attendanceReportUI} from './attendance-report-ui.js';
@@ -172,7 +173,7 @@ document.addEventListener('submit',event=>{if(['customer-profile-edit','customer
 
 function businessSelector(){return `<label class="field">Business<select id="business-choice"><option value="">Choose business</option>${businessChoices.map((b,i)=>`<option value="${i}" ${selectedBusiness?.tenantId===b.tenantId&&selectedBusiness?.businessId===b.businessId?'selected':''}>${escape(b.name)}</option>`).join('')}</select></label>`;}
 document.addEventListener('change',async event=>{if(event.target.id==='business-choice'&&event.target.value!==''){businessGeneration++;selectedBusiness=businessChoices[Number(event.target.value)];selectedClass='';hideProtected();try{await load();}catch(error){notify(error.message);}}if(event.target.matches('[data-staff-role] select[name="role"]'))event.target.form.querySelector('[data-staff-classes]').hidden=event.target.value!=='instructor';});
-function staffPageAllowed(id){const map={'front-desk':'attendance.read',overview:'schedule.read',schedule:'schedule.read',people:'customers.read',communications:'customers.manage',operations:'finance.read',reports:'reports.read'};return id==='staff-access'||staffCan(data,map[id]);}
+function staffPageAllowed(id){const map={'front-desk':'attendance.read',overview:'schedule.read',schedule:'schedule.read',people:'customers.read',communications:'customers.manage',operations:'finance.read',reports:'reports.read',financial:'finance.read'};return id==='staff-access'||staffCan(data,map[id]);}
 const staffRoles=staffRolesUI({getData:()=>data,escape,mutate,notify});
 const beforeStaffRoles=render;
 render=function(){
@@ -214,4 +215,15 @@ render=function(){
   if(data.recovery?.pendingCount>0)$('#main').insertAdjacentHTML('afterbegin','<p class="notice warning" role="status">Some updates are still being confirmed. Refresh before using these figures as final.</p>');
   if(!$('#sign-out'))document.querySelector('header').insertAdjacentHTML('beforeend','<button id="sign-out" class="text-button">Leave workspace</button>');
  }else beforeUtilizationReports();
+};
+
+staffNav.push(['financial','▥','Financial reports']);
+const financialReports=financialReportUI({getData:()=>data,escape,render:()=>render()});
+const beforeFinancialReports=render;
+render=function(){
+ if(data&&!localDemo&&view==='staff'&&page==='financial'&&staffCan(data,'finance.read')){
+  attendance.reconcile('');nav();$('#environment').textContent='Authenticated Development workspace · '+data.staffAccess.label;
+  $('#main').innerHTML=(businessChoices.length>1?businessSelector():'')+financialReports.render();
+  if(!$('#sign-out'))document.querySelector('header').insertAdjacentHTML('beforeend','<button id="sign-out" class="text-button">Leave workspace</button>');
+ }else beforeFinancialReports();
 };

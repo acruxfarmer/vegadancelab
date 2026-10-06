@@ -41,6 +41,8 @@ export function createDevelopmentServer(env = process.env, persistSquareEvent, c
     files['/front-desk-ui.js']=['front-desk-ui.js','text/javascript; charset=utf-8'];
     files['/staff-waitlist.js']=['staff-waitlist.js','text/javascript; charset=utf-8'];
     files['/request-journal.js']=['request-journal.js','text/javascript; charset=utf-8'];
+    files['/financial-report.js']=['financial-report.js','text/javascript; charset=utf-8'];
+    files['/financial-report-ui.js']=['financial-report-ui.js','text/javascript; charset=utf-8'];
     files['/attendance-report.js']=['attendance-report.js','text/javascript; charset=utf-8'];
     files['/attendance-report-ui.js']=['attendance-report-ui.js','text/javascript; charset=utf-8'];
     files['/front-desk-operations.js']=['front-desk-operations.js','text/javascript; charset=utf-8'];

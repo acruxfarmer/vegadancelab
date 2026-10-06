@@ -4,6 +4,11 @@ import {readFile} from 'node:fs/promises';
 import {staffRuntimeFixture,staffIds,scopes} from '../test/helpers/staff-runtime-fixture.mjs';
 import {createApplicationApi} from '../src/runtime/refund-application-api.mjs';
 const h=staffRuntimeFixture();
+if(process.argv.includes('--financial'))for(const s of scopes){
+ const state=h.records.get(s.businessId).state;
+ state.purchaseDrafts=[{id:'sale-one',...s,buyerId:staffIds.member,participantId:'person-one',saleChannel:'front_desk',createdByStaffId:staffIds.worker,offerId:'pack',offerVersion:1,terms:{productName:'Three-class pack'},totalMinor:6000,currency:'USD',paymentStatus:'succeeded',fulfillmentStatus:'issued',createdAt:'2026-09-21T18:00:00Z',paymentConfirmedAt:'2026-09-22T18:00:00Z'}];
+ state.refundOperations=[{id:'refund-one',...s,purchaseId:'sale-one',amountMinor:2000,currency:'USD',status:'completed',createdAt:'2026-09-23T18:00:00Z',providerRefundId:'synthetic-refund',history:[{action:'refund-observation',status:'completed',createdAt:'2026-09-24T18:00:00Z'}]}];
+}
 if(process.argv.includes('--reporting'))for(const {state} of h.records.values()){
  state.classes[0]={...state.classes[0],instructor:'Alex',startsAt:'2026-09-21T18:00:00Z',capacity:4};
  state.classes[1]={...state.classes[1],instructor:'Blair',startsAt:'2026-09-22T18:00:00Z',capacity:2};
@@ -25,4 +30,4 @@ createServer(async(req,res)=>{
  const name=req.url.split('?')[0]==='/'?'index.html':req.url.slice(1).split('?')[0];
  if(!/^[a-z0-9-]+\.(html|css|js)$/.test(name)){res.writeHead(404);return res.end();}
  try{const bytes=await readFile(new URL('../public/'+name,import.meta.url));res.writeHead(200,{'Content-Type':name.endsWith('.js')?'text/javascript':name.endsWith('.css')?'text/css':'text/html','Cache-Control':'no-store'});res.end(bytes);}catch{res.writeHead(404);res.end();}
-}).listen(6130,'127.0.0.1',()=>console.log('Synthetic staff UI verification on http://127.0.0.1:6130; role@fixture.test / fixture; no provider IO'));
+}).listen(process.argv.includes('--financial')?6160:6130,'127.0.0.1',()=>console.log('Synthetic staff UI verification on http://127.0.0.1:'+(process.argv.includes('--financial')?6160:6130)+'; role@fixture.test / fixture; no provider IO'));

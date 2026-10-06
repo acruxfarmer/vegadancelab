@@ -24,4 +24,4 @@ await copyFile(new URL('public/customer-profile-ui.js',root),new URL('dist-front
 
 await copyFile(new URL('public/staff-roles-ui.js',root),new URL('dist-frontdoor/staff-roles-ui.js',root));
 await copyFile(new URL('public/front-desk-operations.js',root),new URL('dist-frontdoor/front-desk-operations.js',root));
-for(const file of ['attendance-report.js','attendance-report-ui.js'])await copyFile(new URL('public/'+file,root),new URL('dist-frontdoor/'+file,root));
+for(const file of ['attendance-report.js','attendance-report-ui.js','financial-report.js','financial-report-ui.js'])await copyFile(new URL('public/'+file,root),new URL('dist-frontdoor/'+file,root));
