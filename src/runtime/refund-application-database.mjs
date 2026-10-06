@@ -15,6 +15,7 @@ import {buildRecoveryReceipt,buildRevocationReceipt,receiptKey} from '../recover
 import {assessRefundEligibility} from '../refund-eligibility.mjs';
 import {boundedRefundReadiness} from '../bounded-refund-readiness.mjs';
 import {refundProgramFacts} from '../refund-program.mjs';
+import {enqueueBookingEmails,readBookingEmails,startBookingEmailDelivery} from './booking-email.mjs';
 
 export function applicationDatabaseOptions(value){
  const u=new URL(value),ref='cjdoczrxcjynjhgpgqop';
@@ -22,7 +23,7 @@ export function applicationDatabaseOptions(value){
  if(!['postgres:','postgresql:'].includes(u.protocol)||(!direct&&!pooler)||u.pathname!=='/postgres'||!['','5432','6543'].includes(u.port)||decodeURIComponent(u.username)!==(direct?'vega_app_runtime':`vega_app_runtime.${ref}`)||!u.password)throw new Error('Invalid application database configuration');
  return {host:u.hostname,port:Number(u.port||5432),database:'postgres',user:decodeURIComponent(u.username),password:decodeURIComponent(u.password),ssl:databaseTls(u.hostname),connectionTimeoutMillis:10000,statement_timeout:10000,application_name:'vega-development-application'};
 }
-export function createApplicationStore(pool,{initialOwners=[],receiptPublicKey=process.env.RECEIPT_PUBLIC_KEY,resolveIntegration=resolveStoredIntegration,refundInventory=()=>undefined,assessmentNow=()=>new Date().toISOString(),refundNow=()=>new Date().toISOString()}={}){
+export function createApplicationStore(pool,{bookingEmails=false,initialOwners=[],receiptPublicKey=process.env.RECEIPT_PUBLIC_KEY,resolveIntegration=resolveStoredIntegration,refundInventory=()=>undefined,assessmentNow=()=>new Date().toISOString(),refundNow=()=>new Date().toISOString()}={}){
  const paymentCapability=Symbol('server payment command');
  const refundCapability=Symbol('server refund command');
  const fail=(message,status=403)=>{throw new ApplicationError(message,status);};
@@ -143,6 +144,7 @@ export function createApplicationStore(pool,{initialOwners=[],receiptPublicKey=p
    }
    const outstanding=await c.query("select count(*)::int as count from vega_private.recovery_outbox where tenant_id=$1 and business_id=$2 and event_kind='business' and discovery_state<>'acknowledged'",[a.tenantId,a.businessId]);
    const raw={mode:'development',context:{name:a.businessId==='vega-dance-lab'?'Vega Dance Lab':a.businessId,...a},revision:row.revision,...visibleState(row.state,a),jobs,squareEnabled:false,recovery:{pendingCount:outstanding.rows[0]?.count??0}};
+   if(bookingEmails&&(a.role==='member'||hasStaffPermission(access(row.state,a),a,'customers.read')))raw.bookingEmails=await readBookingEmails(c,a);
    return a.role==='staff'?{...visibleStaffData(raw,a,access(row.state,a)),...staffManagementView(row.state,a,initialOwners)}:raw;
   }),
   reviewClassDuplicate:(userId,body)=>transaction(userId,async(c,a)=>{
@@ -199,6 +201,7 @@ export function createApplicationStore(pool,{initialOwners=[],receiptPublicKey=p
     next.result.refund=structuredClone(op);
    }
    const receipt=buildRecoveryReceipt({before:row.state,after:next.state,revision:row.revision,authority:a,command,result:next.result,occurredAt:new Date().toISOString(),publicKey:receiptPublicKey});
+   if(bookingEmails)await enqueueBookingEmails(c,row.state,next.state,a,command);
    await c.query('update vega_private.app_state set state=$1,revision=revision+1,updated_at=now() where tenant_id=$2 and business_id=$3',[JSON.stringify(next.state),a.tenantId,a.businessId]);
    await c.query('insert into vega_private.app_commands(tenant_id,business_id,actor_id,request_id,fingerprint,response) values($1,$2,$3,$4,$5,$6)',[a.tenantId,a.businessId,a.userId,requestId,fingerprint,JSON.stringify(next.result)]);
    await c.query('insert into vega_private.recovery_outbox(event_id,tenant_id,business_id,actor_id,request_id,previous_revision,revision,payload,payload_digest) values($1,$2,$3,$4,$5,$6,$7,$8,$9)',[receipt.eventId,a.tenantId,a.businessId,a.userId,requestId,receipt.previousRevision,receipt.revision,receipt.payload,receipt.payloadDigest]);
@@ -208,4 +211,9 @@ export function createApplicationStore(pool,{initialOwners=[],receiptPublicKey=p
  };
  return store;
 }
-export function createApplicationDatabase(value){const pool=new pg.Pool({...applicationDatabaseOptions(value),max:5});pool.on('error',()=>{});return createApplicationStore(pool,{initialOwners:DEVELOPMENT_INITIAL_OWNERS});}
+export function createApplicationDatabase(value){
+ const pool=new pg.Pool({...applicationDatabaseOptions(value),max:5});pool.on('error',()=>{});
+ const store=createApplicationStore(pool,{bookingEmails:true,initialOwners:DEVELOPMENT_INITIAL_OWNERS});
+ const stop=startBookingEmailDelivery(pool,process.env),close=store.close;
+ store.close=async()=>{await stop();await close();};return store;
+}

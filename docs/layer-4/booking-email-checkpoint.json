@@ -1,0 +1,60 @@
+{
+  "dragon": "Layer 4 — Booking Lifecycle Transactional Email",
+  "status": "BLOCKED — Development database permission correction requires Joe approval",
+  "recordedLocalDate": "2026-10-06",
+  "layer3": "COMPLETE / VERIFIED / CLOSED — unchanged",
+  "layer2": "COMPLETE / VERIFIED / CLOSED — unchanged",
+  "implementedLocally": [
+    "Provider-neutral intent derived from existing booking transition in the same transaction",
+    "Booking confirmation, cancellation, rebooking and successful waitlist promotion",
+    "Business-local time, instructor/name/status and scoped My bookings link",
+    "Existing approved Resend adapter; frozen payload and stable idempotency key",
+    "Separate delivery state; no booking/member/entitlement writes by email owner",
+    "Member/staff status projections with no provider diagnostics or recipient address exposure",
+    "Five bounded attempts, 23-hour safety cutoff, uncertain outcomes stop for review"
+  ],
+  "verification": {
+    "targetedTests": {"passed": 17, "failed": 0},
+    "trackedRegression": {"passed": 1076, "failed": 0, "evidence": "docs/layer-4/booking-email-regression.txt"},
+    "includesSecondBusiness": true,
+    "databaseFunctionalTests": "Pending corrected privileges; rollback-only fixtures prepared",
+    "databaseRestrictedRoleTests": "Pending existing Development runtime verification; no application-role grant to postgres authorized",
+    "hostedEmailVerification": "Not performed",
+    "applicationDeployment": "Not performed"
+  },
+  "developmentDatabase": {
+    "project": "cjdoczrxcjynjhgpgqop",
+    "schemaApplied": "Initial additive booking-email tables/functions only",
+    "intents": 0,
+    "enabledBusinesses": 0,
+    "externalMessages": 0,
+    "anonymousPrivateSchemaAccess": false,
+    "authenticatedPrivateSchemaAccess": false,
+    "correctionRequired": "Ownership/ACL ordering left default function EXECUTE and prevented the restricted owner from reading Auth. Prepared correction revokes public execution, uses a private migration-owner verified-address lookup callable only by the NOLOGIN email owner, and grants application runtime only the bounded outbox functions.",
+    "correctionFile": "db/booking-email-permission-correction.sql",
+    "automaticApprovalReview": "Rejected temporary role grants and persistent function permission changes without explicit Joe approval. No rejected action was executed. Approval question pending.",
+    "securityAdvisors": "Only pre-existing mutable-search-path and leaked-password-protection warnings returned; direct privilege checks detected the new ACL issue. No Layer 2 changes made."
+  },
+  "resume": [
+    "Obtain explicit approval for the prepared narrow permission correction; do not request application-role membership in postgres",
+    "Apply correction and rollback-only functional tests; verify public/runtime/helper privileges",
+    "Verify actual restricted Development runtime and database isolation",
+    "Commit/deploy application to Development and verify member/staff UI",
+    "Prepare exact bounded provider activation and test sends to existing verified admin@vegadancelab.com, using existing Resend sending credential through Joe's private operator boundary",
+    "Obtain provider-side execution approval as required by the user; never widen Resend key permissions",
+    "Verify hosted lifecycle messages and truthful acceptance/delivery evidence, then return consolidated completion"
+  ],
+  "recoveryRules": [
+    "Never repeat a booking to resend an email",
+    "Retry only the frozen payload and same idempotency key within the bounded window",
+    "After the safety window or retry limit, reconcile in Resend through the approved operator; do not mint a new send identity",
+    "Provider accepted is not delivered; delivered requires concrete provider evidence",
+    "Preserve provider identifiers internally, never include them in customer content"
+  ],
+  "deferred": ["Reminders", "Marketing", "Broad preferences/subscription management", "New providers/channels", "Production activation"],
+  "references": [
+    "https://resend.com/docs/dashboard/emails/idempotency-keys",
+    "https://resend.com/docs/api-reference/emails/send-email",
+    "https://supabase.com/docs/guides/auth/users"
+  ]
+}
