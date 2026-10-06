@@ -1,5 +1,6 @@
 import {entitlementsUI} from './entitlements-ui.js';
 import {commerceUI} from './commerce-ui.js';
+import {frontDeskUI} from './front-desk-ui.js';
 import {attendanceUI} from './attendance-ui.js';
 import {classCancellationUI} from './class-cancellation-ui.js';
 import {classEditingUI} from './class-editing-ui.js';
@@ -133,7 +134,9 @@ document.addEventListener('submit',async event=>{const form=event.target;if(!['e
 
 // Independent acknowledgment governs confirmation, including reload/read views.
 const renderBeforeCommerce=render;
-render=function(){renderBeforeCommerce();if(data&&!localDemo){if(data.paymentExecution?.enabled)$('#environment').textContent='Authenticated development workspace · Designated Sandbox payment only';if(page==='passes'||(view==='staff'&&page==='people'))$('#main').insertAdjacentHTML('beforeend',commerce.render());}};
+const frontDesk=frontDeskUI({getData:()=>data,escape,modal,mutate,notify,close:()=>$('#dialog').close()});
+render=function(){renderBeforeCommerce();if(data&&!localDemo){if(data.paymentExecution?.enabled)$('#environment').textContent='Authenticated development workspace · Designated Sandbox payment only';if(page==='passes'||(view==='staff'&&page==='people'))$('#main').insertAdjacentHTML('beforeend',frontDesk.render()+commerce.render());}};
+document.addEventListener('submit',event=>{if(event.target.id==='front-desk-select'){event.preventDefault();frontDesk.review(event.target);}if(event.target.id==='front-desk-confirm'){event.preventDefault();void frontDesk.submit(event.target);}});
 document.addEventListener('submit',event=>{if(event.target.id==='commerce-draft'){event.preventDefault();void commerce.submit(event.target);}});
 document.addEventListener('submit',event=>{if(event.target.hasAttribute('data-commerce-payment')){event.preventDefault();void commerce.submitPayment(event.target);}});
 const renderBeforeRecoveryNotice=render;

@@ -21,7 +21,7 @@ export function selfParticipant(state, a) {
   a.participantIds?.length === 1 && a.participantIds[0] === self.participantId &&
   state.participants.filter(p => p.id === self.participantId).length === 1 ? self.participantId : null;
 }
-function productMatches(state, terms=offer) {
+export function productMatches(state, terms=offer) {
  const products = (state.entitlementProducts || []).filter(p => p.id === terms.productId);
  const p = products[0];
  return products.length === 1 && p.name === terms.productName && p.type === terms.productType && p.quantity === terms.quantity && p.validDays === terms.validDays &&
@@ -32,12 +32,13 @@ export function commerceView(state, a) {
  return {
   commerceOffers: allowed && productMatches(state) ? [developmentOffer()] : [],
   commerceSelfParticipantId: participantId,
-  purchaseDrafts: allowed ? structuredClone((state.purchaseDrafts || []).filter(d =>
+  purchaseDrafts: structuredClone((state.purchaseDrafts || []).filter(d =>
+   (allowed || d.saleChannel==='front_desk') &&
    d.tenantId === a.tenantId && d.businessId === a.businessId &&
-   (a.role === 'staff' || (participantId && d.buyerId === a.userId && d.participantId === participantId)))).map(d=>{
+   (a.role === 'staff' || (d.saleChannel==='front_desk' ? a.role==='member' && d.buyerId===a.userId && a.participantIds?.includes(d.participantId) : participantId && d.buyerId === a.userId && d.participantId === participantId)))).map(d=>{
     const p=(state.paymentAttempts||[]).find(p=>p.id===d.activeAttemptId&&p.purchaseId===d.id);
     return p?{...d,paymentSummary:{attemptId:p.id,status:p.status,paymentId:p.paymentId,integrationRef:p.integrationRef??null,transactionRef:p.transactionRef??null,reason:p.reason??null,paymentConfirmedAt:p.paymentConfirmedAt}}:d;
-   }) : []
+   })
  };
 }
 export function createPurchaseDraft(state, body, a, {id, now}, fail) {
@@ -52,17 +53,22 @@ export function createScopedPurchaseDraft(state,body,a,{id,now},fail,terms){
  if(!participantId||state.participants.filter(p=>p.id===participantId).length!==1)fail('Unambiguous self-purchase assignment required',403);
  if(!terms||terms.tenantId!==a.tenantId||terms.businessId!==a.businessId)fail('Offer scope mismatch',403);
  if (Object.keys(body).some(k => !['requestId', 'offerId'].includes(k))) fail('Purchase terms and recipient are server-controlled', 400);
+ return createOwnedPurchaseDraft(state,body,a,{id,now},fail,terms,{buyerId:a.userId,participantId});
+}
+// Internal composition helper: callers establish actor and customer authority first.
+export function createOwnedPurchaseDraft(state,body,a,{id,now},fail,terms,{buyerId,participantId,saleChannel,customerId}){
  if (body.offerId !== terms.id) fail('Offer unavailable', 404);
  if (!productMatches(state,terms)) fail('Existing product terms must match the approved Development offer', 409);
  state.purchaseDrafts ||= [];
- const prior = state.purchaseDrafts.find(d => d.tenantId === a.tenantId && d.businessId === a.businessId && d.buyerId === a.userId && d.requestId === body.requestId);
- if (prior) { if (prior.offerId !== body.offerId) fail('Request identifier conflict', 409); return prior; }
+ const prior = state.purchaseDrafts.find(d => d.tenantId === a.tenantId && d.businessId === a.businessId && (d.createdByStaffId??d.buyerId) === a.userId && d.requestId === body.requestId);
+ if (prior) { if (prior.offerId !== body.offerId || prior.buyerId!==buyerId || prior.participantId!==participantId || prior.saleChannel!==saleChannel || prior.customerId!==customerId) fail('Request identifier conflict', 409); return prior; }
  state.commerceOffers ||= [];
  const stored = state.commerceOffers.find(o => o.id === terms.id);
  // PostgreSQL jsonb may reorder object keys; all keys, values and array order remain immutable.
  if (stored && !isDeepStrictEqual(stored, terms)) fail('Immutable offer version conflict', 409);
  if (!stored) state.commerceOffers.push(structuredClone(terms));
- const draft = { id: id(), tenantId: a.tenantId, businessId: a.businessId, buyerId: a.userId, participantId,
+ const draft = { id: id(), tenantId: a.tenantId, businessId: a.businessId, buyerId, participantId,
+  ...(saleChannel?{saleChannel,customerId,createdByStaffId:a.userId}:{}),
   offerId: terms.id, offerVersion: terms.version, terms: structuredClone(terms), currency: terms.currency, subtotalMinor: terms.priceMinor,
   taxMinor: terms.tax.amountMinor, totalMinor: terms.priceMinor + terms.tax.amountMinor,
   status: 'draft', paymentStatus: 'not_started', fulfillmentStatus: 'not_issued',

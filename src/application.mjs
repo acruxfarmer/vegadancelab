@@ -1,5 +1,6 @@
 import {bookingAccounting,cancelBooking} from './cancellation.mjs';
 import {commerceView,createPurchaseDraft} from './commerce.mjs';
+import {frontDeskView,createFrontDeskSale} from './front-desk.mjs';
 import {paymentTransition} from './payments.mjs';
 import {classCancellationOption,cancelClass} from './class-cancellation.mjs';
 import {createClass} from './class-creation.mjs';
@@ -56,6 +57,7 @@ export function visibleState(state,authority,at=new Date().toISOString()){
   result.classDuplicateOptions=state.classes.map(c=>classDuplicateOption(c,at));
  }
  Object.assign(result,commerceView(state,authority));
+ Object.assign(result,frontDeskView(state,authority));
  return result;
 }
 export function transition(original, command, authority, {id=randomUUID,now=()=>new Date().toISOString(),trustedPayment=false,integrationRef,legacyIntegrationRefs}={}){
@@ -68,6 +70,7 @@ export function transition(original, command, authority, {id=randomUUID,now=()=>
  const staff=()=>{if(authority.role!=='staff')fail('Staff access required',403);};
  const own=participantId=>{if(!authority.participantIds.includes(participantId)&&authority.role!=='staff')fail('Participant authority required',403); if(!state.participants.some(p=>p.id===participantId))fail('Participant unavailable',404);};
  if(command.action==='purchase-draft')return {state,result:createPurchaseDraft(state,body,authority,{id,now},fail)};
+ if(command.action==='front-desk-sale')return {state,result:createFrontDeskSale(state,body,authority,{id,now},fail)};
  const accounting=['attendance','edit-class','duplicate-class'].includes(command.action)?null:bookingAccounting(state,authority,{id,now},fail);
  const waitlistEvent=(r,action,from,to)=>{(r.waitlistHistory??=[]).push({id:id(),action,from,to,actorId:authority.userId,actorRole:authority.role,requestId:body.requestId,createdAt:now()});};
  let result;

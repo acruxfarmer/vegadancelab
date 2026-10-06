@@ -11,6 +11,10 @@ export const digest=value=>createHash('sha256').update(canonical(value)).digest(
 export function purchaseForPayment(state,a,purchaseId,fail,{staffRead=false}={}){
  const d=(state.purchaseDrafts||[]).find(d=>d.id===purchaseId&&d.tenantId===a.tenantId&&d.businessId===a.businessId);
  if(!d)fail('Purchase unavailable',404);
+ if(d.saleChannel==='front_desk'){
+  if(a.role!=='staff'||!d.createdByStaffId||state.participants.filter(p=>p.id===d.participantId).length!==1)fail('Front-desk staff access required',403);
+  return d;
+ }
  if(!(staffRead&&a.role==='staff')&&(a.role!=='member'||a.participantIds?.length!==1||d.buyerId!==a.userId||d.participantId!==a.participantIds[0]||!state.participants.some(p=>p.id===d.participantId)))fail('Self-purchase authority required',403);
  return d;
 }

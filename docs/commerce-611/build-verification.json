@@ -1,0 +1,55 @@
+{
+  "slice": "6.11 V1 — staff-assisted front-desk sale workflow",
+  "date": "2026-10-06",
+  "authority": "Joe approved build and Chett PASS",
+  "baseline": "b1d7316ec0baa392db00413da27ac41ae2f6986d",
+  "latestClosedCheckpoint": "Refund System / Refund Program canonical closure, including full, partial and remaining-balance Sandbox execution",
+  "earlierFoundation": "Commerce 6.10",
+  "branch": "commerce/front-desk-sale-v1",
+  "scope": [
+    "existing configured customer",
+    "one eligible class pack per sale",
+    "Development / Square Sandbox"
+  ],
+  "implementation": [
+    "Existing authenticated staff path and exact tenant/business scope",
+    "Explicit staff actor, server-selected buyer and recipient binding; no member impersonation",
+    "Shared immutable purchase creation and existing payment/confirmation/fulfillment/recovery contracts",
+    "Staff-scoped payment authority only for front-desk sales",
+    "Business-owned history projected to the bound member account",
+    "Existing refund policies and domain implementation unchanged"
+  ],
+  "proofConfiguration": "Existing approved Development member binding and three-class pack; shared policy contract tested with another business and simulated providers",
+  "tests": {
+    "targeted": 14,
+    "activeApplicationRegression": 952,
+    "failed": 0,
+    "broadWorkspace": {
+      "passed": 2688,
+      "failed": 6,
+      "explanation": "Six preserved untracked deferred-platform historical source-hash tests reject authorized changes to the old commerce snapshot. These are not active runtime/deployment dependencies; no deferred source, baseline or test changed."
+    }
+  },
+  "execution": {
+    "actualProviderPayment": false,
+    "production": false,
+    "migration": false,
+    "adminPlane": false,
+    "hosted": "pending"
+  },
+  "limitations": [
+    "Physical card-present terminal capability not implemented",
+    "Sandbox source remains designated per purchase under existing execution gates",
+    "Local browser could not reach loopback fixture; browser verification will use hosted Development"
+  ],
+  "deferred": [
+    "new-customer onboarding",
+    "carts",
+    "cash",
+    "split tender",
+    "discounts",
+    "merchandise inventory",
+    "event admission",
+    "physical card terminal"
+  ]
+}
