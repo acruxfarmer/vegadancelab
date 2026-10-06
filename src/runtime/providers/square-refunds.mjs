@@ -4,6 +4,7 @@ import {PAYMENT_BINDING as B,SQUARE_INTEGRATION,squareConfigurationMatches} from
 export const REFUND_CANDIDATE='3609b576-10f1-4d16-94df-e46e10ec7a96';
 const paymentId='8VcoKhYwBs2FzSVqIjZjCD8yqyAZY';
 export const refundTransportEnabled=e=>e.VEGA_ENV==='development'&&e.VEGA_EXTERNAL_EFFECTS==='disabled'&&e.VEGA_SANDBOX_REFUND_EXECUTION==='authorized'&&e.VEGA_SANDBOX_REFUND_PURCHASE_ID===REFUND_CANDIDATE&&squareConfigurationMatches(e)&&!!e.SQUARE_ACCESS_TOKEN;
+export const refundProgramTransportEnabled=e=>e.VEGA_ENV==='development'&&e.VEGA_EXTERNAL_EFFECTS==='disabled'&&e.VEGA_REFUND_PROGRAM_EXECUTION==='authorized'&&/^[a-f0-9-]{36}$/i.test(e.VEGA_REFUND_PROGRAM_PURCHASE_ID??'')&&squareConfigurationMatches(e)&&!!e.SQUARE_ACCESS_TOKEN;
 export function createSquareRefundAdapter(env,fetcher=fetch,now=()=>new Date().toISOString()){
  const configured=()=>env.VEGA_ENV==='development'&&squareConfigurationMatches(env)&&!!env.SQUARE_ACCESS_TOKEN;
  const bounded=o=>o.purchaseId===REFUND_CANDIDATE&&o.paymentId===paymentId&&o.tenantId===B.tenantId&&o.businessId===B.businessId&&o.amountMinor===6000&&o.currency==='USD'&&o.quantity===3&&digest(o.integrationRef)===digest(SQUARE_INTEGRATION);
@@ -47,7 +48,37 @@ export function createSquareRefundAdapter(env,fetcher=fetch,now=()=>new Date().t
   if(!r||!r.id||r.payment_id!==paymentId||r.location_id!==B.locationId||r.amount_money?.amount!==6000||r.amount_money?.currency!=='USD'||!['PENDING','COMPLETED','FAILED','REJECTED'].includes(r.status)||r.reason!==`Refund ${o.id}: ${o.reason}`||(o.providerRefundId&&r.id!==o.providerRefundId))throw Error('Refund evidence mismatch');
   return {...binding(o),status:r.status.toLowerCase(),refundId:r.id,verified:true,providerEvidenceDigest:digest(r)};
  }
- return {readiness,async submit(o){
+ async function inventory(o){
+  // Read-only acquisition is not the submission allowlist. Registered business
+  // and integration identity are still required before any provider request.
+  if(o.tenantId!==B.tenantId||o.businessId!==B.businessId||digest(o.integrationRef)!==digest(SQUARE_INTEGRATION)||typeof o.paymentId!=='string'||!o.paymentId||typeof o.purchaseId!=='string'||!Number.isSafeInteger(o.amountMinor)||o.amountMinor<=0||o.currency!==B.currency)throw Error('Unsupported Sandbox purchase');
+  await identity();
+  const cutoff=now(),{payment:p}=await request(`/v2/payments/${encodeURIComponent(o.paymentId)}`);
+  if(p?.id!==o.paymentId||p.location_id!==B.locationId||p.application_details?.application_id!==B.applicationId||p.reference_id!==o.attemptId||p.source_type!=='CARD'||p.amount_money?.amount!==o.amountMinor||p.total_money?.amount!==o.amountMinor||p.amount_money?.currency!==o.currency||p.total_money?.currency!==o.currency||(p.tip_money?.amount??0)!==0||(p.app_fee_money?.amount??0)!==0||!p.version_token||!Number.isFinite(Date.parse(p.created_at))||Date.parse(p.created_at)>Date.parse(cutoff))throw Error('Payment binding mismatch');
+  const allRows=await all(`/v2/refunds?location_id=${B.locationId}&begin_time=${encodeURIComponent(p.created_at)}&end_time=${encodeURIComponent(cutoff)}&limit=100`,'refunds');
+  const rows=allRows.filter(r=>r?.payment_id===o.paymentId);
+  if(rows.some(r=>r.location_id!==B.locationId||r.destination_type&&r.destination_type!=='CARD'))throw Error('Unsupported refund destination');
+  const disputes=(await all(`/v2/disputes?location_id=${B.locationId}`,'disputes')).filter(d=>d?.disputed_payment?.payment_id===o.paymentId);
+  const {payment:after}=await request(`/v2/payments/${encodeURIComponent(o.paymentId)}`);
+  if(digest(after)!==digest(p))throw Error('Payment changed during acquisition');
+  return {contract:'refund-provider-inventory/1',tenantId:o.tenantId,businessId:o.businessId,purchaseId:o.purchaseId,paymentId:o.paymentId,integrationDigest:digest(o.integrationRef),cutoff,observedAt:now(),
+   payment:{id:p.id,status:p.status,amountMinor:p.amount_money.amount,currency:p.amount_money.currency,version:p.version_token,refundedMinor:p.refunded_money?.amount??0,refundIds:p.refund_ids??[]},
+   refunds:rows.map(r=>({id:r.id,paymentId:r.payment_id,status:r.status?.toLowerCase(),amountMinor:r.amount_money?.amount,currency:r.amount_money?.currency,reason:r.reason??'',createdAt:r.created_at,updatedAt:r.updated_at})),
+   disputes:disputes.map(d=>({id:d.id,state:d.state})),coverage:{from:p.created_at,paginationExhausted:true,allRefundStatuses:true,paymentStable:true},provider:'square',environment:'sandbox'};
+ }
+ const programBound=o=>o.contract==='refund-program/1'&&o.origin!=='external'&&o.tenantId===B.tenantId&&o.businessId===B.businessId&&digest(o.integrationRef)===digest(SQUARE_INTEGRATION)&&Number.isSafeInteger(o.amountMinor)&&o.amountMinor>0&&o.amountMinor<=o.paymentAmountMinor&&o.currency===B.currency&&typeof o.paymentId==='string'&&o.paymentId&&o.providerKey===o.id;
+ function programNormalize(o,r){
+  if(!r?.id||r.payment_id!==o.paymentId||r.location_id!==B.locationId||r.amount_money?.amount!==o.amountMinor||r.amount_money?.currency!==o.currency||!['PENDING','COMPLETED','FAILED','REJECTED'].includes(r.status)||r.reason!==`Refund ${o.id}: ${o.reason}`||(o.providerRefundId&&o.providerRefundId!==r.id))throw Error('Refund evidence mismatch');
+  return {...binding(o),status:r.status.toLowerCase(),refundId:r.id,verified:true,providerEvidenceDigest:digest(r)};
+ }
+ return {readiness,inventory,async submitProgram(o){
+  if(!refundProgramTransportEnabled(env)||env.VEGA_REFUND_PROGRAM_PURCHASE_ID!==o.purchaseId||!programBound(o)||o.status!=='dispatching'||!o.paymentVersion)throw Error('Refund program execution disabled');
+  try{await identity();const r=await request('/v2/refunds','POST',{idempotency_key:o.providerKey,payment_id:o.paymentId,amount_money:{amount:o.amountMinor,currency:o.currency},payment_version_token:o.paymentVersion,reason:`Refund ${o.id}: ${o.reason}`});return programNormalize(o,r.refund);}catch{return {...binding(o),status:'unknown'};}
+ },async inspectProgram(o){
+  if(!programBound(o))throw Error('Unsupported refund operation');
+  if(!o.providerRefundId)return {...binding(o),status:'unknown'};
+  try{await identity();return programNormalize(o,(await request(`/v2/refunds/${encodeURIComponent(o.providerRefundId)}`)).refund);}catch{return {...binding(o),status:'unknown'};}
+ },async submit(o){
   if(!refundTransportEnabled(env)||!bounded(o)||o.status!=='dispatching'||!o.paymentVersion)throw Error('Refund execution disabled');
   try{await identity();const r=await request('/v2/refunds','POST',{idempotency_key:o.providerKey,payment_id:paymentId,amount_money:{amount:6000,currency:'USD'},payment_version_token:o.paymentVersion,reason:`Refund ${o.id}: ${o.reason}`});return normalize(o,r.refund);}
   catch{return {...binding(o),status:'unknown'};}

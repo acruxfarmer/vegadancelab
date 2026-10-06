@@ -12,3 +12,40 @@ export function refundUI({getData,escape:e,mutate,notify}){
   }catch(error){form.querySelector('[role="alert"]').textContent=error.message;}finally{delete form.dataset.pending;button.disabled=false;}
  }};
 }
+
+export function refundProgramUI({getData,escape:e,api,mutate,notify}){
+ const money=(n,c)=>`${e(c)} ${(n/100).toFixed(2)}`;
+ const labels={'refund-intent':'Credits held for refund','refund-dispatch':'Refund submitted','refund-observation':'Refund status checked','refund-hold-released':'Credits released after confirmed failure','refund-external-recorded':'External refund recorded for review','refund-provider-bound':'Recovery match reviewed'};
+ const form=(p,action,label,op='',extra='',disabled=false)=>`<form data-refund-program="${action}" data-purchase="${e(p)}" data-operation="${e(op)}">${extra}<button ${disabled?'disabled':''}>${label}</button><p role="alert"></p></form>`;
+ const history=rows=>rows.map(o=>`<article class="card"><h3>${money(o.amountMinor,o.currency)} · ${e(o.status)}</h3><p>Credits: ${e(o.entitlementDisposition)}.</p><ul>${o.history.map(h=>`<li>${e(labels[h.event]??'Refund update')} · ${e(h.at)}${h.status?` · ${e(h.status)}`:''}</li>`).join('')}</ul></article>`).join('');
+ return {render(){
+  const d=getData(),rows=d.refundHistory??[];
+  if(d.context?.role!=='staff')return rows.length?`<section aria-label="Your refund history"><h2>Your refunds</h2>${history(rows)}<p>Pending or uncertain outcomes keep affected credits unavailable. Contact the studio about a refund needing review.</p></section>`:'';
+  const purchases=(d.purchaseDrafts??[]).filter(p=>p.paymentStatus==='succeeded');
+  return `<section aria-label="Refund management"><h2>Refund management</h2><p>${d.refundProgram?.enabled?'Designated Sandbox execution only.':'Refund execution is disabled.'} Checks and reviewed recovery never submit another refund.</p>${purchases.map(p=>`<section class="card" data-refund-purchase="${e(p.id)}"><h3>${money(p.totalMinor,p.currency)} purchase</h3><p>${e(p.id)}</p>${history(rows.filter(o=>o.purchaseId===p.id))}${form(p.id,'preview','Check refund readiness and Square history')}<div data-refund-preview></div>${rows.filter(o=>o.purchaseId===p.id&&o.contract==='refund-program/1').map(o=>{
+   if(o.origin==='external'&&o.status==='needs-review')return form(p.id,'preview','Review external refund allocation',o.id);
+   if(o.recoveryAction==='bind')return form(p.id,'bind','Review and bind unique lost-response match',o.id);
+   if(['pending','needs-review'].includes(o.status))return o.history.some(h=>h.event==='refund-dispatch')?form(p.id,'reconcile','Reconcile provider outcome',o.id):form(p.id,'execute','Submit this refund once',o.id,'',!(d.refundProgram?.enabled&&d.refundProgram.purchaseId===p.id));
+   if(['failed','rejected'].includes(o.status)&&o.entitlementDisposition==='held')return form(p.id,'release','Confirm failure and release credits',o.id);
+   return '';
+  }).join('')}</section>`).join('')}</section>`;
+ },async submit(f){
+  if(f.dataset.pending)return;f.dataset.pending='true';const button=f.querySelector('button');button.disabled=true;
+  const d=getData(),p=f.dataset.purchase,op=f.dataset.operation,action=f.dataset.refundProgram;
+  try{
+   if(action==='preview'){
+    const r=await api(`/api/commerce/purchases/${encodeURIComponent(p)}/refund-reconciliation${op?`?operationId=${encodeURIComponent(op)}`:''}`);
+    if(getData()!==d||!f.isConnected)return;
+    const target=f.closest('[data-refund-purchase]').querySelector('[data-refund-preview]');
+    const choices=(r.business?.units??[]).map((u,i)=>`<label><input type="checkbox" name="unitIds" value="${e(u.unitId)}"> Credit ${i+1}${u.restored?' (restored; history retained)':''} · ${money(u.amountMinor,r.currency)}</label>`).join('');
+    target.innerHTML=`<p>Square comparison: ${e(r.status)}. Completed: ${r.completedMinor===null?'unverified':money(r.completedMinor,r.currency)}. Pending: ${r.pendingMinor===null?'unverified':money(r.pendingMinor,r.currency)}.</p><p>Checked through ${e(r.cutoff??'unavailable')}. ${e(r.reasonCodes.join(', '))}</p><p>Business eligibility: ${e(r.business?.status??'unavailable')}. ${e(r.business?.reasonCodes.join(', ')??'')}</p>${!op&&r.externalCount?form(p,'external','Record external refunds and hold affected rights'):''}${op?form(p,'resolve','Confirm exact external disposition (or confirmed failure release)',op,choices):r.business?.status==='ready'&&r.status==='reconciled'?form(p,'prepare','Hold selected credits for refund','',`${choices}<label>Reason <input name="reason" required maxlength="120"></label>`,!(d.refundProgram?.enabled&&d.refundProgram.purchaseId===p)):''}<p>No automatic retry. Provider amounts do not authorize an entitlement disposition.</p>`;
+    return;
+   }
+   const fields=new FormData(f),body={purchaseId:p};if(op)body.operationId=op;
+   if(['prepare','resolve'].includes(action))body.unitIds=fields.getAll('unitIds');
+   if(fields.get('reason'))body.reason=fields.get('reason');
+   await mutate(`/api/commerce/refund-program/${action}`,body,()=>{throw Error('Authenticated staff required');});
+   notify('Refund record updated. Review current status and recovery acknowledgment.');
+  }catch(error){if(f.isConnected)f.querySelector('[role="alert"]').textContent=error.message;}finally{delete f.dataset.pending;button.disabled=false;}
+ }};
+}

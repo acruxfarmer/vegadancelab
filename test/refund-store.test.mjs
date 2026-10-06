@@ -5,6 +5,7 @@ import {readFileSync} from 'node:fs';
 import {generateKeyPairSync} from 'node:crypto';
 import {createApplicationStore} from '../src/runtime/refund-application-database.mjs';
 import {digest} from '../src/payments.mjs';
+import {programFixture} from './helpers/refund-program-fixture.mjs';
 const fixture=JSON.parse(readFileSync(new URL('./fixtures/refund-eligibility.json',import.meta.url),'utf8').replace(/^\uFEFF/,''));
 const publicKey=generateKeyPairSync('rsa',{modulusLength:3072}).publicKey.export({type:'spki',format:'pem'});
 const stamp='2026-10-05T23:00:00Z';
@@ -40,3 +41,12 @@ test('membership revoked while waiting for lock blocks intent',async()=>{const h
 test('nonstaff denied before loading purchase state',async()=>{const h=harness();h.role='member';await assert.rejects(h.store.refundCommand('member',h.cmd('refund-intent'),h.proof()));assert.ok(!h.queries.some(q=>q.startsWith('select state')));});
 test('ordinary caller cannot use refund command capability',async()=>{const h=harness();await assert.rejects(h.store.command('staff',h.cmd('refund-intent')));assert.equal(h.data.revision,127);});
 test('revoked integration prevents committing refund intent',async()=>{const h=harness();h.integrationChanged=true;await assert.rejects(h.store.refundCommand('staff',h.cmd('refund-intent'),h.proof()),/Integration unavailable/);assert.equal(h.data.revision,127);});
+
+function programProof(h){const f=programFixture();f.state=structuredClone(h.data.state);f.at=stamp;return f.evidence();}
+const programIntent=h=>h.cmd('refund-program-intent','program-intent',{unitIds:[h.data.state.creditUnits[0].id]});
+test('program store commits partial hold and independent acknowledgment identity atomically',async()=>{const h=harness(),r=await h.store.refundCommand('staff',programIntent(h),programProof(h));assert.equal(r.refund.amountMinor,2000);assert.equal(r.refund.intentReceiptId,h.data.outbox[0].event);assert.equal(h.data.state.creditUnits.filter(u=>u.status==='refund_held').length,1);assert.equal(h.data.revision,128);});
+test('program store concurrent intents serialize against the exact snapshot',async()=>{const h=harness(),proof=programProof(h),cmd=programIntent(h);const results=await Promise.allSettled([h.store.refundCommand('staff',cmd,proof),h.store.refundCommand('staff',{...cmd,body:{...cmd.body,requestId:'competing'}},proof)]);assert.equal(results.filter(r=>r.status==='fulfilled').length,1);assert.equal(h.data.state.refundOperations.length,1);});
+test('program duplicate intent receipt replay changes nothing',async()=>{const h=harness(),cmd=programIntent(h),proof=programProof(h);await h.store.refundCommand('staff',cmd,proof);const before=structuredClone(h.data);await h.store.refundCommand('staff',cmd,proof);assert.deepEqual(h.data,before);});
+test('program store competing dispatch creates exactly one dispatch transition',async()=>{const h=harness(),r=await h.store.refundCommand('staff',programIntent(h),programProof(h)),proof=programProof(h);const results=await Promise.allSettled(['first','second'].map(request=>h.store.refundCommand('staff',h.cmd('refund-program-dispatch',request,{operationId:r.refund.id}),proof)));assert.equal(results.filter(r=>r.status==='fulfilled').length,1);assert.equal(h.data.state.refundOperations[0].history.filter(e=>e.action==='refund-dispatch').length,1);});
+test('program outbox failure rolls back partial hold and all state',async()=>{const h=harness(),before=structuredClone(h.data);h.failOutbox=true;await assert.rejects(h.store.refundCommand('staff',programIntent(h),programProof(h)));assert.deepEqual(h.data,before);});
+test('program membership change while locked denies without mutation',async()=>{const h=harness(),before=structuredClone(h.data);h.changed=true;await assert.rejects(h.store.refundCommand('staff',programIntent(h),programProof(h)),/Access changed/);assert.deepEqual(h.data,before);});

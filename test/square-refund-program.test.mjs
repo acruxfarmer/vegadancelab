@@ -1,0 +1,28 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createSquareRefundAdapter} from '../src/runtime/providers/square-refunds.mjs';
+import {PAYMENT_BINDING as B,SQUARE_INTEGRATION} from '../src/runtime/providers/square-configuration.mjs';
+function fixture(){
+ const o={id:'operation',providerKey:'operation',contract:'refund-program/1',reason:'Customer request',purchaseId:'11111111-1111-4111-8111-111111111111',paymentId:'payment-two',attemptId:'attempt-two',tenantId:B.tenantId,businessId:B.businessId,amountMinor:2000,paymentAmountMinor:6000,currency:'USD',quantity:1,integrationRef:SQUARE_INTEGRATION,status:'dispatching',paymentVersion:'v1'};
+ const env={VEGA_ENV:'development',VEGA_EXTERNAL_EFFECTS:'disabled',VEGA_REFUND_PROGRAM_EXECUTION:'authorized',VEGA_REFUND_PROGRAM_PURCHASE_ID:o.purchaseId,SQUARE_ENVIRONMENT:'sandbox',SQUARE_APPLICATION_ID:B.applicationId,SQUARE_MERCHANT_ID:B.merchantId,SQUARE_LOCATION_ID:B.locationId,SQUARE_ACCESS_TOKEN:'synthetic-only'};
+ const p={id:o.paymentId,status:'COMPLETED',location_id:B.locationId,application_details:{application_id:B.applicationId},reference_id:o.attemptId,source_type:'CARD',amount_money:{amount:6000,currency:'USD'},total_money:{amount:6000,currency:'USD'},created_at:'2026-10-02T22:22:37Z',version_token:'v1'};
+ const x={o,env,p,status:'COMPLETED',rows:[],disputes:[],calls:[],lost:false,changed:false,cycle:false,badIdentity:false};let reads=0;
+ x.fetcher=async(url,options)=>{x.calls.push({url,options});assert.ok(url.startsWith('https://connect.squareupsandbox.com/'));let body;
+  if(url.endsWith('/oauth2/token/status'))body={client_id:B.applicationId,merchant_id:x.badIdentity?'foreign':B.merchantId};
+  else if(url.includes('/locations/'))body={location:{id:B.locationId,merchant_id:B.merchantId,currency:'USD',status:'ACTIVE'}};
+  else if(url.includes('/payments/'))body={payment:{...p,...(++reads>1&&x.changed?{version_token:'v2'}:{})}};
+  else if(url.includes('/refunds?'))body={refunds:x.rows,...(x.cycle?{cursor:'same'}:{})};
+  else if(url.includes('/disputes?'))body={disputes:x.disputes};
+  else if(url.endsWith('/v2/refunds')||url.includes('/v2/refunds/')){if(x.lost)throw Error('lost response');body={refund:{id:'refund',payment_id:o.paymentId,location_id:B.locationId,amount_money:{amount:o.amountMinor,currency:'USD'},status:x.status,reason:`Refund ${o.id}: ${o.reason}`}};}
+  else assert.fail(url);return {ok:true,json:async()=>structuredClone(body)};
+ };
+ x.adapter=createSquareRefundAdapter(env,x.fetcher,()=> '2026-10-06T03:00:00Z');return x;
+}
+test('program partial submission uses exact amount, payment version and stable key once',async()=>{const x=fixture(),r=await x.adapter.submitProgram(x.o);assert.equal(r.status,'completed');const posts=x.calls.filter(c=>c.url.endsWith('/v2/refunds'));assert.equal(posts.length,1);assert.deepEqual(JSON.parse(posts[0].options.body),{idempotency_key:'operation',payment_id:'payment-two',amount_money:{amount:2000,currency:'USD'},payment_version_token:'v1',reason:'Refund operation: Customer request'});});
+for(const status of ['PENDING','COMPLETED','FAILED','REJECTED'])test(`program maps ${status} independently`,async()=>{const x=fixture();x.status=status;assert.equal((await x.adapter.submitProgram(x.o)).status,status.toLowerCase());});
+for(const [name,change] of [['disabled',x=>x.env.VEGA_REFUND_PROGRAM_EXECUTION='disabled'],['production',x=>x.env.VEGA_ENV='production'],['foreign business',x=>x.o.businessId='foreign'],['other purchase',x=>x.env.VEGA_REFUND_PROGRAM_PURCHASE_ID='other'],['external operation',x=>x.o.origin='external'],['over refund',x=>x.o.amountMinor=6001]])test(`program prevents ${name} submission`,async()=>{const x=fixture();change(x);await assert.rejects(x.adapter.submitProgram(x.o));assert.equal(x.calls.length,0);});
+test('program lost response produces unknown and no retry',async()=>{const x=fixture();x.lost=true;assert.equal((await x.adapter.submitProgram(x.o)).status,'unknown');assert.equal(x.calls.filter(c=>c.url.endsWith('/v2/refunds')).length,1);});
+test('read-only inventory works with submission gate disabled and preserves partial/external evidence',async()=>{const x=fixture();x.env.VEGA_REFUND_PROGRAM_EXECUTION='disabled';x.rows=[{id:'external',payment_id:x.o.paymentId,location_id:B.locationId,amount_money:{amount:2000,currency:'USD'},status:'COMPLETED',reason:'dashboard'},{id:'unrelated',payment_id:'other',location_id:B.locationId,amount_money:{amount:100,currency:'USD'},status:'PENDING'}];x.p.refunded_money={amount:2000,currency:'USD'};x.p.refund_ids=['external'];const r=await x.adapter.inventory({...x.o,amountMinor:6000});assert.equal(r.refunds.length,1);assert.equal(r.refunds[0].id,'external');assert.equal(r.coverage.paymentStable,true);assert.ok(x.calls.every(c=>c.options.method==='GET'||c.url.endsWith('/token/status')));});
+for(const [name,change] of [['unstable payment',x=>x.changed=true],['cursor cycle',x=>x.cycle=true],['wrong identity',x=>x.badIdentity=true],['wrong payment binding',x=>x.p.reference_id='foreign']])test(`inventory rejects ${name}`,async()=>{const x=fixture();change(x);await assert.rejects(x.adapter.inventory({...x.o,amountMinor:6000}));});
+test('recovery GET can confirm after submission gate is disabled',async()=>{const x=fixture();x.env.VEGA_REFUND_PROGRAM_EXECUTION='disabled';x.o.providerRefundId='refund';assert.equal((await x.adapter.inspectProgram(x.o)).status,'completed');assert.ok(!x.calls.some(c=>c.url.endsWith('/v2/refunds')));});
+test('unknown refund ID never launches a submission to recover',async()=>{const x=fixture();assert.equal((await x.adapter.inspectProgram(x.o)).status,'unknown');assert.equal(x.calls.length,0);});

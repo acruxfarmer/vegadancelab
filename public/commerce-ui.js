@@ -1,7 +1,7 @@
 import {paymentStatusHTML} from './payment-status.js';
 export function commerceUI({escape:e,getData,mutate,notify}) {
  const money = n => `USD $${(n / 100).toFixed(2)}`;
- function terms(o) { return `<p>${e(o.productName)} · ${e(o.quantity)} credits · ${e(o.validDays)} days after confirmed payment</p><p>Eligible classes: ${e(o.categories.join(', '))}</p><p><strong>${money(o.priceMinor)} — ${e(o.priceLabel)}</strong></p><p>Oregon Development: non-taxable · Transaction tax: USD $0.00</p><p>Refund policy: staff-approved full refunds for wholly unused packs with no active reservations, requested within 30 days of confirmed payment / successful purchase completion. Partial and used-pack refunds are deferred.</p>`; }
+ function terms(o) { return `<p>${e(o.productName)} · ${e(o.quantity)} credits · ${e(o.validDays)} days after confirmed payment</p><p>Eligible classes: ${e(o.categories.join(', '))}</p><p><strong>${money(o.priceMinor)} — ${e(o.priceLabel)}</strong></p><p>Oregon Development: non-taxable · Transaction tax: USD $0.00</p><p>Original offer refund terms: staff-approved full refunds for wholly unused packs with no active reservations, within 30 days of confirmed payment / successful purchase completion. These frozen terms remain on the purchase.</p><p>The additional approved staff refund policy permits whole unused credits at their original allocated value, including proven restored credits. Consumed value is not refundable. Requests must be strictly before the frozen cutoff; reservations must be resolved first. Unsupported cases require staff review.</p>`; }
  return {
   render() {
    const d=getData(), staff=d.context.role==='staff', offers=d.commerceOffers||[], drafts=d.purchaseDrafts||[];

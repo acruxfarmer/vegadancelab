@@ -2,7 +2,9 @@ import { ApplicationError } from '../application.mjs';
 import {revokeSession} from './sign-out.mjs';
 import {createDirectPayments,sandboxPaymentEnabled,paymentPreparationEnabled} from './direct-payments.mjs';
 import {createRefundWorkflow} from './refund-workflow.mjs';
-import {createSquareRefundAdapter,refundTransportEnabled,REFUND_CANDIDATE} from './providers/square-refunds.mjs';
+import {createSquareRefundAdapter,refundTransportEnabled,refundProgramTransportEnabled,REFUND_CANDIDATE} from './providers/square-refunds.mjs';
+import {reconcileRefundInventory} from '../refund-reconciliation.mjs';
+import {createRefundProgram} from './refund-program-workflow.mjs';
 
 const origin='https://cjdoczrxcjynjhgpgqop.supabase.co';
 export async function readJson(req){
@@ -12,7 +14,9 @@ export async function readJson(req){
 }
 export function createApplicationApi(env,store,fetcher=fetch){
  const payments=createDirectPayments(env,store,fetcher);
- const refunds=createRefundWorkflow({store,adapter:createSquareRefundAdapter(env,fetcher),enabled:()=>refundTransportEnabled(env)});
+ const refundAdapter=createSquareRefundAdapter(env,fetcher);
+ const refunds=createRefundWorkflow({store,adapter:refundAdapter,enabled:()=>refundTransportEnabled(env)});
+ const program=createRefundProgram({store,adapter:refundAdapter,enabled:purchaseId=>refundProgramTransportEnabled(env)&&env.VEGA_REFUND_PROGRAM_PURCHASE_ID===purchaseId});
  const key=env.SUPABASE_PUBLISHABLE_KEY;
  const configured=()=>{if(!key||env.SUPABASE_URL!==origin)throw new ApplicationError('Application authentication is not configured',503);};
  async function principal(req){
@@ -48,6 +52,30 @@ export function createApplicationApi(env,store,fetcher=fetch){
    }
    const userId=await principal(req);
    if(!store)throw new ApplicationError('Application database handoff is pending',503);
+   const refundReport=url.pathname.match(/^\/api\/commerce\/purchases\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\/refund-reconciliation$/i);
+   if(refundReport){
+    if(req.method!=='GET')throw new ApplicationError('Method not allowed',405);
+    if([...url.searchParams.keys()].some(k=>k!=='operationId')||url.searchParams.getAll('operationId').length>1)throw new ApplicationError('Query parameters not accepted');
+    const operationId=url.searchParams.get('operationId')??undefined;
+    if(operationId&&!/^[a-f0-9]{40}$/.test(operationId))throw new ApplicationError('Invalid operation');
+    const c=await store.refundContext(userId,refundReport[1],operationId);
+    const evidence=await refundAdapter.inventory(c.purchase);
+    // Recheck current membership and source state after external acquisition.
+    const after=await store.refundContext(userId,refundReport[1],operationId);
+    if(c.revision!==after.revision||c.stateDigest!==after.stateDigest||JSON.stringify(c.purchase)!==JSON.stringify(after.purchase))throw new ApplicationError('Purchase changed during reconciliation; refresh before review',409);
+    const report=reconcileRefundInventory({purchase:c.purchase,operations:c.operations,evidence,at:new Date().toISOString()});
+    // Provider identifiers and raw evidence remain server-side.
+    const facts=c.programFacts;
+    send(200,{contract:report.contract,purchaseId:report.purchaseId,status:report.status,reasonCodes:report.reasonCodes,completedMinor:report.completedMinor??null,pendingMinor:report.pendingMinor??null,remainingProviderMinor:report.remainingProviderMinor??null,currency:c.purchase.currency,matchedCount:report.matches.length,externalCount:report.external.length,cutoff:report.cutoff??null,evidenceDigest:report.evidenceDigest??null,revision:c.revision,executionAuthorized:false,readOnly:true,historicalCompleteness:'unknown',business:facts?{status:facts.status,reasonCodes:facts.reasonCodes,units:facts.units,remainingBusinessMinor:facts.remainingBusinessMinor??0,cutoff:facts.cutoff??null,policy:facts.policy}:null});return true;
+   }
+   const programAction=url.pathname.match(/^\/api\/commerce\/refund-program\/(prepare|execute|reconcile|release|external|resolve|bind)$/);
+   if(programAction){
+    if(req.method!=='POST')throw new ApplicationError('Method not allowed',405);
+    if(url.search)throw new ApplicationError('Query parameters not accepted');
+    const result=await program[programAction[1]](userId,await readJson(req));
+    const o=result.refund;
+    send(200,{...(o?{refund:{id:o.id,purchaseId:o.purchaseId,status:o.status,amountMinor:o.amountMinor,currency:o.currency}}:{}),...(result.independentReceipt?{independentReceipt:result.independentReceipt}:{}),...(result.externalRecorded!==undefined?{externalRecorded:result.externalRecorded}:{}),executionAuthorized:false});return true;
+   }
    const refundAction=url.pathname.match(/^\/api\/commerce\/refunds\/(prepare|execute|reconcile|release)$/);
    if(refundAction){
     if(req.method!=='POST')throw new ApplicationError('Method not allowed',405);
@@ -62,7 +90,7 @@ export function createApplicationApi(env,store,fetcher=fetch){
     const assessment=await store.assessRefund(userId,refundAssessment[1]);
     send(assessment.status==='denied'?403:200,assessment);return true;
    }
-   if(url.pathname==='/api/app'&&req.method==='GET'){const view=await store.read(userId);send(200,{...view,squareEnabled:sandboxPaymentEnabled(env),paymentExecution:{enabled:sandboxPaymentEnabled(env),purchaseId:sandboxPaymentEnabled(env)?env.VEGA_SANDBOX_PURCHASE_ID:null},refundWorkflow:{enabled:refundTransportEnabled(env),purchaseId:REFUND_CANDIDATE}});return true;}
+   if(url.pathname==='/api/app'&&req.method==='GET'){const view=await store.read(userId);send(200,{...view,squareEnabled:sandboxPaymentEnabled(env),paymentExecution:{enabled:sandboxPaymentEnabled(env),purchaseId:sandboxPaymentEnabled(env)?env.VEGA_SANDBOX_PURCHASE_ID:null},refundWorkflow:{enabled:refundTransportEnabled(env),purchaseId:REFUND_CANDIDATE},refundProgram:{enabled:refundProgramTransportEnabled(env),purchaseId:refundProgramTransportEnabled(env)?env.VEGA_REFUND_PROGRAM_PURCHASE_ID:null}});return true;}
    const operation=url.pathname.match(/^\/api\/recovery\/operations\/([a-f0-9]{64})$/);
    if(operation&&req.method==='GET'){const result=await store.operation(userId,operation[1]);send(result.pending?202:200,result);return true;}
    if(req.method!=='POST')throw new ApplicationError('Method not allowed',405);

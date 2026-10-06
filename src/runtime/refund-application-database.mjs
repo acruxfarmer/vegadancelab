@@ -9,6 +9,7 @@ import {reviewClassDuplicate} from '../class-duplication.mjs';
 import {buildRecoveryReceipt,buildRevocationReceipt,receiptKey} from '../recovery-receipt.mjs';
 import {assessRefundEligibility} from '../refund-eligibility.mjs';
 import {boundedRefundReadiness} from '../bounded-refund-readiness.mjs';
+import {refundProgramFacts} from '../refund-program.mjs';
 
 export function applicationDatabaseOptions(value){
  const u=new URL(value),ref='cjdoczrxcjynjhgpgqop';
@@ -35,7 +36,7 @@ export function createApplicationStore(pool,{receiptPublicKey=process.env.RECEIP
   if(rows.length!==1)throw new ApplicationError('Studio application data is not initialized',503);return rows[0];
  }
  const store={
-  refundContext:(userId,purchaseId)=>transaction(userId,async(c,a)=>{
+  refundContext:(userId,purchaseId,operationId)=>transaction(userId,async(c,a)=>{
    if(a.role!=='staff')throw new ApplicationError('Staff access required',403);
    const row=await stateRow(c,a),state=row.state;
    const p=state.purchaseDrafts?.find(p=>p.id===purchaseId&&p.tenantId===a.tenantId&&p.businessId===a.businessId);
@@ -45,8 +46,10 @@ export function createApplicationStore(pool,{receiptPublicKey=process.env.RECEIP
    const registered=await resolveIntegration(c,a,attempt);
    if(digest(registered)!==digest(attempt.integrationRef))throw new ApplicationError('Refund integration changed',409);
    const businessReadiness=boundedRefundReadiness({state,authority:a,purchaseId:p.id,at:refundNow()});
-   const operation=state.refundOperations?.find(o=>o.purchaseId===p.id&&o.tenantId===a.tenantId&&o.businessId===a.businessId);
-   return {stateDigest:digest(state),revision:row.revision,businessReadiness,operation:operation?structuredClone(operation):null,purchase:{purchaseId:p.id,tenantId:a.tenantId,businessId:a.businessId,paymentId:attempt.paymentId,attemptId:attempt.id,integrationRef:attempt.integrationRef,amountMinor:p.totalMinor,currency:p.currency,quantity:p.terms.quantity}};
+   const operation=state.refundOperations?.find(o=>o.purchaseId===p.id&&o.tenantId===a.tenantId&&o.businessId===a.businessId&&(!operationId||o.id===operationId));
+   const programFacts=refundProgramFacts(state,a,p.id,refundNow(),operation?.origin==='external'?{holdingOperationId:operation.id,dispositionOnly:true}:{});
+   const operations=(state.refundOperations??[]).filter(o=>o.purchaseId===p.id&&o.tenantId===a.tenantId&&o.businessId===a.businessId);
+   return {stateDigest:digest(state),revision:row.revision,businessReadiness,programFacts,operations:structuredClone(operations),operation:operation?structuredClone(operation):null,purchase:{purchaseId:p.id,tenantId:a.tenantId,businessId:a.businessId,paymentId:attempt.paymentId,attemptId:attempt.id,integrationRef:attempt.integrationRef,amountMinor:p.totalMinor,currency:p.currency,quantity:p.terms.quantity}};
   },true),
   refundCommand:(userId,command,evidence)=>store.command(userId,command,refundCapability,evidence),
   assessRefund:(userId,purchaseId)=>transaction(userId,async(c,a)=>{
@@ -152,7 +155,7 @@ export function createApplicationStore(pool,{receiptPublicKey=process.env.RECEIP
    if(trustedPayment)for(const old of row.state.paymentAttempts||[]){if(!old.integrationRef)legacyIntegrationRefs[old.id]=await resolveIntegration(c,a,old);}
    const next=transition(row.state,command,a,{trustedPayment,trustedRefund,refundEvidence,integrationRef,legacyIntegrationRefs,...(trustedRefund?{now:refundNow}:{})});
    if(trustedRefund&&canonical(next.state)===canonical(row.state))return next.result;
-   if(command.action==='refund-intent'){
+   if(['refund-intent','refund-program-intent'].includes(command.action)){
     const op=next.state.refundOperations.find(o=>o.id===next.result.refund.id);
     op.intentReceiptId=createHash('sha256').update(canonical(['vega-independent-receipt-v1',{tenantId:a.tenantId,businessId:a.businessId,actorId:a.userId,requestId:command.body.requestId}])).digest('hex');
     next.result.refund=structuredClone(op);
