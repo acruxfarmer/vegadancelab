@@ -79,11 +79,11 @@
     "Waitlist-expiry notices"
   ],
   "activeSlice": {
-    "id": "L6-S1B",
-    "name": "Universal Media Placement & Access Authority",
-    "status": "IMPLEMENTED / READY FOR REVIEW",
-    "checkpoint": "docs/layer-6/l6-s1b-checkpoint.json",
-    "previousSlice": "L6-S1A COMPLETE / VERIFIED / APPROVED / CLOSED",
-    "nextSlices": "Stop for Joe + Chett review. L6-S2 not started. Production remains untouched."
+    "id": "L6-S2",
+    "name": "Viewer Access Resolution",
+    "status": "IMPLEMENTED / HOSTED VERIFICATION BLOCKED ON WILLOW FIXTURE AUTHORIZATION",
+    "checkpoint": "docs/layer-6/l6-s2-checkpoint.json",
+    "previousSlice": "L6-S1A and L6-S1B COMPLETE / VERIFIED / APPROVED / CLOSED",
+    "nextSlices": "Finish L6-S2 verification after bounded fixture approval; no next slice authorized. Production untouched."
   }
 }
