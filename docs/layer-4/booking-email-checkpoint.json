@@ -1,6 +1,6 @@
 {
   "dragon": "Layer 4 — Booking Lifecycle Transactional Email",
-  "status": "BLOCKED — Existing Resend credential handoff to Development web runtime required",
+  "status": "FINAL VERIFICATION — provider accepted one authorized Development email",
   "recordedLocalDate": "2026-10-06",
   "layer3": "COMPLETE / VERIFIED / CLOSED — unchanged",
   "layer2": "COMPLETE / VERIFIED / CLOSED — unchanged",
@@ -26,8 +26,8 @@
     "includesSecondBusiness": true,
     "databaseFunctionalTests": "Passed: rollback-only two-business verification",
     "databaseRestrictedRoleTests": "Passed through deployed vega_app_runtime: all four lifecycle kinds, member/staff agreement, 11 receipt checks, direct writes/Auth lookup denied; all test mutations rolled back",
-    "hostedEmailVerification": "Browser booking confirmed; one verified-recipient intent queued; zero provider attempts",
-    "applicationDeployment": "Development Live at 0fabbdd6b34c6215bab238d14a2226e5bd4c3090; final helper/UI build awaits credential installation",
+    "hostedEmailVerification": "One authorized email accepted on first attempt; member/staff runtime status agrees; business digests unchanged",
+    "applicationDeployment": "Development Live at dcb46ff07704515190034722097cb1e3d6652952",
     "hostedBuildTests": {
       "passed": 1079,
       "failed": 0
@@ -38,7 +38,7 @@
     "schemaApplied": "Initial additive booking-email tables/functions only",
     "intents": 1,
     "enabledBusinesses": 0,
-    "externalMessages": 0,
+    "externalMessages": 1,
     "anonymousPrivateSchemaAccess": false,
     "authenticatedPrivateSchemaAccess": false,
     "correctionRequired": null,
@@ -49,12 +49,7 @@
     "evidence": "docs/layer-4/booking-email-permission-evidence.json"
   },
   "resume": [
-    "Joe runs the prepared private credential script; no additional approval requested and no secrets shared in chat",
-    "Inspect non-secret result and deploy final committed Development build",
-    "Enable only the approved Development configuration for the existing queued intent; keep unattended delivery disabled",
-    "Run send-one-booking-email-development.mjs with exact approved intent c10c1894d59e8c098a71f73c7c184f398e9835c99d21ac299bda1300c24b0ae9",
-    "Disable the test configuration after the bounded attempt; reconcile any uncertainty without a new send identity",
-    "Verify provider acceptance/delivery only against actual evidence, member/staff status, and unchanged booking/payment/refund/entitlement state"
+    "Finish member browser verification after expired-session sign-in; save closure evidence"
   ],
   "recoveryRules": [
     "Never repeat a booking to resend an email",

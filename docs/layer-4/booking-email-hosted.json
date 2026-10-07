@@ -1,17 +1,17 @@
 {
-  "status": "HOSTED APPLICATION VERIFIED — ONE PROVIDER TEST AWAITS PRIVATE CREDENTIAL HANDOFF",
+  "status": "HOSTED PROVIDER ACCEPTANCE VERIFIED — FINAL MEMBER BROWSER CHECK PENDING",
   "environment": "Development",
   "productionTouched": false,
   "deployment": {
     "serviceId": "srv-dao5cjbm8hqs73db51j0",
-    "deploymentId": "dep-db2o4mid0e5s73dprn5g",
-    "commit": "0fabbdd6b34c6215bab238d14a2226e5bd4c3090",
+    "deploymentId": "dep-db2os367bikc73aek4o0",
+    "commit": "dcb46ff07704515190034722097cb1e3d6652952",
     "status": "Live",
-    "durationSeconds": 41.3,
     "hostedBuildTests": {
       "passed": 1079,
       "failed": 0
-    }
+    },
+    "liveAt": "2026-10-07T00:11:34Z"
   },
   "restrictedRuntime": {
     "role": "vega_app_runtime",
@@ -42,12 +42,17 @@
     "verifiedAuthAddressMatched": true,
     "sender": "Vega Dance Lab <admin@acrux.co>",
     "provider": "Existing Resend Sending-access credential",
-    "attempts": 0,
-    "status": "intent_created",
+    "attempts": 1,
+    "status": "provider_accepted",
     "unattendedDeliveryEnabled": false,
-    "credentialPresentInWebRuntime": false,
+    "credentialPresentInWebRuntime": true,
     "credentialHandoffScript": "scripts/configure-booking-email-development.ps1",
-    "oneMessageRunner": "scripts/send-one-booking-email-development.mjs"
+    "oneMessageRunner": "scripts/send-one-booking-email-development.mjs",
+    "providerId": "01a113b4-16c6-787d-b8ca-ded5f8295d21",
+    "acceptedAt": "2026-10-07T00:12:11.965768Z",
+    "deliveredAt": null,
+    "deliveryClaimed": false,
+    "enabledBusinessesAfterTest": 0
   },
   "publicBoundary": {
     "unauthenticatedAppStatus": 401,
@@ -66,5 +71,26 @@
       "stateDigest": "1e8a823a955d74251b2a56b2cff77cfd"
     }
   ],
-  "permissionEvidence": "docs/layer-4/booking-email-permission-evidence.json"
+  "permissionEvidence": "docs/layer-4/booking-email-permission-evidence.json",
+  "businessStateAfterSend": [
+    {
+      "business": "vega-dance-lab",
+      "revision": 168,
+      "stateDigest": "1f2801f444fb91ce54f927f418b9fb48"
+    },
+    {
+      "business": "willow-movement",
+      "revision": 0,
+      "stateDigest": "1e8a823a955d74251b2a56b2cff77cfd"
+    }
+  ],
+  "businessStateUnchangedByDelivery": true,
+  "finalRestrictedRuntimeRead": {
+    "memberStaffAgree": true,
+    "status": "Email accepted by provider",
+    "booking": "reserved",
+    "revision": 168,
+    "unattendedDelivery": "disabled"
+  },
+  "deliveryEvidenceLimit": "Resend accepted one message. Inbox delivery has not been independently observed; Resend dashboard requires a separate login. Sending-only key permissions preserved."
 }
