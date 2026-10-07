@@ -22,10 +22,10 @@ for(const business of ['vega','willow'])test(`${business}: booking/cancellation/
  assert.equal(bookingEmailIntents(cancelled,again,a,reserve)[0].kind,'rebooking_confirmation');
  assert.notEqual(bookingEmailIntents(cancelled,again,a,reserve)[0].id,first[0].id);
 });
-test('successful promotion uses authoritative waitlist transition; waiting alone sends nothing',()=>{
+test('successful promotion and waitlist joining use authoritative transitions',()=>{
  const a=authority(),s=fixture();s.reservations=[{id:'full',participantId:'other',classId:'class',status:'reserved'}];
  const waiting=transition(s,{...reserve,body:{...reserve.body,waitlistOnly:true}},a,{now}).state;
- assert.deepEqual(bookingEmailIntents(s,waiting,a,reserve),[]);
+ assert.equal(bookingEmailIntents(s,waiting,a,reserve)[0].kind,'waitlist_joined');
  waiting.reservations[0].status='cancelled';
  const command={action:'promote',id:waiting.reservations[1].id,body:{requestId:'promote'}},promoted=transition(waiting,command,{...a,role:'staff'},{now}).state;
  const intents=bookingEmailIntents(waiting,promoted,a,command);assert.equal(intents[0].kind,'waitlist_promotion');
