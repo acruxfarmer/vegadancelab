@@ -89,3 +89,15 @@ test('direct restricted HTTP requests and forged scope headers cannot bypass ser
  f.placement.authorized=false;const denied=await request(api,url,{token:true});assert.equal(denied.status,403);assert.equal(denied.body.includes('productIds'),false);
  assert.equal((await request(api,url+'?allowed=true',{token:true})).status,400);
 });
+
+test('viewer description exposes only safe metadata and canonical denial, never asset or entitlement data',async()=>{
+ const f=fixture();Object.assign(f.video,{title:'Practice',description:'A short class',creator:'Teacher',privateStaffNotes:'secret'});
+ const viewerStore=createMediaViewerStore(database(f),{now:()=>at});
+ const api=createApplicationApi(env,{mediaPlacementView:(id,p)=>viewerStore.describe(id,p),mediaPlacementPlayback:(id,p)=>viewerStore.play(id,p)});
+ const r=await request(api,`/api/media/placements/${placementId}`),body=JSON.parse(r.body);
+ assert.equal(r.status,200);assert.equal(body.decision.reason,'authentication_required');assert.equal(body.metadata.title,'Practice');
+ for(const privateValue of ['asset','productIds','participant','privateStaffNotes','bytes','businessId','resourceId'])assert.equal(r.body.includes(privateValue),false);
+ assert.equal((await request(api,`/api/media/placements/${placementId}/play`)).status,401);
+ f.placement.policy={kind:'pay_on_demand'};assert.equal((await viewerStore.describe(null,placementId)).decision.reason,'paid_access_required');
+ await assert.rejects(viewerStore.play(viewer,placementId));
+});

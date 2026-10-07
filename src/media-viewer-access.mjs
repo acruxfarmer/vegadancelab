@@ -1,7 +1,7 @@
 import {placementContext,placementPolicy,qualifiesForMembership} from './media-placement.mjs';
 import {mediaEligible} from './media.mjs';
 
-export const MEDIA_ACCESS_REASONS=Object.freeze(['public_access','qualifying_membership','authentication_required','membership_required','membership_not_current','placement_unavailable','resource_unavailable','access_policy_invalid']);
+export const MEDIA_ACCESS_REASONS=Object.freeze(['public_access','qualifying_membership','authentication_required','membership_required','membership_not_current','paid_access_required','placement_unavailable','resource_unavailable','access_policy_invalid']);
 const decision=(allowed,reason)=>({allowed,reason});
 // Canonical, presentation-free qualification decision. State is supplied only by
 // the scoped server adapter, never by HTTP payloads or editable identity claims.
@@ -10,6 +10,7 @@ export function resolveMediaViewerAccess({placement,resourceAvailable,viewerId,a
  try{placementContext(placement.context);}catch{return decision(false,'placement_unavailable');}
  if(resourceAvailable!==true)return decision(false,'resource_unavailable');
  const policy=placement.policy;
+ if(policy?.kind==='pay_on_demand')return decision(false,Object.keys(policy).length===1?'paid_access_required':'access_policy_invalid');
  if(policy?.kind==='public'){
   try{placementPolicy(policy,{});return decision(true,'public_access');}catch{return decision(false,'access_policy_invalid');}
  }

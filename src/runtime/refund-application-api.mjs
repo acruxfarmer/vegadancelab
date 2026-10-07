@@ -35,6 +35,14 @@ export function createApplicationApi(env,store,fetcher=fetch){
   const url=new URL(req.url,'http://vega.local');if(!url.pathname.startsWith('/api/'))return false;
   const send=(status,data)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(data));};
   try{
+   const placementView=url.pathname.match(/^\/api\/media\/placements\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i);
+   if(placementView){
+    if(req.method!=='GET'||url.search)throw new ApplicationError('Invalid media request',400);
+    if(!store?.mediaPlacementView)throw new ApplicationError('Media temporarily unavailable',503);
+    let viewerId=null;
+    if(req.headers.authorization!==undefined){configured();viewerId=(await createMediaPrincipalVerifier({authOrigin:origin,publishableKey:key,fetcher})(req)).userId;}
+    send(200,await store.mediaPlacementView(viewerId,placementView[1]));return true;
+   }
    const placementPlay=url.pathname.match(/^\/api\/media\/placements\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\/play$/i);
    if(placementPlay){
     if(req.method!=='GET')throw new ApplicationError('Method not allowed',405);
@@ -133,6 +141,11 @@ export function createApplicationApi(env,store,fetcher=fetch){
     send(assessment.status==='denied'?403:200,assessment);return true;
    }
    const mediaPlay=url.pathname.match(/^\/api\/media\/([A-Za-z0-9-]{1,128})\/play$/);
+   const mediaAccess=url.pathname.match(/^\/api\/media\/([A-Za-z0-9-]{1,128})\/access$/);
+   if(mediaAccess){
+    if(url.search||!['GET','POST'].includes(req.method))throw new ApplicationError('Invalid media request',400);
+    send(200,await store.mediaAccessManagement(userId,mediaAccess[1],req.method==='POST'?await readJson(req):undefined));return true;
+   }
    if(mediaPlay&&req.method==='GET'){
     if([...url.searchParams.keys()].some(k=>k!=='revision')||url.searchParams.getAll('revision').length!==1)throw new ApplicationError('Invalid media link');
     const bytes=await store.mediaPlayback(userId,mediaPlay[1],Number(url.searchParams.get('revision')));

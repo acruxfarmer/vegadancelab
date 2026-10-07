@@ -38,40 +38,40 @@ function fixture(){
 const config=(policy={kind:'public'})=>({visible:true,policy,categoryIds:['category'],collectionIds:['collection']});
 test('owner authorizes one resource into two contexts without ownership or business mutations',async()=>{
  const f=fixture(),before=structuredClone([...f.businesses]),resource=structuredClone(f.resources.get('resource'));
- const a=await f.service.authorize('owner','resource',contexts[0]),b=await f.service.authorize('owner','resource',contexts[1]);
+ const a=await f.service.authorize('owner','resource',contexts[0],{kind:'public'}),b=await f.service.authorize('owner','resource',contexts[1],{kind:'public'});
  assert.notEqual(a.id,b.id);assert.equal(a.resourceId,b.resourceId);assert.equal(a.visible,false);
  assert.deepEqual(f.resources.get('resource'),resource);assert.deepEqual([...f.businesses],before);
- assert.equal((await f.service.authorize('owner','resource',contexts[0])).id,a.id);assert.equal(f.audit().length,2);
+ assert.equal((await f.service.authorize('owner','resource',contexts[0],{kind:'public'})).id,a.id);assert.equal(f.audit().length,2);
 });
 test('unrelated user and target staff cannot authorize another owner resource; owner is not context staff',async()=>{
- const f=fixture();for(const actor of ['other','staff-vega'])await assert.rejects(f.service.authorize(actor,'resource',contexts[0]),/owner access/);
- const p=await f.service.authorize('owner','resource',contexts[0]);await assert.rejects(f.service.configure('owner',p.id,1,config()),/Context media/);
+ const f=fixture();for(const actor of ['other','staff-vega'])await assert.rejects(f.service.authorize(actor,'resource',contexts[0],{kind:'public'}),/owner access/);
+ const p=await f.service.authorize('owner','resource',contexts[0],{kind:'public'});await assert.rejects(f.service.configure('owner',p.id,1,config()),/Context media/);
  await assert.rejects(f.service.configure('staff-willow',p.id,1,config()),/Context media/);
 });
 test('business ownership uses the same placement semantics and scoped management',async()=>{
- const f=fixture(),p=await f.service.authorize('staff-vega','business-resource',contexts[1]);
- await assert.rejects(f.service.authorize('staff-willow','business-resource',contexts[1]),/owner access/);
+ const f=fixture(),p=await f.service.authorize('staff-vega','business-resource',contexts[1],{kind:'public'});
+ await assert.rejects(f.service.authorize('staff-willow','business-resource',contexts[1],{kind:'public'}),/owner access/);
  const live=await f.service.configure('staff-willow',p.id,1,config());assert.equal(live.visible,true);
  await assert.rejects(f.service.withdraw('staff-willow',p.id,2),/owner access/);
  assert.equal((await f.service.withdraw('staff-vega',p.id,2)).authorized,false);
 });
 test('public placement needs no entitlement or sign-in, but hidden and withdrawn placements deny',async()=>{
- const f=fixture(),p=await f.service.authorize('owner','resource',contexts[0]);assert.deepEqual(await f.service.access(null,p.id),{allowed:false});
+ const f=fixture(),p=await f.service.authorize('owner','resource',contexts[0],{kind:'public'});assert.deepEqual(await f.service.access(null,p.id),{allowed:false});
  await f.service.configure('staff-vega',p.id,1,config());assert.equal((await f.service.access(null,p.id)).allowed,true);
  await f.service.withdraw('owner',p.id,2);assert.deepEqual(await f.service.access(null,p.id),{allowed:false});
  await assert.rejects(f.service.configure('staff-vega',p.id,3,config()),/inactive/);
- await assert.rejects(f.service.authorize('owner','resource',contexts[0]),/withdrawn/);
+ await assert.rejects(f.service.authorize('owner','resource',contexts[0],{kind:'public'}),/withdrawn/);
 });
 test('withdrawal retains resource, other placement, audit and all entitlement state',async()=>{
  const f=fixture(),before=structuredClone([...f.businesses]);
- const a=await f.service.authorize('owner','resource',contexts[0]),b=await f.service.authorize('owner','resource',contexts[1]);
+ const a=await f.service.authorize('owner','resource',contexts[0],{kind:'public'}),b=await f.service.authorize('owner','resource',contexts[1],{kind:'public'});
  await f.service.configure('staff-vega',a.id,1,config());await f.service.configure('staff-willow',b.id,1,config());
  await f.service.withdraw('owner',a.id,2);assert.equal((await f.service.access(null,b.id)).allowed,true);
  assert.equal(f.resources.get('resource').lifecycle,'active');assert.deepEqual([...f.businesses],before);
  assert.deepEqual(f.audit().map(e=>e.action),['authorized','authorized','configured','configured','withdrawn']);
 });
 for(const context of contexts)test(`${context.businessId}: membership OR uses existing periods, ignores zero credits, expires exactly, remains non-consumptive`,async()=>{
- const f=fixture(),{state,products}=f.businesses.get(context.businessId),p=await f.service.authorize('owner','resource',context);
+ const f=fixture(),{state,products}=f.businesses.get(context.businessId),p=await f.service.authorize('owner','resource',context,{kind:'memberships',productIds:products.map(p=>p.id)});
  await f.service.configure(`staff-${context.businessId}`,p.id,1,config({kind:'memberships',productIds:products.map(p=>p.id)}));
  const actor=`member-${context.businessId}`;assert.equal((await f.service.access(actor,p.id)).allowed,true);
  for(const u of state.creditUnits)u.status='consumed';const before=structuredClone(state);
@@ -81,8 +81,8 @@ for(const context of contexts)test(`${context.businessId}: membership OR uses ex
  f.time('2026-09-30T23:59:59.999Z');assert.equal((await f.service.access(actor,p.id)).allowed,false);
 });
 test('business-specific policy references and member linkage cannot cross contexts',async()=>{
- const f=fixture(),a=await f.service.authorize('owner','resource',contexts[0]),b=await f.service.authorize('owner','resource',contexts[1]);
- const pa=f.businesses.get('vega').products[0].id,pb=f.businesses.get('willow').products[0].id;
+ const f=fixture(),pa=f.businesses.get('vega').products[0].id,pb=f.businesses.get('willow').products[0].id;
+ const a=await f.service.authorize('owner','resource',contexts[0],{kind:'memberships',productIds:[pa]}),b=await f.service.authorize('owner','resource',contexts[1],{kind:'memberships',productIds:[pb]});
  await assert.rejects(f.service.configure('staff-willow',b.id,1,config({kind:'memberships',productIds:[pa]})),/unavailable/);
  await f.service.configure('staff-vega',a.id,1,config({kind:'memberships',productIds:[pa]}));
  await f.service.configure('staff-willow',b.id,1,config({kind:'memberships',productIds:[pb]}));
@@ -90,7 +90,7 @@ test('business-specific policy references and member linkage cannot cross contex
  assert.equal((await f.service.access(null,a.id)).allowed,false);
 });
 test('invalid/deferred products, arbitrary policies and ownership fields are rejected',async()=>{
- const f=fixture(),p=await f.service.authorize('owner','resource',contexts[0]),s=f.businesses.get('vega').state;
+ const f=fixture(),p=await f.service.authorize('owner','resource',contexts[0],{kind:'public'}),s=f.businesses.get('vega').state;
  s.entitlementProducts.push({id:'pack',type:'class_pack'});
  for(const ids of [['missing'],['pack'],[],['pack','pack']])assert.throws(()=>placementPolicy({kind:'memberships',productIds:ids},s));
  await assert.rejects(f.service.configure('staff-vega',p.id,1,{...config(),owner:{kind:'user',userId:'staff-vega'}}),/Unsupported/);
@@ -104,10 +104,21 @@ test('inconsistent issuance/period, missing product and ambiguous participant li
  grant.participantId='p';state.entitlementIssuances.push(structuredClone(grant));assert.equal(qualifiesForMembership(state,['p'],ids,at),false);
 });
 test('archived resource invalidates all placement decisions without mutating placements',async()=>{
- const f=fixture(),p=await f.service.authorize('owner','resource',contexts[0]);await f.service.configure('staff-vega',p.id,1,config());
+ const f=fixture(),p=await f.service.authorize('owner','resource',contexts[0],{kind:'public'});await f.service.configure('staff-vega',p.id,1,config());
  f.resources.get('resource').lifecycle='archived';assert.equal((await f.service.access(null,p.id)).allowed,false);assert.equal(f.placements()[0].authorized,true);
 });
 test('repository rolls back and releases on failures',async()=>{
  const queries=[];let released=false;const repository=createMediaPlacementRepository({connect:async()=>({query:async q=>{queries.push(q);return {rows:[]};},release:()=>released=true})});
  await assert.rejects(repository.transaction('owner',()=>{throw Error('test failure')}),/test failure/);assert.equal(queries.at(-1),'rollback');assert.equal(released,true);
+});
+
+test('same-business staff edit availability without changing identity or ownership; external context cannot',async()=>{
+ const f=fixture(),p=await f.service.authorize('staff-vega','business-resource',contexts[0],{kind:'public'}),before=structuredClone(f.resources.get('business-resource'));
+ const changed=await f.service.configure('staff-vega',p.id,1,config({kind:'pay_on_demand'}));
+ assert.equal(changed.id,p.id);assert.equal(changed.resourceId,p.resourceId);assert.deepEqual(f.resources.get('business-resource'),before);
+ const external=await f.service.authorize('owner','resource',contexts[0],{kind:'pay_on_demand'});
+ await assert.rejects(f.service.configure('staff-vega',external.id,1,config({kind:'public'})),/resource owner/);
+ const local=await f.service.configure('staff-vega',external.id,1,config({kind:'pay_on_demand'}));assert.equal(local.visible,true);assert.equal((await f.service.access(null,local.id)).allowed,false);
+ await assert.rejects(f.service.configure('staff-willow',changed.id,2,config({kind:'public'})),/Context media/);
+ await assert.rejects(f.service.authorize('owner','resource',contexts[1]),/Explicit access/);
 });

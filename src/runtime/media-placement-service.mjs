@@ -18,13 +18,14 @@ export function createMediaPlacementService({authenticate,repository,now=()=>new
  };
  const audit=(tx,p,actor,action)=>tx.audit({placementId:p.id,actorId:actor,action,revision:p.revision,createdAt:now()});
  return {
-  authorize:(request,resourceId,context)=>run(request,async(tx,actor)=>{
+  authorize:(request,resourceId,context,initialPolicy)=>run(request,async(tx,actor)=>{
    context=placementContext(context);const r=await tx.resource(resourceId);await owner(tx,actor,r);
    if(r.lifecycle!=='active')fail('Resource is inactive',409);
    await tx.lock(resourceId,context);
    const existing=await tx.find(resourceId,context);
    if(existing){if(!existing.authorized)fail('Placement was withdrawn; explicit reauthorization is not supported in this slice',409);return existing;}
-   const p={id:id(),resourceId,context,authorized:true,authorizedBy:actor,authorizedAt:now(),withdrawnAt:null,visible:false,policy:{kind:'public'},categoryIds:[],collectionIds:[],revision:1};
+   const policy=placementPolicy(initialPolicy,initialPolicy?.kind==='memberships'?await tx.businessState(context):{});
+   const p={id:id(),resourceId,context,authorized:true,authorizedBy:actor,authorizedAt:now(),withdrawnAt:null,visible:false,policy,categoryIds:[],collectionIds:[],revision:1};
    await tx.insert(p);await audit(tx,p,actor,'authorized');return p;
   }),
   configure:(request,placementId,expectedRevision,input)=>run(request,async(tx,actor)=>{
@@ -34,6 +35,10 @@ export function createMediaPlacementService({authenticate,repository,now=()=>new
    if(p.revision!==expectedRevision)fail('Placement changed; refresh before saving',409);
    if(!input||Object.keys(input).some(k=>!['visible','policy','categoryIds','collectionIds'].includes(k))||typeof input.visible!=='boolean')fail('Unsupported placement configuration',400);
    const state=await tx.businessState(p.context),policy=placementPolicy(input.policy,state);
+   const r=await tx.resource(p.resourceId),o=r?.owner;
+   const sameBusiness=o?.kind==='business'&&o.tenantId===p.context.tenantId&&o.businessId===p.context.businessId;
+   const samePolicy=JSON.stringify(policy)===JSON.stringify(placementPolicy(p.policy,state));
+   if(!sameBusiness&&!samePolicy)fail('Access Availability is controlled by the resource owner');
    const groups={};
    for(const [key,kind] of [['categoryIds','category'],['collectionIds','collection']]){
     const values=input[key]??[];

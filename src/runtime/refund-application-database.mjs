@@ -1,4 +1,5 @@
 import {mediaPlayback} from '../media.mjs';
+import {manageMediaAccess} from './media-access-management.mjs';
 import {createMediaViewerStore,resolveMediaOnClient,requireMediaDecision} from './media-viewer-store.mjs';
 import {resolveStaffAccess,hasStaffPermission,requireStaffPermission,requireStaffCommand,visibleStaffData,staffCommandResult} from '../staff-permissions.mjs';
 import {DEVELOPMENT_INITIAL_OWNERS,staffManagementView,staffManagementTransition} from '../staff-role-management.mjs';
@@ -56,8 +57,13 @@ export function createApplicationStore(pool,{bookingEmails=false,initialOwners=[
   const {rows}=await client.query(`select state,revision from vega_private.app_state where tenant_id=$1 and business_id=$2${lock?' for update':''}`,[a.tenantId,a.businessId]);
   if(rows.length!==1)throw new ApplicationError('Studio application data is not initialized',503);return rows[0];
  }
- const viewer=createMediaViewerStore(pool);
+ const viewer=createMediaViewerStore(pool,{observe:event=>{if(event.reason==='access_policy_invalid')console.warn(JSON.stringify({event:'media_access_policy_invalid',placementId:event.placementId}));}});
  const store={
+  mediaAccessManagement:(identity,videoId,input)=>transaction(identity,async(c,a)=>{
+   const row=await stateRow(c,a);if(a.role!=='staff')fail('Staff access required');requirePermission(row.state,a,'customers.manage');
+   return manageMediaAccess(c,a,row.state,videoId,input,{initialOwners});
+  }),
+  mediaPlacementView:(viewerId,placementId)=>viewer.describe(viewerId,placementId),
   mediaPlacementPlayback:(viewerId,placementId)=>viewer.play(viewerId,placementId),
   mediaPlayback:(identity,id,revision)=>transaction(identity,async(c,a)=>{
    const row=await stateRow(c,a),staffAllowed=hasStaffPermission(access(row.state,a),a,'customers.manage');
@@ -156,6 +162,10 @@ export function createApplicationStore(pool,{bookingEmails=false,initialOwners=[
    }
    const outstanding=await c.query("select count(*)::int as count from vega_private.recovery_outbox where tenant_id=$1 and business_id=$2 and event_kind='business' and discovery_state<>'acknowledged'",[a.tenantId,a.businessId]);
    const raw={mode:'development',context:{name:a.businessId==='vega-dance-lab'?'Vega Dance Lab':a.businessId,...a},revision:row.revision,...visibleState(row.state,a),jobs,squareEnabled:false,recovery:{pendingCount:outstanding.rows[0]?.count??0}};
+   if(a.role==='member')for(const video of raw.videos||[]){
+    const {rows}=await c.query('select media_private.legacy_viewer_placement($1,$2,$3) as id',[a.tenantId,a.businessId,video.id]);
+    if(rows[0]?.id){const result=await resolveMediaOnClient(c,a.userId,rows[0].id);video.placementId=rows[0].id;video.accessDecision=result.decision;}
+   }
    if(bookingEmails&&(a.role==='member'||hasStaffPermission(access(row.state,a),a,'customers.read')))raw.bookingEmails=await readBookingEmails(c,a);
    return a.role==='staff'?{...visibleStaffData(raw,a,access(row.state,a)),...staffManagementView(row.state,a,initialOwners)}:raw;
   }),
@@ -183,6 +193,7 @@ export function createApplicationStore(pool,{bookingEmails=false,initialOwners=[
    const latest=current[0];
    if(current.length!==1||latest.tenant_id!==a.tenantId||latest.business_id!==a.businessId||latest.role!==a.role||JSON.stringify(latest.participant_ids)!==JSON.stringify(a.participantIds))throw new ApplicationError('Access changed. Reload your account before continuing.',403);
    if(command.action==='staff-register'&&a.role!=='staff')fail('Staff membership required',403);
+   if(command.action==='media-publish'){const {rows}=await c.query('select media_private.legacy_viewer_placement($1,$2,$3) as id',[a.tenantId,a.businessId,command.body.id]);if(!rows[0]?.id)fail('Choose Access Availability before publishing.',409);}
    if(command.action!=='staff-register')requireStaffCommand(row.state,command,a,access(row.state,a),fail);
    if(command.action.startsWith('payment-'))requirePayment(row.state,a,command.body?.purchaseId);
    if(typeof requestId!=='string'||!requestId.trim()||requestId.length>128)throw new ApplicationError('A request identifier is required');

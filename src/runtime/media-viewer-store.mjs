@@ -20,7 +20,9 @@ export async function resolveMediaOnClient(client,viewerId,placementId,{at=new D
  if(result.allowed){try{bytes=mediaAssetBytes(material.video);}catch{result={allowed:false,reason:'resource_unavailable'};}}
  // A caller may record this allowlisted diagnostic, never the token or source.
  observe({placementId,context:p?.context??null,...result});
- return {decision:result,...(result.allowed?{bytes,revision:material.video.revision}: {})};
+ const v=material?.video;
+ const metadata=v&&p?.authorized===true&&p.visible===true?{title:v.title,description:v.description,creator:v.creator,duration:v.duration,poster:'/media-poster.svg',availability:({public:'ALL',memberships:'MEMBERS',pay_on_demand:'PAY_ON_DEMAND'})[p.policy?.kind]||null}:null;
+ return {decision:result,metadata,...(result.allowed?{bytes,revision:material.video.revision}: {})};
 }
 export function requireMediaDecision(result){
  if(!result.decision.allowed){const e=new ApplicationError('This video is unavailable for your account.',result.decision.reason==='authentication_required'?401:403);e.mediaReason=result.decision.reason;throw e;}
@@ -33,5 +35,5 @@ export function createMediaViewerStore(pool,{observe=()=>{},now=()=>new Date().t
    const result=await resolveMediaOnClient(c,viewerId,placementId,{at:now(),observe});
    await c.query('commit');return result;
   }catch(e){await c.query('rollback').catch(()=>{});throw e;}finally{c.release();}
- },async play(viewerId,placementId){return requireMediaDecision(await this.resolve(viewerId,placementId));}};
+ },async describe(viewerId,placementId){const {decision,metadata}=await this.resolve(viewerId,placementId);return {decision,metadata};},async play(viewerId,placementId){return requireMediaDecision(await this.resolve(viewerId,placementId));}};
 }
