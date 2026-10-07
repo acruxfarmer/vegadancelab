@@ -5,12 +5,13 @@ import {applicationDatabaseOptions,createApplicationStore} from '../src/runtime/
 import {DEVELOPMENT_INITIAL_OWNERS} from '../src/staff-role-management.mjs';
 import {createMediaPlacementRepository} from '../src/runtime/media-placement-repository.mjs';
 import {createMediaPlacementService} from '../src/runtime/media-placement-service.mjs';
-import {createMediaViewerStore,resolveMediaOnClient} from '../src/runtime/media-viewer-store.mjs';
+import {createMediaViewerStore} from '../src/runtime/media-viewer-store.mjs';
 import {bookingAccounting} from '../src/cancellation.mjs';
 import {entitlementActive} from '../src/entitlements.mjs';
 
 if(process.env.VEGA_ENV!=='development'||process.env.RENDER_SERVICE_ID!=='srv-dao5cjbm8hqs73db51j0')throw Error('Development runtime required');
 const pool=new pg.Pool(applicationDatabaseOptions(process.env.APP_DATABASE_URL));
+const secondBusiness=process.argv.includes('--with-second-business-fixture');
 const staff=DEVELOPMENT_INITIAL_OWNERS[0],member='e5946b40-9839-4a96-99d5-93262d9573f0';
 const vega={kind:'business',tenantId:staff.tenantId,businessId:staff.businessId},willow={kind:'business',tenantId:'layer3-reuse-fixture',businessId:'willow-movement'};
 const resource='5d23202b-538b-4ad0-9bbe-46856932166e',product='98418cad-59e3-4301-85c0-ec696907d3a2',willowProduct='d1e20fe7-83c2-4bde-a628-2b5b3a714232';
@@ -33,20 +34,20 @@ const write=async(ctx,state)=>c.query('update vega_private.app_state set state=$
 const hash=s=>createHash('sha256').update(JSON.stringify(s)).digest('hex');
 try{
  await c.query('begin');await actor(staff.userId);
- const beforeVega=await read(vega),beforeWillow=await read(willow);
+ const beforeVega=await read(vega),beforeWillow=secondBusiness?await read(willow):null;
  // Second-business products/role assignment are transaction-local fixtures.
  // Existing member links are prepared separately and removed after verification.
  const willowFixture={...structuredClone(beforeWillow),entitlementProducts:[{id:willowProduct,name:'Development membership fixture',type:'membership',quantity:1,validDays:30}],staffRoleAssignments:[{tenantId:willow.tenantId,businessId:willow.businessId,userId:staff.userId,role:'owner',revision:1}]};
- await write(willow,willowFixture);
- const a=await placements.authorize(staff.userId,resource,vega),b=await placements.authorize(staff.userId,resource,willow);
+ if(secondBusiness)await write(willow,willowFixture);
+ const a=await placements.authorize(staff.userId,resource,vega),b=secondBusiness?await placements.authorize(staff.userId,resource,willow):null;
  await placements.configure(staff.userId,a.id,1,config({kind:'public'}));
- await placements.configure(staff.userId,b.id,1,config({kind:'public'}));
- assert.ok((await viewer.play(null,a.id)).length>0);assert.ok((await viewer.play(null,b.id)).length>0);
+ if(b)await placements.configure(staff.userId,b.id,1,config({kind:'public'}));
+ assert.ok((await viewer.play(null,a.id)).length>0);if(b)assert.ok((await viewer.play(null,b.id)).length>0);
  await placements.configure(staff.userId,a.id,2,config({kind:'memberships',productIds:[product]}));
  assert.ok((await viewer.play(member,a.id)).length>0);await assert.rejects(viewer.play(null,a.id));
- await placements.configure(staff.userId,b.id,2,config({kind:'memberships',productIds:[willowProduct]}));
+ if(b){await placements.configure(staff.userId,b.id,2,config({kind:'memberships',productIds:[willowProduct]}));
  assert.equal((await viewer.resolve(member,b.id)).decision.allowed,false);
- await placements.configure(staff.userId,b.id,3,config({kind:'public'}));
+ await placements.configure(staff.userId,b.id,3,config({kind:'public'}));}
  const expiry=createMediaViewerStore(nestedPool,{now:()=> '2026-10-21T07:00:00.000Z'});assert.equal((await expiry.resolve(member,a.id)).decision.reason,'membership_not_current');
  await c.query('savepoint zero_credit_fixture');await actor(staff.userId);
  const zero=structuredClone(beforeVega),at=new Date().toISOString(),participantId='vega-member-test-joe';
@@ -67,8 +68,8 @@ try{
  await c.query('rollback to savepoint unpublished_fixture');await c.query('release savepoint unpublished_fixture');
  await placements.withdraw(staff.userId,a.id,3);assert.equal((await viewer.resolve(member,a.id)).decision.allowed,false);
  await assert.rejects(application.mediaPlayback({userId:member,...vega},'b584d560-1f3d-4b4d-bd2f-9d4a8026122f',8));
- assert.ok((await viewer.play(null,b.id)).length>0);
- await actor(staff.userId);assert.equal(hash(await read(vega)),hash(beforeVega));assert.equal(hash(await read(willow)),hash(willowFixture));
- console.log(JSON.stringify({result:'L6S2_RUNTIME_PASS',publicPlayback:true,currentMembershipPlayback:true,zeroCurrentCreditsPlayback:true,expiryDenied:true,wrongBusinessMembershipDenied:true,withdrawalDenied:true,otherPlacementPlays:true,legacyUrlBypassDenied:true,unpublishedDenied:true,viewingNonConsumptive:true,allRuntimeFixtureChangesRolledBack:true,providerExecution:false}));
+ if(b)assert.ok((await viewer.play(null,b.id)).length>0);
+ await actor(staff.userId);assert.equal(hash(await read(vega)),hash(beforeVega));if(b)assert.equal(hash(await read(willow)),hash(willowFixture));
+ console.log(JSON.stringify({result:secondBusiness?'L6S2_RUNTIME_PASS':'L6S2_VEGA_RUNTIME_PASS',publicPlayback:true,currentMembershipPlayback:true,zeroCurrentCreditsPlayback:true,expiryDenied:true,wrongBusinessMembershipDenied:secondBusiness?true:'NOT_RUN',withdrawalDenied:true,otherPlacementPlays:secondBusiness?true:'NOT_RUN',legacyUrlBypassDenied:true,unpublishedDenied:true,viewingNonConsumptive:true,allRuntimeFixtureChangesRolledBack:true,providerExecution:false}));
 }catch(e){console.error(JSON.stringify({result:'L6S2_RUNTIME_FAILED',code:e.code||null,message:e.message}));process.exitCode=1;}
 finally{await c.query('rollback');c.release();await pool.end();}
