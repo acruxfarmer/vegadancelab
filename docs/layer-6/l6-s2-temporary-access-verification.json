@@ -1,0 +1,102 @@
+{
+  "status": "HOSTED VERIFIED / READY FOR CLOSURE",
+  "date": "2026-10-07",
+  "singleBoundedRun": true,
+  "temporaryLinksCreated": 2,
+  "temporaryLinksRemoved": 2,
+  "safetyFinallyRemovalCount": 0,
+  "before": {
+    "audit": {
+      "hash": "93a4ec841034b6b644c0c79529f602b3",
+      "count": 5
+    },
+    "linksHash": "2751a1e191d9fa327e62f7fee3adf94e",
+    "resources": {
+      "hash": "465491decf99982e63d25ef67d5cb67b",
+      "count": 3
+    },
+    "businesses": [
+      {
+        "hash": "1e8a823a955d74251b2a56b2cff77cfd",
+        "tenant": "layer3-reuse-fixture",
+        "business": "willow-movement",
+        "revision": 0
+      },
+      {
+        "hash": "ec6a3cbc4a395bc350244c228ec85cac",
+        "tenant": "vega-development",
+        "business": "vega-dance-lab",
+        "revision": 189
+      }
+    ],
+    "placements": {
+      "hash": "e40286fb77e8b5a5abde6eaf114e5940",
+      "count": 2
+    },
+    "willowLinks": 0
+  },
+  "after": {
+    "audit": {
+      "hash": "93a4ec841034b6b644c0c79529f602b3",
+      "count": 5
+    },
+    "linksHash": "2751a1e191d9fa327e62f7fee3adf94e",
+    "resources": {
+      "hash": "465491decf99982e63d25ef67d5cb67b",
+      "count": 3
+    },
+    "businesses": [
+      {
+        "hash": "1e8a823a955d74251b2a56b2cff77cfd",
+        "tenant": "layer3-reuse-fixture",
+        "business": "willow-movement",
+        "revision": 0
+      },
+      {
+        "hash": "ec6a3cbc4a395bc350244c228ec85cac",
+        "tenant": "vega-development",
+        "business": "vega-dance-lab",
+        "revision": 189
+      }
+    ],
+    "placements": {
+      "hash": "e40286fb77e8b5a5abde6eaf114e5940",
+      "count": 2
+    },
+    "willowLinks": 0
+  },
+  "exactRestoration": true,
+  "wrongBusiness": {
+    "assertionCompleted": true,
+    "reason": "membership_required",
+    "qualifyingVegaMembershipDoesNotQualifyWillow": true
+  },
+  "alternatePlacement": {
+    "assertionCompleted": true,
+    "withdrawnReason": "placement_unavailable",
+    "independentPolicy": "public",
+    "actualPlaybackBytesReturned": true
+  },
+  "harness": {
+    "rawRunResult": "L6S2_RUNTIME_FAILED",
+    "code": "ERR_ASSERTION",
+    "stage": "post-playback Willow fixture text-hash comparison",
+    "actual": "d65d79317b88a9feecc06acfafe15861a8128a2e1ce603390381f381972cc5d9",
+    "expected": "764b2b5edb5ad170b6920ed3f8a84441a959c0b40f804800144566c507322b3e",
+    "reconciliation": "Read-only SQL reconstructed the same JSONB fixture. Local deepStrictEqual passed and reproduced both exact hashes. Difference is JSON key order, not state mutation. Both requested access/playback assertions precede this comparison and completed. Outer finally rolled back; independent post-run SQL hashes prove restoration.",
+    "correctedComparison": "deepStrictEqual",
+    "correctedScriptNotRerun": true
+  },
+  "runtimeCommit": "b74eeebc361d4ae234789fc4925c2c0e21071bbe",
+  "totals": {
+    "targeted": 61,
+    "trackedRegression": 1144,
+    "hostedBuild": 1147,
+    "remainingHostedAssertionsCompleted": 2
+  },
+  "noEntitlementMemberBalancesChanged": true,
+  "noPersistentRoleChanges": true,
+  "noProviderExecution": true,
+  "productionUntouched": true,
+  "nextSliceStarted": false
+}

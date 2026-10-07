@@ -1,6 +1,6 @@
 {
   "slice": "L6-S2 — Viewer Access Resolution",
-  "status": "BLOCKED — temporary Willow fixture authorization required for remaining hosted verification",
+  "status": "HOSTED VERIFIED / READY FOR CLOSURE",
   "date": "2026-10-07",
   "runtimeCommit": "b74eeebc361d4ae234789fc4925c2c0e21071bbe",
   "implementationCommit": "c6a8a136c158fe672f0642b22c135696ec104c25",
@@ -15,10 +15,21 @@
   "trackedRegressionsPassed": 1144,
   "hostedBuildPassed": 1147,
   "hostedRuntimeResult": "L6S2_VEGA_RUNTIME_PASS",
-  "hostedPassed": ["public playback bytes", "current membership playback bytes", "zero current credits playback bytes", "exact expiry denial", "unpublished denial", "withdrawal denial", "legacy URL bypass denial", "viewing does not mutate business state"],
-  "hostedPending": ["wrong-business membership denial", "second placement continues playback after first withdrawal"],
+  "hostedPassed": [
+    "public playback bytes",
+    "current membership playback bytes",
+    "zero current credits playback bytes",
+    "exact expiry denial",
+    "unpublished denial",
+    "withdrawal denial",
+    "legacy URL bypass denial",
+    "viewing does not mutate business state",
+    "wrong-business membership denial: membership_required",
+    "independent public placement playback after targeted withdrawal"
+  ],
+  "hostedPending": [],
   "fixtureChangesRolledBack": true,
-  "temporaryWillowLinksCreated": false,
+  "temporaryWillowLinksCreated": true,
   "willowLinksRemaining": 0,
   "vegaRevision": 189,
   "vegaStateHash": "ec6a3cbc4a395bc350244c228ec85cac",
@@ -33,5 +44,9 @@
   "productionUntouched": true,
   "noCommerceCdnOrCreditProductPolicy": true,
   "closedS1AAndS1BPreserved": true,
-  "nextSliceStarted": false
+  "nextSliceStarted": false,
+  "temporaryWillowLinksRemoved": 2,
+  "temporaryAccessEvidence": "docs/layer-6/l6-s2-temporary-access-verification.json",
+  "hostedRemainingRun": "Access assertions passed; subsequent JSON key-order hash assertion reconciled read-only; exact cleanup verified",
+  "closureReviewRequired": true
 }

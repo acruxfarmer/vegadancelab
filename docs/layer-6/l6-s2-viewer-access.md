@@ -80,7 +80,7 @@ Hosted runtime verification uses explicit existing verified Auth-subject fixture
 and returns actual existing MP4 bytes. HTTP authentication/enforcement is covered
 by the API tests. This is not a claim of new placement UI verification.
 
-## Remaining bounded gate
+## Historical bounded gate — resolved by explicit approval and verification
 
 Willow currently has no app-member links. Automatic approval review rejected the
 proposed two temporary committed links (existing Development staff and member
@@ -110,3 +110,13 @@ not replace these required hosted checks.
 New media delivery/source adapters, CDN/native hosting, external source playback,
 locked-card/upsell UX, commerce, direct media purchases, packs/drop-ins, creator
 tools, network-context adapters, analytics, and Production. No next slice begun.
+
+## Approved temporary-access run — 2026-10-07
+
+Joe + Chett approved exactly two temporary Willow links for one run. Both were created and then immediately removed after the run. A separate finally-based cleanup also completed (zero rows remained to remove). No links were recreated.
+
+Wrong-business access returned `membership_required`; the targeted withdrawn placement returned `placement_unavailable`; a second public placement for the same resource continued returning video bytes. These assertions completed before a later verifier-only preservation assertion failed. That assertion compared JSON text hashes across PostgreSQL JSONB normalization. Read-only reconstruction reproduced the exact two hashes and deep structural equality passed. This is explicitly not a clean PASS exit from the original harness. Independent before/after database hashes prove complete restoration of both business states, all member links, resources, placements and placement audit rows.
+
+The exact executed script is preserved in `l6-s2-remaining-hosted-run.mjs`. The reusable verifier now uses structural equality for that comparison; syntax checked, not rerun with links. Full non-secret evidence: `l6-s2-temporary-access-verification.json`. Existing totals remain 61 targeted / 1,144 tracked regression / 1,147 hosted build; no runtime change or redeployment occurred during this run.
+
+Status: **HOSTED VERIFIED / READY FOR CLOSURE**, pending Joe + Chett review. No next slice started.

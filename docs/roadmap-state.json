@@ -81,9 +81,9 @@
   "activeSlice": {
     "id": "L6-S2",
     "name": "Viewer Access Resolution",
-    "status": "IMPLEMENTED / HOSTED VERIFICATION BLOCKED ON WILLOW FIXTURE AUTHORIZATION",
+    "status": "HOSTED VERIFIED / READY FOR CLOSURE",
     "checkpoint": "docs/layer-6/l6-s2-checkpoint.json",
     "previousSlice": "L6-S1A and L6-S1B COMPLETE / VERIFIED / APPROVED / CLOSED",
-    "nextSlices": "Finish L6-S2 verification after bounded fixture approval; no next slice authorized. Production untouched."
+    "nextSlices": "Await Joe + Chett closure review; no next slice authorized. Production untouched."
   }
 }

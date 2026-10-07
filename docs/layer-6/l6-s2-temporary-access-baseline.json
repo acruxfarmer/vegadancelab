@@ -1,0 +1,33 @@
+{
+  "capturedBeforeLinks": true,
+  "baseline": {
+    "audit": {
+      "hash": "93a4ec841034b6b644c0c79529f602b3",
+      "count": 5
+    },
+    "linksHash": "2751a1e191d9fa327e62f7fee3adf94e",
+    "resources": {
+      "hash": "465491decf99982e63d25ef67d5cb67b",
+      "count": 3
+    },
+    "businesses": [
+      {
+        "hash": "1e8a823a955d74251b2a56b2cff77cfd",
+        "tenant": "layer3-reuse-fixture",
+        "business": "willow-movement",
+        "revision": 0
+      },
+      {
+        "hash": "ec6a3cbc4a395bc350244c228ec85cac",
+        "tenant": "vega-development",
+        "business": "vega-dance-lab",
+        "revision": 189
+      }
+    ],
+    "placements": {
+      "hash": "e40286fb77e8b5a5abde6eaf114e5940",
+      "count": 2
+    },
+    "willowLinks": 0
+  }
+}
