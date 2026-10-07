@@ -1,3 +1,4 @@
+import {mediaPlayback} from '../media.mjs';
 import {resolveStaffAccess,hasStaffPermission,requireStaffPermission,requireStaffCommand,visibleStaffData,staffCommandResult} from '../staff-permissions.mjs';
 import {DEVELOPMENT_INITIAL_OWNERS,staffManagementView,staffManagementTransition} from '../staff-role-management.mjs';
 import pg from 'pg';
@@ -55,6 +56,7 @@ export function createApplicationStore(pool,{bookingEmails=false,initialOwners=[
   if(rows.length!==1)throw new ApplicationError('Studio application data is not initialized',503);return rows[0];
  }
  const store={
+  mediaPlayback:(identity,id,revision)=>transaction(identity,async(c,a)=>{const row=await stateRow(c,a);return mediaPlayback(row.state,a,id,revision,hasStaffPermission(access(row.state,a),a,'customers.manage'));},true),
   publicDiscovery:slug=>readPublicDiscovery(pool,slug),
   onboard:(userId,body,verifiedEmail)=>onboardPublicMember(pool,userId,body,receiptPublicKey,verifiedEmail),
   memberships:async identity=>{

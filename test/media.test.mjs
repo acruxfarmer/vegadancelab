@@ -1,0 +1,33 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {Readable} from 'node:stream';
+import {emptyState} from '../src/application.mjs';
+import {transition,visibleState} from '../src/first-booking.mjs';
+import {mediaPlayback,mediaView} from '../src/media.mjs';
+import {resolveStaffAccess,requireStaffCommand} from '../src/staff-permissions.mjs';
+import {createApplicationApi} from '../src/runtime/refund-application-api.mjs';
+const bytes=Buffer.concat([Buffer.from([0,0,0,24]),Buffer.from('ftypisom'),Buffer.alloc(16)]);
+const staff={role:'staff',userId:'staff',tenantId:'t',businessId:'vega',participantIds:[]};
+const member={...staff,role:'member',userId:'member',participantIds:['p']};
+const seed=()=>({...emptyState(),participants:[{id:'p',name:'Member'}]});
+const create=(s=seed(),a=staff)=>transition(s,{action:'media-save',body:{requestId:'create',title:'Practice',description:'A short practice.',creator:'Studio',duration:6,assetData:bytes.toString('base64')}},a);
+const change=(s,action,a=staff)=>transition(s,{action,body:{id:s.videos[0].id,requestId:action,expectedRevision:s.videos[0].revision}},a);
+for(const businessId of ['vega','willow'])test(`${businessId}: create/edit/preview/publish/member playback/unpublish without unrelated changes`,()=>{
+ const a={...staff,businessId},m={...member,businessId},before=seed();let {state:s,result}=create(before,a);
+ assert.equal(result.publishState,'draft');assert.equal(result.asset,undefined);assert.equal(mediaView(s,m).length,0);
+ assert.deepEqual(mediaPlayback(s,a,result.id,1,true),bytes);
+ s=transition(s,{action:'media-save',body:{id:result.id,expectedRevision:1,requestId:'edit',title:'Updated',description:'Revised',creator:'Teacher',duration:null}},a).state;
+ s=change(s,'media-publish',a).state;assert.equal(visibleState(s,m).videos[0].title,'Updated');assert.deepEqual(mediaPlayback(s,m,result.id,3),bytes);
+ assert.equal(JSON.stringify(visibleState(s,m)).includes(bytes.toString('base64')),false);
+ s=change(s,'media-unpublish',a).state;assert.equal(visibleState(s,m).videos.length,0);assert.throws(()=>mediaPlayback(s,m,result.id,4),/unavailable/);
+ const {videos,activity,...rest}=s,{videos:v,activity:act,...original}=before;assert.deepEqual(rest,original);
+});
+test('member cannot create or publish',()=>{assert.throws(()=>create(seed(),member),/Staff access/);const s=create().state;assert.throws(()=>change(s,'media-publish',member),/Staff access/);});
+test('existing owner/manager permission reused; instructor and front desk denied',()=>{for(const role of ['owner','manager','instructor','front_desk']){const s=seed();s.staffRoleAssignments=[{...staff,role}];const access=resolveStaffAccess(s,staff),run=()=>requireStaffCommand(s,{action:'media-save'},staff,access,(m)=>{throw Error(m)});if(['owner','manager'].includes(role))assert.doesNotThrow(run);else assert.throws(run,/does not allow/);}});
+test('foreign business and ambiguous linkage cannot see or play private media',()=>{const s=change(create().state,'media-publish').state,id=s.videos[0].id;for(const a of [{...member,businessId:'other'},{...member,tenantId:'other'},{...member,participantIds:[]},{...member,participantIds:['p','other']}]){assert.equal(mediaView(s,a).length,0);assert.throws(()=>mediaPlayback(s,a,id,2),/unavailable/);}assert.throws(()=>mediaPlayback(s,staff,id,2,false),/unavailable/);});
+test('stale link and edit revision rejected; edit takes published content offline',()=>{let s=change(create().state,'media-publish').state;assert.throws(()=>mediaPlayback(s,member,s.videos[0].id,1),/changed/);assert.throws(()=>transition(s,{action:'media-unpublish',body:{id:s.videos[0].id,expectedRevision:1,requestId:'x'}},staff),/changed/);s=transition(s,{action:'media-save',body:{id:s.videos[0].id,expectedRevision:2,requestId:'edit',title:'New',description:'',creator:'',duration:null}},staff).state;assert.equal(mediaView(s,member).length,0);});
+test('missing or corrupt asset denied without modifying state',()=>{for(const mode of ['missing','corrupt']){const s=change(create().state,'media-publish').state;if(mode==='missing')delete s.videos[0].asset;else s.videos[0].asset.data='Y29ycnVwdA==';const before=structuredClone(s);assert.throws(()=>mediaPlayback(s,member,s.videos[0].id,2),/unavailable/);assert.deepEqual(s,before);}});
+test('invalid uploads, excess size, URLs and scope injection rejected',()=>{const base={requestId:'x',title:'X',description:'',creator:'',duration:null};for(const extra of [{assetData:'https://example.com/video'},{assetData:Buffer.alloc(262145).toString('base64')},{assetData:bytes.toString('base64'),businessId:'other'},{assetData:Buffer.from('<script>').toString('base64')}])assert.throws(()=>transition(seed(),{action:'media-save',body:{...base,...extra}},staff));});
+const env={SUPABASE_URL:'https://cjdoczrxcjynjhgpgqop.supabase.co',SUPABASE_PUBLISHABLE_KEY:'test'};
+async function request(api,url,token){const req=Readable.from([]);req.url=url;req.method='GET';req.headers=token?{authorization:'Bearer token'}:{};let status,headers,body;await api(req,{writeHead:(s,h)=>{status=s;headers=h},end:b=>{body=b}});return {status,headers,body};}
+test('HTTP playback requires current authentication and never returns a provider URL',async()=>{let calls=0;const api=createApplicationApi(env,{mediaPlayback:async()=>{calls++;return bytes}},async()=>({ok:true,json:async()=>({id:'11111111-1111-4111-8111-111111111111'})}));assert.equal((await request(api,'/api/media/video/play?revision=1')).status,401);assert.equal(calls,0);const r=await request(api,'/api/media/video/play?revision=1',true);assert.equal(r.status,200);assert.equal(r.headers['Content-Type'],'video/mp4');assert.equal(r.headers['Cache-Control'],'private, no-store');assert.deepEqual(r.body,bytes);assert.equal((await request(api,'/api/media/video/play?revision=1&revision=2',true)).status,400);});

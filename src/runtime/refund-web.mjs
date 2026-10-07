@@ -14,12 +14,14 @@ export function createDevelopmentServer(env = process.env, persistSquareEvent, c
     res.setHeader('Cache-Control', 'no-store');
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Referrer-Policy','no-referrer');
-    res.setHeader('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
+    res.setHeader('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; media-src 'self' blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
     if(req.method==='GET'&&req.url==='/health/application'){
       void(async()=>{try{if(!applicationStore||env.SUPABASE_URL!=='https://cjdoczrxcjynjhgpgqop.supabase.co'||!env.SUPABASE_PUBLISHABLE_KEY)throw new Error();await applicationStore.check();res.writeHead(200);res.end(JSON.stringify({status:'application_runtime_ready',environment:'development',squareEnabled:sandboxPaymentEnabled(env)}));}catch{res.writeHead(503);res.end(JSON.stringify({status:'application_runtime_unavailable',squareEnabled:sandboxPaymentEnabled(env)}));}})();return;
     }
     if(req.url.startsWith('/api/')){void api(req,res);return;}
     const files={'/entitlements-ui.js':['entitlements-ui.js','text/javascript; charset=utf-8'],'/cancellation-ui.js':['cancellation-ui.js','text/javascript; charset=utf-8'],'/session.js':['session.js','text/javascript; charset=utf-8'],'/':['index.html','text/html; charset=utf-8'],'/app.js':['app.js','text/javascript; charset=utf-8'],'/integration.js':['integration.js','text/javascript; charset=utf-8'],'/styles.css':['styles.css','text/css; charset=utf-8']};
+    files['/media-ui.js']=['media-ui.js','text/javascript; charset=utf-8'];
+    files['/media-poster.svg']=['media-poster.svg','image/svg+xml'];
     files['/member-booking.js']=['member-booking.js','text/javascript; charset=utf-8'];
     files['/member-cancellation.js']=['member-cancellation.js','text/javascript; charset=utf-8'];
     files['/promotion-notices.js']=['promotion-notices.js','text/javascript; charset=utf-8'];

@@ -7,3 +7,4 @@ coverage/
 dist-frontdoor/
 records/*.local.json
 supabase/.temp/
+records/*.local.mp4

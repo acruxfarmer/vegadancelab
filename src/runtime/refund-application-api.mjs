@@ -7,9 +7,9 @@ import {reconcileRefundInventory} from '../refund-reconciliation.mjs';
 import {createRefundProgram} from './refund-program-workflow.mjs';
 
 const origin='https://cjdoczrxcjynjhgpgqop.supabase.co';
-export async function readJson(req){
+export async function readJson(req,limit=16384){
  if(!req.headers['content-type']?.startsWith('application/json'))throw new ApplicationError('JSON required',415);
- let size=0,chunks=[];for await(const chunk of req){size+=chunk.length;if(size>16384)throw new ApplicationError('Request too large',413);chunks.push(chunk);}
+ let size=0,chunks=[];for await(const chunk of req){size+=chunk.length;if(size>limit)throw new ApplicationError('Request too large',413);chunks.push(chunk);}
  try{const value=JSON.parse(Buffer.concat(chunks).toString());if(!value||Array.isArray(value)||typeof value!=='object')throw new Error();return value;}catch{throw new ApplicationError('Invalid JSON');}
 }
 export function createApplicationApi(env,store,fetcher=fetch){
@@ -121,6 +121,12 @@ export function createApplicationApi(env,store,fetcher=fetch){
     const assessment=await store.assessRefund(userId,refundAssessment[1]);
     send(assessment.status==='denied'?403:200,assessment);return true;
    }
+   const mediaPlay=url.pathname.match(/^\/api\/media\/([A-Za-z0-9-]{1,128})\/play$/);
+   if(mediaPlay&&req.method==='GET'){
+    if([...url.searchParams.keys()].some(k=>k!=='revision')||url.searchParams.getAll('revision').length!==1)throw new ApplicationError('Invalid media link');
+    const bytes=await store.mediaPlayback(userId,mediaPlay[1],Number(url.searchParams.get('revision')));
+    res.writeHead(200,{'Content-Type':'video/mp4','Content-Length':bytes.length,'Cache-Control':'private, no-store','Content-Disposition':'inline','X-Content-Type-Options':'nosniff'});res.end(bytes);return true;
+   }
    if(url.pathname==='/api/app'&&req.method==='GET'){
     const view=await store.read(userId),staff=view.context?.role==='staff';
     const allowed=p=>!staff||view.staffAccess?.permissions?.includes(p)===true;
@@ -138,9 +144,10 @@ export function createApplicationApi(env,store,fetcher=fetch){
     const input=await readJson(req),result=await (url.pathname.endsWith('/resume')?payments.resume(userId,input):payments.start(userId,input));
     send(result.status==='succeeded'&&result.fulfillmentStatus==='issued'?200:202,result);return true;
    }
-   const body=await readJson(req),routes={'/api/entitlements/products':'entitlement-product','/api/entitlements/issue':'issue-entitlement','/api/credits/issue':'issue-credit','/api/classes/cancel':'cancel-class','/api/classes/policy':'class-policy','/api/reservations':'reserve','/api/classes':'class','/api/participants':'participant','/api/preferences':'preferences','/api/notifications':'notification'};
+   const body=await readJson(req,url.pathname==='/api/media/save'?360000:16384),routes={'/api/entitlements/products':'entitlement-product','/api/entitlements/issue':'issue-entitlement','/api/credits/issue':'issue-credit','/api/classes/cancel':'cancel-class','/api/classes/policy':'class-policy','/api/reservations':'reserve','/api/classes':'class','/api/participants':'participant','/api/preferences':'preferences','/api/notifications':'notification'};
    if(url.pathname==='/api/classes/edit/review'){send(200,await store.reviewClassEdit(userId,body));return true;}
    if(url.pathname==='/api/classes/duplicate/review'){send(200,await store.reviewClassDuplicate(userId,body));return true;}
+   routes['/api/media/save']='media-save';routes['/api/media/publish']='media-publish';routes['/api/media/unpublish']='media-unpublish';
    routes['/api/classes/duplicate']='duplicate-class';
    routes['/api/commerce/drafts']='purchase-draft';
    routes['/api/commerce/front-desk/sales']='front-desk-sale';

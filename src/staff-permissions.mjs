@@ -44,7 +44,7 @@ const commandPermissions={
  attendance:'attendance.write',reserve:'bookings.manage',cancel:'bookings.manage','correct-cancellation':'bookings.manage',promote:'bookings.manage',
  class:'schedule.edit','edit-class':'schedule.edit','duplicate-class':'schedule.edit','class-policy':'schedule.edit','cancel-class':'schedule.cancel',
  'front-desk-sale':'sales.manage','entitlement-product':'entitlements.manage','issue-entitlement':'entitlements.manage','issue-credit':'entitlements.manage',
- participant:'customers.manage',preferences:'customers.manage',notification:'customers.manage','waiver-publish':'waivers.publish','staff-role-set':'roles.manage'
+ participant:'customers.manage',preferences:'customers.manage','media-save':'customers.manage','media-publish':'customers.manage','media-unpublish':'customers.manage',notification:'customers.manage','waiver-publish':'waivers.publish','staff-role-set':'roles.manage'
 };
 export function requireStaffCommand(state,command,authority,access,fail){
  if(authority.role!=='staff'){
@@ -82,7 +82,7 @@ export function visibleStaffData(view,authority,access){
  }
  if(!allowed('reports.read'))result.activity=[];
  if(!allowed('sales.manage'))result.commerceOffers=[];
- if(!allowed('customers.manage')){result.preferences=[];result.notifications=[];}
+ if(!allowed('customers.manage')){result.preferences=[];result.notifications=[];result.videos=[];}
  if(!allowed('finance.read')){
   result.reservations=result.reservations.map(({paymentStatus,refundStatus,...r})=>r);
   result.entitlementIssuances=[];
