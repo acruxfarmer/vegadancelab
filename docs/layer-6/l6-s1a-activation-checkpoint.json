@@ -1,0 +1,14 @@
+{
+  "slice":"L6-S1A",
+  "date":"2026-10-07",
+  "status":"DATABASE ACTIVATED / HOSTED VERIFICATION PENDING",
+  "candidate":"0d55b58",
+  "migration":{"project":"cjdoczrxcjynjhgpgqop","name":"l6_s1a_universal_media_resource_foundation","version":"20261007185940","source":"db/proposals/l6-s1a-media-resource.sql","applied":true,"schema":"media_private","objects":["resources","legacy_media_links","resource_audit"],"destructive":false},
+  "postgres":{"restrictedIdentity":"vega_app_runtime","connection":"Existing Render Development APP_DATABASE_URL; no credential read or printed","userResource":"1ab5124f-2033-45c2-9902-4b63685d29f5","businessResource":"5d23202b-538b-4ad0-9bbe-46856932166e","verifiedAuthUser":true,"userOwnerStaffAssignments":0,"independentUserOwnershipReread":true,"unrelatedUserDenied":true,"staffDeniedUserResource":true,"invalidOwnerForeignKeyRejected":true,"crossBusinessMutationDenied":true,"invalidResourceForeignKeyRejected":true,"invalidBusinessForeignKeyRejected":true,"duplicateMappingRejected":true,"concurrentAdoptionAttempts":3,"canonicalAdoptionIdentities":1,"resources":2,"compatibilityLinks":1,"auditRows":2,"probeChangesRolledBack":true,"scope":"Executed actual SQL under runtime role; shipped repository/service execution remains pending"},
+  "permissions":{"rlsEnabledAllNewTables":true,"publicAccess":false,"anonAccess":false,"authenticatedDirectAccess":false,"temporaryRoleElevation":false,"note":"Connector SET ROLE was denied before writes; verification used the existing Render runtime connection instead. No role membership changed."},
+  "preservation":{"vegaRevision":187,"vegaFullStateDigest":"56f07de29d2f7c67f87a293dd7d32058","willowRevision":0,"willowFullStateDigest":"1e8a823a955d74251b2a56b2cff77cfd","businessStateUnchangedAfterAdoption":true,"emailIntents":1,"emailAttempts":1,"applicationHealth":200,"ingestionHealth":200,"squareEnabled":false,"productionTouched":false},
+  "tests":{"regressionPassed":1119,"failed":0,"evidence":"docs/layer-6/l6-s1a-activation-regression.txt"},
+  "remaining":["Staff/member credential handoff for hosted Layer 5 publishing/discovery/playback checks","Execute shipped repository/service verification in Development runtime","Final evidence and normal source publication"],
+  "providerExecution":false,
+  "laterSlicesStarted":false
+}
