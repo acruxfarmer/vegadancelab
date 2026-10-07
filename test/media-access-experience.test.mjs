@@ -4,6 +4,7 @@ import {mediaPresentation,accessNotice} from '../public/media-access.js';
 import {resolveMediaViewerAccess} from '../src/media-viewer-access.mjs';
 import {placementPolicy} from '../src/media-placement.mjs';
 import {mediaUI} from '../public/media-ui.js';
+import {manageMediaAccess} from '../src/runtime/media-access-management.mjs';
 
 test('canonical outcomes map to accessible generic states without inspecting entitlements',()=>{
  const states={authentication_required:'sign_in_required',membership_required:'locked',membership_not_current:'locked',paid_access_required:'locked',placement_unavailable:'unavailable',resource_unavailable:'unavailable',access_policy_invalid:'unavailable'};
@@ -32,4 +33,11 @@ test('mixed collection retains locked metadata but renders no locked player',asy
 test('CTA slot does not activate checkout or accept external navigation',()=>{
  const html=accessNotice({allowed:false,reason:'authentication_required'},s=>s,[{state:'sign_in_required',href:'/member.html',label:'Sign in'},{state:'sign_in_required',href:'//evil.test',label:'Bad'}]);
  assert.match(html,/Sign in/);assert.doesNotMatch(html,/evil|checkout|Buy/);
+});
+
+test('staff management does not infer editable ownership when resource is hidden by RLS',async()=>{
+ const c={query:async()=>({rows:[{resource_id:'externally-owned',resource:null,placement:{id:'p',revision:2,policy:{kind:'public'}}}]})};
+ const a={userId:'staff',tenantId:'t',businessId:'b'},state={videos:[{id:'v',tenantId:'t',businessId:'b'}]};
+ const view=await manageMediaAccess(c,a,state,'v');assert.equal(view.editable,false);assert.deepEqual(view.policy,{kind:'public'});
+ await assert.rejects(manageMediaAccess(c,a,state,'v',{policy:{kind:'pay_on_demand'},expectedRevision:2}),/resource owner/);
 });

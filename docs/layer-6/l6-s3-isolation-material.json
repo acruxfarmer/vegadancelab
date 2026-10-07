@@ -1,0 +1,56 @@
+{
+  "withdrawn": {
+    "placement": null,
+    "resourceAvailable": false
+  },
+  "independent": {
+    "placement": {
+      "id": "12319b5f-c026-4b97-bc6c-b4b3b19082f9",
+      "policy": {
+        "kind": "public"
+      },
+      "context": {
+        "kind": "business",
+        "tenantId": "vega-development",
+        "businessId": "vega-dance-lab"
+      },
+      "visible": true,
+      "revision": 2,
+      "authorized": true,
+      "resourceId": "5d23202b-538b-4ad0-9bbe-46856932166e",
+      "categoryIds": [],
+      "withdrawnAt": null,
+      "authorizedAt": "2026-10-07T21:45:19.75517+00:00",
+      "authorizedBy": "4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124",
+      "collectionIds": []
+    },
+    "resourceAvailable": true
+  },
+  "wrongBusiness": {
+    "viewerId": "e5946b40-9839-4a96-99d5-93262d9573f0",
+    "placement": {
+      "id": "0f0dab6e-4384-443d-a0bf-5ff2b3453957",
+      "policy": {
+        "kind": "memberships",
+        "productIds": [
+          "d1e20fe7-83c2-4bde-a628-2b5b3a714232"
+        ]
+      },
+      "context": {
+        "kind": "business",
+        "tenantId": "layer3-reuse-fixture",
+        "businessId": "willow-movement"
+      },
+      "visible": true,
+      "revision": 2,
+      "authorized": true,
+      "resourceId": "5d23202b-538b-4ad0-9bbe-46856932166e",
+      "categoryIds": [],
+      "withdrawnAt": null,
+      "authorizedAt": "2026-10-07T21:45:19.75517+00:00",
+      "authorizedBy": "4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124",
+      "collectionIds": []
+    },
+    "resourceAvailable": true
+  }
+}

@@ -3,10 +3,10 @@ import {mediaPresentation,accessNotice} from './media-access.js';
 const root=document.querySelector('#watch'),escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let objectUrl,generation=0;
 function clear(){generation++;if(objectUrl)URL.revokeObjectURL(objectUrl);objectUrl=null;root.innerHTML='<p role="status">Checking access…</p>';}
-const session=createSession({storage:sessionStorage,onPending:clear,onLost:()=>{},onReady:()=>load()});
+const session=createSession({storage:sessionStorage,onPending:clear,onLost:()=>load(),onReady:()=>load()});
 const id=new URL(location.href).searchParams.get('placement');
 const valid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id||'');
-async function request(play=false){const token=session.active()?await session.access():null;return fetch('/api/media/placements/'+encodeURIComponent(id)+(play?'/play':''),{headers:token?{Authorization:'Bearer '+token}:{},cache:'no-store',signal:AbortSignal.timeout(20000)});}
+async function request(play=false){const token=session.active()?await session.access():null;const response=await fetch('/api/media/placements/'+encodeURIComponent(id)+(play?'/play':''),{headers:token?{Authorization:'Bearer '+token}:{},cache:'no-store',signal:AbortSignal.timeout(20000)});if(token&&response.status===401){session.clear();throw Error('Session expired');}return response;}
 async function load(){
  clear();const current=generation;
  try{
