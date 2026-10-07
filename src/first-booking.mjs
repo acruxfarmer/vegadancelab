@@ -1,4 +1,4 @@
-import {mediaTransition,mediaView} from './media.mjs';
+import {mediaTransition,mediaView,mediaOrganization} from './media.mjs';
 import {transition as existingTransition,visibleState as existingView,ApplicationError} from './refund-application.mjs';
 import {customerProfileView} from './customer-profile.mjs';
 
@@ -23,6 +23,6 @@ export function visibleState(state,authority,at=new Date().toISOString()){
  const result=existingView(state,authority,at),gate=bookingReadiness(state,authority,at);
  if(gate)result.bookingOptions=result.bookingOptions.map(o=>({...o,...gate,eligible:false,waitlistEligible:false,passId:undefined}));
  else if(authority.role==='member')result.bookingOptions=result.bookingOptions.map(o=>({...o,...(!o.eligible&&!o.waitlistEligible&&o.creditRequired&&o.reason.startsWith('No eligible class credit')?{nextStep:'passes'}:{})}));
- result.videos=mediaView(state,authority);
+ result.videos=mediaView(state,authority);result.mediaGroups=mediaOrganization(state,authority);
  return result;
 }

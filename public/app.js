@@ -85,8 +85,8 @@ async function mutate(path,body,local){
  if((generation!==session.generation()||scopedGeneration!==businessGeneration)||!session.active())throw new Error('Session changed. Sign in and review your account.');
  try{
   let result=await api(path,{method:'POST',body:JSON.stringify({...body,requestId:pending.requestId})});
-  if(result.pending)notify(path==='/api/reservations'?'Saving your booking. Please wait for confirmation.':'Your change is recorded. Waiting for independent recovery confirmation.');
-  for(let attempt=0;result.pending&&attempt<8;attempt++){
+  if(result.pending)notify(path.startsWith('/api/media/')?'Saving your library changes…':path==='/api/reservations'?'Saving your booking. Please wait for confirmation.':'Your change is recorded. Waiting for independent recovery confirmation.');
+  for(let attempt=0;result.pending&&attempt<(path.startsWith('/api/media/')?40:8);attempt++){
    await new Promise(resolve=>setTimeout(resolve,750));
    if((generation!==session.generation()||scopedGeneration!==businessGeneration)||!session.active())throw new Error('Session changed.');
    result=await api('/api/recovery/operations/'+result.independentReceipt.operationId);
@@ -248,4 +248,4 @@ render=function(){renderBeforeBookingReturn();if(!data||localDemo||view!=='membe
 document.addEventListener('click',event=>{const b=event.target.closest('[data-booking-resolve]');if(!b)return;bookingReturn={tenantId:data.context.tenantId,businessId:data.context.businessId,classId:b.dataset.returnClass};$('#dialog').close();location.hash=b.dataset.bookingResolve;render();});
 
 document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b||localDemo)return;try{await media.click(b);}catch(error){notify(error.message);}});
-document.addEventListener('submit',async e=>{if(e.target.id!=='media-edit')return;e.preventDefault();const form=e.target,b=form.querySelector('button');b.disabled=true;try{await media.submit(form);}catch(error){form.querySelector('[role="alert"]').textContent=error.message;}finally{b.disabled=false;}});
+document.addEventListener('submit',async e=>{if(!['media-edit','media-search','media-group','media-organize'].includes(e.target.id))return;e.preventDefault();const form=e.target,b=form.querySelector('button');b.disabled=true;try{await media.submit(form);}catch(error){form.querySelector('[role="alert"]').textContent=error.message;}finally{b.disabled=false;}});

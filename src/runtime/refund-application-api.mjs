@@ -147,7 +147,7 @@ export function createApplicationApi(env,store,fetcher=fetch){
    const body=await readJson(req,url.pathname==='/api/media/save'?360000:16384),routes={'/api/entitlements/products':'entitlement-product','/api/entitlements/issue':'issue-entitlement','/api/credits/issue':'issue-credit','/api/classes/cancel':'cancel-class','/api/classes/policy':'class-policy','/api/reservations':'reserve','/api/classes':'class','/api/participants':'participant','/api/preferences':'preferences','/api/notifications':'notification'};
    if(url.pathname==='/api/classes/edit/review'){send(200,await store.reviewClassEdit(userId,body));return true;}
    if(url.pathname==='/api/classes/duplicate/review'){send(200,await store.reviewClassDuplicate(userId,body));return true;}
-   routes['/api/media/save']='media-save';routes['/api/media/publish']='media-publish';routes['/api/media/unpublish']='media-unpublish';
+   routes['/api/media/groups']='media-group-save';routes['/api/media/organize']='media-organize';routes['/api/media/save']='media-save';routes['/api/media/publish']='media-publish';routes['/api/media/unpublish']='media-unpublish';
    routes['/api/classes/duplicate']='duplicate-class';
    routes['/api/commerce/drafts']='purchase-draft';
    routes['/api/commerce/front-desk/sales']='front-desk-sale';
