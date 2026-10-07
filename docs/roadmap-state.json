@@ -1,5 +1,5 @@
 {
-  "recordedLocalDate": "2026-10-06",
+  "recordedLocalDate": "2026-10-07",
   "laterLayers": [
     "Native apps"
   ],
@@ -77,5 +77,12 @@
     "Class time-change notices",
     "Instructor-change notices",
     "Waitlist-expiry notices"
-  ]
+  ],
+  "activeSlice": {
+    "id": "L6-S1A",
+    "name": "Universal Media Resource Foundation",
+    "status": "DEVELOPMENT VERIFIED / READY FOR CLOSURE",
+    "checkpoint": "docs/layer-6/l6-s1a-activation-checkpoint.json",
+    "nextSlices": "L6-S1B and L6-S2 not started; Joe + Chett review required"
+  }
 }

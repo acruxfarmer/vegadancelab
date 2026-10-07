@@ -1,14 +1,144 @@
 {
-  "slice":"L6-S1A",
-  "date":"2026-10-07",
-  "status":"DATABASE ACTIVATED / HOSTED VERIFICATION PENDING",
-  "candidate":"0d55b58",
-  "migration":{"project":"cjdoczrxcjynjhgpgqop","name":"l6_s1a_universal_media_resource_foundation","version":"20261007185940","source":"db/proposals/l6-s1a-media-resource.sql","applied":true,"schema":"media_private","objects":["resources","legacy_media_links","resource_audit"],"destructive":false},
-  "postgres":{"restrictedIdentity":"vega_app_runtime","connection":"Existing Render Development APP_DATABASE_URL; no credential read or printed","userResource":"1ab5124f-2033-45c2-9902-4b63685d29f5","businessResource":"5d23202b-538b-4ad0-9bbe-46856932166e","verifiedAuthUser":true,"userOwnerStaffAssignments":0,"independentUserOwnershipReread":true,"unrelatedUserDenied":true,"staffDeniedUserResource":true,"invalidOwnerForeignKeyRejected":true,"crossBusinessMutationDenied":true,"invalidResourceForeignKeyRejected":true,"invalidBusinessForeignKeyRejected":true,"duplicateMappingRejected":true,"concurrentAdoptionAttempts":3,"canonicalAdoptionIdentities":1,"resources":2,"compatibilityLinks":1,"auditRows":2,"probeChangesRolledBack":true,"scope":"Executed actual SQL under runtime role; shipped repository/service execution remains pending"},
-  "permissions":{"rlsEnabledAllNewTables":true,"publicAccess":false,"anonAccess":false,"authenticatedDirectAccess":false,"temporaryRoleElevation":false,"note":"Connector SET ROLE was denied before writes; verification used the existing Render runtime connection instead. No role membership changed."},
-  "preservation":{"vegaRevision":187,"vegaFullStateDigest":"56f07de29d2f7c67f87a293dd7d32058","willowRevision":0,"willowFullStateDigest":"1e8a823a955d74251b2a56b2cff77cfd","businessStateUnchangedAfterAdoption":true,"emailIntents":1,"emailAttempts":1,"applicationHealth":200,"ingestionHealth":200,"squareEnabled":false,"productionTouched":false},
-  "tests":{"regressionPassed":1119,"failed":0,"evidence":"docs/layer-6/l6-s1a-activation-regression.txt"},
-  "remaining":["Staff/member credential handoff for hosted Layer 5 publishing/discovery/playback checks","Execute shipped repository/service verification in Development runtime","Final evidence and normal source publication"],
-  "providerExecution":false,
-  "laterSlicesStarted":false
+  "slice": "L6-S1A",
+  "date": "2026-10-07",
+  "status": "L6-S1A — DEVELOPMENT VERIFIED / READY FOR CLOSURE",
+  "candidate": "0d55b58",
+  "migration": {
+    "project": "cjdoczrxcjynjhgpgqop",
+    "name": "l6_s1a_universal_media_resource_foundation",
+    "version": "20261007185940",
+    "source": "db/proposals/l6-s1a-media-resource.sql",
+    "applied": true,
+    "schema": "media_private",
+    "objects": [
+      "resources",
+      "legacy_media_links",
+      "resource_audit"
+    ],
+    "destructive": false
+  },
+  "postgres": {
+    "restrictedIdentity": "vega_app_runtime",
+    "connection": "Existing Render Development APP_DATABASE_URL; no credential read or printed",
+    "userResource": "1ab5124f-2033-45c2-9902-4b63685d29f5",
+    "businessResource": "5d23202b-538b-4ad0-9bbe-46856932166e",
+    "verifiedAuthUser": true,
+    "userOwnerStaffAssignments": 0,
+    "independentUserOwnershipReread": true,
+    "unrelatedUserDenied": true,
+    "staffDeniedUserResource": true,
+    "invalidOwnerForeignKeyRejected": true,
+    "crossBusinessMutationDenied": true,
+    "invalidResourceForeignKeyRejected": true,
+    "invalidBusinessForeignKeyRejected": true,
+    "duplicateMappingRejected": true,
+    "concurrentAdoptionAttempts": 3,
+    "canonicalAdoptionIdentities": 1,
+    "resources": 2,
+    "compatibilityLinks": 1,
+    "auditRows": 3,
+    "probeChangesRolledBack": true,
+    "scope": "Actual restricted-runtime SQL checks plus committed service/repository script executed in deployed Development application",
+    "userResourceLifecycle": "archived",
+    "repositoryVerification": {
+      "result": "L6S1A_REPOSITORY_PASS",
+      "script": "scripts/verify-media-resource-development.mjs",
+      "ownerRead": true,
+      "unrelatedUserDenied": true,
+      "staffDoesNotOwnUserResource": true,
+      "userNotBusinessAdmin": true,
+      "concurrentAdoptionAttempts": 3,
+      "canonicalIdentityCount": 1,
+      "linkedArchiveDenied": true,
+      "standaloneArchiveReread": true
+    }
+  },
+  "permissions": {
+    "rlsEnabledAllNewTables": true,
+    "publicAccess": false,
+    "anonAccess": false,
+    "authenticatedDirectAccess": false,
+    "temporaryRoleElevation": false,
+    "note": "Connector SET ROLE was denied before writes; verification used the existing Render runtime connection instead. No role membership changed."
+  },
+  "preservation": {
+    "vegaRevision": 187,
+    "vegaFullStateDigest": "56f07de29d2f7c67f87a293dd7d32058",
+    "willowRevision": 0,
+    "willowFullStateDigest": "1e8a823a955d74251b2a56b2cff77cfd",
+    "businessStateUnchangedAfterAdoption": true,
+    "emailIntents": 1,
+    "emailAttempts": 1,
+    "applicationHealth": 200,
+    "ingestionHealth": 200,
+    "squareEnabled": false,
+    "productionTouched": false,
+    "finalVegaRevision": 189,
+    "finalVegaProtectedDigest": "0fc6dae231f5255ec9807ad48a138df9",
+    "finalWillowProtectedDigest": "0163f80a059c3d49096306859d3318b1",
+    "note": "Full state unchanged by schema/adoption. Hosted unpublish/republish intentionally advanced media/activity revisions 188–189, restoring published state. Other business state, original asset and Willow remain unchanged."
+  },
+  "tests": {
+    "regressionPassed": 1119,
+    "failed": 0,
+    "evidence": "docs/layer-6/l6-s1a-activation-regression.txt",
+    "targetedPassed": 31,
+    "newFoundationTests": 13
+  },
+  "remaining": [],
+  "providerExecution": false,
+  "laterSlicesStarted": false,
+  "hosted": {
+    "environment": "Development",
+    "commit": "22cac28965052ad18c4ada353ab0fbc7fde6aea2",
+    "deployment": "dep-db39hos9v7es73bdc7m0",
+    "status": "Live",
+    "buildTests": {
+      "passed": 1122,
+      "failed": 0
+    },
+    "staffUnpublishRepublish": true,
+    "draftHiddenFromMember": true,
+    "collectionDiscovery": true,
+    "combinedTitleCategorySearch": true,
+    "staffOrganizationVisible": true,
+    "postDeploymentPlayback": {
+      "duration": 6,
+      "currentTime": 6,
+      "ended": true,
+      "error": null,
+      "width": 480,
+      "height": 270,
+      "readyState": 4
+    },
+    "videoId": "b584d560-1f3d-4b4d-bd2f-9d4a8026122f",
+    "assetDigest": "6da38c9f36f8235802fa0443e5889b9b4c62d4fd5c6df42f26bc0fe6711dfe22",
+    "assetMatchesOriginalLocalFixture": true,
+    "existingUrlsUnchanged": true
+  },
+  "limitations": [
+    "Foundation service has no public creator/ownership route; runtime verification invokes the committed service with trusted fixtures for existing verified Auth subjects. Provider verifier is separately unit-tested; existing live staff/member login verified through Layer 5.",
+    "Legacy mapping is additive; Layer 5 playback continues through its established path. No new policy resolution or placement workflows.",
+    "Linked canonical withdrawal remains denied pending coordinated lifecycle implementation; standalone archival is verified.",
+    "Source references are not new external playback adapters. Existing bounded media limits remain."
+  ],
+  "confirmations": {
+    "canonicalMediaIndependentOfBusiness": true,
+    "userAndBusinessOwnership": true,
+    "userOwnershipGrantsNoStaffRights": true,
+    "videoIdentityUrlsAssetsStable": true,
+    "layer5Intact": true,
+    "entitlementAuthorityUnchanged": true,
+    "noShadowEntitlements": true,
+    "noPaymentPayoutOrDeliveryExecution": true,
+    "productionUntouched": true,
+    "l6s1bUnstarted": true,
+    "l6s2Unstarted": true
+  },
+  "sourceControl": {
+    "branch": "product/layer3-public-entry",
+    "verifiedCandidate": "22cac28965052ad18c4ada353ab0fbc7fde6aea2",
+    "candidatePushed": true,
+    "closureCommit": "Commit containing this final evidence; hash reported in final response"
+  }
 }
