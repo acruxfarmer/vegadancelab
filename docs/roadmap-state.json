@@ -6,11 +6,26 @@
   ],
   "nextLayer": {
     "name": "Layer 4 — COMMUNICATIONS",
-    "status": "IN PROGRESS — first booking lifecycle transactional email dragon PRODUCT COMPLETE",
+    "status": "IN PROGRESS — booking lifecycle and class/waitlist communication dragons PRODUCT COMPLETE",
     "recommendedFirstDragon": "Booking Lifecycle Transactional Email",
     "review": "docs/layer-3/layer-4-transition-review.json",
     "approvalGate": "Later communications dragons and Production activation require a new bounded brief. No new implementation started.",
-    "firstDragonCompletion": "docs/layer-4/booking-email-checkpoint.json"
+    "firstDragonCompletion": "docs/layer-4/booking-email-checkpoint.json",
+    "classWaitlistCompletion": "docs/layer-4/class-waitlist-checkpoint.json",
+    "communicationDeferrals": [
+      "Class time-change notices",
+      "Instructor-change notices",
+      "Waitlist-expiry notices",
+      "Reminders",
+      "Recurring campaigns",
+      "Marketing",
+      "Segmentation",
+      "Broad preference center",
+      "SMS",
+      "Push notifications",
+      "Automation builder",
+      "Production activation"
+    ]
   },
   "precedence": "This machine-readable checkpoint updates current roadmap status; the historical image is preserved unchanged.",
   "historicalVisualRoadmap": "D:/JOES WIP/ACRUX/Acrux System Tools/Vega Development Roadmap Dashboard.png",

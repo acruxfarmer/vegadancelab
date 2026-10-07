@@ -23,7 +23,7 @@ try{
  await command(member,'cancel',{},first.id);
  const again=await command(member,'reserve',{classId:course.id,participantId});
  await command(member,'cancel',{},again.id);
- const other=original.participants.find(p=>p.id!==participantId);assert.ok(other);
+ const other=await command(owner,'participant',{name:'Unlinked communication test member'});
  const full=await command(owner,'reserve',{classId:course.id,participantId:other.id});
  const waiting=await command(member,'reserve',{classId:course.id,participantId,waitlistOnly:true});
  assert.equal(waiting.status,'waitlisted');

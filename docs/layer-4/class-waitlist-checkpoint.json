@@ -1,0 +1,95 @@
+{
+  "dragon": "Layer 4 — Class Changes + Waitlist Updates",
+  "status": "LAYER 4 — CLASS CHANGES + WAITLIST UPDATES — PRODUCT COMPLETE",
+  "source": "src/class-editing.mjs: classEditOption rejects every occurrence with any reservation history",
+  "implementedLocally": [
+    "class cancellation reports booked and waitlisted outcomes",
+    "waitlist joined confirmation",
+    "waitlist removal confirmation",
+    "existing waitlist promotion reused",
+    "same provider-neutral intent and Resend adapter"
+  ],
+  "tests": {
+    "targetedPassed": 23,
+    "targetedFailed": 0,
+    "fullRegressionPassed": 1082,
+    "fullRegressionFailed": 0,
+    "includesVegaAndWillow": true,
+    "hostedBuildPassed": 1085,
+    "hostedBuildFailed": 0
+  },
+  "databaseChangesApplied": true,
+  "deployed": true,
+  "externalMessagesSent": 0,
+  "pending": [],
+  "unchanged": [
+    "Layer 2",
+    "Layer 3",
+    "authoritative scheduling and booking rules",
+    "existing delivery safeguards",
+    "Production"
+  ],
+  "expiry": "No existing authoritative waitlist-expiry transition found; no expiry engine introduced",
+  "scopeApproval": "Joe approved communication-only scope; no authoritative schedule changes",
+  "deferred": [
+    "Class time-change notices",
+    "Instructor-change notices",
+    "Waitlist-expiry notices",
+    "Reminders",
+    "Recurring campaigns",
+    "Marketing",
+    "Segmentation",
+    "Broad preference center",
+    "SMS",
+    "Push notifications",
+    "Automation builder",
+    "Production activation"
+  ],
+  "deferralReason": "Time/instructor changes with affected members and waitlist expiry have no supported authoritative workflow in this scope; no synthetic business events introduced",
+  "supportedEvents": [
+    "class_cancelled for booked and waitlisted members",
+    "waitlist_joined",
+    "waitlist_removed",
+    "waitlist_promotion"
+  ],
+  "recipientSelection": "Existing private verified Auth address lookup and exact self/member/business linkage; only affected active reservations; missing/invalid/unverified linkage needs review; unaffected and previously cancelled members receive no intent",
+  "messageExperience": "Business/class name, business-local time, instructor, accurate resulting booking or waitlist status, and scoped My bookings link. No private cancellation reason, internal IDs or provider diagnostics.",
+  "reliability": "Existing transactional intent insertion, stable tenant/business/reservation/kind identity, unique constraint, frozen content, same Resend idempotency key, bounded retry and uncertain outcome review preserved",
+  "deliverySemantics": "Intent created, processing, provider accepted, delivered with evidence, failed and needs review remain distinct. No new external provider execution in this dragon; no new delivery claim.",
+  "hosted": {
+    "environment": "Development",
+    "service": "srv-dao5cjbm8hqs73db51j0",
+    "deployment": "dep-db2pbb59fdbs738p8t4g",
+    "applicationCommit": "064e0dedaa0b82dda803dfebb94e2142bdafa246",
+    "liveAt": "2026-10-07T00:44:06Z",
+    "restrictedRuntimeRole": "vega_app_runtime",
+    "classCancellationBookedAndWaiting": true,
+    "waitlistJoinedAndRemoved": true,
+    "successfulPromotion": true,
+    "replayedEventDeduplicated": true,
+    "missingVerifiedRecipientNeedsReview": true,
+    "memberStaffAgree": true,
+    "privateLookupDenied": true,
+    "directDeliveryWritesDenied": true,
+    "recoveryConstraintsChecked": 23,
+    "rolledBack": true,
+    "externalMessages": 0,
+    "memberBrowser": "Existing signed-in My bookings remains correct; earlier accepted email status retained",
+    "publicVegaAndWillow": 200,
+    "unauthenticatedApp": 401,
+    "publicPrivateEmailData": false,
+    "testFixtureCorrection": "Initial test selected an existing verified member when testing missing linkage. Corrected to create an explicitly unlinked participant within the rollback transaction; corrected hosted test passed. No product change or persistent fixture mutation."
+  },
+  "databaseEvidence": "docs/layer-4/class-waitlist-database-evidence.json",
+  "businessStateUnchanged": true,
+  "permissionShapeUnchanged": true,
+  "deliveryEnabled": false,
+  "advisors": {
+    "newCommunicationFindings": 0,
+    "preexistingOnly": true,
+    "references": [
+      "https://supabase.com/docs/guides/database/database-linter?lint=0011_function_search_path_mutable",
+      "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection"
+    ]
+  }
+}
