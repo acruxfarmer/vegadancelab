@@ -1,0 +1,96 @@
+{
+  "contract": "acrux-product-transition-review/1",
+  "recordedLocalDate": "2026-10-06",
+  "from": "Layer 4 — Communications — COMPLETE / VERIFIED / CLOSED",
+  "to": "Layer 5 — VEGA MEDIA SYSTEM",
+  "status": "AWAITING JOE + CHETT REVIEW — NO IMPLEMENTATION",
+  "architecture": "Acrux ecosystem first. Vega is the proving business.",
+  "sourceReview": [
+    {
+      "path": "../docs/consumer-network-architecture.md",
+      "finding": "Video/Content is an activated business module; authorized relationships and declared membership eligibility remain authoritative; media delivery is a bounded commodity rail."
+    },
+    {
+      "path": "docs/operational-application-architecture.md",
+      "finding": "Video is within the studio product scope; tenant/business authority, account/profile separation and clearly marked unavailable effects remain required."
+    },
+    {
+      "path": "docs/design.md",
+      "finding": "Media examples are wireframes, not evidence of operational media or access control."
+    },
+    {
+      "path": "public/app.js",
+      "finding": "Video library navigation exists; authenticated library currently renders unavailable. Demo cards are not operational content."
+    },
+    {
+      "path": "src/application.mjs",
+      "finding": "An existing videos collection is present; it does not establish a complete media publishing or protected viewing workflow."
+    },
+    {
+      "path": "../docs/foundation-planning/Vega-Launch-Stack-Adoption-Proposal-v1.md",
+      "finding": "Media CDN deferred; archive storage is not a media-serving platform. No media delivery provider is selected by this review."
+    }
+  ],
+  "dragons": [
+    {
+      "order": 1,
+      "name": "Publish → Discover → Watch",
+      "outcome": "An authorized staff member publishes one approved on-demand video; an eligible linked member discovers its details and watches it; staff can withdraw it.",
+      "whyFirst": "Turns the existing empty library into one complete customer journey and proves content ownership, viewing access and basic staff management before expanding the catalog."
+    },
+    {
+      "order": 2,
+      "name": "Organized Practice Library",
+      "outcome": "Staff organizes videos into simple categories or collections; members find relevant practice by topic, instructor or level with clear details and empty states.",
+      "boundary": "No recommendation engine, social features or advanced creator tools."
+    },
+    {
+      "order": 3,
+      "name": "Media Access Through Existing Memberships",
+      "outcome": "Business-approved media eligibility uses existing membership/pass capabilities; members see clear access states and authorized next steps as eligibility changes.",
+      "boundary": "No parallel entitlement engine, new payments or invented entitlement promises; reuse an existing purchase path only where supported."
+    }
+  ],
+  "recommendedFirst": "Publish → Discover → Watch",
+  "firstBuild": {
+    "journey": "Staff prepares approved video → publishes → linked eligible member browses → opens details → plays → staff unpublishes and future access is denied",
+    "include": [
+      "One on-demand video type in the existing signed-in library",
+      "Business-owned title, description, instructor where available, duration and one simple category",
+      "Minimal authorized staff/owner create/edit/publish/unpublish workflow",
+      "Draft and unpublished content unavailable to members",
+      "One explicitly approved simple viewing policy using existing account/business linkage",
+      "Server-enforced viewing access, not merely hidden buttons; no private source credentials in the browser",
+      "Clear loading, unavailable, no-content and access-denied states",
+      "Vega proving content and a second-business fixture proving isolated reuse"
+    ],
+    "proposedAccessPolicy": "Published V1 videos available to authenticated linked members of that business; proposal for Joe + Chett review, not an approved entitlement policy.",
+    "inputsBeforeBuild": [
+      "One approved sample video and permission to use it",
+      "Confirm the simple V1 audience/access policy",
+      "Confirm an existing suitable media source/delivery arrangement; no provider purchase or provisioning is authorized by this review"
+    ],
+    "acceptance": [
+      "Staff publishes and an eligible member can find and play the same content",
+      "Anonymous, foreign-business and unauthorized accounts cannot obtain protected playback",
+      "Draft/unpublished content is not exposed; unpublish prevents new playback authorization",
+      "Only authorized staff/owner can manage content",
+      "Member and staff see consistent business-owned metadata",
+      "Second-business fixture works without Vega-specific assumptions",
+      "Booking, commerce and communications remain unchanged"
+    ],
+    "exclude": [
+      "Bulk migration or import",
+      "Custom transcoding, DRM or media infrastructure",
+      "New paid media offers or payment flows",
+      "Native mobile apps",
+      "Marketing campaigns",
+      "Public-site redesign",
+      "Advanced creator tooling",
+      "Unrelated file management",
+      "Production activation"
+    ]
+  },
+  "implementationStarted": false,
+  "approvalGate": "Stop for Joe + Chett review before any Layer 5 implementation."
+}

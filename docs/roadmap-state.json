@@ -1,36 +1,19 @@
 {
   "recordedLocalDate": "2026-10-06",
   "laterLayers": [
-    "Media system",
     "Native apps"
   ],
   "nextLayer": {
-    "name": "Layer 4 — COMMUNICATIONS",
-    "status": "IN PROGRESS — booking lifecycle, class/waitlist updates, and class reminders/preferences dragons PRODUCT COMPLETE",
-    "recommendedFirstDragon": "Booking Lifecycle Transactional Email",
-    "review": "docs/layer-3/layer-4-transition-review.json",
-    "approvalGate": "Later communications dragons and Production activation require a new bounded brief. No new implementation started.",
-    "firstDragonCompletion": "docs/layer-4/booking-email-checkpoint.json",
-    "classWaitlistCompletion": "docs/layer-4/class-waitlist-checkpoint.json",
-    "communicationDeferrals": [
-      "Class time-change notices",
-      "Instructor-change notices",
-      "Waitlist-expiry notices",
-      "Recurring campaigns",
-      "Marketing",
-      "Segmentation",
-      "Broad preference center",
-      "SMS",
-      "Push notifications",
-      "Automation builder",
-      "Production activation",
-      "Multiple customizable reminder times"
-    ],
-    "classReminderCompletion": "docs/layer-4/class-reminder-checkpoint.json"
+    "name": "Layer 5 — VEGA MEDIA SYSTEM",
+    "status": "TRANSITION REVIEW — NOT STARTED",
+    "review": "docs/layer-4/layer-5-transition-review.json",
+    "recommendedFirstDragon": "Publish → Discover → Watch",
+    "approvalGate": "Stop for Joe + Chett review before any Layer 5 implementation.",
+    "implementationAuthorized": false
   },
   "precedence": "This machine-readable checkpoint updates current roadmap status; the historical image is preserved unchanged.",
   "historicalVisualRoadmap": "D:/JOES WIP/ACRUX/Acrux System Tools/Vega Development Roadmap Dashboard.png",
-  "authority": "Joe approved Layer 4 class reminders policy and bounded Development migration; Layer 2, Layer 3 and prior Layer 4 closures preserved",
+  "authority": "Joe approved canonical Layer 4 closure and Layers 1–4 complete → Layer 5 transition review; no Layer 5 implementation authorized",
   "layer2": {
     "slices": "6.8 through 6.16",
     "closure": "docs/layer-2/canonical-closure.json",
@@ -58,5 +41,39 @@
     "Group booking",
     "New payment flows",
     "Identity merging / federation"
+  ],
+  "completedLayers": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "layer1": {
+    "status": "COMPLETE",
+    "basis": "Explicit Joe roadmap instruction; no Layer 1 re-audit in this closure task"
+  },
+  "layer4": {
+    "name": "Communications",
+    "status": "COMPLETE / VERIFIED / CLOSED",
+    "closure": "docs/layer-4/canonical-closure.json",
+    "individualClosures": [
+      "docs/layer-4/booking-email-checkpoint.json",
+      "docs/layer-4/class-waitlist-checkpoint.json",
+      "docs/layer-4/class-reminder-checkpoint.json"
+    ]
+  },
+  "communicationDeferrals": [
+    "SMS",
+    "Push notifications",
+    "Marketing",
+    "Campaigns",
+    "Segmentation",
+    "Automation builder",
+    "Custom reminder schedules",
+    "Broad communications center",
+    "Production activation",
+    "Class time-change notices",
+    "Instructor-change notices",
+    "Waitlist-expiry notices"
   ]
 }

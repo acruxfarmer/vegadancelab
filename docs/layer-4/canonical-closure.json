@@ -1,0 +1,112 @@
+{
+  "contract": "acrux-layer-closure/1",
+  "layer": 4,
+  "name": "Communications",
+  "status": "COMPLETE / VERIFIED / CLOSED",
+  "recordedLocalDate": "2026-10-06",
+  "timezone": "America/Los_Angeles",
+  "authority": "Joe explicit canonical Layer 4 closure and Layer 5 transition-review instruction",
+  "architecture": "Acrux ecosystem first. Vega is the proving business.",
+  "individualClosures": [
+    "docs/layer-4/booking-email-checkpoint.json",
+    "docs/layer-4/class-waitlist-checkpoint.json",
+    "docs/layer-4/class-reminder-checkpoint.json"
+  ],
+  "capabilities": [
+    "Business-owned provider-neutral communication intents",
+    "Resend transactional delivery adapter",
+    "Booking confirmation, cancellation and rebooking",
+    "Waitlist join, removal and successful promotion updates",
+    "Class cancellation notices to affected booked and waitlisted members",
+    "One 24-hour class reminder; enabled by default; member may disable; no late booking/promotion catch-up",
+    "Verified-recipient requirement and exact affected-member selection",
+    "Frozen content, stable identity and duplicate prevention",
+    "Bounded retry and uncertain-outcome review",
+    "Provider acceptance distinct from confirmed delivery",
+    "Vega / Willow business isolation"
+  ],
+  "evidence": [
+    {
+      "path": "docs/layer-4/booking-email-checkpoint.json",
+      "sha256": "51807e259b346d830503c22548e9b2315bddbf62ea0c653cdb0081e58db0b4d2"
+    },
+    {
+      "path": "docs/layer-4/booking-email-credential-result.json",
+      "sha256": "29403c7ceb27ccb6954b0536dcd033498d6ae5fb58cbf7a210d6eb64de48b136"
+    },
+    {
+      "path": "docs/layer-4/booking-email-hosted.json",
+      "sha256": "e7a10065bb26ef39f24f8234fb35a12346e23b3a79bb648dd3fcea14ff133a93"
+    },
+    {
+      "path": "docs/layer-4/booking-email-permission-evidence.json",
+      "sha256": "de31a8e1c003ab2c0e08f70043e31f87ba89f0c2d3f34f294b7ef0eb14496eac"
+    },
+    {
+      "path": "docs/layer-4/booking-email-regression.txt",
+      "sha256": "0b54a02d1ba79c1bf4870f778f6d17adac3e6b016165f348e8731a5a38e56ebe"
+    },
+    {
+      "path": "docs/layer-4/class-reminder-checkpoint.json",
+      "sha256": "81f590673e8a2d1734ddb34e73d90fce11c27063511acd3feebceb4a0934df80"
+    },
+    {
+      "path": "docs/layer-4/class-reminder-database-evidence.json",
+      "sha256": "4617fcb1014395c1faecdfc3ac54d5a17abaeb8ea20ece0da1b1082d64a11c61"
+    },
+    {
+      "path": "docs/layer-4/class-reminder-regression.txt",
+      "sha256": "e2530eab75949ebfc05e71da8f25781b8fbd9fb03b30d54563d1d52860b9c07c"
+    },
+    {
+      "path": "docs/layer-4/class-waitlist-checkpoint.json",
+      "sha256": "39e2115f31c7bdb5a7ec0b2ef061cb0bd4eb3c4ded23fa4768453acf5d209347"
+    },
+    {
+      "path": "docs/layer-4/class-waitlist-database-evidence.json",
+      "sha256": "080113281516360485c85cf8edea86067cfa2ee63aafccde8d05b5fc95caf4e3"
+    },
+    {
+      "path": "docs/layer-4/class-waitlist-regression.txt",
+      "sha256": "30b3e2237fdf794641628ac51f37c42a6ef6741337bfe63fd5e9d7d83445e8a9"
+    }
+  ],
+  "coverageLimits": [
+    "Closure consolidates recorded evidence and explicit user approval; no new runtime audit or deployment in this task.",
+    "Development only; Production activation remains deferred.",
+    "Booking lifecycle: 17 targeted / 1076 tracked / 1079 hosted-build tests passed; one authorized email provider acceptance proven, not inbox delivery.",
+    "Class/waitlist: 23 targeted / 1082 tracked / 1085 hosted-build tests passed; restricted-runtime rollback verification, zero new external messages.",
+    "Reminders: 23 targeted / 1088 tracked / 1091 hosted-build tests passed; restricted-runtime rollback eligibility/suppression and hosted member preference saves verified, zero live reminder sends.",
+    "Suite counts are separate checkpoints, not additive.",
+    "Unattended email delivery remains disabled at the final recorded checkpoint.",
+    "Reminders use a five-minute processing tolerance around the fixed 24-hour due time; no late catch-up.",
+    "Vega/Willow fixture isolation verified; hosted member preference interaction used Vega.",
+    "Temporary migration elevation removed; private communication access remains restricted; prior business permissions preserved."
+  ],
+  "deferred": [
+    "SMS",
+    "Push notifications",
+    "Marketing",
+    "Campaigns",
+    "Segmentation",
+    "Automation builder",
+    "Custom reminder schedules",
+    "Broad communications center",
+    "Production activation"
+  ],
+  "deferredAreBlockers": false,
+  "workflowDependentDeferrals": [
+    "Class time-change notices",
+    "Instructor-change notices",
+    "Waitlist-expiry notices"
+  ],
+  "workflowDependentDeferralReason": "No supported authoritative underlying workflow in the closed communication scope; no scheduling changes or invented events.",
+  "historicalDeferralReconciliation": "Earlier individual records defer reminders historically; the later reminder dragon completes that capability. Preserve those individual records unchanged.",
+  "priorLayers": {
+    "layer2": "COMPLETE / VERIFIED / CLOSED — not reopened",
+    "layer3": "COMPLETE / VERIFIED / CLOSED — not reopened"
+  },
+  "roadmap": "docs/roadmap-state.json",
+  "transitionReview": "docs/layer-4/layer-5-transition-review.json",
+  "layer5ImplementationAuthorized": false
+}
