@@ -1,0 +1,129 @@
+{
+  "dragon": "Layer 4 — Class Reminders + Communication Preferences",
+  "status": "PRODUCT COMPLETE",
+  "independentWork": [
+    "Inspected existing private intents, Resend adapter, polling and preference records",
+    "Added separate class_reminders email purpose locally",
+    "Restricted reminder preference edits to the owning member",
+    "Preserved existing transactional and marketing preferences"
+  ],
+  "targetedTests": {
+    "passed": 23,
+    "failed": 0,
+    "newReminderTests": 6
+  },
+  "deliveryDesign": [
+    "Use existing runtime poller and communication intent table",
+    "Recheck active booking, upcoming class, enabled preference and verified recipient at dispatch",
+    "Stable reminder identity per booking and fixed window",
+    "Suppress cancelled bookings/classes and waitlisted entries",
+    "Uncertain reminder outcomes require review rather than automatic resend",
+    "Provider acceptance remains distinct from delivery"
+  ],
+  "databaseChanged": true,
+  "deployed": true,
+  "emailsSent": 0,
+  "productionTouched": false,
+  "deferred": [
+    "Multiple customizable reminder times",
+    "SMS",
+    "Push",
+    "Marketing",
+    "Campaigns",
+    "Segmentation",
+    "Automation builder",
+    "Broad communication center",
+    "Production activation"
+  ],
+  "approvedPolicy": {
+    "intervalHours": 24,
+    "defaultEnabled": true,
+    "lateBookingCatchUp": false,
+    "memberMayDisable": true,
+    "requiredTransactionalMessagesSeparate": true
+  },
+  "fullRegression": {
+    "passed": 1088,
+    "failed": 0
+  },
+  "implementation": [
+    "Separate member-owned email reminder preference and default-on control",
+    "Existing poller creates stable reminder intents only during fixed 24-hour due window",
+    "Five-minute processing tolerance; no late catch-up",
+    "Recheck authoritative state before claiming; suppress ineligible reminder",
+    "Uncertain reminder and expired reminder lease require review without automatic resend",
+    "Existing Resend adapter and frozen message mechanism reused"
+  ],
+  "databasePackage": {
+    "migration": "db/class-reminder.sql",
+    "rollbackTests": "test/class-reminder-database.sql",
+    "privileges": "Existing runtime entry points unchanged; new pure private snapshot helper executable only by existing communication owner; PUBLIC/anon/authenticated/runtime denied direct helper execution",
+    "temporaryElevation": "Existing acrux_booking_email membership inherited by postgres only inside migration transaction; revoked before commit, with effective privilege assertion",
+    "newRoles": false,
+    "broadSchemaGrants": false,
+    "production": false
+  },
+  "automaticApprovalReview": "Initial rejection resolved by explicit Joe + Chett approval. Bounded migration applied with rollback-only tests; temporary elevation removed.",
+  "remaining": [],
+  "databaseVerification": {
+    "rollbackOnlyTestsPassed": true,
+    "businessStateUnchanged": true,
+    "unrelatedPermissionsUnchanged": true,
+    "publicAccess": false,
+    "anonAccess": false,
+    "authenticatedAccess": false,
+    "temporaryInherit": false,
+    "temporarySetRole": false,
+    "enabledBusinesses": 0,
+    "evidence": "docs/layer-4/class-reminder-database-evidence.json"
+  },
+  "completedLocalDate": "2026-10-06",
+  "deliveryEnabled": false,
+  "hostedVerification": {
+    "applicationCommit": "96907dd241bebeda3d0f628a8f3b1ce3ad9a994b",
+    "deployment": "dep-db2pqd2d0e5s73dvmdag",
+    "liveAt": "2026-10-07T01:16:21Z",
+    "buildRegression": {
+      "passed": 1091,
+      "failed": 0
+    },
+    "restrictedRuntime": {
+      "role": "vega_app_runtime",
+      "eligibleReminderRetained": true,
+      "preferenceOffSuppresses": true,
+      "privateHelperDenied": true,
+      "directIntentWritesDenied": true,
+      "allStateUnchanged": true,
+      "rolledBack": true,
+      "externalMessages": 0,
+      "delivery": "disabled"
+    },
+    "memberBrowser": {
+      "defaultOnObserved": true,
+      "offSavedAndPersisted": true,
+      "onSavedAndPersisted": true,
+      "finalEnabled": true,
+      "revisionBefore": 168,
+      "revisionAfter": 170,
+      "onlyPreferencesAndActivityChanged": true
+    },
+    "protectedStateDigests": {
+      "vegaBeforeAndAfter": "d37e9311cb9c171423ba3708d4aec1e5",
+      "willowBeforeAndAfter": "ab3e216ff185a0f8801bbd2c11cfda96",
+      "willowRevision": 0
+    },
+    "publicVegaAndWillow": {
+      "status": 200,
+      "privateReminderData": false
+    },
+    "unauthenticatedAppStatus": 401,
+    "persistedIntentsBeforeAndAfter": 1,
+    "providerAttemptsBeforeAndAfter": 1,
+    "newProviderRequests": 0,
+    "deliveryClaimed": false
+  },
+  "validationLimits": [
+    "Hosted reminder eligibility and suppression verified in rollback-only transaction under actual restricted runtime; no live reminder email sent. Existing Resend adapter remains disabled.",
+    "Five-minute processing tolerance around the fixed 24-hour due time; no late catch-up."
+  ]
+}

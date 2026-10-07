@@ -6,7 +6,7 @@
   ],
   "nextLayer": {
     "name": "Layer 4 — COMMUNICATIONS",
-    "status": "IN PROGRESS — booking lifecycle and class/waitlist communication dragons PRODUCT COMPLETE",
+    "status": "IN PROGRESS — booking lifecycle, class/waitlist updates, and class reminders/preferences dragons PRODUCT COMPLETE",
     "recommendedFirstDragon": "Booking Lifecycle Transactional Email",
     "review": "docs/layer-3/layer-4-transition-review.json",
     "approvalGate": "Later communications dragons and Production activation require a new bounded brief. No new implementation started.",
@@ -16,7 +16,6 @@
       "Class time-change notices",
       "Instructor-change notices",
       "Waitlist-expiry notices",
-      "Reminders",
       "Recurring campaigns",
       "Marketing",
       "Segmentation",
@@ -24,12 +23,14 @@
       "SMS",
       "Push notifications",
       "Automation builder",
-      "Production activation"
-    ]
+      "Production activation",
+      "Multiple customizable reminder times"
+    ],
+    "classReminderCompletion": "docs/layer-4/class-reminder-checkpoint.json"
   },
   "precedence": "This machine-readable checkpoint updates current roadmap status; the historical image is preserved unchanged.",
   "historicalVisualRoadmap": "D:/JOES WIP/ACRUX/Acrux System Tools/Vega Development Roadmap Dashboard.png",
-  "authority": "Joe approved Layer 4 booking lifecycle email build and bounded Development permission correction/test; Layer 2 and Layer 3 closures preserved",
+  "authority": "Joe approved Layer 4 class reminders policy and bounded Development migration; Layer 2, Layer 3 and prior Layer 4 closures preserved",
   "layer2": {
     "slices": "6.8 through 6.16",
     "closure": "docs/layer-2/canonical-closure.json",

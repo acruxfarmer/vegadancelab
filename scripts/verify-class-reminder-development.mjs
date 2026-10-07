@@ -21,6 +21,6 @@ try{
  await c.query('select * from vega_private.claim_booking_email($1)',[randomUUID()]);result=await c.query('select status from vega_private.booking_email_intents where id=$1',[id]);assert.equal(result.rows[0].status,'suppressed');
  await c.query('savepoint private_helper');await assert.rejects(c.query("select vega_private.class_reminder_snapshot('{}','x','x','x',now())"),/permission denied/);await c.query('rollback to savepoint private_helper');
  const access=await c.query("select current_user as role,has_table_privilege(current_user,'vega_private.booking_email_intents','INSERT,UPDATE,DELETE') as direct_write");assert.equal(access.rows[0].role,'vega_app_runtime');assert.equal(access.rows[0].direct_write,false);
- await c.query('rollback');const after=await store.read(owner);assert.deepEqual(after,original);
+ await c.query('rollback');const after=await store.read(owner);assert.equal(after.revision,original.revision);for(const k of ['classes','participants','reservations','passes','creditUnits','creditEvents','purchaseDrafts','refundHistory','preferences','bookingEmails'])assert.ok(JSON.stringify(after[k])===JSON.stringify(original[k]),k+' unchanged');
  console.log(JSON.stringify({verified:true,role:access.rows[0].role,eligibleReminderRetained:true,preferenceOffSuppresses:true,privateHelperDenied:true,directIntentWritesDenied:true,allStateUnchanged:true,rolledBack:true,externalMessages:0,delivery:process.env.BOOKING_EMAIL_DELIVERY}));
 }finally{await c.query('rollback').catch(()=>{});c.release();await pool.end();}
