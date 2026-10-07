@@ -61,6 +61,14 @@ export function createMediaOwnerManagement(pool,{initialOwners=[]}={}){
     }
     items.push({...r,placements:projections,linkedVideo:links[0]||null});
    }
+   // Target staff receive their local placement only, never the external
+   // owner's canonical metadata/source document or global management rights.
+   const {rows:local}=await c.query('select document from media_private.placements order by id');
+   for(const {document:p} of local){
+    const b=businesses.find(b=>b.tenant_id===p.context.tenantId&&b.business_id===p.context.businessId);
+    if(!b||items.some(r=>r.id===p.resourceId))continue;
+    items.push({id:p.resourceId,title:'Externally owned media',owner:{kind:'external'},source:{provider:'Managed by owner',kind:'external'},lifecycle:p.authorized?'active':'withdrawn',localOnly:true,placements:[{...p,products:[],canOrganize:true,groups:(b.state.mediaGroups||[]).map(g=>({id:g.id,name:g.name,kind:g.kind}))}]});
+   }
    const result={userId:actor,items,businesses:businesses.map(b=>({kind:'business',tenantId:b.tenant_id,businessId:b.business_id,products:(b.state.entitlementProducts||[]).filter(p=>p.type==='membership').map(p=>({id:p.id,name:p.name}))}))};
    await c.query('commit');return result;
   }catch(error){await c.query('rollback').catch(()=>{});throw error;}finally{c.release();}
