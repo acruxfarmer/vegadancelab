@@ -146,7 +146,8 @@ export function transition(original, command, authority, {id=randomUUID,now=()=>
  }else if(command.action==='participant'){
   staff();if(!text(body.name))fail('Participant name required');result={id:id(),name:body.name,relationship:'Studio participant'};state.participants.push(result);
  }else if(command.action==='preferences'){
-  own(body.participantId);if(!['email','sms'].includes(body.channel)||!['studio_updates','class_notifications'].includes(body.purpose)||typeof body.allowed!=='boolean')fail('Invalid communication preference');
+  own(body.participantId);if(!['email','sms'].includes(body.channel)||!['studio_updates','class_notifications','class_reminders'].includes(body.purpose)||typeof body.allowed!=='boolean')fail('Invalid communication preference');
+  if(body.purpose==='class_reminders'&&(authority.role!=='member'||body.channel!=='email'))fail('Only the member can change class reminder email preferences',403);
   result={participantId:body.participantId,sender:'vega',channel:body.channel,purpose:body.purpose,allowed:body.allowed,updatedAt:now()};
   state.preferences=state.preferences.filter(x=>!(x.participantId===result.participantId&&x.channel===result.channel&&x.purpose===result.purpose));state.preferences.push(result);
  }else if(command.action==='notification'){
