@@ -1,6 +1,6 @@
 {
   "dragon": "Layer 5 — Publish → Discover → Watch",
-  "status": "BLOCKED — HOSTED STAFF AND MEMBER SIGN-IN REQUIRED",
+  "status": "LAYER 5 — PUBLISH → DISCOVER → WATCH — PRODUCT COMPLETE",
   "recordedLocalDate": "2026-10-06",
   "architecture": "Acrux ecosystem first. Vega is the proving business.",
   "storageDecision": {
@@ -41,15 +41,13 @@
     "trackedPassed": 1097,
     "trackedFailed": 0
   },
-  "remaining": [
-    "Hosted staff create/edit/preview/publish/unpublish",
-    "Hosted member discovery and actual decoded playback",
-    "Final protected-state and private-boundary evidence"
-  ],
+  "remaining": [],
   "coverageLimits": [
     "Generic practice poster for V1; per-video custom posters deferred.",
     "Small bounded file download before playback; no adaptive streaming, range delivery or full-length catalog qualification.",
-    "Unpublish denies new playback authorization; bytes already delivered to an authorized browser cannot be recalled. No DRM claim."
+    "Unpublish denies new playback authorization; bytes already delivered to an authorized browser cannot be recalled. No DRM claim.",
+    "Hosted browser verification used Vega; Willow reuse and foreign-business denial verified in targeted tests.",
+    "Initial save exceeded the short UI recovery wait; existing receipt subsequently acknowledged. No duplicate record was created."
   ],
   "deferred": [
     "Full-length/larger video delivery",
@@ -80,9 +78,43 @@
     "rawFixturePubliclyAccessible": false,
     "publicVegaAndWillow": 200,
     "publicAssetDataExposed": false,
-    "actualPlaybackVerified": false
+    "actualPlaybackVerified": true,
+    "staffRoleAndCreateFormVerified": true,
+    "attachmentAttempt": "Automated file selection crashed the in-app browser before save. User recovered and selected the same approved local synthetic clip; agent then completed save, edit, preview, publish, member playback, unpublish denial and republish using the product UI.",
+    "staffCreate": true,
+    "staffEdit": true,
+    "staffDraftPreview": true,
+    "staffPublish": true,
+    "memberPublishedDiscovery": true,
+    "memberPlayback": {
+      "durationSeconds": 6,
+      "playedThroughSeconds": 6,
+      "ended": true,
+      "readyState": 4,
+      "videoWidth": 480,
+      "videoHeight": 270,
+      "error": null
+    },
+    "draftHiddenFromMember": true,
+    "unpublishDeniesExistingMemberPlayButton": true,
+    "denialMessage": "This video is unavailable for your account.",
+    "finalPublishState": "published",
+    "mediaId": "b584d560-1f3d-4b4d-bd2f-9d4a8026122f",
+    "mediaRevision": 5,
+    "businessRevision": 175,
+    "independentReceiptsAcknowledged": [
+      171,
+      172,
+      173,
+      174,
+      175
+    ],
+    "protectedBusinessStateUnchanged": true,
+    "willowUnchanged": true,
+    "communicationIntentsUnchanged": 1,
+    "communicationAttemptsUnchanged": 1
   },
-  "credentials": "Existing staff/owner and admin@vegadancelab.com member sign-in requested in separate Codex tabs. No credentials read or printed.",
+  "credentials": "Existing staff and member sessions used; no credentials read or printed.",
   "businessBaseline": [
     {
       "business": "vega-dance-lab",

@@ -5,10 +5,10 @@
   ],
   "nextLayer": {
     "name": "Layer 5 — VEGA MEDIA SYSTEM",
-    "status": "IN PROGRESS — Publish → Discover → Watch deployed to Development; hosted authenticated verification pending",
+    "status": "IN PROGRESS — Publish → Discover → Watch PRODUCT COMPLETE",
     "review": "docs/layer-4/layer-5-transition-review.json",
     "recommendedFirstDragon": "Publish → Discover → Watch",
-    "approvalGate": "Joe authorized this bounded Layer 5 build; Production and expanded media scope remain deferred",
+    "approvalGate": "Further Layer 5 dragons require a new bounded brief; Production remains deferred",
     "implementationAuthorized": true,
     "firstDragonCheckpoint": "docs/layer-5/media-checkpoint.json"
   },
