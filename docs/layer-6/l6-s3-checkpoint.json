@@ -1,6 +1,8 @@
 {
   "slice": "L6-S3 — Locked / Restricted Media Experience",
-  "status": "IMPLEMENTED / READY FOR REVIEW",
+  "status": "COMPLETE / VERIFIED / APPROVED / CLOSED",
+  "closureAuthority": "Joe + Chett L6-S4 directive explicitly closes L6-S3; evidence preserved",
+  "finalEvidenceCommit": "e2cc902",
   "date": "2026-10-07",
   "runtimeCommit": "aa88a34e396f2f3f686765e5b1b7c764e79f0533",
   "implementationCommit": "d0034ff0a528ed7fb7463e4990ae39a935894da1",
@@ -23,5 +25,5 @@
   "productionUntouched": true,
   "closedSlicesPreserved": true,
   "nextSliceStarted": false,
-  "reviewRequired": true
+  "reviewRequired": false
 }

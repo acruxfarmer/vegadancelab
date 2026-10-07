@@ -79,11 +79,11 @@
     "Waitlist-expiry notices"
   ],
   "activeSlice": {
-    "id": "L6-S3",
-    "name": "Locked / Restricted Media Experience",
+    "id": "L6-S4",
+    "name": "Creator / Business Media Management",
     "status": "IMPLEMENTED / READY FOR REVIEW",
-    "checkpoint": "docs/layer-6/l6-s3-checkpoint.json",
-    "previousSlice": "L6-S1A, L6-S1B and L6-S2 COMPLETE / VERIFIED / APPROVED / CLOSED",
-    "nextSlices": "Await Joe + Chett L6-S3 review; no next slice started. Production untouched."
+    "checkpoint": "docs/layer-6/l6-s4-checkpoint.json",
+    "previousSlice": "L6-S1A, L6-S1B, L6-S2 and L6-S3 COMPLETE / VERIFIED / APPROVED / CLOSED",
+    "nextSlices": "Await Joe + Chett L6-S4 review; no next slice started. Production untouched."
   }
 }
