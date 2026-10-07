@@ -1,0 +1,61 @@
+{
+  "slice": "L6-S1A — Universal Media Resource Foundation",
+  "status": "IMPLEMENTED / READY FOR REVIEW",
+  "date": "2026-10-07",
+  "authority": "Joe + Chett approved additive context-independent foundation following the L6-S1 business-bound media HOLD.",
+  "architecture": {
+    "identity": "Independent UUID canonical video resource; no required tenant or business on user-owned resources.",
+    "principal": "Existing Supabase Auth user ID verified through the existing /auth/v1/user contract. No new identity catalog or login flow; business headers and editable user metadata do not grant ownership.",
+    "ownership": "Discriminated user or tenant/business owner. Creation as another user is denied. Business authority reuses app_members and resolveStaffAccess/customers.manage, including established initial-owner configuration supplied by the host.",
+    "provenance": "submittedBy is the authenticated introducer; creator is descriptive metadata, not authority. Legacy adoption records originalSubmitter as unknown when unavailable. Business ownership describes platform control, not a copyright adjudication.",
+    "source": "Separate provider-neutral opaque managed/external/legacy reference. No URL fetching, embedding, token issuance or playback adapter is introduced. Existing legacy bytes remain in their original store.",
+    "compatibility": "Unique (tenant,business,video) mapping to resource UUID; resource_id is not unique in the mapping model. Adoption is serialized and repeatable. Existing video ID, URL, publication, categories, collections and bytes are unchanged. This is an additive mapping, not a replacement read path.",
+    "lifecycle": "Standalone resources may be archived with revision check and audit; no hard deletion or ownership transfer. Archiving a mapped legacy resource is explicitly rejected until coordinated lifecycle withdrawal is implemented.",
+    "entitlements": "Existing business-scoped entitlement authority remains untouched. No media entitlement catalog, access evaluator or consumption behavior added.",
+    "boundary": "Generic media core; existing database schema/runtime names occur only in the compatibility adapter and proposal foreign keys. No business-name branching or Vega/PDX-specific resource identity."
+  },
+  "implementation": {
+    "model": "src/media-resource.mjs",
+    "serviceAndPrincipalVerification": "src/runtime/media-resource-foundation.mjs",
+    "postgresRepository": "src/runtime/media-resource-repository.mjs",
+    "schemaProposal": "db/proposals/l6-s1a-media-resource.sql",
+    "tests": "test/media-resource-foundation.test.mjs",
+    "newSchema": "media_private.resources, legacy_media_links, resource_audit",
+    "schemaApplied": false,
+    "migrationCreated": false,
+    "deploymentPerformed": false,
+    "browserRoutesAdded": false,
+    "newRoles": false,
+    "runtimeActivated": false
+  },
+  "verification": {
+    "newTestsPassed": 13,
+    "targetedIncludingLayer5Passed": 31,
+    "trackedRegressionPassed": 1119,
+    "failed": 0,
+    "regressionEvidence": "docs/layer-6/l6-s1a-regression.txt",
+    "layer5": "Existing media and organized-library suites pass for Vega and Willow; a compatibility test also proves adoption leaves member projection and private playback unchanged.",
+    "postgres": "Repository rollback/release tested with a controlled connection. SQL proposal and repository have NOT been executed against PostgreSQL; database constraints, RLS/grants, concurrent adoption and live session integration still require Development verification before activation.",
+    "browser": "No browser changes or new hosted verification in this local foundation slice.",
+    "provider": "Authentication tests use controlled responses; no live authentication request or provider mutation performed. Official documentation was read only."
+  },
+  "reviewBeforeActivation": [
+    "Apply reviewed additive schema through established Development migration workflow and verify grants/RLS under restricted runtime identity.",
+    "Verify auth.users and business foreign keys, rollback, duplicate/concurrent adoption and nonexistent references on actual PostgreSQL.",
+    "Verify adoption against bounded Development videos with before/after business-state comparison; do not bulk-convert records.",
+    "Owner permission is enforced in the service; database adds owner or scoped staff defense in depth. Browser roles receive no schema/table access. Confirm this permission shape before applying."
+  ],
+  "confirmations": {
+    "canonicalMediaNotIntrinsicallyBusinessBound": true,
+    "userOwnershipGrantsNoBusinessOrAdminAuthority": true,
+    "businessOwnershipSupported": true,
+    "layer5BehaviorPreserved": true,
+    "existingEntitlementAuthorityUnchanged": true,
+    "shadowEntitlementSystemCreated": false,
+    "providerExecutionOccurred": false,
+    "productionTouched": false
+  },
+  "deferred": ["L6-S1B", "L6-S2", "Multi-business placement workflow", "Owner placement approval UI", "Access-policy resolution", "Member viewing changes", "Legacy synchronization/withdrawal bridge", "External-source playback", "Ownership transfer", "Creator/global network UI", "Commerce, offers, pricing and payments", "Production"],
+  "documentationReference": "https://supabase.com/docs/guides/auth/users",
+  "stop": "Await Joe + Chett review. No L6-S1B or L6-S2 started."
+}
