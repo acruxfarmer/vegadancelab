@@ -5,11 +5,12 @@
   ],
   "nextLayer": {
     "name": "Layer 5 — VEGA MEDIA SYSTEM",
-    "status": "TRANSITION REVIEW — NOT STARTED",
+    "status": "IN PROGRESS — Publish → Discover → Watch deployed to Development; hosted authenticated verification pending",
     "review": "docs/layer-4/layer-5-transition-review.json",
     "recommendedFirstDragon": "Publish → Discover → Watch",
-    "approvalGate": "Stop for Joe + Chett review before any Layer 5 implementation.",
-    "implementationAuthorized": false
+    "approvalGate": "Joe authorized this bounded Layer 5 build; Production and expanded media scope remain deferred",
+    "implementationAuthorized": true,
+    "firstDragonCheckpoint": "docs/layer-5/media-checkpoint.json"
   },
   "precedence": "This machine-readable checkpoint updates current roadmap status; the historical image is preserved unchanged.",
   "historicalVisualRoadmap": "D:/JOES WIP/ACRUX/Acrux System Tools/Vega Development Roadmap Dashboard.png",

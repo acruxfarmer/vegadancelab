@@ -1,0 +1,98 @@
+{
+  "dragon": "Layer 5 — Publish → Discover → Watch",
+  "status": "BLOCKED — HOSTED STAFF AND MEMBER SIGN-IN REQUIRED",
+  "recordedLocalDate": "2026-10-06",
+  "architecture": "Acrux ecosystem first. Vega is the proving business.",
+  "storageDecision": {
+    "existingSupabaseStorageBuckets": 0,
+    "sourceRepositoryVisibility": "public",
+    "arrangement": "Bounded MP4 attachment in existing private business state; existing restricted server authorizes each fetch; browser receives a session-scoped blob for playback.",
+    "limits": {
+      "maxVideoBytes": 262144,
+      "maxItemsPerBusiness": 10
+    },
+    "noNewProvider": true,
+    "noSchemaMigration": true,
+    "noPermissionChanges": true,
+    "fullLengthVideoDeliveryDeferred": true
+  },
+  "access": "Current authenticated business membership plus existing unambiguous participant relationship; unpublished videos denied to members; owner/manager use established customers.manage permission.",
+  "metadata": [
+    "title",
+    "description",
+    "shared practice poster",
+    "duration when supplied",
+    "creator",
+    "publish state",
+    "business scope",
+    "linked_business_member access requirement"
+  ],
+  "sample": {
+    "path": "records/media-proof.local.mp4",
+    "committed": false,
+    "synthetic": true,
+    "seconds": 6,
+    "bytes": 109534,
+    "source": "Locally generated test pattern, no third-party creative content"
+  },
+  "tests": {
+    "targetedPassed": 9,
+    "targetedFailed": 0,
+    "trackedPassed": 1097,
+    "trackedFailed": 0
+  },
+  "remaining": [
+    "Hosted staff create/edit/preview/publish/unpublish",
+    "Hosted member discovery and actual decoded playback",
+    "Final protected-state and private-boundary evidence"
+  ],
+  "coverageLimits": [
+    "Generic practice poster for V1; per-video custom posters deferred.",
+    "Small bounded file download before playback; no adaptive streaming, range delivery or full-length catalog qualification.",
+    "Unpublish denies new playback authorization; bytes already delivered to an authorized browser cannot be recalled. No DRM claim."
+  ],
+  "deferred": [
+    "Full-length/larger video delivery",
+    "Custom posters",
+    "Membership/pass media tiers",
+    "Bulk uploads",
+    "Transcoding",
+    "DRM",
+    "Analytics/engagement",
+    "Recommendation engine",
+    "Native apps",
+    "Marketing campaigns",
+    "Public-site redesign",
+    "Advanced creator tools",
+    "Production activation"
+  ],
+  "hosted": {
+    "environment": "Development",
+    "commit": "91ce2267c19a65ce6d3e9af06a691caf45bd295f",
+    "deployment": "dep-db2qp6ajnfac73fmhnhg",
+    "status": "Live",
+    "buildTests": {
+      "passed": 1100,
+      "failed": 0
+    },
+    "unauthenticatedPlayback": 401,
+    "unauthenticatedApp": 401,
+    "rawFixturePubliclyAccessible": false,
+    "publicVegaAndWillow": 200,
+    "publicAssetDataExposed": false,
+    "actualPlaybackVerified": false
+  },
+  "credentials": "Existing staff/owner and admin@vegadancelab.com member sign-in requested in separate Codex tabs. No credentials read or printed.",
+  "businessBaseline": [
+    {
+      "business": "vega-dance-lab",
+      "revision": 170,
+      "digestExcludingVideosAndActivity": "0fc6dae231f5255ec9807ad48a138df9"
+    },
+    {
+      "business": "willow-movement",
+      "revision": 0,
+      "digestExcludingVideosAndActivity": "0163f80a059c3d49096306859d3318b1"
+    }
+  ]
+}
