@@ -1,6 +1,6 @@
 {
   "dragon": "Layer 5 — Organized Practice Library",
-  "status": "IMPLEMENTED / LOCAL VERIFIED / HOSTED VERIFICATION PENDING",
+  "status": "LAYER 5 — ORGANIZED PRACTICE LIBRARY — PRODUCT COMPLETE",
   "recordedLocalDate": "2026-10-06",
   "architecture": "Acrux ecosystem first. Vega is the proving business.",
   "implementationCommit": "06f5080eb63eaba4e17f1915719b5f14a120a192",
@@ -13,13 +13,103 @@
   "discovery": "Case-insensitive and accent-insensitive title/description/instructor search; combined category, collection and instructor filters; staff publication-state filter; result counts and clear empty states",
   "access": "Existing owner/manager customers.manage permission for organization. Member projection contains only authorized published videos. Existing private authenticated playback and tenant/business boundaries retained.",
   "delivery": "Existing bounded private MP4 path; no new provider, schema, roles or grants. Prior 256 KB per asset and ten videos per business limits remain.",
-  "tests": {"targetedPassed":18,"targetedFailed":0,"trackedPassed":1106,"trackedFailed":0,"evidence":"docs/layer-5/organized-library-regression.txt","secondBusiness":"Willow fixture exercises multiple categories, collections, membership, filtering and protected playback"},
-  "hosted": {"environment":"Development","status":"Pending Render credential handoff","deployed":false,"playbackVerified":false},
+  "tests": {
+    "targetedPassed": 18,
+    "targetedFailed": 0,
+    "trackedPassed": 1106,
+    "trackedFailed": 0,
+    "evidence": "docs/layer-5/organized-library-regression.txt",
+    "secondBusiness": "Willow fixture exercises multiple categories, collections, membership, filtering and protected playback"
+  },
+  "hosted": {
+    "environment": "Development",
+    "status": "Live / verified",
+    "deployed": true,
+    "commit": "06f5080eb63eaba4e17f1915719b5f14a120a192",
+    "deployment": "dep-db2s2bp42hec73fmv4i0",
+    "buildTests": {
+      "passed": 1109,
+      "failed": 0
+    },
+    "staff": {
+      "categoriesCreated": 3,
+      "collectionsCreated": 2,
+      "collectionRenamed": true,
+      "approvedAssetReused": true,
+      "multipleVideoRecords": 2,
+      "multipleCollectionMembership": true,
+      "organizationPreservesPublication": true,
+      "publicationFilter": true,
+      "publishUnpublishRepublish": true
+    },
+    "member": {
+      "draftHidden": true,
+      "combinedDescriptionCategoryCollectionInstructorSearch": true,
+      "emptyCategory": true,
+      "collectionCounts": [
+        1,
+        2
+      ],
+      "playbackVerified": true,
+      "playback": {
+        "durationSeconds": 6,
+        "playedThroughSeconds": 6,
+        "ended": true,
+        "readyState": 4,
+        "width": 480,
+        "height": 270,
+        "error": null
+      },
+      "unpublishedExistingPlayButtonDenied": true,
+      "denialMessage": "This video is unavailable for your account.",
+      "managementControlsAbsent": true
+    },
+    "anonymousPlaybackStatus": 401,
+    "finalBusinessRevision": 187,
+    "receiptRevisions": {
+      "first": 176,
+      "last": 187,
+      "count": 12,
+      "allAcknowledged": true
+    },
+    "unrelatedVegaStateUnchanged": true,
+    "willowStateUnchanged": true,
+    "communicationIntents": 1,
+    "communicationAttempts": 1
+  },
   "baseline": [
-    {"business":"vega-dance-lab","revision":175,"digestExcludingVideosActivityMediaGroups":"0fc6dae231f5255ec9807ad48a138df9"},
-    {"business":"willow-movement","revision":0,"digestExcludingVideosActivityMediaGroups":"0163f80a059c3d49096306859d3318b1"}
+    {
+      "business": "vega-dance-lab",
+      "revision": 175,
+      "digestExcludingVideosActivityMediaGroups": "0fc6dae231f5255ec9807ad48a138df9"
+    },
+    {
+      "business": "willow-movement",
+      "revision": 0,
+      "digestExcludingVideosActivityMediaGroups": "0163f80a059c3d49096306859d3318b1"
+    }
   ],
-  "remaining": ["Development deployment", "Hosted staff organization and multiple-item publishing", "Hosted member search/filter and playback", "Verify unrelated business state unchanged"],
+  "remaining": [],
   "preservedClosure": "docs/layer-5/media-checkpoint.json",
-  "deferred": ["Paid media tiers","Media subscriptions","Transcoding","DRM","Bulk ingestion","Creator analytics","Recommendation engine","Social/community features","Native apps","Ordered playlist playback","Full-length/larger video delivery","Custom posters","Production activation"]
+  "deferred": [
+    "Paid media tiers",
+    "Media subscriptions",
+    "Transcoding",
+    "DRM",
+    "Bulk ingestion",
+    "Creator analytics",
+    "Recommendation engine",
+    "Social/community features",
+    "Native apps",
+    "Ordered playlist playback",
+    "Full-length/larger video delivery",
+    "Custom posters",
+    "Production activation"
+  ],
+  "coverageLimits": [
+    "Hosted UI verification used Vega; Willow reuse, role restrictions and foreign-business denials are covered by automated fixtures.",
+    "Missing assets and stale revisions are covered by targeted tests; hosted unpublish denial exercised the unavailable member path.",
+    "Collections are unordered. Existing 256 KB asset and ten-video limits remain; this build does not qualify full-length media delivery.",
+    "Previously delivered authorized bytes cannot be recalled; unpublish prevents new authorization. No DRM claim."
+  ]
 }
