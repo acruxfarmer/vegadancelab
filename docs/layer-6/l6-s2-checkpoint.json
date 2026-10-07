@@ -1,6 +1,8 @@
 {
   "slice": "L6-S2 — Viewer Access Resolution",
-  "status": "HOSTED VERIFIED / READY FOR CLOSURE",
+  "status": "COMPLETE / VERIFIED / APPROVED / CLOSED",
+  "closureAuthority": "Joe + Chett L6-S3 directive explicitly closes L6-S2; original verification evidence preserved",
+  "finalEvidenceCommit": "789c309fbc15ba50fcf49b5915dd0ad3e9688fe8",
   "date": "2026-10-07",
   "runtimeCommit": "b74eeebc361d4ae234789fc4925c2c0e21071bbe",
   "implementationCommit": "c6a8a136c158fe672f0642b22c135696ec104c25",
@@ -48,5 +50,5 @@
   "temporaryWillowLinksRemoved": 2,
   "temporaryAccessEvidence": "docs/layer-6/l6-s2-temporary-access-verification.json",
   "hostedRemainingRun": "Access assertions passed; subsequent JSON key-order hash assertion reconciled read-only; exact cleanup verified",
-  "closureReviewRequired": true
+  "closureReviewRequired": false
 }

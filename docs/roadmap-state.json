@@ -79,11 +79,11 @@
     "Waitlist-expiry notices"
   ],
   "activeSlice": {
-    "id": "L6-S2",
-    "name": "Viewer Access Resolution",
-    "status": "HOSTED VERIFIED / READY FOR CLOSURE",
-    "checkpoint": "docs/layer-6/l6-s2-checkpoint.json",
-    "previousSlice": "L6-S1A and L6-S1B COMPLETE / VERIFIED / APPROVED / CLOSED",
-    "nextSlices": "Await Joe + Chett closure review; no next slice authorized. Production untouched."
+    "id": "L6-S3",
+    "name": "Locked / Restricted Media Experience",
+    "status": "IMPLEMENTED / READY FOR REVIEW",
+    "checkpoint": "docs/layer-6/l6-s3-checkpoint.json",
+    "previousSlice": "L6-S1A, L6-S1B and L6-S2 COMPLETE / VERIFIED / APPROVED / CLOSED",
+    "nextSlices": "Await Joe + Chett L6-S3 review; no next slice started. Production untouched."
   }
 }
