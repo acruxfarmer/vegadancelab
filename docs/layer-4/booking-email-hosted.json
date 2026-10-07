@@ -1,5 +1,5 @@
 {
-  "status": "HOSTED PROVIDER ACCEPTANCE VERIFIED — FINAL MEMBER BROWSER CHECK PENDING",
+  "status": "COMPLETE / VERIFIED — Development bounded booking email",
   "environment": "Development",
   "productionTouched": false,
   "deployment": {
@@ -32,7 +32,15 @@
     "bookingId": "d0802ae7-28d0-4007-a1a8-327a17c3bc2b",
     "bookingConfirmed": true,
     "myBookingsShowsEmailQueued": true,
-    "creditsConsumed": 0
+    "creditsConsumed": 0,
+    "finalSignedInVerification": {
+      "verified": true,
+      "booking": "Movement foundations — preview",
+      "bookingState": "Booked",
+      "emailLabel": "Email accepted by provider",
+      "creditState": "No class credit consumed",
+      "date": "2026-10-06"
+    }
   },
   "boundedProviderTest": {
     "authorizedBy": "Joe + Chett 2026-10-06: one bounded transactional email test",

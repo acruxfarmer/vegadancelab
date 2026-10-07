@@ -1,6 +1,6 @@
 {
   "dragon": "Layer 4 — Booking Lifecycle Transactional Email",
-  "status": "FINAL VERIFICATION — provider accepted one authorized Development email",
+  "status": "LAYER 4 — BOOKING LIFECYCLE TRANSACTIONAL EMAIL — PRODUCT COMPLETE",
   "recordedLocalDate": "2026-10-06",
   "layer3": "COMPLETE / VERIFIED / CLOSED — unchanged",
   "layer2": "COMPLETE / VERIFIED / CLOSED — unchanged",
@@ -26,7 +26,7 @@
     "includesSecondBusiness": true,
     "databaseFunctionalTests": "Passed: rollback-only two-business verification",
     "databaseRestrictedRoleTests": "Passed through deployed vega_app_runtime: all four lifecycle kinds, member/staff agreement, 11 receipt checks, direct writes/Auth lookup denied; all test mutations rolled back",
-    "hostedEmailVerification": "One authorized email accepted on first attempt; member/staff runtime status agrees; business digests unchanged",
+    "hostedEmailVerification": "One authorized email accepted on first attempt; signed-in My bookings shows Booked and Email accepted by provider; member/staff runtime status agrees; both business digests unchanged",
     "applicationDeployment": "Development Live at dcb46ff07704515190034722097cb1e3d6652952",
     "hostedBuildTests": {
       "passed": 1079,
@@ -48,9 +48,7 @@
     "correctionVerified": true,
     "evidence": "docs/layer-4/booking-email-permission-evidence.json"
   },
-  "resume": [
-    "Finish member browser verification after expired-session sign-in; save closure evidence"
-  ],
+  "resume": [],
   "recoveryRules": [
     "Never repeat a booking to resend an email",
     "Retry only the frozen payload and same idempotency key within the bounded window",
@@ -70,5 +68,6 @@
     "https://resend.com/docs/api-reference/emails/send-email",
     "https://supabase.com/docs/guides/auth/users"
   ],
-  "permissionApproval": "Joe + Chett explicitly approved the bounded correction on 2026-10-06"
+  "permissionApproval": "Joe + Chett explicitly approved the bounded correction on 2026-10-06",
+  "completionBoundary": "Development feature verified with one bounded send. Unattended delivery remains disabled. Provider acceptance is proven; inbox delivery is not claimed. This closes the booking-email dragon, not all Layer 4 communications."
 }
