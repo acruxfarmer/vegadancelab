@@ -30,6 +30,12 @@ try{
  // personal owners to create business placements or relationships.
  const p=await placements.authorize(owner,r.id,context,{kind:'public'});
  await placements.configure(staff.userId,p.id,1,{visible:true,policy:{kind:'public'},categoryIds:[],collectionIds:[]});
+ await actor(owner);await c.query('savepoint raw_owner_denial');
+ await assert.rejects(c.query("update media_private.placements set document=document||'{\"visible\":false,\"revision\":3,\"policy\":{\"kind\":\"pay_on_demand\"}}'::jsonb where id=$1",[p.id]),e=>e.code==='42501');
+ await c.query('rollback to savepoint raw_owner_denial');await c.query('release savepoint raw_owner_denial');
+ await actor(staff.userId);await c.query('savepoint raw_staff_denial');
+ await assert.rejects(c.query("update media_private.placements set document=document||'{\"revision\":3,\"policy\":{\"kind\":\"pay_on_demand\"}}'::jsonb where id=$1",[p.id]),e=>e.code==='42501');
+ await c.query('rollback to savepoint raw_staff_denial');await c.query('release savepoint raw_staff_denial');
  view=await manage(owner,{action:'policy',id:p.id,expectedRevision:2,policy:{kind:'memberships',productIds:[product]}});
  let owned=view.items.find(x=>x.id===identity);assert.deepEqual(owned.owner,resource.owner);assert.equal(owned.placements[0].canOrganize,false);assert.deepEqual(owned.placements[0].groups,[]);
  assert.ok(owned.placements[0].products.some(p=>p.id===product));assert.equal(view.state,undefined);
@@ -52,7 +58,7 @@ try{
  await manage(staff.userId,{action:'edit',id:r.id,expectedRevision:1,metadata:{title:'Business edited',creator:'Development'}});
  await manage(staff.userId,{action:'archive',id:r.id,expectedRevision:2});
  await actor(staff.userId);const after=(await c.query('select state from vega_private.app_state where tenant_id=$1 and business_id=$2',[context.tenantId,context.businessId])).rows[0].state;assert.equal(hash(after),hash(before));
- result={result:'L6S4_RUNTIME_PASS',personalCreateEditArchive:true,businessCreateEditOrganizeArchive:true,ownerPolicyAllMembersPaid:true,unrelatedDenied:true,targetStaffOverrideDenied:true,personalOrganizationDenied:true,privateForeignBusinessReadDenied:true,staleDenied:true,withdrawalDenied:true,canonicalIdentityPreserved:true,businessStateUnchanged:true,fixtureChangesRolledBack:true};
+ result={result:'L6S4_RUNTIME_PASS',personalCreateEditArchive:true,businessCreateEditOrganizeArchive:true,ownerPolicyAllMembersPaid:true,unrelatedDenied:true,targetStaffOverrideDenied:true,personalOrganizationDenied:true,directDatabaseBoundaryDenials:true,privateForeignBusinessReadDenied:true,staleDenied:true,withdrawalDenied:true,canonicalIdentityPreserved:true,businessStateUnchanged:true,fixtureChangesRolledBack:true};
 }catch(e){console.error(JSON.stringify({result:'L6S4_RUNTIME_FAILED',message:e.message,code:e.code||null}));process.exitCode=1;}
 finally{try{await c.query('rollback');}finally{c.release();await pool.end();}}
 if(result)console.log(JSON.stringify(result));
