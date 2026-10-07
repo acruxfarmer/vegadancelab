@@ -25,6 +25,7 @@ function fixture(){
   const result=await fn({
    resource:async id=>resources.get(id),resourceActive:async id=>resources.get(next.find(p=>p.id===id)?.resourceId)?.lifecycle==='active',
    canManageBusiness:async c=>manage(actor,c),lock:async()=>{},
+   validateOwnerPolicy:async(id,policy)=>placementPolicy(policy,businesses.get(next.find(p=>p.id===id).context.businessId).state),
    find:async(r,c)=>next.find(p=>p.resourceId===r&&p.context.businessId===c.businessId&&p.context.tenantId===c.tenantId),get:async id=>next.find(p=>p.id===id),
    insert:async p=>{if(!businesses.has(p.context.businessId))throw Error('Invalid context');next.push(p);},
    update:async p=>{next[next.findIndex(x=>x.id===p.id)]=p;},audit:async e=>events.push(e),
@@ -36,6 +37,25 @@ function fixture(){
  return {service,businesses,resources,placements:()=>placements,audit:()=>audit,time:t=>time=t};
 }
 const config=(policy={kind:'public'})=>({visible:true,policy,categoryIds:['category'],collectionIds:['collection']});
+test('personal owner changes only policy on existing active placement without business authority',async()=>{
+ const f=fixture(),before=structuredClone([...f.businesses]),r=structuredClone(f.resources.get('resource'));
+ const a=await f.service.authorize('owner','resource',contexts[0],{kind:'public'}),b=await f.service.authorize('owner','resource',contexts[1],{kind:'public'});
+ const p=await f.service.configure('staff-vega',a.id,1,config());
+ const product=f.businesses.get('vega').products[0].id;
+ const next=await f.service.ownerPolicy('owner',p.id,2,{policy:{kind:'memberships',productIds:[product]}});
+ assert.deepEqual(next.collectionIds,p.collectionIds);assert.equal(next.visible,true);assert.equal(f.placements().find(p=>p.id===b.id).revision,1);
+ await assert.rejects(f.service.ownerPolicy('other',p.id,3,{policy:{kind:'public'}}),/owner access/);
+ await assert.rejects(f.service.ownerPolicy('staff-vega',p.id,3,{policy:{kind:'public'}}),/owner access/);
+ await assert.rejects(f.service.ownerPolicy('owner',p.id,3,{policy:{kind:'public'},visible:false}),/Only Access/);
+ await assert.rejects(f.service.configure('owner',p.id,3,config()),/Context media/);
+ await assert.rejects(f.service.configure('staff-vega',p.id,3,config()),/resource owner/);
+ await assert.rejects(f.service.ownerPolicy('owner',p.id,2,{policy:{kind:'public'}}),/changed/);
+ await assert.rejects(f.service.ownerPolicy('owner',p.id,3,{policy:{kind:'memberships',productIds:[f.businesses.get('willow').products[0].id]}}),/unavailable/);
+ await f.service.ownerPolicy('owner',p.id,3,{policy:{kind:'pay_on_demand'}});
+ await f.service.withdraw('owner',p.id,4);
+ await assert.rejects(f.service.ownerPolicy('owner',p.id,5,{policy:{kind:'public'}}),/inactive/);
+ assert.deepEqual(f.resources.get('resource'),r);assert.deepEqual([...f.businesses],before);
+});
 test('owner authorizes one resource into two contexts without ownership or business mutations',async()=>{
  const f=fixture(),before=structuredClone([...f.businesses]),resource=structuredClone(f.resources.get('resource'));
  const a=await f.service.authorize('owner','resource',contexts[0],{kind:'public'}),b=await f.service.authorize('owner','resource',contexts[1],{kind:'public'});

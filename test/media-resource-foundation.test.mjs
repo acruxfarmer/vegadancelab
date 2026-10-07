@@ -27,6 +27,17 @@ function fixture(){
  return {service,business,original,state:()=>state};
 }
 const input=(owned={kind:'user',userId:alice})=>({owner:owned,title:'Independent video',creator:'A different creator',source:{kind:'external_reference',provider:'example-host',reference:'opaque-asset-123'}});
+test('owner metadata editing preserves identity, source and audit; denies stale and foreign edits',async()=>{
+ const f=fixture(),r=await f.service.create(alice,input());
+ await assert.rejects(f.service.edit(bob,r.id,1,{title:'Wrong',creator:''}),/owner access/);
+ await assert.rejects(f.service.edit(alice,r.id,1,{title:'Wrong',creator:'',owner:{kind:'user',userId:bob}}),/Unsupported/);
+ const next=await f.service.edit(alice,r.id,1,{title:'Practice reference',creator:'Teacher'});
+ assert.equal(next.id,r.id);assert.deepEqual(next.owner,r.owner);assert.deepEqual(next.source,r.source);assert.equal(next.revision,2);
+ await assert.rejects(f.service.edit(alice,r.id,1,{title:'Stale',creator:''}),/changed/);
+ await f.service.archive(alice,r.id,2);
+ await assert.rejects(f.service.edit(alice,r.id,3,{title:'Archived',creator:''}),/Archived/);
+ assert.deepEqual(f.state().audit.map(e=>e.action),['resource_created','metadata_edited','resource_archived']);assert.deepEqual(f.business,f.original);
+});
 
 test('ordinary authenticated user owns an independent resource without a business or entitlement',async()=>{const f=fixture(),r=await f.service.create(alice,input());assert.deepEqual(r.owner,{kind:'user',userId:alice});assert.equal(r.tenantId,undefined);assert.equal(r.businessId,undefined);assert.equal(r.submittedBy,alice);assert.equal(r.creator,'A different creator');assert.equal(r.source.provider,'example-host');assert.equal(f.state().links.length,0);assert.deepEqual(f.business,f.original);});
 test('unrelated users cannot read, archive, or create on behalf of another owner',async()=>{const f=fixture(),r=await f.service.create(alice,input());await assert.rejects(f.service.readOwned(bob,r.id),/owner access/);await assert.rejects(f.service.archive(bob,r.id,1),/owner access/);await assert.rejects(f.service.create(bob,input()),/owner access/);assert.equal(f.state().resources.length,1);});

@@ -1,5 +1,5 @@
 import {ApplicationError} from '../application.mjs';
-import {newMediaResource,archiveMediaResource,resourceOwner} from '../media-resource.mjs';
+import {newMediaResource,archiveMediaResource,editMediaResource,resourceOwner} from '../media-resource.mjs';
 
 const fail=(message,status=403)=>{throw new ApplicationError(message,status);};
 // Server-only service. authenticate must verify the existing provider session;
@@ -18,6 +18,13 @@ export function createMediaResourceFoundation({authenticate,repository}){
  }
  const audit=(tx,actor,resource,action)=>tx.audit({actorId:actor,resourceId:resource.id,action,revision:resource.revision});
  return {
+  edit:(request,id,expectedRevision,input)=>run(request,async(tx,actor)=>{
+   const resource=await tx.get(id);if(!resource)fail('Resource unavailable',404);
+   await authorize(tx,actor,resource.owner);
+   if(await tx.hasLegacyLinks(id))fail('Edit linked studio video details in the existing studio library',409);
+   const next=editMediaResource(resource,expectedRevision,input);
+   await tx.update(next);await audit(tx,actor,next,'metadata_edited');return next;
+  }),
   create:(request,input)=>run(request,async(tx,actor)=>{
    await authorize(tx,actor,input.owner);
    if(input.source?.kind==='legacy_video')fail('Use verified legacy adoption for business video references',400);

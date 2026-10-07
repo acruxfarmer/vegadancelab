@@ -26,5 +26,12 @@ export function archiveMediaResource(resource,expectedRevision,now=()=>new Date(
  if(resource.lifecycle==='archived')return structuredClone(resource);
  return {...structuredClone(resource),lifecycle:'archived',revision:resource.revision+1,archivedAt:now()};
 }
+export function editMediaResource(resource,expectedRevision,input,now=()=>new Date().toISOString()){
+ fields(input,['title','creator']);
+ if(resource.revision!==expectedRevision)fail('Resource changed. Refresh before saving.',409);
+ if(resource.lifecycle!=='active')fail('Archived media cannot be edited',409);
+ if(!text(input.title,160)||typeof input.creator!=='string'||input.creator.length>160||/[\u0000-\u001f]/.test(input.creator))fail('Valid resource metadata required');
+ return {...structuredClone(resource),title:input.title.trim(),creator:input.creator.trim(),revision:resource.revision+1,updatedAt:now()};
+}
 // Compatibility identifiers are scoped. They never replace the canonical ID.
 export const legacyMediaKey=({tenantId,businessId,videoId})=>JSON.stringify([tenantId,businessId,videoId]);

@@ -14,6 +14,7 @@ export function createMediaPlacementRepository(pool,{initialOwners=[]}={}){
     if(rows.length!==1)throw Error('Business context unavailable');return rows[0].state;
    };
    const tx={member,businessState,
+    async validateOwnerPolicy(id,policy){const {rows}=await c.query('select media_private.owner_policy_valid($1,$2) as valid',[id,JSON.stringify(policy)]);if(rows[0]?.valid!==true){const {ApplicationError}=await import('../application.mjs');throw new ApplicationError('Choose a valid membership policy for this placement',400);}return policy;},
     async canManageBusiness(context){const a=await member(context);return !!a&&hasStaffPermission(resolveStaffAccess(await businessState(context),a,{initialOwners}),a,'customers.manage');},
     async resource(id){const {rows}=await c.query('select document from media_private.resources where id=$1 for share',[id]);return rows[0]?.document;},
     async resourceActive(id){const {rows}=await c.query('select media_private.placement_resource_active($1) as active',[id]);return rows[0]?.active===true;},

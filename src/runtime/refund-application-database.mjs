@@ -1,4 +1,5 @@
 import {mediaPlayback} from '../media.mjs';
+import {createMediaOwnerManagement} from './media-owner-management.mjs';
 import {manageMediaAccess} from './media-access-management.mjs';
 import {createMediaViewerStore,resolveMediaOnClient,requireMediaDecision} from './media-viewer-store.mjs';
 import {resolveStaffAccess,hasStaffPermission,requireStaffPermission,requireStaffCommand,visibleStaffData,staffCommandResult} from '../staff-permissions.mjs';
@@ -59,6 +60,7 @@ export function createApplicationStore(pool,{bookingEmails=false,initialOwners=[
  }
  const viewer=createMediaViewerStore(pool,{observe:event=>{if(event.reason==='access_policy_invalid')console.warn(JSON.stringify({event:'media_access_policy_invalid',placementId:event.placementId}));}});
  const store={
+  mediaOwnerManagement:createMediaOwnerManagement(pool,{initialOwners}),
   mediaAccessManagement:(identity,videoId,input)=>transaction(identity,async(c,a)=>{
    const row=await stateRow(c,a);if(a.role!=='staff')fail('Staff access required');requirePermission(row.state,a,'customers.manage');
    return manageMediaAccess(c,a,row.state,videoId,input,{initialOwners});

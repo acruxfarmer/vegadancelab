@@ -18,6 +18,18 @@ export function createMediaPlacementService({authenticate,repository,now=()=>new
  };
  const audit=(tx,p,actor,action)=>tx.audit({placementId:p.id,actorId:actor,action,revision:p.revision,createdAt:now()});
  return {
+  ownerPolicy:(request,placementId,expectedRevision,input)=>run(request,async(tx,actor)=>{
+   const p=await tx.get(placementId);if(!p)fail('Placement unavailable',404);
+   const r=await tx.resource(p.resourceId);
+   if(r?.owner.kind!=='user'||r.owner.userId!==actor)fail('Personal resource owner access required');
+   if(!p.authorized||r.lifecycle!=='active')fail('Placement is inactive',409);
+   if(p.revision!==expectedRevision)fail('Placement changed; refresh before saving',409);
+   if(!input||Object.keys(input).some(k=>k!=='policy'))fail('Only Access Availability may be changed',400);
+   // This narrow validator never returns business state or member records.
+   const policy=await tx.validateOwnerPolicy(p.id,input.policy);
+   const next={...p,policy,revision:p.revision+1};
+   await tx.update(next);await audit(tx,next,actor,'configured');return next;
+  }),
   authorize:(request,resourceId,context,initialPolicy)=>run(request,async(tx,actor)=>{
    context=placementContext(context);const r=await tx.resource(resourceId);await owner(tx,actor,r);
    if(r.lifecycle!=='active')fail('Resource is inactive',409);

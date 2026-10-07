@@ -1,0 +1,58 @@
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import pg from 'pg';
+import {applicationDatabaseOptions} from '../src/runtime/refund-application-database.mjs';
+import {createMediaOwnerManagement} from '../src/runtime/media-owner-management.mjs';
+import {createMediaPlacementRepository} from '../src/runtime/media-placement-repository.mjs';
+import {createMediaPlacementService} from '../src/runtime/media-placement-service.mjs';
+import {DEVELOPMENT_INITIAL_OWNERS as initialOwners} from '../src/staff-role-management.mjs';
+if(process.env.VEGA_ENV!=='development'||process.env.RENDER_SERVICE_ID!=='srv-dao5cjbm8hqs73db51j0')throw Error('Development runtime required');
+const pool=new pg.Pool(applicationDatabaseOptions(process.env.APP_DATABASE_URL)),c=await pool.connect();
+const staff=initialOwners[0],owner='01d4a4c0-9758-4bf4-8561-56232b9c9e4a',other='e5946b40-9839-4a96-99d5-93262d9573f0';
+const context={kind:'business',tenantId:staff.tenantId,businessId:staff.businessId},product='98418cad-59e3-4301-85c0-ec696907d3a2';
+const nested={connect:async()=>({release(){},async query(sql,args){if(sql==='begin')return c.query('savepoint s4_verification');if(sql==='commit')return c.query('release savepoint s4_verification');if(sql==='rollback'){await c.query('rollback to savepoint s4_verification');return c.query('release savepoint s4_verification');}return c.query(sql,args);}})};
+const manage=createMediaOwnerManagement(nested,{initialOwners});
+const placements=createMediaPlacementService({authenticate:async userId=>({userId}),repository:createMediaPlacementRepository(nested,{initialOwners})});
+const hash=v=>createHash('sha256').update(JSON.stringify(v)).digest('hex');
+const actor=id=>c.query("select set_config('vega.actor_id',$1,true)",[id]);
+let result;
+try{
+ await c.query('begin');await actor(staff.userId);
+ const before=(await c.query('select state from vega_private.app_state where tenant_id=$1 and business_id=$2',[context.tenantId,context.businessId])).rows[0].state;
+ const resource={owner:{kind:'user',userId:owner},title:'L6-S4 transaction reference',creator:'Development',source:{kind:'external_reference',provider:'development-reference',reference:'synthetic-video'}};
+ let view=await manage(owner,{action:'create',resource});let r=view.items.find(r=>r.title===resource.title);assert.ok(r);const identity=r.id;
+ assert.equal(view.businesses.length,0);
+ assert.ok(!(await manage(other)).items.some(x=>x.id===r.id));
+ await assert.rejects(manage(other,{action:'edit',id:r.id,expectedRevision:1,metadata:{title:'Wrong',creator:''}}));
+ view=await manage(owner,{action:'edit',id:r.id,expectedRevision:1,metadata:{title:'Edited reference',creator:'Development creator'}});r=view.items.find(x=>x.id===identity);assert.equal(r.revision,2);
+ await assert.rejects(manage(owner,{action:'edit',id:r.id,expectedRevision:1,metadata:{title:'Stale',creator:''}}));
+ // Transaction-local setup of an existing placement. No product route allows
+ // personal owners to create business placements or relationships.
+ const p=await placements.authorize(owner,r.id,context,{kind:'public'});
+ await placements.configure(staff.userId,p.id,1,{visible:true,policy:{kind:'public'},categoryIds:[],collectionIds:[]});
+ view=await manage(owner,{action:'policy',id:p.id,expectedRevision:2,policy:{kind:'memberships',productIds:[product]}});
+ let owned=view.items.find(x=>x.id===identity);assert.deepEqual(owned.owner,resource.owner);assert.equal(owned.placements[0].canOrganize,false);assert.deepEqual(owned.placements[0].groups,[]);
+ assert.ok(owned.placements[0].products.some(p=>p.id===product));assert.equal(view.state,undefined);
+ await assert.rejects(manage(other,{action:'policy',id:p.id,expectedRevision:3,policy:{kind:'public'}}));
+ await assert.rejects(manage(staff.userId,{action:'policy',id:p.id,expectedRevision:3,policy:{kind:'public'}}));
+ await assert.rejects(manage(owner,{action:'organize',id:p.id,expectedRevision:3,configuration:{visible:false,policy:{kind:'memberships',productIds:[product]},categoryIds:[],collectionIds:[]}}));
+ await assert.rejects(manage(owner,{action:'policy',id:p.id,expectedRevision:3,policy:{kind:'memberships',productIds:['foreign-product']}}));
+ await manage(owner,{action:'policy',id:p.id,expectedRevision:3,policy:{kind:'pay_on_demand'}});
+ await manage(owner,{action:'policy',id:p.id,expectedRevision:4,policy:{kind:'public'}});
+ await actor(owner);assert.equal((await c.query("select count(*)::int as n from vega_private.app_state where business_id='willow-movement'")).rows[0].n,0);
+ await manage(owner,{action:'withdraw',id:p.id,expectedRevision:5});
+ await assert.rejects(manage(owner,{action:'policy',id:p.id,expectedRevision:6,policy:{kind:'public'}}));
+ view=await manage(owner,{action:'archive',id:r.id,expectedRevision:2});assert.equal(view.items.find(x=>x.id===identity).lifecycle,'archived');
+ const businessResource={...resource,owner:context,title:'L6-S4 business transaction reference'};
+ view=await manage(staff.userId,{action:'create',resource:businessResource,policy:{kind:'pay_on_demand'}});r=view.items.find(x=>x.title===businessResource.title);assert.ok(r);
+ const bp=r.placements[0],groups=bp.groups;const collection=groups.find(g=>g.kind==='collection');assert.ok(collection);
+ await manage(staff.userId,{action:'organize',id:bp.id,expectedRevision:bp.revision,configuration:{visible:true,policy:bp.policy,categoryIds:[],collectionIds:[collection.id]}});
+ view=await manage(staff.userId);r=view.items.find(x=>x.id===r.id);assert.deepEqual(r.placements[0].collectionIds,[collection.id]);
+ await manage(staff.userId,{action:'organize',id:bp.id,expectedRevision:r.placements[0].revision,configuration:{visible:false,policy:bp.policy,categoryIds:[],collectionIds:[]}});
+ await manage(staff.userId,{action:'edit',id:r.id,expectedRevision:1,metadata:{title:'Business edited',creator:'Development'}});
+ await manage(staff.userId,{action:'archive',id:r.id,expectedRevision:2});
+ await actor(staff.userId);const after=(await c.query('select state from vega_private.app_state where tenant_id=$1 and business_id=$2',[context.tenantId,context.businessId])).rows[0].state;assert.equal(hash(after),hash(before));
+ result={result:'L6S4_RUNTIME_PASS',personalCreateEditArchive:true,businessCreateEditOrganizeArchive:true,ownerPolicyAllMembersPaid:true,unrelatedDenied:true,targetStaffOverrideDenied:true,personalOrganizationDenied:true,privateForeignBusinessReadDenied:true,staleDenied:true,withdrawalDenied:true,canonicalIdentityPreserved:true,businessStateUnchanged:true,fixtureChangesRolledBack:true};
+}catch(e){console.error(JSON.stringify({result:'L6S4_RUNTIME_FAILED',message:e.message,code:e.code||null}));process.exitCode=1;}
+finally{try{await c.query('rollback');}finally{c.release();await pool.end();}}
+if(result)console.log(JSON.stringify(result));

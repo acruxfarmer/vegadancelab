@@ -21,7 +21,7 @@ export function createDevelopmentServer(env = process.env, persistSquareEvent, c
     if(req.url.startsWith('/api/')){void api(req,res);return;}
     const files={'/entitlements-ui.js':['entitlements-ui.js','text/javascript; charset=utf-8'],'/cancellation-ui.js':['cancellation-ui.js','text/javascript; charset=utf-8'],'/session.js':['session.js','text/javascript; charset=utf-8'],'/':['index.html','text/html; charset=utf-8'],'/app.js':['app.js','text/javascript; charset=utf-8'],'/integration.js':['integration.js','text/javascript; charset=utf-8'],'/styles.css':['styles.css','text/css; charset=utf-8']};
     files['/media-library.js']=['media-library.js','text/javascript; charset=utf-8'];
-    for(const [file,type] of [['watch.html','text/html'],['watch.js','text/javascript'],['media-access.js','text/javascript']])files['/'+file]=[file,type+'; charset=utf-8'];
+    for(const [file,type] of [['manage-media.html','text/html'],['manage-media.js','text/javascript'],['watch.html','text/html'],['watch.js','text/javascript'],['media-access.js','text/javascript']])files['/'+file]=[file,type+'; charset=utf-8'];
     files['/media-ui.js']=['media-ui.js','text/javascript; charset=utf-8'];
     files['/media-poster.svg']=['media-poster.svg','image/svg+xml'];
     files['/member-booking.js']=['member-booking.js','text/javascript; charset=utf-8'];

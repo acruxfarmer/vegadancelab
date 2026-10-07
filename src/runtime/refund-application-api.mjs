@@ -35,6 +35,12 @@ export function createApplicationApi(env,store,fetcher=fetch){
   const url=new URL(req.url,'http://vega.local');if(!url.pathname.startsWith('/api/'))return false;
   const send=(status,data)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(data));};
   try{
+   if(url.pathname==='/api/media-management'){
+    if(url.search||!['GET','POST'].includes(req.method))throw new ApplicationError('Invalid management request',400);
+    configured();const actor=await createMediaPrincipalVerifier({authOrigin:origin,publishableKey:key,fetcher})(req);
+    if(!store?.mediaOwnerManagement)throw new ApplicationError('Media management unavailable',503);
+    send(200,await store.mediaOwnerManagement(actor.userId,req.method==='POST'?await readJson(req):undefined));return true;
+   }
    const placementView=url.pathname.match(/^\/api\/media\/placements\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i);
    if(placementView){
     if(req.method!=='GET'||url.search)throw new ApplicationError('Invalid media request',400);
