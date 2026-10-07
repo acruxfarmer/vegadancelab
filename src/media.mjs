@@ -69,6 +69,11 @@ export function mediaPlayback(state,a,id,revision,staffAllowed=false){
  const v=(state.videos||[]).find(v=>v.id===id&&scoped(v,a));
  if(!v||(a.role==='staff'?!staffAllowed:!mediaEligible(state,a)||v.publishState!=='published'))fail('This video is unavailable for your account.',404);
  if(v.revision!==revision)fail('This video changed. Return to the library and open it again.',409);
+ return mediaAssetBytes(v);
+}
+// Shared bounded asset integrity check. Authorization belongs to the caller's
+// established legacy policy or canonical placement resolver.
+export function mediaAssetBytes(v){
  if(v.asset?.kind!=='private-inline-mp4-v1'||!v.asset.data)fail('Video temporarily unavailable.',503);
  const bytes=Buffer.from(v.asset.data,'base64');
  if(bytes.length>MAX_VIDEO_BYTES||createHash('sha256').update(bytes).digest('hex')!==v.asset.digest)fail('Video temporarily unavailable.',503);

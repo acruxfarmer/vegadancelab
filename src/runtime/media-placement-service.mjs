@@ -1,7 +1,7 @@
 import {randomUUID} from 'node:crypto';
 import {ApplicationError} from '../application.mjs';
-import {placementContext,placementPolicy,qualifiesForMembership} from '../media-placement.mjs';
-import {mediaEligible} from '../media.mjs';
+import {placementContext,placementPolicy} from '../media-placement.mjs';
+import {resolveMediaViewerAccess} from '../media-viewer-access.mjs';
 
 const fail=(m,status=403)=>{throw new ApplicationError(m,status);};
 // Server-only configuration/service surface, using the same verified principal
@@ -51,15 +51,15 @@ export function createMediaPlacementService({authenticate,repository,now=()=>new
    const next={...p,authorized:false,visible:false,withdrawnAt:now(),revision:p.revision+1};
    await tx.update(next);await audit(tx,next,actor,'withdrawn');return next;
   }),
-  access:(request,placementId)=>run(request,async(tx)=>{
+  access:(request,placementId)=>run(request,async(tx,viewerId)=>{
    const p=await tx.get(placementId,false);
    if(!p||!p.authorized||!p.visible||!await tx.resourceActive(p.id))return {allowed:false};
-   if(p.policy.kind==='public')return {allowed:true,placementId:p.id,resourceId:p.resourceId};
-   const a=await tx.member(p.context);
-   if(!a||a.role!=='member'||!Array.isArray(a.participantIds)||!a.participantIds.length)return {allowed:false};
-   const state=await tx.businessState(p.context);
-   if(!mediaEligible(state,a))return {allowed:false};
-   return qualifiesForMembership(state,a.participantIds,p.policy.productIds,now())?{allowed:true,placementId:p.id,resourceId:p.resourceId}:{allowed:false};
+   const a=p.policy.kind==='public'?null:await tx.member(p.context);
+   const state=a?await tx.businessState(p.context):undefined;
+   // Compatibility preflight delegates policy meaning to the canonical engine.
+   // This remains a non-transferable decision, not a playback authorization token.
+   const result=resolveMediaViewerAccess({placement:p,resourceAvailable:true,viewerId,authority:a,state,at:now()});
+   return result.allowed?{allowed:true,placementId:p.id,resourceId:p.resourceId}:{allowed:false};
   },true)
  };
 }

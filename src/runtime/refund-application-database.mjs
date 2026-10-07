@@ -1,4 +1,5 @@
 import {mediaPlayback} from '../media.mjs';
+import {createMediaViewerStore,resolveMediaOnClient,requireMediaDecision} from './media-viewer-store.mjs';
 import {resolveStaffAccess,hasStaffPermission,requireStaffPermission,requireStaffCommand,visibleStaffData,staffCommandResult} from '../staff-permissions.mjs';
 import {DEVELOPMENT_INITIAL_OWNERS,staffManagementView,staffManagementTransition} from '../staff-role-management.mjs';
 import pg from 'pg';
@@ -55,8 +56,17 @@ export function createApplicationStore(pool,{bookingEmails=false,initialOwners=[
   const {rows}=await client.query(`select state,revision from vega_private.app_state where tenant_id=$1 and business_id=$2${lock?' for update':''}`,[a.tenantId,a.businessId]);
   if(rows.length!==1)throw new ApplicationError('Studio application data is not initialized',503);return rows[0];
  }
+ const viewer=createMediaViewerStore(pool);
  const store={
-  mediaPlayback:(identity,id,revision)=>transaction(identity,async(c,a)=>{const row=await stateRow(c,a);return mediaPlayback(row.state,a,id,revision,hasStaffPermission(access(row.state,a),a,'customers.manage'));},true),
+  mediaPlacementPlayback:(viewerId,placementId)=>viewer.play(viewerId,placementId),
+  mediaPlayback:(identity,id,revision)=>transaction(identity,async(c,a)=>{
+   const row=await stateRow(c,a),staffAllowed=hasStaffPermission(access(row.state,a),a,'customers.manage');
+   if(a.role!=='staff'){
+    const {rows}=await c.query('select media_private.legacy_viewer_placement($1,$2,$3) as id',[a.tenantId,a.businessId,id]);
+    if(rows[0]?.id){const result=await resolveMediaOnClient(c,a.userId,rows[0].id);const bytes=requireMediaDecision(result);if(result.revision!==revision)fail('This video changed. Return to the library and open it again.',409);return bytes;}
+   }
+   return mediaPlayback(row.state,a,id,revision,staffAllowed);
+  }),
   publicDiscovery:slug=>readPublicDiscovery(pool,slug),
   onboard:(userId,body,verifiedEmail)=>onboardPublicMember(pool,userId,body,receiptPublicKey,verifiedEmail),
   memberships:async identity=>{

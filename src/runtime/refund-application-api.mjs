@@ -1,4 +1,5 @@
 import { ApplicationError } from '../application.mjs';
+import {createMediaPrincipalVerifier} from './media-resource-foundation.mjs';
 import {revokeSession} from './sign-out.mjs';
 import {createDirectPayments,sandboxPaymentEnabled,paymentPreparationEnabled} from './direct-payments.mjs';
 import {createRefundWorkflow} from './refund-workflow.mjs';
@@ -34,6 +35,16 @@ export function createApplicationApi(env,store,fetcher=fetch){
   const url=new URL(req.url,'http://vega.local');if(!url.pathname.startsWith('/api/'))return false;
   const send=(status,data)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(data));};
   try{
+   const placementPlay=url.pathname.match(/^\/api\/media\/placements\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\/play$/i);
+   if(placementPlay){
+    if(req.method!=='GET')throw new ApplicationError('Method not allowed',405);
+    if(url.search)throw new ApplicationError('Invalid media link',400);
+    if(!store?.mediaPlacementPlayback)throw new ApplicationError('Media temporarily unavailable',503);
+    let viewerId=null;
+    if(req.headers.authorization!==undefined){configured();viewerId=(await createMediaPrincipalVerifier({authOrigin:origin,publishableKey:key,fetcher})(req)).userId;}
+    const bytes=await store.mediaPlacementPlayback(viewerId,placementPlay[1]);
+    res.writeHead(200,{'Content-Type':'video/mp4','Content-Length':bytes.length,'Cache-Control':'private, no-store','Content-Disposition':'inline','X-Content-Type-Options':'nosniff'});res.end(bytes);return true;
+   }
    if(url.pathname.startsWith('/api/public/')){
     if(req.method!=='GET')throw new ApplicationError('Method not allowed',405);
     const match=url.pathname.match(/^\/api\/public\/studios\/([a-z0-9][a-z0-9-]{0,79})$/);
