@@ -1,0 +1,25 @@
+{
+  "dragon": "Layer 5 — Organized Practice Library",
+  "status": "IMPLEMENTED / LOCAL VERIFIED / HOSTED VERIFICATION PENDING",
+  "recordedLocalDate": "2026-10-06",
+  "architecture": "Acrux ecosystem first. Vega is the proving business.",
+  "implementationCommit": "06f5080eb63eaba4e17f1915719b5f14a120a192",
+  "organization": {
+    "ownership": "Business-scoped configurable categories and collections in existing authoritative business state",
+    "collections": "Simple unordered collections; a video may belong to multiple categories and collections",
+    "limits": "40 organization groups per business; up to 20 assignments of each kind per video",
+    "editing": "Revision-checked group editing and assignment updates; organization preserves publish state; metadata/asset editing retains the existing return-to-draft rule"
+  },
+  "discovery": "Case-insensitive and accent-insensitive title/description/instructor search; combined category, collection and instructor filters; staff publication-state filter; result counts and clear empty states",
+  "access": "Existing owner/manager customers.manage permission for organization. Member projection contains only authorized published videos. Existing private authenticated playback and tenant/business boundaries retained.",
+  "delivery": "Existing bounded private MP4 path; no new provider, schema, roles or grants. Prior 256 KB per asset and ten videos per business limits remain.",
+  "tests": {"targetedPassed":18,"targetedFailed":0,"trackedPassed":1106,"trackedFailed":0,"evidence":"docs/layer-5/organized-library-regression.txt","secondBusiness":"Willow fixture exercises multiple categories, collections, membership, filtering and protected playback"},
+  "hosted": {"environment":"Development","status":"Pending Render credential handoff","deployed":false,"playbackVerified":false},
+  "baseline": [
+    {"business":"vega-dance-lab","revision":175,"digestExcludingVideosActivityMediaGroups":"0fc6dae231f5255ec9807ad48a138df9"},
+    {"business":"willow-movement","revision":0,"digestExcludingVideosActivityMediaGroups":"0163f80a059c3d49096306859d3318b1"}
+  ],
+  "remaining": ["Development deployment", "Hosted staff organization and multiple-item publishing", "Hosted member search/filter and playback", "Verify unrelated business state unchanged"],
+  "preservedClosure": "docs/layer-5/media-checkpoint.json",
+  "deferred": ["Paid media tiers","Media subscriptions","Transcoding","DRM","Bulk ingestion","Creator analytics","Recommendation engine","Social/community features","Native apps","Ordered playlist playback","Full-length/larger video delivery","Custom posters","Production activation"]
+}
