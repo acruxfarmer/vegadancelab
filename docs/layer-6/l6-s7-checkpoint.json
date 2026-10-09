@@ -1,0 +1,22 @@
+{
+  "slice": "L6-S7 — Owner Rights & Placement Delegation",
+  "status": "IMPLEMENTED LOCALLY / PRIVATE RUNTIME AND HOSTED PROOF PENDING",
+  "priorRuntime": "02ce2e9",
+  "priorEvidence": "93f8945",
+  "priorSlicesClosed": true,
+  "databaseProposal": "db/proposals/l6-s7-placement-rights.sql",
+  "developmentDatabaseApplied": true,
+  "existingPlacementDocumentsRewritten": false,
+  "postgresTriggerProof": "passed with rollback; connector role, not restricted runtime role",
+  "restrictedRuntimeVerified": false,
+  "targetedPassed": 21,
+  "regressionsPassed": 1182,
+  "failed": 0,
+  "newSecurityAdvisorFindings": 0,
+  "hostedVerified": false,
+  "temporaryPlacementId": "ef4b9797-4675-4dd4-ae42-7a2a83c1ae19",
+  "temporaryPlacementCreated": false,
+  "productionUntouched": true,
+  "providerRequests": 0,
+  "nextAction": "Run bounded private deployment handoff; inspect receipts before browser proof."
+}

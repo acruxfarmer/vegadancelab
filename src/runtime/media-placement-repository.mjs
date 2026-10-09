@@ -23,7 +23,7 @@ export function createMediaPlacementRepository(pool,{initialOwners=[]}={}){
     async get(id,lock=true){const {rows}=await c.query(`select document from media_private.placements where id=$1${lock?' for update':''}`,[id]);return rows[0]?.document;},
     async insert(p){await c.query('insert into media_private.placements(id,resource_id,tenant_id,business_id,authorized_by,document) values($1,$2,$3,$4,$5,$6)',[p.id,p.resourceId,p.context.tenantId,p.context.businessId,p.authorizedBy,JSON.stringify(p)]);},
     async update(p){const result=await c.query('update media_private.placements set document=$2 where id=$1',[p.id,JSON.stringify(p)]);if(result.rowCount!==1)throw Error('Placement update denied');},
-    async audit(e){await c.query('insert into media_private.placement_audit(placement_id,actor_id,action,revision,created_at) values($1,$2,$3,$4,$5)',[e.placementId,e.actorId,e.action,e.revision,e.createdAt]);}
+    async audit(e){await c.query('insert into media_private.placement_audit(placement_id,actor_id,action,revision,created_at,details) values($1,$2,$3,$4,$5,$6)',[e.placementId,e.actorId,e.action,e.revision,e.createdAt,JSON.stringify(e.details||{})]);}
    };
    const result=await work(tx);await c.query('commit');return result;
   }catch(e){await c.query('rollback').catch(()=>{});throw e;}finally{c.release();}

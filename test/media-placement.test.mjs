@@ -142,3 +142,41 @@ test('same-business staff edit availability without changing identity or ownersh
  await assert.rejects(f.service.configure('staff-willow',changed.id,2,config({kind:'public'})),/Context media/);
  await assert.rejects(f.service.authorize('owner','resource',contexts[1]),/Explicit access/);
 });
+
+test('owner grants bounded edits, prevents membership expansion, revokes immediately and preserves identity',async()=>{
+ const f=fixture(),products=f.businesses.get('vega').products.map(p=>p.id),before=structuredClone([...f.resources]);
+ let p=await f.service.authorize('owner','resource',contexts[0],{kind:'memberships',productIds:products});
+ p=await f.service.configure('staff-vega',p.id,p.revision,config(p.policy));
+ await assert.rejects(f.service.configure('staff-vega',p.id,p.revision,config()),/owner delegation/);
+ p=await f.service.rights('owner',p.id,p.revision,{present:true,organize:true,access:{mode:'restrict'}});
+ p=await f.service.configure('staff-vega',p.id,p.revision,config({kind:'memberships',productIds:[products[0]]}));
+ await assert.rejects(f.service.configure('staff-vega',p.id,p.revision,config({kind:'memberships',productIds:products})),/owner delegation/);
+ await assert.rejects(f.service.configure('staff-vega',p.id,p.revision,config({kind:'pay_on_demand'})),/owner delegation/);
+ p=await f.service.rights('owner',p.id,p.revision,{present:true,organize:true,access:{mode:'modes',modes:['public']}});
+ p=await f.service.configure('staff-vega',p.id,p.revision,config());assert.equal(p.policy.kind,'public');
+ p=await f.service.rights('owner',p.id,p.revision,{present:true,organize:true,access:{mode:'none'}});
+ await assert.rejects(f.service.configure('staff-vega',p.id,p.revision,config({kind:'memberships',productIds:products})),/owner delegation/);
+ assert.equal((await f.service.access(null,p.id)).allowed,true);assert.deepEqual([...f.resources],before);
+ assert.ok(f.audit().some(e=>e.action==='rights_granted'));assert.ok(f.audit().some(e=>e.action==='rights_revoked'));assert.ok(f.audit().some(e=>e.action==='delegated_access_changed'));
+});
+test('rights cannot be forged by receiver or unrelated owner; withdrawn grants are inert',async()=>{
+ const f=fixture();let p=await f.service.authorize('owner','resource',contexts[0],{kind:'public'});
+ const rights={present:true,organize:true,access:{mode:'all'}};
+ for(const actor of ['other','staff-vega','staff-willow'])await assert.rejects(f.service.rights(actor,p.id,1,rights),/owner access/);
+ await assert.rejects(f.service.rights('owner','missing',1,rights),/unavailable/);
+ await assert.rejects(f.service.rights('owner',p.id,0,rights),/changed/);
+ await assert.rejects(f.service.rights('owner',p.id,1,{...rights,owner:'other'}),/explicit/);
+ p=await f.service.rights('owner',p.id,1,{present:false,organize:false,access:{mode:'none'}});
+ await assert.rejects(f.service.configure('staff-vega',p.id,p.revision,config()),/Presentation/);
+ await assert.rejects(f.service.configure('staff-vega',p.id,p.revision,{...config(),visible:false}),/organization/);
+ p=await f.service.withdraw('owner',p.id,p.revision);
+ await assert.rejects(f.service.rights('owner',p.id,p.revision,rights),/inactive/);
+ await assert.rejects(f.service.configure('staff-vega',p.id,p.revision,{...config(),visible:false}),/inactive/);
+});
+test('business owner delegates to another business through the same rights service',async()=>{
+ const f=fixture();let p=await f.service.authorize('staff-vega','business-resource',contexts[1],{kind:'pay_on_demand'});
+ p=await f.service.rights('staff-vega',p.id,1,{present:true,organize:true,access:{mode:'all'}});
+ p=await f.service.configure('staff-willow',p.id,p.revision,config());assert.equal(p.policy.kind,'public');
+ p=await f.service.ownerPolicy('staff-vega',p.id,p.revision,{policy:{kind:'pay_on_demand'}});assert.equal(p.rights.access.ceiling.kind,'pay_on_demand');
+ await assert.rejects(f.service.ownerPolicy('staff-willow',p.id,p.revision,{policy:{kind:'public'}}),/owner access/);
+});

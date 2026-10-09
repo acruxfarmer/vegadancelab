@@ -1,3 +1,4 @@
+import {effectivePlacementRights,receiverAccessOptions} from '../media-placement-rights.mjs';
 import {ApplicationError} from '../application.mjs';
 import {createMediaResourceFoundation} from './media-resource-foundation.mjs';
 import {createMediaResourceRepository} from './media-resource-repository.mjs';
@@ -23,7 +24,7 @@ export function createMediaOwnerManagement(pool,{initialOwners=[]}={}){
    const resources=createMediaResourceFoundation({authenticate,repository:createMediaResourceRepository(nested,{initialOwners})});
    const placements=createMediaPlacementService({authenticate,repository:createMediaPlacementRepository(nested,{initialOwners})});
    if(input!==undefined){
-    if(!input||Object.keys(input).some(k=>!['action','id','expectedRevision','resource','policy','metadata','configuration'].includes(k)))fail('Unsupported management request',400);
+    if(!input||Object.keys(input).some(k=>!['action','id','expectedRevision','resource','policy','metadata','configuration','rights'].includes(k)))fail('Unsupported management request',400);
     if(input.action==='create'){
      if(!input.resource||input.resource.source?.kind!=='external_reference')fail('Register an external reference',400);
      const r=await resources.create(null,input.resource);
@@ -36,11 +37,14 @@ export function createMediaOwnerManagement(pool,{initialOwners=[]}={}){
      if(input.action==='edit')await resources.edit(null,input.id,input.expectedRevision,input.metadata);
      else if(input.action==='archive')await resources.archive(null,input.id,input.expectedRevision);
      else if(input.action==='withdraw')await placements.withdraw(null,input.id,input.expectedRevision);
+     else if(input.action==='rights')await placements.rights(null,input.id,input.expectedRevision,input.rights);
      else if(input.action==='policy'){
       const {rows:pr}=await c.query('select p.document,r.document as resource from media_private.placements p join media_private.resources r on r.id=p.resource_id where p.id=$1',[input.id]);
       const p=pr[0]?.document,r=pr[0]?.resource;if(!owns(r))fail('Resource owner access required');
-      if(r.owner.kind==='user')await placements.ownerPolicy(null,p.id,input.expectedRevision,{policy:input.policy});
-      else await placements.configure(null,p.id,input.expectedRevision,{visible:p.visible,policy:input.policy,categoryIds:p.categoryIds,collectionIds:p.collectionIds});
+      await placements.ownerPolicy(null,p.id,input.expectedRevision,{policy:input.policy});
+     }else if(input.action==='local-policy'){
+      const {rows}=await c.query('select document from media_private.placements where id=$1',[input.id]);const p=rows[0]?.document;if(!p)fail('Placement unavailable',404);
+      await placements.configure(null,p.id,input.expectedRevision,{visible:p.visible,policy:input.policy,categoryIds:p.categoryIds,collectionIds:p.collectionIds});
      }else if(input.action==='organize')await placements.configure(null,input.id,input.expectedRevision,input.configuration);
      else fail('Unsupported management action',400);
     }
@@ -55,9 +59,9 @@ export function createMediaOwnerManagement(pool,{initialOwners=[]}={}){
     for(const {document:p} of ps){
      const b=businesses.find(b=>b.tenant_id===p.context.tenantId&&b.business_id===p.context.businessId);
      let products=[];
-     if(r.owner.kind==='user')products=(await c.query('select media_private.owner_policy_choices($1) as products',[p.id])).rows[0].products;
-     else if(b)products=(b.state.entitlementProducts||[]).filter(x=>x.type==='membership').map(x=>({id:x.id,name:x.name}));
-     projections.push({...p,products,canOrganize:!!b,groups:b?(b.state.mediaGroups||[]).map(g=>({id:g.id,name:g.name,kind:g.kind})):[]});
+     products=(await c.query('select media_private.owner_policy_choices($1) as products',[p.id])).rows[0].products;
+
+     projections.push({...p,rights:effectivePlacementRights(p),canEditAccess:true,allowedAccessModes:['public','memberships','pay_on_demand'],products,canOrganize:!!b&&effectivePlacementRights(p).organize,canPresent:!!b&&effectivePlacementRights(p).present,groups:b?(b.state.mediaGroups||[]).map(g=>({id:g.id,name:g.name,kind:g.kind})):[]});
     }
     let delivery;
     if(r.source?.kind==='managed_reference'){
@@ -74,7 +78,9 @@ export function createMediaOwnerManagement(pool,{initialOwners=[]}={}){
     const b=businesses.find(b=>b.tenant_id===p.context.tenantId&&b.business_id===p.context.businessId);
     const existing=items.find(r=>r.id===p.resourceId);
     if(!b||existing&&!existing.localOnly)continue;
-    const localPlacement={...p,products:[],canOrganize:true,groups:(b.state.mediaGroups||[]).map(g=>({id:g.id,name:g.name,kind:g.kind}))};
+    const rights=effectivePlacementRights(p),allowedAccessModes=receiverAccessOptions(p);
+    const products=(b.state.entitlementProducts||[]).filter(x=>x.type==='membership'&&(rights.access.mode!=='restrict'||p.policy.kind==='public'||p.policy.productIds?.includes(x.id))).map(x=>({id:x.id,name:x.name}));
+    const localPlacement={...p,rights,products,canEditAccess:allowedAccessModes.length>0,allowedAccessModes,canOrganize:rights.organize,canPresent:rights.present,groups:(b.state.mediaGroups||[]).map(g=>({id:g.id,name:g.name,kind:g.kind}))};
     if(existing)existing.placements.push(localPlacement);
     else items.push({id:p.resourceId,title:'Externally owned media',owner:{kind:'external'},source:{provider:'Managed by owner',kind:'external'},lifecycle:'Local placement',localOnly:true,placements:[localPlacement]});
    }

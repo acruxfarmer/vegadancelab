@@ -1,3 +1,4 @@
+import {placementRights,effectivePlacementRights,delegatedAccessAllowed,sameAccess} from '../media-placement-rights.mjs';
 import {randomUUID} from 'node:crypto';
 import {ApplicationError} from '../application.mjs';
 import {placementContext,placementPolicy} from '../media-placement.mjs';
@@ -16,19 +17,28 @@ export function createMediaPlacementService({authenticate,repository,now=()=>new
   if(!r)fail('Resource unavailable',404);
   if(r.owner.kind==='user'?r.owner.userId!==actor:!await tx.canManageBusiness(r.owner))fail('Resource owner access required');
  };
- const audit=(tx,p,actor,action)=>tx.audit({placementId:p.id,actorId:actor,action,revision:p.revision,createdAt:now()});
+ const audit=(tx,p,actor,action)=>tx.audit({placementId:p.id,actorId:actor,action,revision:p.revision,createdAt:now(),details:{policy:p.policy,rights:p.rights||null}});
  return {
   ownerPolicy:(request,placementId,expectedRevision,input)=>run(request,async(tx,actor)=>{
    const p=await tx.get(placementId);if(!p)fail('Placement unavailable',404);
    const r=await tx.resource(p.resourceId);
-   if(r?.owner.kind!=='user'||r.owner.userId!==actor)fail('Personal resource owner access required');
+   await owner(tx,actor,r);
    if(!p.authorized||r.lifecycle!=='active')fail('Placement is inactive',409);
    if(p.revision!==expectedRevision)fail('Placement changed; refresh before saving',409);
    if(!input||Object.keys(input).some(k=>k!=='policy'))fail('Only Access Availability may be changed',400);
    // This narrow validator never returns business state or member records.
    const policy=await tx.validateOwnerPolicy(p.id,input.policy);
-   const next={...p,policy,revision:p.revision+1};
+   const next={...p,policy,...(p.rights?{rights:{...p.rights,access:{...p.rights.access,ceiling:policy}}}:{}),revision:p.revision+1};
    await tx.update(next);await audit(tx,next,actor,'configured');return next;
+  }),
+  rights:(request,placementId,expectedRevision,input)=>run(request,async(tx,actor)=>{
+   const p=await tx.get(placementId);if(!p)fail('Placement unavailable',404);
+   const r=await tx.resource(p.resourceId);await owner(tx,actor,r);
+   if(!p.authorized||r.lifecycle!=='active')fail('Placement is inactive',409);
+   if(p.revision!==expectedRevision)fail('Placement changed; refresh before saving',409);
+   const rights=placementRights(input,p.policy);
+   const next={...p,rights,visible:rights.present?p.visible:false,revision:p.revision+1};
+   await tx.update(next);await audit(tx,next,actor,!p.rights?'rights_granted':rights.access.mode==='none'&&p.rights.access.mode!=='none'?'rights_revoked':'rights_changed');return next;
   }),
   authorize:(request,resourceId,context,initialPolicy)=>run(request,async(tx,actor)=>{
    context=placementContext(context);const r=await tx.resource(resourceId);await owner(tx,actor,r);
@@ -49,16 +59,18 @@ export function createMediaPlacementService({authenticate,repository,now=()=>new
    const state=await tx.businessState(p.context),policy=placementPolicy(input.policy,state);
    const r=await tx.resource(p.resourceId),o=r?.owner;
    const sameBusiness=o?.kind==='business'&&o.tenantId===p.context.tenantId&&o.businessId===p.context.businessId;
-   const samePolicy=JSON.stringify(policy)===JSON.stringify(placementPolicy(p.policy,state));
-   if(!sameBusiness&&!samePolicy)fail('Access Availability is controlled by the resource owner');
+   const samePolicy=sameAccess(policy,p.policy),rights=effectivePlacementRights(p);
+   if(input.visible&&!rights.present)fail('Presentation is not granted by the resource owner');
+   if(!sameBusiness&&!samePolicy&&!delegatedAccessAllowed(p,policy))fail('Access Availability exceeds resource owner delegation');
    const groups={};
    for(const [key,kind] of [['categoryIds','category'],['collectionIds','collection']]){
     const values=input[key]??[];
     if(!Array.isArray(values)||values.length>20||new Set(values).size!==values.length||values.some(id=>!(state.mediaGroups||[]).some(g=>g.id===id&&g.kind===kind&&g.tenantId===p.context.tenantId&&g.businessId===p.context.businessId)))fail('Choose organization from this context',400);
     groups[key]=[...values];
    }
+   if(!rights.organize&&['categoryIds','collectionIds'].some(k=>JSON.stringify([...groups[k]].sort())!==JSON.stringify([...p[k]].sort())))fail('Local organization is not granted by the resource owner');
    const next={...p,...groups,policy,visible:input.visible,revision:p.revision+1};
-   await tx.update(next);await audit(tx,next,actor,'configured');return next;
+   await tx.update(next);await audit(tx,next,actor,!sameBusiness&&!samePolicy?'delegated_access_changed':'configured');return next;
   }),
   withdraw:(request,placementId,expectedRevision)=>run(request,async(tx,actor)=>{
    const p=await tx.get(placementId);if(!p)fail('Placement unavailable',404);

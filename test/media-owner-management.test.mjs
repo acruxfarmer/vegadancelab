@@ -21,3 +21,21 @@ test('management rejects unauthenticated identities before connecting and rolls 
  await assert.rejects(manage(''),/Sign in/);assert.equal(calls,0);
  await assert.rejects(manage(owner,{action:'transfer',id:owner,expectedRevision:1}),/Unsupported/);assert.deepEqual(log.slice(-2),['rollback','released']);
 });
+
+test('receiving UI projection exposes only delegated controls and refresh reflects revocation',async()=>{
+ const actor='4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124',context={kind:'business',tenantId:'development',businessId:'receiver'};
+ const placement={id:owner,resourceId:'external',context,authorized:true,visible:true,policy:{kind:'memberships',productIds:['m1']},revision:1};
+ const state={entitlementProducts:[{id:'m1',name:'One',type:'membership'},{id:'m2',name:'Two',type:'membership'}],mediaGroups:[]};
+ const manage=createMediaOwnerManagement({connect:async()=>({release(){},async query(sql){
+  if(sql.includes('select m.tenant_id'))return {rows:[{tenant_id:context.tenantId,business_id:context.businessId,role:'staff',state}]};
+  if(sql==='select document from media_private.placements order by id')return {rows:[{document:placement}]};
+  return {rows:[]};
+ }})},{initialOwners:[{userId:actor,tenantId:context.tenantId,businessId:context.businessId}]});
+ let result=await manage(actor),p=result.items[0].placements[0];
+ assert.equal(result.items[0].localOnly,true);assert.equal(p.canEditAccess,false);assert.equal(p.canOrganize,true);assert.deepEqual(p.allowedAccessModes,[]);
+ placement.rights={present:true,organize:false,access:{mode:'restrict',ceiling:placement.policy}};
+ p=(await manage(actor)).items[0].placements[0];assert.equal(p.canOrganize,false);assert.equal(p.canEditAccess,true);assert.deepEqual(p.allowedAccessModes,['memberships']);assert.deepEqual(p.products.map(x=>x.id),['m1']);
+ placement.rights.access={mode:'modes',modes:['public'],ceiling:placement.policy};p=(await manage(actor)).items[0].placements[0];assert.deepEqual(p.allowedAccessModes,['public']);
+ placement.rights.access.mode='none';p=(await manage(actor)).items[0].placements[0];assert.equal(p.canEditAccess,false);
+ assert.equal(result.items[0].source.reference,undefined);assert.equal(result.state,undefined);
+});
