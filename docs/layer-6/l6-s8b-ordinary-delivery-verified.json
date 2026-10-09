@@ -1,0 +1,129 @@
+{
+  "status": "EXACT_ASSET_ORDINARY_DELIVERY_VERIFIED_STOPPED_FOR_REVIEW",
+  "resourceId": "dcb5f610-23a2-43be-af39-706a17be8a92",
+  "bindingId": "439dc92e-5036-41b8-b77c-d2f080594a9d",
+  "placementId": "8d6b8b83-8d4c-4a28-966f-a8c4a2e23470",
+  "context": {
+    "kind": "business",
+    "tenantId": "vega-development",
+    "businessId": "vega-dance-lab"
+  },
+  "accessAvailability": "ALL",
+  "productionUntouched": true,
+  "payments": 0,
+  "uploads": 0,
+  "cleanupPending": false,
+  "runtimeCommit": "7740407196614fa14dc7257bb2d12374e333ae8e",
+  "deployId": "dep-db46psrbc2fs73aqpt40",
+  "baseline": {
+    "state": "266c6aefaf21eaf2a9f26210ab0a4b9f7d8229076083403f2459e45664f19ec4",
+    "members": "cbdd29d72415f5d60a498281e063b25627c23c8ac903a2661db2497f662e2679",
+    "database": {
+      "state_digest": "ec6a3cbc4a395bc350244c228ec85cac",
+      "revision": "189",
+      "members_digest": "18ac701b1fe9e8ca843b5c31190a2486"
+    }
+  },
+  "original": {
+    "resource": "707765e3f6964213c8718510237b8ab25285ffbf66f0a08a4a78176bf8e8e385",
+    "binding": "077e78326ec0901c5199c8c4d6f5543242f840ffd9d1a51253b909d7e8ad4ae9"
+  },
+  "accessDecision": {
+    "allowed": true,
+    "reason": "public_access"
+  },
+  "stage": "ticket-cleanup",
+  "events": [
+    {
+      "stage": "hosted-l6s2",
+      "allowed": true,
+      "reason": "public_access"
+    },
+    {
+      "stage": "ordinary-play-request",
+      "ticketAttempts": 1,
+      "cleanupPending": true
+    },
+    {
+      "stage": "ordinary-grant",
+      "exactBindingMapping": true,
+      "credentialSource": "hosted-ordinary-adapter"
+    },
+    {
+      "stage": "asset-a-playback",
+      "request": 1,
+      "httpStatus": 200
+    },
+    {
+      "stage": "master-confirmed",
+      "httpStatus": 200
+    },
+    {
+      "stage": "asset-a-playback",
+      "request": 2,
+      "httpStatus": 200
+    },
+    {
+      "stage": "child-confirmed",
+      "httpStatus": 200
+    },
+    {
+      "stage": "asset-a-playback",
+      "request": 3,
+      "httpStatus": 200
+    },
+    {
+      "stage": "media-confirmed",
+      "httpStatus": 200,
+      "mediaBytes": 15416,
+      "mediaType": "mpeg-ts"
+    },
+    {
+      "stage": "asset-b-same-ticket",
+      "httpStatus": 403
+    },
+    {
+      "stage": "asset-a-still-valid",
+      "httpStatus": 200,
+      "manifestConfirmed": true
+    },
+    {
+      "stage": "ticket-cleanup",
+      "httpStatus": 200,
+      "ticketRemoved": true,
+      "cleanupPending": false
+    }
+  ],
+  "proof": {
+    "hostedOrdinaryPath": true,
+    "l6s2": "public_access",
+    "master": true,
+    "child": true,
+    "media": true,
+    "assetBSameTicketDenied": true
+  },
+  "placementWithdrawn": true,
+  "businessBaselineUnchanged": true,
+  "canonicalAndBindingUnchanged": true,
+  "updatedAt": "2026-10-09T04:31:37.929Z",
+  "cleanupVerification": {
+    "placementRowsRemaining": 0,
+    "auditRowsRemaining": 0,
+    "stateRevision": 189,
+    "stateDigest": "ec6a3cbc4a395bc350244c228ec85cac",
+    "membershipBaseline": "Runtime proof before/after comparison passed; final cleanup touched only disposable placement/audit rows"
+  },
+  "tests": {
+    "ordinaryAdapterAndHostedTargetedPassed": 11,
+    "fullRegressionsPassed": 1250,
+    "failed": 0
+  },
+  "verifierCommit": "7ab1f20",
+  "finalSafety": {
+    "environment": "development",
+    "squareEnabled": false,
+    "externalEffects": "disabled",
+    "paymentMode": "disabled"
+  },
+  "limitation": "Hosted HTTP application route plus guarded HLS traversal verified; no new interactive browser playback or paid entitlement execution in this run."
+}
