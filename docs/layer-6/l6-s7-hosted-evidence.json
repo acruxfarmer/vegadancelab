@@ -1,0 +1,215 @@
+{
+  "status": "hosted-delegation-verified-wording-refresh-pending",
+  "runtimeCommit": "ef78d8a6837672832ca5764a6a330a014eabd6e0",
+  "deploymentId": "dep-db44d4rncjis73bol2vg",
+  "placementId": "ef4b9797-4675-4dd4-ae42-7a2a83c1ae19",
+  "browser": {
+    "ownerGrantSaved": true,
+    "receiverInitialAccessReadOnly": true,
+    "localOrganizationSaved": true,
+    "onlyPermittedPublicOptionShown": true,
+    "receiverPublicChangeSaved": true,
+    "ownerRevocationSaved": true,
+    "receiverReadOnlyAfterRevocation": true
+  },
+  "l6s2": {
+    "before": "DENY: authentication_required",
+    "after": "ALLOW: public_access"
+  },
+  "deniedEditEvidence": "Restricted runtime services denied initial broadening and post-revocation change; direct restricted database update denied. Browser intentionally exposes no forbidden edit action.",
+  "audit": [
+    {
+      "action": "authorized",
+      "details": {
+        "policy": {
+          "kind": "memberships",
+          "productIds": [
+            "98418cad-59e3-4301-85c0-ec696907d3a2"
+          ]
+        },
+        "rights": null
+      },
+      "revision": 1,
+      "createdAt": "2026-10-09T01:43:46.64+00:00"
+    },
+    {
+      "action": "configured",
+      "details": {
+        "policy": {
+          "kind": "memberships",
+          "productIds": [
+            "98418cad-59e3-4301-85c0-ec696907d3a2"
+          ]
+        },
+        "rights": null
+      },
+      "revision": 2,
+      "createdAt": "2026-10-09T01:43:46.981+00:00"
+    },
+    {
+      "action": "rights_granted",
+      "details": {
+        "policy": {
+          "kind": "memberships",
+          "productIds": [
+            "98418cad-59e3-4301-85c0-ec696907d3a2"
+          ]
+        },
+        "rights": {
+          "access": {
+            "mode": "none",
+            "ceiling": {
+              "kind": "memberships",
+              "productIds": [
+                "98418cad-59e3-4301-85c0-ec696907d3a2"
+              ]
+            }
+          },
+          "present": true,
+          "organize": true
+        }
+      },
+      "revision": 3,
+      "createdAt": "2026-10-09T01:43:47.163+00:00"
+    },
+    {
+      "action": "configured",
+      "details": {
+        "policy": {
+          "kind": "memberships",
+          "productIds": [
+            "98418cad-59e3-4301-85c0-ec696907d3a2"
+          ]
+        },
+        "rights": {
+          "access": {
+            "mode": "none",
+            "ceiling": {
+              "kind": "memberships",
+              "productIds": [
+                "98418cad-59e3-4301-85c0-ec696907d3a2"
+              ]
+            }
+          },
+          "present": true,
+          "organize": true
+        }
+      },
+      "revision": 4,
+      "createdAt": "2026-10-09T01:47:05.044+00:00"
+    },
+    {
+      "action": "rights_changed",
+      "details": {
+        "policy": {
+          "kind": "memberships",
+          "productIds": [
+            "98418cad-59e3-4301-85c0-ec696907d3a2"
+          ]
+        },
+        "rights": {
+          "access": {
+            "mode": "modes",
+            "modes": [
+              "public"
+            ],
+            "ceiling": {
+              "kind": "memberships",
+              "productIds": [
+                "98418cad-59e3-4301-85c0-ec696907d3a2"
+              ]
+            }
+          },
+          "present": true,
+          "organize": true
+        }
+      },
+      "revision": 5,
+      "createdAt": "2026-10-09T01:47:32.878+00:00"
+    },
+    {
+      "action": "delegated_access_changed",
+      "details": {
+        "policy": {
+          "kind": "public"
+        },
+        "rights": {
+          "access": {
+            "mode": "modes",
+            "modes": [
+              "public"
+            ],
+            "ceiling": {
+              "kind": "memberships",
+              "productIds": [
+                "98418cad-59e3-4301-85c0-ec696907d3a2"
+              ]
+            }
+          },
+          "present": true,
+          "organize": true
+        }
+      },
+      "revision": 6,
+      "createdAt": "2026-10-09T01:47:43.159+00:00"
+    },
+    {
+      "action": "rights_revoked",
+      "details": {
+        "policy": {
+          "kind": "public"
+        },
+        "rights": {
+          "access": {
+            "mode": "none",
+            "ceiling": {
+              "kind": "public"
+            }
+          },
+          "present": true,
+          "organize": true
+        }
+      },
+      "revision": 7,
+      "createdAt": "2026-10-09T01:48:00.586+00:00"
+    },
+    {
+      "action": "withdrawn",
+      "details": {
+        "policy": {
+          "kind": "public"
+        },
+        "rights": {
+          "access": {
+            "mode": "none",
+            "ceiling": {
+              "kind": "public"
+            }
+          },
+          "present": true,
+          "organize": true
+        }
+      },
+      "revision": 8,
+      "createdAt": "2026-10-09T01:48:29.455+00:00"
+    }
+  ],
+  "cleanupPending": false,
+  "providerRequests": 0,
+  "productionUntouched": true,
+  "temporaryPlacementRemoved": true,
+  "baselineMatches": true,
+  "canonicalResourceUnchanged": true,
+  "bindingUnchanged": true,
+  "baselineAfter": {
+    "stateDigest": "ec6a3cbc4a395bc350244c228ec85cac",
+    "revision": "189",
+    "runtimeVisibleMembersDigest": "18ac701b1fe9e8ca843b5c31190a2486"
+  },
+  "remainingPlacements": 0,
+  "finalBinding": {
+    "state": "ready",
+    "revision": 4
+  },
+  "wordingRuntimeCommit": "ac46eafcae040017d623921046ccef40c40daeee"
+}
