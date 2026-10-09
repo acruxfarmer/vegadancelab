@@ -1,0 +1,21 @@
+{
+  "status": "anonymous-hosted-lock-verified-awaiting-buyer-sign-in",
+  "placementId": "19a43581-f18c-4ec8-b040-149a54a1664f",
+  "resourceId": "3d170055-f7e0-4a94-a7d9-24fcdcfd81a4",
+  "bindingState": "ready",
+  "offerId": "l6-s8b-paid-media-usd1-v1",
+  "priceMinor": 100,
+  "currency": "USD",
+  "browserMetadataVisible": true,
+  "browserPaidLockVisible": true,
+  "browserCTA": "Buy access · $1.00",
+  "anonymousDecision": "DENY: paid_access_required",
+  "anonymousPlaybackStatus": 403,
+  "buyerEntitlementCount": 0,
+  "offerRecovery": "acknowledged",
+  "businessRevision": 190,
+  "authenticatedBuyerProofPending": true,
+  "squareEnabled": false,
+  "payments": 0,
+  "productionUntouched": true
+}
