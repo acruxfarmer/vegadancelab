@@ -1,0 +1,46 @@
+{
+  "slice": "L6-S8A",
+  "title": "Generic Post-Purchase Fulfillment Orchestrator",
+  "status": "IMPLEMENTED_LOCALLY_AWAITING_DEVELOPMENT_POSTGRES_VERIFICATION",
+  "runtimeCommit": "bf53e3ad81d8977d00946879aa6bc4068b889cae",
+  "deployedRuntimeUnchanged": "ac46eafcae040017d623921046ccef40c40daeee",
+  "architecture": {
+    "entry": "Existing verified payment-fulfill transition delegates to fulfillPurchase inside the locked application-state transaction.",
+    "plan": "Frozen purchase terms.fulfillmentPlan = {version:1, actions:[{id,type,target?}]}; explicit empty actions are valid. Maximum 10 actions, at most one BOOKING_CREDITS action under existing issuance/refund semantics.",
+    "compatibility": "Only previously supported booking product types with absent plans resolve the legacy booking action. Unknown products require an explicit plan. Historical terms and issued purchases are not rewritten.",
+    "dispatcher": "Local handler registry with fulfill/reverse contracts; own-property lookup rejects unsupported handlers safely. Payment adapters are unchanged and fulfillment-agnostic.",
+    "states": ["pending", "fulfilled", "failed", "revoked"],
+    "idempotency": "SHA-256 identity over version, tenant, business, purchase and stable action ID; frozen-action equality checked; successful/revoked actions skipped. Attempt history and purchase fulfillmentRevision permit command-journal-safe failed-action retries.",
+    "failure": "Each local handler runs against a cloned aggregate. Failure retains previous successes and records a failed action without leaking partial handler changes. Payment success remains distinct from fulfillment completion.",
+    "storage": "Additive fulfillmentActions and accessEntitlements arrays in the existing PostgreSQL JSONB application aggregate, protected by existing row locking, command journal and recovery outbox. No schema migration required. No standalone SQL unique index for nested action IDs; uniqueness is enforced by serialized domain transitions."
+  },
+  "handlers": {
+    "BOOKING_CREDITS": "Reuses entitlementOperations and bookingAccounting unchanged, including purchase issuance reference and payment-confirmed validity. Existing credit refund policy retires units; action becomes revoked once all its units are refunded.",
+    "DURABLE_ACCESS": "One active grant per action, binding buyer principal, tenant/business, generic target kind/id/scope, purchase and fulfillment action. Qualification is read-only and corroborates frozen plan and grant provenance. Completed full refund revokes the grant and retains action history."
+  },
+  "refundLimits": [
+    "Durable and mixed implemented-action plans support the existing bounded full-purchase refund contract.",
+    "The whole-credit partial-refund program rejects mixed or non-credit plans; no invented cross-outcome monetary allocation.",
+    "Unsupported handlers and incomplete fulfillment fail closed for automatic refund eligibility. Operator review remains necessary; no new refund policy is inferred."
+  ],
+  "verification": {
+    "targetedPassed": 147,
+    "regressionsPassed": 1208,
+    "failed": 0,
+    "regressionScope": "All tracked Node test files plus new fulfillment tests; existing Layer 5 and Layer 6 regressions included.",
+    "proofs": ["explicit empty-plan soda purchase without credits", "durable non-consumptive generic access", "legacy and explicit class-pack fulfillment", "multi-action execution once", "partial failure and journal-safe retry", "wrong principal/business denial", "frozen target scope enforcement", "refund revocation with retained history", "unrelated legacy credits unchanged"],
+    "scriptSyntax": "Node and PowerShell syntax checked",
+    "postgres": "Pending Joe's existing private session; script verifies Development runtime role, JSONB round trips, replay, full refund, deferred outbox constraints and rollback baseline. No credentials available to this process.",
+    "postgresScript": "scripts/verify-l6-s8a-postgres-private.ps1",
+    "postgresReceipt": "docs/layer-6/l6-s8a-postgres.local.json",
+    "postgresLimit": "Planned proof uses one rollback-only transaction against the existing aggregate. It does not claim multi-connection concurrency or independently acknowledged recovery delivery; local workflow tests cover concurrent command retries."
+  },
+  "files": ["src/fulfillment.mjs", "src/payments.mjs", "src/runtime/payment-workflow.mjs", "src/bounded-refunds.mjs", "src/refund-eligibility.mjs", "src/refund-program.mjs", "test/fulfillment.test.mjs", "test/helpers/fulfillment-fixture.mjs", "test/direct-payments.test.mjs", "scripts/verify-l6-s8a-postgres-private.mjs", "scripts/verify-l6-s8a-postgres-private.ps1"],
+  "deferred": ["physical fulfillment", "inventory", "admission", "new membership activation handler", "download handler", "bundle/add-on UI", "offer authoring UI", "S8B checkout and media authorization integration"],
+  "providerRequests": 0,
+  "deploymentPerformed": false,
+  "productionUntouched": true,
+  "olderVegaCheckoutUntouched": true,
+  "priorLayer6SlicesUnchanged": true,
+  "next": "Inspect PostgreSQL receipt after Joe replies done, reconcile evidence, return S8A review report, then stop. Do not begin S8B without Joe + Chett approval."
+}
