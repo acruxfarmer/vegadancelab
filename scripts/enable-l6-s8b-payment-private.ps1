@@ -10,9 +10,9 @@ $priorDebug=$env:BITWARDENCLI_DEBUG; $env:BITWARDENCLI_DEBUG='false'
 $commit='6860adbf7e9e7f50940a420ea7e1a14a32adcf3a'
 $serviceId='srv-dao5cjbm8hqs73db51j0'
 $base='https://api.render.com/v1/services/'+$serviceId
-$receiptPath=Join-Path $PSScriptRoot '../docs/layer-6/l6-s8b-payment-enable-deployment.local.json'
-$marker=Join-Path $PSScriptRoot '../docs/layer-6/l6-s8b-payment-enable-deployment-attempted.local.json'
-$inspectionPath=Join-Path $PSScriptRoot '../docs/layer-6/l6-s8b-payment-enable-service-inspection.local.json'
+$receiptPath=Join-Path $PSScriptRoot '../docs/layer-6/l6-s8b-payment-enable-reconciled-deployment.local.json'
+$marker=Join-Path $PSScriptRoot '../docs/layer-6/l6-s8b-payment-enable-reconciled-deployment-attempted.local.json'
+$inspectionPath=Join-Path $PSScriptRoot '../docs/layer-6/l6-s8b-payment-enable-reconciled-service-inspection.local.json'
 $receipt=[ordered]@{runtimeCommit=$commit;serviceId=$serviceId;status='preflight';stage='private session';environment='development';settingsUpdated=@();deployAttempted=$false;deployId=$null;productionUntouched=$true;providerRequests=0;secretsPersisted=$false}
 $headers=$null; $values=@{}; $acquired=$false
 function Save-Receipt { $receipt|ConvertTo-Json -Depth 8|Set-Content -LiteralPath $receiptPath -Encoding utf8 }
@@ -88,7 +88,7 @@ function Inspect-Safety {
   if($null -ne $_.Exception.Response.StatusCode){$safe.httpStatus=[int]$_.Exception.Response.StatusCode}
   $safe.errorCategory=if($safe.httpStatus){'http-rejection'}else{'transport-or-response-failure'}
  } finally {
-  $safe|ConvertTo-Json -Depth 6|Set-Content -LiteralPath (Join-Path $PSScriptRoot '../docs/layer-6/l6-s8b-payment-enable-safety-inspection.local.json') -Encoding utf8
+  $safe|ConvertTo-Json -Depth 6|Set-Content -LiteralPath (Join-Path $PSScriptRoot '../docs/layer-6/l6-s8b-payment-enable-reconciled-safety-inspection.local.json') -Encoding utf8
   $envVars=$null;$v=$null;$config=$null;$active=$null
  }
  return ($null -eq $safe.errorCategory)
@@ -118,11 +118,12 @@ try {
  $lock=[IO.File]::Open($marker,[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::None)
  try{$bytes=[Text.Encoding]::UTF8.GetBytes('{"attempted":true}');$lock.Write($bytes,0,$bytes.Length);$lock.Flush($true)}finally{$lock.Dispose()}
  $acquired=$true;Save-Receipt
- $receipt.stage='Sandbox configuration verification';Save-Receipt
+ $receipt.stage='Sandbox configuration verification';$receipt.configurationChecks=@{};Save-Receipt
  $vars=@(Api ($base+'/env-vars?limit=100'))
  foreach($pair in @(@('SQUARE_ENVIRONMENT','sandbox'),@('SQUARE_APPLICATION_ID','sandbox-sq0idb-iQmG15i6Pe5yMJMLmu_miw'),@('SQUARE_MERCHANT_ID','MLJGVWY9QZ66R'),@('SQUARE_LOCATION_ID','L7EMFD4DPV27P'))){
   $entry=@($vars|Where-Object {$_.envVar.key -ceq $pair[0]})
-  if($entry.Count -ne 1 -or $entry[0].envVar.value -cne $pair[1]){throw 'Sandbox binding mismatch'}
+  $matchesExpected=($entry.Count -eq 1 -and $entry[0].envVar.value -ceq $pair[1]);$receipt.configurationChecks[$pair[0]]=$matchesExpected;Save-Receipt
+  if(-not $matchesExpected){throw 'Sandbox binding mismatch'}
  }
  $token=@($vars|Where-Object {$_.envVar.key -ceq 'SQUARE_ACCESS_TOKEN'})
  $source=@($vars|Where-Object {$_.envVar.key -ceq 'SQUARE_SANDBOX_SOURCE_ID'})
@@ -156,12 +157,13 @@ try {
  $receipt.status='live-awaiting-browser-proof';$receipt.stage='complete';Save-Receipt
  Write-Host 'Development Sandbox enabled for the scoped one-dollar purchase. No charge made. Tell Astra done.'
 } catch {
- if($acquired){$receipt.status='stopped-reconcile-before-retry';Save-Receipt}
+ if($acquired){$receipt.status='stopped-reconcile-before-retry';$receipt.failureType=$_.Exception.GetType().Name;Save-Receipt}
  Write-Host ('Stopped at: '+$receipt.stage+'. No secret details printed. Tell Astra; do not rerun after a deployment attempt.')
 } finally {
  $raw=$null;$folders=$null;$folder=$null;$operator=$null;$scale=$null;$headers=$null;$values=$null;$envVars=$null;$v=$null;$database=$null;$appDatabaseUrl=$null;$payload=$null
  $env:BITWARDENCLI_DEBUG=$priorDebug
 }
+
 
 
 
