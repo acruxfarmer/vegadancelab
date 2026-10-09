@@ -1,0 +1,34 @@
+{
+  "slice": "L6-S8B",
+  "status": "STOPPED_FOR_JOE_CHETT_GUARD_REVIEW",
+  "evidence": {
+    "source": "l6-s8b-query-names.local.json",
+    "parameterNames": ["key", "pass"],
+    "parameterCount": 2,
+    "duplicateNamesPresent": false,
+    "ticketCreationHttpStatus": 201,
+    "masterPlaylistHttpStatus": 200,
+    "childFollowed": false,
+    "ticketRemoved": true,
+    "canonicalAndBindingUnchanged": true
+  },
+  "preparedGuard": {
+    "file": "src/runtime/providers/scaleengine-hls-reference.mjs",
+    "wiredIntoRuntimeOrProof": false,
+    "allowedQueries": "No query, or exactly one nonempty key and one nonempty pass; order independent",
+    "rejected": ["unknown names", "duplicates", "encoded name aliases", "incomplete pairs", "non-HTTPS", "different origin", "outside exact asset directory", "userinfo", "fragments", "literal or encoded path traversal", "backslashes"],
+    "ticketValues": "Never logged; subsequent approved playback must continue applying provider-returned ticket credentials"
+  },
+  "targetedTestsPassed": 30,
+  "failedTests": 0,
+  "providerRequestsDuringReconciliation": 0,
+  "ordinaryAdapterChanged": false,
+  "isolationProofRetried": false,
+  "liveMediaBytesVerified": false,
+  "liveAssetIsolationVerified": false,
+  "payments": 0,
+  "uploads": 0,
+  "bindingMutations": false,
+  "productionUntouched": true,
+  "next": "Joe + Chett review before wiring the narrow guard into the bounded proof or retrying playback. Square stays disabled."
+}
