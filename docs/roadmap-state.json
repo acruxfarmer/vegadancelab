@@ -4,18 +4,14 @@
     "Native apps"
   ],
   "nextLayer": {
-    "name": "Layer 5 — VEGA MEDIA SYSTEM",
-    "status": "IN PROGRESS — Publish → Discover → Watch and Organized Practice Library PRODUCT COMPLETE",
-    "review": "docs/layer-4/layer-5-transition-review.json",
-    "recommendedFirstDragon": "Publish → Discover → Watch",
-    "approvalGate": "Further Layer 5 dragons require a new bounded brief; Production remains deferred",
-    "implementationAuthorized": true,
-    "firstDragonCheckpoint": "docs/layer-5/media-checkpoint.json",
-    "organizedLibraryCheckpoint": "docs/layer-5/organized-library-checkpoint.json"
+    "name": "Layer 6",
+    "status": "L6-S8B CLOSED — NEXT SLICE NOT SELECTED",
+    "approvalGate": "Joe + Chett must explicitly select the next slice",
+    "implementationAuthorized": false
   },
   "precedence": "This machine-readable checkpoint updates current roadmap status; the historical image is preserved unchanged.",
   "historicalVisualRoadmap": "D:/JOES WIP/ACRUX/Acrux System Tools/Vega Development Roadmap Dashboard.png",
-  "authority": "Joe approved canonical Layers 1–4 closure and the bounded Layer 5 Publish → Discover → Watch and Organized Practice Library builds. Production remains deferred.",
+  "authority": "Joe approved canonical Layers 1–4 closure and the bounded Layer 5 Publish → Discover → Watch and Organized Practice Library builds. Production remains deferred. Joe + Chett explicitly approved L6-S8B final closure; further slices require explicit selection.",
   "layer2": {
     "slices": "6.8 through 6.16",
     "closure": "docs/layer-2/canonical-closure.json",
@@ -79,11 +75,26 @@
     "Waitlist-expiry notices"
   ],
   "activeSlice": {
-    "id": "L6-S4",
-    "name": "Creator / Business Media Management",
-    "status": "IMPLEMENTED / READY FOR REVIEW",
-    "checkpoint": "docs/layer-6/l6-s4-checkpoint.json",
-    "previousSlice": "L6-S1A, L6-S1B, L6-S2 and L6-S3 COMPLETE / VERIFIED / APPROVED / CLOSED",
-    "nextSlices": "Await Joe + Chett L6-S4 review; no next slice started. Production untouched."
+    "id": null,
+    "status": "AWAITING EXPLICIT JOE + CHETT SELECTION",
+    "previousSlice": "L6-S8B — COMPLETE / VERIFIED / APPROVED / CLOSED",
+    "nextSlices": "Not selected. No implementation authorized."
+  },
+  "layer6": {
+    "status": "BETWEEN SLICES — AWAITING SELECTION",
+    "lastClosedSlice": "L6-S8B",
+    "lastClosedSliceName": "Pay on Demand Media Commerce",
+    "closure": "docs/layer-6/l6-s8b-canonical-closure.json",
+    "checkpoint": "docs/layer-6/l6-s8b-checkpoint.json",
+    "nextSlice": null,
+    "implementationAuthorized": false,
+    "productionUntouched": true
+  },
+  "layer5": {
+    "name": "VEGA MEDIA SYSTEM",
+    "status": "Publish → Discover → Watch and Organized Practice Library PRODUCT COMPLETE",
+    "review": "docs/layer-4/layer-5-transition-review.json",
+    "firstDragonCheckpoint": "docs/layer-5/media-checkpoint.json",
+    "organizedLibraryCheckpoint": "docs/layer-5/organized-library-checkpoint.json"
   }
 }
