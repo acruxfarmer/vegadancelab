@@ -1,0 +1,49 @@
+{
+  "slice": "L6-S8B",
+  "status": "GENERIC_PAYMENT_REFUND_BOUNDARY_READY_FOR_JOE_CHETT_REVIEW",
+  "codeCommit": "6860adbf7e9e7f50940a420ea7e1a14a32adcf3a",
+  "deployedRuntimeUnchanged": "7740407196614fa14dc7257bb2d12374e333ae8e",
+  "amountSource": "Active server-selected offer is copied into immutable purchase terms and total/currency. Existing payment workflow passes financialIntent(draft); adapter verifies agreement with the stored attempt financialIntent and uses those values for submit, retry and normalization.",
+  "paymentCorrection": "Removed fixed 6000/USD amount from ordinary Square intent validation, request payload and response normalization. Tests cover 100 USD, 6000 USD and 1299 CAD without live provider calls.",
+  "refundCorrection": "Resolve payment identity, full amount and currency from the current scoped commerce purchase/refund operation. Remove historical purchase/payment and credit-quantity restrictions. Retain explicit Development purchase activation, settled-payment identity checks, zero previous refunds, dispute checks, complete provider inventory, stable payment version, idempotency key and terminal evidence validation.",
+  "scopeGate": "Refund workflow rejects non-activated purchase IDs before context/provider work. Submission independently matches VEGA_SANDBOX_REFUND_PURCHASE_ID. API UI publishes that selected ID rather than a historical constant.",
+  "reversal": "Existing refundTransition calls reversePurchaseFulfillment after canonical completed provider evidence. Existing S8A per-action handlers reverse booking credits and durable access. No provider branches on fulfillment type and no S8A implementation change was required.",
+  "sodaTest": "A 100 USD minor-unit purchase with explicit empty fulfillment plan can use the same mocked full-refund workflow without creating credits. Physical inventory fulfillment is not implemented.",
+  "tests": {
+    "newFocusedTests": 11,
+    "targetedPassed": 126,
+    "fullRegressionsPassed": 1261,
+    "failed": 0,
+    "covers": [
+      "Arbitrary frozen amount and currency reach Square request and normalized evidence",
+      "One-dollar purchase stays one dollar; sixty-dollar compatibility retained",
+      "Later offer edits do not mutate frozen purchase/attempt; retries retain identical payload",
+      "Current-purchase full refunds for empty plan, durable-only, booking-only and mixed full plans",
+      "Repeated execute and completed reconciliation produce one refund POST and unchanged entitlement/audit state",
+      "Re-fulfillment after refund cannot recreate access",
+      "Cross-business and non-activated purchase rejection; mismatched refund amount rejected",
+      "Existing booking-credit refunds remain intact; partial mixed allocation remains blocked",
+      "Square adapters contain no fulfillment type branches or historical price/purchase constants"
+    ]
+  },
+  "developmentDatabaseProof": {
+    "performed": false,
+    "reason": "Optional PostgreSQL proof not repeated: this correction changes provider translation and execution targeting, with no schema or persistence change. Local tests exercise the actual commerce, payment and refund workflows with mock provider transport.",
+    "databaseWrites": 0
+  },
+  "limits": [
+    "Local verification only; correction not deployed or exercised against Square",
+    "Configured Sandbox merchant/location and business restrictions remain; mock CAD test proves translation, not live currency acceptance",
+    "Full-refund execution remains explicitly enabled per purchase, never arbitrary",
+    "Partial mixed-outcome refunds remain unsupported",
+    "No new media resource or provider upload; prior approval preserved for later continuation"
+  ],
+  "squareRequests": 0,
+  "charges": 0,
+  "refunds": 0,
+  "uploads": 0,
+  "deployments": 0,
+  "squareEnablementChanged": false,
+  "productionUntouched": true,
+  "next": "STOP for Joe + Chett review before deployment/purchase-proof continuation, resource creation, upload or enabling Sandbox execution."
+}
