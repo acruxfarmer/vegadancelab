@@ -1,0 +1,12 @@
+{
+  "status": "business-aggregate-baseline-matched",
+  "baselineSource": "l6-s8b-checkpoint.json and l6-s8b-paid-upload.local.json, captured before fixture creation",
+  "baselineRevision": 189,
+  "baselineDigest": "ec6a3cbc4a395bc350244c228ec85cac",
+  "projectedCurrentDigest": "ec6a3cbc4a395bc350244c228ec85cac",
+  "method": "Read-only projection removes only records with the exact S8B purchase, offer, product, placement or associated activity identity. The five newly introduced empty collections are omitted from the projection; the exact historical PostgreSQL JSONB digest then matches. No persisted state changed.",
+  "covered": ["bookings/reservations", "classes", "passes", "credit balances/events", "memberships", "unrelated commerce purchases", "legacy media in the business aggregate", "all other fields in this business aggregate"],
+  "notCovered": ["other tenant/business aggregates without a recorded baseline", "all independent media-private rows without a recorded baseline"],
+  "hostedAlternatePlacement": "Cannot honestly reproduce active-entitlement isolation after refund: zero active entitlements for Placement A, resource archived, binding deleted. No purchase or entitlement reconstructed.",
+  "providerExecutionChanged": false
+}
