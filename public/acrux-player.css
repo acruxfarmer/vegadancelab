@@ -1,0 +1,21 @@
+.acrux-player{background:#13241d;color:#f9fbf4;border:1px solid #314b3e;border-radius:12px;overflow:hidden;width:100%;max-width:100%;color-scheme:dark}
+.acrux-player-stage{position:relative;background:#080f0b;display:grid;place-items:center;aspect-ratio:16/9;overflow:hidden;min-height:0}
+.acrux-player video{display:block;width:100%;height:100%;max-height:65vh;object-fit:contain}
+.acrux-player video.acrux-video-mirrored{transform:scaleX(-1)}
+.acrux-player-captions{position:absolute;bottom:5%;left:8%;right:8%;text-align:center;white-space:pre-line;pointer-events:none;font-size:clamp(14px,2vw,24px);line-height:1.4;text-shadow:0 1px 4px #000,0 1px 4px #000}
+.acrux-player-controls{padding:14px 18px 10px}
+.acrux-player-timeline{display:flex;gap:12px;align-items:center;font-size:12px}
+.acrux-player input[type=range]{padding:0;accent-color:#dbeab8;border:0;background:transparent;min-width:0;cursor:pointer}
+.acrux-player-timeline input{width:100%;min-height:32px}
+.acrux-player-buttons{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.acrux-player button{background:#294b3a;color:#fff;border:1px solid #65806c;border-radius:6px;padding:9px 12px;min-height:42px;font-size:13px}
+.acrux-player button[aria-pressed=true]{background:#dbeab8;color:#172b20;border-color:#dbeab8}
+.acrux-player button:focus-visible,.acrux-player input:focus-visible{outline:3px solid #b1d8ff;outline-offset:3px}
+.acrux-player output{font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap;margin-right:auto}
+.acrux-player-volume{display:flex;gap:8px;align-items:center;font-size:12px}.acrux-player-volume input{width:80px;min-height:32px}
+.acrux-player-status{font-size:12px;color:#d5dfd4;min-height:1.4em;margin:10px 0 0}
+.acrux-player[data-state=error] .acrux-player-status{color:#ffcfb9}
+.acrux-player:fullscreen{border:0;border-radius:0;display:flex;flex-direction:column;justify-content:center;background:#080f0b}
+.acrux-player:fullscreen .acrux-player-stage{flex:1;aspect-ratio:auto;min-height:0}.acrux-player:fullscreen video{max-height:100%;position:absolute;inset:0}
+.acrux-player:fullscreen .acrux-player-controls{flex:none}
+@media(max-width:600px){.acrux-player-controls{padding:10px}.acrux-player-buttons{gap:8px}.acrux-player button{padding:8px 10px}.acrux-player-volume input{width:65px}.acrux-player output{margin-right:0}.acrux-player-stage{aspect-ratio:16/9}}

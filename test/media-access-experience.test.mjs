@@ -27,8 +27,8 @@ test('mixed collection retains locked metadata but renders no locked player',asy
  const data={context:{role:'member',tenantId:'t',businessId:'b',userId:'m'},videos:[{id:'locked',title:'Technique',description:'Practice',creator:'Instructor',poster:'/media-poster.svg',assetAvailable:true,accessDecision:{allowed:false,reason:'membership_required'}},{id:'open',title:'Warm up',assetAvailable:true,accessDecision:{allowed:true,reason:'public_access'}}]};
  const ui=mediaUI({getData:()=>data,api:()=>{throw Error('Rendering must not fetch bytes')},escape:s=>String(s??''),render(){}});
  const library=ui.html();assert.match(library,/Technique/);assert.match(library,/Warm up/);assert.match(library,/eligible members/);
- await ui.click({dataset:{mediaOpen:'locked'},hasAttribute:()=>false});const detail=ui.html();assert.match(detail,/eligible members/);assert.doesNotMatch(detail,/<video|data-media-play/);
- await ui.click({dataset:{mediaOpen:'open'},hasAttribute:()=>false});assert.match(ui.html(),/data-media-play/);
+ await ui.click({dataset:{mediaOpen:'locked'},hasAttribute:()=>false});const detail=ui.html();assert.match(detail,/eligible members/);assert.doesNotMatch(detail,/<video|data-media-play|data-acrux-player/);
+ await ui.click({dataset:{mediaOpen:'open'},hasAttribute:()=>false});assert.match(ui.html(),/data-acrux-player/);
 });
 test('CTA slot does not activate checkout or accept external navigation',()=>{
  const html=accessNotice({allowed:false,reason:'authentication_required'},s=>s,[{state:'sign_in_required',href:'/member.html',label:'Sign in'},{state:'sign_in_required',href:'//evil.test',label:'Bad'}]);
