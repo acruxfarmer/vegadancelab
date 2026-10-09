@@ -1,0 +1,71 @@
+{
+  "status": "implemented-local-verification-passed-hosted-pending",
+  "reference": "vod-rental-development-verification-v1",
+  "baselineCommit": "281c5c4e57553c9de2cef05ddb5c44c2c91584e9",
+  "control": {
+    "default": "disabled",
+    "environment": "development",
+    "serviceId": "srv-dao5cjbm8hqs73db51j0",
+    "account": "joe@acrux.co",
+    "business": "vega-dance-lab",
+    "expiresAt": "2026-10-10T23:59:00.000Z",
+    "configuration": "VEGA_RENTAL_VERIFICATION must exactly equal the code-pinned expiration",
+    "serverChecks": [
+      "platform service and hostname",
+      "authenticated account",
+      "entitlement identity",
+      "business ownership",
+      "placement resource and binding identity",
+      "current entitlement eligibility",
+      "device continuity and existing replay policy",
+      "provider exact asset authorization"
+    ],
+    "generalRentalPlayback": "disabled"
+  },
+  "verification": {
+    "localTestsPassed": 31,
+    "providerNetwork": "mocked in local tests; live hosted proof pending",
+    "checks": [
+      "unrelated identities denied",
+      "missing malformed disabled and expired settings denied",
+      "Production environment and non-Development service denied",
+      "saved tickets recheck control",
+      "late issued ticket revoked",
+      "expired entitlement denied despite valid scoped control",
+      "real adapter issuance retains exact scope IP and ticket limits"
+    ]
+  },
+  "fixture": {
+    "kind": "audited complimentary rental",
+    "historicalWrites": 0,
+    "sourceResourceId": "dcb5f610-23a2-43be-af39-706a17be8a92",
+    "source": "existing verified Development provider test asset; original ownership and binding unchanged",
+    "cleanupLimitation": "Fixture shares the existing test file. Do not delete the provider file when archiving this isolated resource.",
+    "viewingHours": 1,
+    "replayAllowed": false
+  },
+  "operator": {
+    "fixtureCommand": "prepare-l6-s8b-paid-offer-private.ps1 -RentalFixture",
+    "enableCommand": "deploy-l6-s9-hosted-private.ps1 -RentalVerification -RuntimeCommit <exact reviewed commit> -RentalControl Enable",
+    "disableCommand": "deploy-l6-s9-hosted-private.ps1 -RentalVerification -RuntimeCommit <same exact commit> -RentalControl Disable",
+    "shutdownEvidence": "Must confirm hosted rental authorization denial after disabled deployment; automatic fixed expiry is a backstop only."
+  },
+  "remaining": [
+    "private fixture receipt",
+    "pinned Development deployment",
+    "hosted first-play provider evidence",
+    "hosted recovery including unresolved failure limitation",
+    "hosted replay and saved-session restrictions",
+    "natural one-hour entitlement expiration",
+    "disable deployment and hosted denial",
+    "independent review and Joe approval"
+  ],
+  "boundaries": {
+    "productionUntouched": true,
+    "paymentRefundExecution": "disabled",
+    "s8bS9": "closed; evidence unchanged",
+    "s10": "not started",
+    "merged": false,
+    "closed": false
+  }
+}

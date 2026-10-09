@@ -3,7 +3,7 @@
 # Deployment only; hosted ordinary-path playback is a separate bounded verification.
 # No ScaleEngine requests, tickets, uploads, or Production changes.
 [CmdletBinding()]
-param([switch]$InspectServiceOnly,[switch]$InspectSafetyOnly,[switch]$RentalVerification,[string]$RuntimeCommit)
+param([switch]$InspectServiceOnly,[switch]$InspectSafetyOnly,[switch]$RentalVerification,[string]$RuntimeCommit,[ValidateSet('Enable','Disable')][string]$RentalControl)
 $ErrorActionPreference='Stop'
 $VerbosePreference='SilentlyContinue'; $DebugPreference='SilentlyContinue'; Set-PSDebug -Off
 $priorDebug=$env:BITWARDENCLI_DEBUG; $env:BITWARDENCLI_DEBUG='false'
@@ -12,6 +12,9 @@ if($RentalVerification){
  if($RuntimeCommit -cnotmatch '^[a-f0-9]{40}$'){throw 'Exact rental Development commit required'}
  $commit=$RuntimeCommit
 }
+if($RentalControl -and -not $RentalVerification){throw 'Rental control requires rental verification mode'}
+$controlExpiry='2026-10-10T23:59:00.000Z'
+if($RentalControl -ceq 'Enable' -and [datetimeoffset]::UtcNow -ge [datetimeoffset]::Parse($controlExpiry)){throw 'Verification window expired'}
 $serviceId='srv-dao5cjbm8hqs73db51j0'
 $base='https://api.render.com/v1/services/'+$serviceId
 $receiptPath=Join-Path $PSScriptRoot '../docs/layer-6/l6-s9-hosted-deployment.local.json'
@@ -23,6 +26,13 @@ if($RentalVerification){
  $inspectionPath=Join-Path $PSScriptRoot '../docs/layer-6/vod-rental-hosted-service-inspection.local.json'
 }
 $safetyPath=if($RentalVerification){Join-Path $PSScriptRoot '../docs/layer-6/vod-rental-hosted-safety-inspection.local.json'}else{Join-Path $PSScriptRoot '../docs/layer-6/l6-s9-hosted-safety-inspection.local.json'}
+if($RentalControl){
+ $prefix='vod-rental-control-'+$RentalControl.ToLowerInvariant()+'-'+$commit.Substring(0,12)
+ $receiptPath=Join-Path $PSScriptRoot ('../docs/layer-6/'+$prefix+'-deployment.local.json')
+ $marker=Join-Path $PSScriptRoot ('../docs/layer-6/'+$prefix+'-attempted.local.json')
+ $inspectionPath=Join-Path $PSScriptRoot ('../docs/layer-6/'+$prefix+'-service.local.json')
+ $safetyPath=Join-Path $PSScriptRoot ('../docs/layer-6/'+$prefix+'-safety.local.json')
+}
 $receipt=[ordered]@{runtimeCommit=$commit;serviceId=$serviceId;status='preflight';stage='private session';environment='development';settingsUpdated=@();deployAttempted=$false;deployId=$null;productionUntouched=$true;providerRequests=0;secretsPersisted=$false}
 $headers=$null; $values=@{}; $acquired=$false
 function Save-Receipt { $receipt|ConvertTo-Json -Depth 8|Set-Content -LiteralPath $receiptPath -Encoding utf8 }
@@ -139,6 +149,20 @@ try {
  $lock=[IO.File]::Open($marker,[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::None)
  try{$bytes=[Text.Encoding]::UTF8.GetBytes('{"attempted":true}');$lock.Write($bytes,0,$bytes.Length);$lock.Flush($true)}finally{$lock.Dispose()}
  $acquired=$true;Save-Receipt
+ if($RentalControl){
+  $receipt.stage='bounded rental verification setting';Save-Receipt
+  if($RentalControl -ceq 'Enable'){
+   $fixture=Get-Content -Raw -LiteralPath (Join-Path $PSScriptRoot '../docs/layer-6/vod-rental-fixture.local.json')|ConvertFrom-Json
+   if($fixture.status -cne 'fixture-ready' -or $fixture.fixture.placementId -cne '2960abdf-bfb3-49b1-87db-f9f95011d47f' -or $fixture.fixture.expiresAt -cne $controlExpiry){throw 'Isolated rental fixture not confirmed'}
+  }
+  $controlValue=if($RentalControl -ceq 'Enable'){$controlExpiry}else{'disabled'}
+  $null=Api ($base+'/env-vars/VEGA_RENTAL_VERIFICATION') 'PUT' @{value=$controlValue}
+  $verify=@(Api ($base+'/env-vars?limit=100'))
+  $found=@($verify|Where-Object {$_.envVar.key -ceq 'VEGA_RENTAL_VERIFICATION'})
+  if($found.Count -ne 1 -or $found[0].envVar.value -cne $controlValue){throw 'Rental control setting not confirmed'}
+  $receipt.settingsUpdated=@('VEGA_RENTAL_VERIFICATION');$receipt.rentalControl=$RentalControl;$receipt.controlExpiry=$controlExpiry;Save-Receipt
+  $verify=$null;$found=$null
+ }
  $receipt.stage='exact runtime deployment';$receipt.deployAttempted=$true;Save-Receipt
  $deploy=Api ($base+'/deploys') 'POST' @{commitId=$commit;clearCache='do_not_clear'}
  if($deploy.id -cnotmatch '^dep-[a-z0-9]+$'){throw 'Deployment identity unavailable'}

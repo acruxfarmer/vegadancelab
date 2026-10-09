@@ -98,3 +98,16 @@ test('confirmed no-ticket rejection recovers once and cumulative ten-minute budg
  assert.equal(f.state.accessEntitlements[0].rental.recoveryUsedMs,600000);
  await assert.rejects(workflow.start('viewer','p',{deviceId}),/exhausted/);assert.equal(count,2);
 });
+
+test('scoped verification rechecks saved tickets, expiry during issuance and existing entitlement eligibility',async()=>{
+ let enabled=true;
+ const f=fixture(),a=adapter({rentalCapabilities:{...capabilities,rentalAccessVerified:false},rentalCapabilitiesFor(scope){return {...capabilities,rentalAccessVerified:enabled&&scope?.actorId==='viewer'&&scope?.placementId==='p'&&scope?.entitlementId==='e'};}});
+ const w=createRentalPlaybackWorkflow({store:f.store,adapters:{fake:a}});
+ await assert.rejects(w.start('other','p',{deviceId}));assert.equal(a.calls,0);
+ const result=await w.start('viewer','p',{deviceId});enabled=false;
+ await assert.rejects(w.start('viewer','p',{deviceId,sessionId:result.rental.sessionId}));assert.equal(a.calls,1);
+ enabled=true;f.setTime('2037-01-01T00:00:00.000Z');await assert.rejects(w.start('viewer','p',{deviceId,sessionId:result.rental.sessionId}));assert.equal(a.calls,1);
+ const g=fixture();let revoked=false;
+ const b=adapter({rentalCapabilitiesFor(){return {...capabilities,rentalAccessVerified:enabled};},async authorize(){enabled=false;return {kind:'hls',expiresAt:new Date(Date.parse(at)+120000).toISOString(),ticket:{key:'late'}};},async revoke(){revoked=true;}});
+ enabled=true;await assert.rejects(createRentalPlaybackWorkflow({store:g.store,adapters:{fake:b}}).start('viewer','p',{deviceId}));assert.equal(revoked,true);
+});
