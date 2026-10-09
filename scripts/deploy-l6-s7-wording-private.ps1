@@ -1,6 +1,6 @@
 # Run in Joe's existing unlocked Bitwarden PowerShell. Development only.
 # Deploys the exact placement-rights runtime using existing Development settings.
-# Then creates one approved temporary MEMBERS placement through the existing services.
+# Wording-only refresh. No database access or fixture creation.
 # No ScaleEngine requests, tickets, uploads, or Production changes.
 [CmdletBinding()]
 param([switch]$InspectServiceOnly,[switch]$InspectSafetyOnly)
@@ -144,3 +144,4 @@ try {
  $raw=$null;$folders=$null;$folder=$null;$operator=$null;$scale=$null;$headers=$null;$values=$null;$envVars=$null;$v=$null;$database=$null;$appDatabaseUrl=$null;$payload=$null
  $env:BITWARDENCLI_DEBUG=$priorDebug
 }
+
