@@ -1,0 +1,21 @@
+{
+  "status": "full-refund-and-hosted-relock-verified-shutdown-pending",
+  "purchaseId": "6f6e63d4-2a76-4f13-9f54-1a967a6ccb24",
+  "operationId": "c6f09874a37b927b34f96e8c16583359b354cadc",
+  "paymentId": "cbTiovC25uztWvpz7ipDrXe8wHDZY",
+  "refundId": "cbTiovC25uztWvpz7ipDrXe8wHDZY_D6RZLQqTDsG88QKYRGqfl1G3AoTdn9hNiTnqXWuoMsd",
+  "amountMinor": 100,
+  "currency": "USD",
+  "providerOutcome": "completed",
+  "refundDispatches": 1,
+  "entitlementState": "revoked",
+  "browserReload": "Paid access is required; Buy access · $1.00; no player",
+  "businessRevision": 199,
+  "purchaseHistoryPreserved": true,
+  "productionUntouched": true,
+  "remaining": [
+    "Execution shutdown",
+    "Disposable fixture cleanup",
+    "Explicit live idempotency and alternate-placement checks remain unproven"
+  ]
+}
