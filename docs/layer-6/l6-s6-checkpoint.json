@@ -1,0 +1,79 @@
+{
+  "slice": "L6-S6 — Acrux Media Player V1",
+  "status": "LOCAL IMPLEMENTATION VERIFIED / HOSTED VERIFICATION PENDING",
+  "runtimeCommit": "02ce2e9beb833922dcca0b5a448c935fb1da40df",
+  "priorClosedSlices": [
+    "Layer 5",
+    "L6-S1A",
+    "L6-S1B",
+    "L6-S2",
+    "L6-S3",
+    "L6-S4",
+    "L6-S5"
+  ],
+  "architecture": "Existing upstream access and source adapter -> one Acrux player shell. No authorization policy in player.",
+  "controls": [
+    "play",
+    "pause",
+    "timeline",
+    "time/duration",
+    "volume",
+    "mute",
+    "fullscreen",
+    "Mirror"
+  ],
+  "sources": [
+    "legacy authorized MP4 blob",
+    "protected HLS using existing L6-S5 attachment"
+  ],
+  "mirror": {
+    "captions": "Plain-text sibling overlay outside transformed video",
+    "default": "off",
+    "assetDuplication": false,
+    "controlsMirrored": false,
+    "fullscreenPreserved": true,
+    "pausedTimeUnchanged": true,
+    "method": "video-only scaleX(-1)",
+    "sourceUnchanged": true,
+    "reencoding": false
+  },
+  "localBrowser": {
+    "volumeSliderValue": 0.05,
+    "playPause": true,
+    "mobile": {
+      "scrollWidth": 390,
+      "playerWidth": 308.8,
+      "viewportWidth": 390
+    },
+    "keyboardScrubSeconds": 0.1,
+    "lockedPlayerAbsent": true,
+    "fullscreen": true,
+    "mirrorOffRestored": true,
+    "existingMp4Played": true,
+    "mirrorVisiblyFlipped": true,
+    "tablet": {
+      "scrollWidth": 820,
+      "playerWidth": 724.4,
+      "viewportWidth": 820
+    }
+  },
+  "tests": {
+    "newPlayerTests": 11,
+    "regressionsPassed": 1178,
+    "targetedPassed": 40,
+    "failed": 0
+  },
+  "hostedVerified": false,
+  "nextAction": "Run scripts/deploy-l6-s6-hosted-private.ps1 in existing private Bitwarden session; inspect receipts before browser playback",
+  "temporaryPlacementId": "391db552-e6ff-4708-bb49-937bc920d626",
+  "providerResourceId": "dcb5f610-23a2-43be-af39-706a17be8a92",
+  "noNewProviderAssets": true,
+  "noCommerceAdsOrSocial": true,
+  "productionUntouched": true,
+  "deferred": [
+    "YouTube/Vimeo and other embed adapters",
+    "Persistent Mirror preference",
+    "Player analytics",
+    "Richer media metadata"
+  ]
+}
