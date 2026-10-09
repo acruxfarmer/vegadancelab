@@ -13,7 +13,9 @@ async function load(){
  try{
   if(!valid)throw Error();const response=await request();if(!response.ok)throw Error();const result=await response.json();if(current!==generation)return;
   const m=result.metadata,p=mediaPresentation(result.decision);
+  const offer=result.decision.reason==='paid_access_required'?result.offer:null;
   root.innerHTML='<a href="/member.html#library">Media Library / sign in</a><section class="card">'+(m?'<h1>'+escape(m.title)+'</h1><p>'+escape(m.description)+'</p><p>'+escape(m.creator)+'</p>':'<h1>Media unavailable</h1>')+accessNotice(result.decision,escape,[{state:'sign_in_required',href:'/member.html#library',label:'Sign in'}])+(p.playable?'<div data-acrux-player></div>':'')+'</section>';
+  if(offer){const link=document.createElement('a');link.className='button';link.href='/member.html?offer='+encodeURIComponent(offer.id)+'#passes';link.textContent='Buy access · '+new Intl.NumberFormat('en-US',{style:'currency',currency:offer.currency}).format(offer.priceMinor/100);root.querySelector('section').append(link);}
   if(p.playable)player=mountAcruxPlayer(root.querySelector('[data-acrux-player]'),{title:m?.title,poster:m?.poster,getSource:async()=>{
    const r=await request(true);if(current!==generation)throw Error();
    if(!r.ok){await load();throw Error();}

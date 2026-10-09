@@ -1,4 +1,5 @@
 import {resolveStaffAccess,hasStaffPermission,requireStaffPermission,requireStaffCommand,visibleStaffData,staffCommandResult} from '../staff-permissions.mjs';
+import {mediaCommerceMaterial,publishedMediaOffers} from './media-commerce-material.mjs';
 import {DEVELOPMENT_INITIAL_OWNERS,staffManagementView,staffManagementTransition} from '../staff-role-management.mjs';
 import pg from 'pg';
 import { createHash } from 'node:crypto';
@@ -118,6 +119,7 @@ export function createApplicationStore(pool,{initialOwners=[],receiptPublicKey=p
    }
    const outstanding=await c.query("select count(*)::int as count from vega_private.recovery_outbox where tenant_id=$1 and business_id=$2 and event_kind='business' and discovery_state<>'acknowledged'",[a.tenantId,a.businessId]);
    const raw={mode:'development',context:{name:a.businessId==='vega-dance-lab'?'Vega Dance Lab':a.businessId,...a},revision:row.revision,...visibleState(row.state,a),jobs,squareEnabled:false,recovery:{pendingCount:outstanding.rows[0]?.count??0}};
+   raw.commerceOffers.push(...await publishedMediaOffers(c,row.state));
    return a.role==='staff'?{...visibleStaffData(raw,a,access(row.state,a)),...staffManagementView(row.state,a,initialOwners)}:raw;
   }),
   reviewClassDuplicate:(userId,body)=>transaction(userId,async(c,a)=>{
@@ -158,7 +160,8 @@ export function createApplicationStore(pool,{initialOwners=[],receiptPublicKey=p
    const integrationRef=trustedPayment?await resolveIntegration(c,a,paymentAttempt):undefined;
    const legacyIntegrationRefs={};
    if(trustedPayment)for(const old of row.state.paymentAttempts||[]){if(!old.integrationRef)legacyIntegrationRefs[old.id]=await resolveIntegration(c,a,old);}
-   const next=['staff-register','staff-role-set'].includes(command.action)?staffManagementTransition(row.state,command,a,{initialOwners},fail):transition(row.state,command,a,{trustedPayment,integrationRef,legacyIntegrationRefs});
+   const material=await mediaCommerceMaterial(c,row.state,command);
+   const next=['staff-register','staff-role-set'].includes(command.action)?staffManagementTransition(row.state,command,a,{initialOwners},fail):transition(row.state,command,a,{trustedPayment,integrationRef,legacyIntegrationRefs,mediaCommerceMaterial:material});
    const receipt=buildRecoveryReceipt({before:row.state,after:next.state,revision:row.revision,authority:a,command,result:next.result,occurredAt:new Date().toISOString(),publicKey:receiptPublicKey});
    await c.query('update vega_private.app_state set state=$1,revision=revision+1,updated_at=now() where tenant_id=$2 and business_id=$3',[JSON.stringify(next.state),a.tenantId,a.businessId]);
    await c.query('insert into vega_private.app_commands(tenant_id,business_id,actor_id,request_id,fingerprint,response) values($1,$2,$3,$4,$5,$6)',[a.tenantId,a.businessId,a.userId,requestId,fingerprint,JSON.stringify(next.result)]);

@@ -1,4 +1,5 @@
 import {isDeepStrictEqual} from 'node:util';
+import {mediaOffer} from './media-commerce.mjs';
 
 // Development-only commerce terms. Product pricing and entitlement balances are untouched.
 export const PRODUCT_ID = '5dcc7d89-2398-4b29-ba6e-f4e549d4e4f1';
@@ -22,7 +23,7 @@ export function selfParticipant(state, a) {
   state.participants.filter(p => p.id === self.participantId).length === 1 ? self.participantId : null;
 }
 export function productMatches(state, terms=offer) {
- const products = (state.entitlementProducts || []).filter(p => p.id === terms.productId);
+ const products = (terms.productType==='digital_access'?state.commerceProducts||[]:state.entitlementProducts || []).filter(p => p.id === terms.productId);
  const p = products[0];
  return products.length === 1 && p.name === terms.productName && p.type === terms.productType && p.quantity === terms.quantity && p.validDays === terms.validDays &&
   isDeepStrictEqual(p.categories,terms.categories) && isDeepStrictEqual(p.classIds,terms.classIds);
@@ -41,7 +42,14 @@ export function commerceView(state, a) {
    })
  };
 }
-export function createPurchaseDraft(state, body, a, {id, now}, fail) {
+export function createPurchaseDraft(state, body, a, {id, now}, fail,mediaMaterial) {
+ if(body.offerId!==OFFER_ID){
+  const p=mediaMaterial?.placement,r=mediaMaterial?.resource;
+  if(!p||!r||p.resourceId!==r.id||r.lifecycle!=='active'||r.owner.kind!=='business'||r.owner.tenantId!==a.tenantId||r.owner.businessId!==a.businessId||p.authorized!==true||p.visible!==true||p.policy?.kind!=='pay_on_demand')fail('Media offer unavailable',404);
+  const offer=mediaOffer(state,p);if(!offer||offer.id!==body.offerId)fail('Active media offer unavailable',404);
+  const {active,...terms}=offer;
+  return createScopedPurchaseDraft(state,body,a,{id,now},fail,terms);
+ }
  if (!scope(a)) fail('Development commerce unavailable', 403);
  const participantId = selfParticipant(state, a);
  if (!participantId) fail('Unambiguous Development self-purchase assignment required', 403);

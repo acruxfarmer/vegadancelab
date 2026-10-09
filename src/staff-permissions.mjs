@@ -41,6 +41,7 @@ export function requireStaffPermission(access,authority,permission,fail){
  if(!hasStaffPermission(access,authority,permission))fail(`Your staff role does not allow this action: ${PERMISSIONS[permission]||'unsupported operation'}. Ask your business owner for help.`,403);
 }
 const commandPermissions={
+ 'media-offer-attach':'sales.manage',
  attendance:'attendance.write',reserve:'bookings.manage',cancel:'bookings.manage','correct-cancellation':'bookings.manage',promote:'bookings.manage',
  class:'schedule.edit','edit-class':'schedule.edit','duplicate-class':'schedule.edit','class-policy':'schedule.edit','cancel-class':'schedule.cancel',
  'front-desk-sale':'sales.manage','entitlement-product':'entitlements.manage','issue-entitlement':'entitlements.manage','issue-credit':'entitlements.manage',
@@ -53,6 +54,7 @@ export function requireStaffCommand(state,command,authority,access,fail){
  }
  const permission=command.action.startsWith('refund-')?'refunds.manage':command.action.startsWith('payment-')?'sales.manage':commandPermissions[command.action];
  requireStaffPermission(access,authority,permission,fail);
+ if(command.action==='media-offer-attach')requireStaffPermission(access,authority,'customers.manage',fail);
  if(access.role==='instructor'){
   const r=state.reservations.find(x=>x.id===command.id),classId=r?.classId??command.body?.classId;
   if(!classId||!access.classIds.includes(classId)||!state.classes.some(c=>c.id===classId))fail('This class is not assigned to you. Ask your business owner for help.',403);

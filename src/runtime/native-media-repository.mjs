@@ -43,10 +43,11 @@ export function createNativeMediaRepository(pool,{initialOwners=[]}={}){
   viewer:(actor,placementId,work)=>transaction(actor,async c=>{
    const {rows}=await c.query('select media_private.native_viewer_material($1) as material',[placementId]);
    const material=rows[0]?.material;
-   if(material?.placement.policy.kind==='memberships'&&actor){
+   if(['memberships','pay_on_demand'].includes(material?.placement.policy.kind)&&actor){
     const p=material.placement,{rows:members}=await c.query('select role,participant_ids from vega_private.app_members where user_id::text=$1 and tenant_id=$2 and business_id=$3',[actor,p.context.tenantId,p.context.businessId]);
     if(members.length===1){material.authority={userId:actor,role:members[0].role,participantIds:members[0].participant_ids,...p.context};material.state=(await c.query('select state from vega_private.app_state where tenant_id=$1 and business_id=$2 for share',[p.context.tenantId,p.context.businessId])).rows[0]?.state;}
    }
+   if(material?.placement.policy.kind==='pay_on_demand')material.commerceState=(await c.query('select media_private.commerce_material($1) as material',[placementId])).rows[0]?.material?.commerceState;
    return work(material);
   })
  };

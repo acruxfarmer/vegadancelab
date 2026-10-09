@@ -5,6 +5,7 @@ import {mediaDeliveryAdapters} from './media-delivery-configuration.mjs';
 import {manageMediaAccess} from './media-access-management.mjs';
 import {createMediaViewerStore,resolveMediaOnClient,requireMediaDecision} from './media-viewer-store.mjs';
 import {resolveStaffAccess,hasStaffPermission,requireStaffPermission,requireStaffCommand,visibleStaffData,staffCommandResult} from '../staff-permissions.mjs';
+import {mediaCommerceMaterial,publishedMediaOffers} from './media-commerce-material.mjs';
 import {DEVELOPMENT_INITIAL_OWNERS,staffManagementView,staffManagementTransition} from '../staff-role-management.mjs';
 import pg from 'pg';
 import {readPublicDiscovery} from './public-discovery-store.mjs';
@@ -167,6 +168,7 @@ export function createApplicationStore(pool,{nativeAdapters=null,bookingEmails=f
    }
    const outstanding=await c.query("select count(*)::int as count from vega_private.recovery_outbox where tenant_id=$1 and business_id=$2 and event_kind='business' and discovery_state<>'acknowledged'",[a.tenantId,a.businessId]);
    const raw={mode:'development',context:{name:a.businessId==='vega-dance-lab'?'Vega Dance Lab':a.businessId,...a},revision:row.revision,...visibleState(row.state,a),jobs,squareEnabled:false,recovery:{pendingCount:outstanding.rows[0]?.count??0}};
+   raw.commerceOffers.push(...await publishedMediaOffers(c,row.state));
    if(a.role==='member')for(const video of raw.videos||[]){
     const {rows}=await c.query('select media_private.legacy_viewer_placement($1,$2,$3) as id',[a.tenantId,a.businessId,video.id]);
     if(rows[0]?.id){const result=await resolveMediaOnClient(c,a.userId,rows[0].id);video.placementId=rows[0].id;video.accessDecision=result.decision;}
@@ -221,7 +223,8 @@ export function createApplicationStore(pool,{nativeAdapters=null,bookingEmails=f
    const integrationRef=trustedPayment?await resolveIntegration(c,a,paymentAttempt):undefined;
    const legacyIntegrationRefs={};
    if(trustedPayment)for(const old of row.state.paymentAttempts||[]){if(!old.integrationRef)legacyIntegrationRefs[old.id]=await resolveIntegration(c,a,old);}
-   const next=['staff-register','staff-role-set'].includes(command.action)?staffManagementTransition(row.state,command,a,{initialOwners},fail):transition(row.state,command,a,{trustedPayment,trustedRefund,refundEvidence,integrationRef,legacyIntegrationRefs,...(trustedRefund?{now:refundNow}:{})});
+   const material=await mediaCommerceMaterial(c,row.state,command);
+   const next=['staff-register','staff-role-set'].includes(command.action)?staffManagementTransition(row.state,command,a,{initialOwners},fail):transition(row.state,command,a,{trustedPayment,trustedRefund,refundEvidence,integrationRef,legacyIntegrationRefs,mediaCommerceMaterial:material,...(trustedRefund?{now:refundNow}:{})});
    if(trustedRefund&&canonical(next.state)===canonical(row.state))return next.result;
    if(['refund-intent','refund-program-intent'].includes(command.action)){
     const op=next.state.refundOperations.find(o=>o.id===next.result.refund.id);

@@ -181,6 +181,7 @@ export function createApplicationApi(env,store,fetcher=fetch){
    routes['/api/media/groups']='media-group-save';routes['/api/media/organize']='media-organize';routes['/api/media/save']='media-save';routes['/api/media/publish']='media-publish';routes['/api/media/unpublish']='media-unpublish';
    routes['/api/classes/duplicate']='duplicate-class';
    routes['/api/commerce/drafts']='purchase-draft';
+   routes['/api/commerce/media-offers/attach']='media-offer-attach';
    routes['/api/commerce/front-desk/sales']='front-desk-sale';
    routes['/api/staff/register']='staff-register';
    routes['/api/staff/roles']='staff-role-set';

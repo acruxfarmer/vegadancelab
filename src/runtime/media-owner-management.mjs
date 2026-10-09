@@ -5,6 +5,7 @@ import {createMediaResourceRepository} from './media-resource-repository.mjs';
 import {createMediaPlacementService} from './media-placement-service.mjs';
 import {createMediaPlacementRepository} from './media-placement-repository.mjs';
 import {resolveStaffAccess,hasStaffPermission} from '../staff-permissions.mjs';
+import {mediaOffer} from '../media-commerce.mjs';
 const fail=(message,status=403)=>{throw new ApplicationError(message,status);};
 const uuid=value=>typeof value==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
 export function createMediaOwnerManagement(pool,{initialOwners=[]}={}){
@@ -62,6 +63,10 @@ export function createMediaOwnerManagement(pool,{initialOwners=[]}={}){
      products=(await c.query('select media_private.owner_policy_choices($1) as products',[p.id])).rows[0].products;
 
      projections.push({...p,rights:effectivePlacementRights(p),canEditAccess:true,allowedAccessModes:['public','memberships','pay_on_demand'],products,canOrganize:!!b&&effectivePlacementRights(p).organize,canPresent:!!b&&effectivePlacementRights(p).present,groups:b?(b.state.mediaGroups||[]).map(g=>({id:g.id,name:g.name,kind:g.kind})):[]});
+     if(b&&r.owner.kind==='business'&&manages(r.owner)&&r.owner.tenantId===p.context.tenantId&&r.owner.businessId===p.context.businessId){
+      const projection=projections.at(-1),summary=o=>o?{id:o.id,version:o.version,title:o.productName,priceMinor:o.priceMinor,currency:o.currency,active:o.active}:null;
+      projection.commerce={current:summary(mediaOffer(b.state,p,{activeOnly:false})),offers:(b.state.commerceOffers||[]).flatMap(o=>{const preview={...b.state,mediaCommerceLinks:[{placementId:p.id,offerId:o.id,offerVersion:o.version,...p.context}]};const offer=mediaOffer(preview,p,{activeOnly:false});return offer?[summary(offer)]:[];})};
+     }
     }
     let delivery;
     if(r.source?.kind==='managed_reference'){

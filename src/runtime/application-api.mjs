@@ -78,6 +78,7 @@ export function createApplicationApi(env,store,fetcher=fetch){
    if(url.pathname==='/api/classes/duplicate/review'){send(200,await store.reviewClassDuplicate(userId,body));return true;}
    routes['/api/classes/duplicate']='duplicate-class';
    routes['/api/commerce/drafts']='purchase-draft';
+   routes['/api/commerce/media-offers/attach']='media-offer-attach';
    routes['/api/commerce/front-desk/sales']='front-desk-sale';
    routes['/api/staff/register']='staff-register';
    routes['/api/staff/roles']='staff-role-set';

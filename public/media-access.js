@@ -3,7 +3,7 @@ const denied={
  authentication_required:['sign_in_required','Sign in to check access.'],
  membership_required:['locked','This media is available to eligible members.'],
  membership_not_current:['locked','Your access to this media is not currently active.'],
- paid_access_required:['locked','Paid access is required. Purchasing access is not available yet.'],
+ paid_access_required:['locked','Paid access is required.'],
  placement_unavailable:['unavailable','This media is no longer available here.'],
  resource_unavailable:['unavailable','This media is currently unavailable.'],
  access_policy_invalid:['unavailable','This media is currently unavailable.']
