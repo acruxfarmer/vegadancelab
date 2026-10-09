@@ -1,0 +1,102 @@
+{
+  "status": "EXACT_ASSET_DELIVERY_ISOLATION_VERIFIED_STOPPED_FOR_REVIEW",
+  "resourceId": "dcb5f610-23a2-43be-af39-706a17be8a92",
+  "stage": "ticket-cleanup",
+  "uploads": 0,
+  "payments": 0,
+  "bindingMutations": false,
+  "databaseReadOnly": true,
+  "productionUntouched": true,
+  "automaticRetries": 0,
+  "secretsPersisted": false,
+  "events": [
+    {
+      "stage": "mapping-confirmed",
+      "assetAScope": "sestore99/acruxanalog/acrux-l6-s5-439dc92e-5036-41b8-b77c-d2f080594a9d.mp4",
+      "assetBScope": "sestore99/acruxanalog/1.mp4",
+      "existingIndexedAssets": true
+    },
+    {
+      "stage": "asset-b-no-ticket",
+      "httpStatus": 403
+    },
+    {
+      "stage": "ticket-create",
+      "ticketAttempts": 1,
+      "app": "acruxanalog-vod",
+      "video": "sestore99/acruxanalog/acrux-l6-s5-439dc92e-5036-41b8-b77c-d2f080594a9d.mp4",
+      "ip": "auto",
+      "uses": 5,
+      "expiresAt": "2026-10-09T04:11:51.192Z",
+      "passwordSource": "provider-returned",
+      "cleanupPending": true
+    },
+    {
+      "stage": "asset-a-playback",
+      "request": 1,
+      "httpStatus": 200
+    },
+    {
+      "stage": "asset-a-master-confirmed",
+      "httpStatus": 200
+    },
+    {
+      "stage": "asset-a-playback",
+      "request": 2,
+      "httpStatus": 200
+    },
+    {
+      "stage": "asset-a-child-playlist-confirmed",
+      "httpStatus": 200
+    },
+    {
+      "stage": "asset-a-playback",
+      "request": 3,
+      "httpStatus": 200
+    },
+    {
+      "stage": "asset-a-media-confirmed",
+      "httpStatus": 200,
+      "mediaBytes": 15416,
+      "mediaType": "mpeg-ts"
+    },
+    {
+      "stage": "asset-b-same-ticket",
+      "httpStatus": 403,
+      "sameReturnedTicket": true
+    },
+    {
+      "stage": "asset-a-ticket-still-valid",
+      "httpStatus": 200,
+      "manifestConfirmed": true
+    },
+    {
+      "stage": "ticket-cleanup",
+      "httpStatus": 200,
+      "ticketRemoved": true,
+      "cleanupPending": false
+    }
+  ],
+  "bindingId": "439dc92e-5036-41b8-b77c-d2f080594a9d",
+  "bindingRevision": 4,
+  "canonicalBaselineHash": "1985e8f996caed98e230a827cbca7d647b6287181d9a0535074321f6315a1eeb",
+  "assetANoTicket": {
+    "httpStatus": 403,
+    "reusedEvidence": "l6-s5-no-ticket.local.json",
+    "samePlaybackMapping": true
+  },
+  "proof": {
+    "assetAPlayback": true,
+    "masterPlaylistConfirmed": true,
+    "childPlaylistConfirmed": true,
+    "assetBDenied": true,
+    "sameTicket": true,
+    "stillValidAfterDenial": true
+  },
+  "canonicalAndBindingUnchanged": true,
+  "updatedAt": "2026-10-09T04:09:52.118Z",
+  "proofCodeCommit": "87d07da",
+  "regressionsPassed": 1245,
+  "ordinaryAdapterChanged": false,
+  "reviewBoundary": "Bounded Development isolation verified. No payment execution or deployment. Ordinary adapter exact-scope rollout remains pending review."
+}
