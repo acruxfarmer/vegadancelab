@@ -3,14 +3,17 @@ import {qualifiedTransaction} from '../../payment-contract.mjs';
 import {PAYMENT_BINDING as B,SQUARE_INTEGRATION as integrationRef,squareConfigurationMatches} from './square-configuration.mjs';
 
 export function squareExecutionReady(e){return squareConfigurationMatches(e)&&!!e.SQUARE_ACCESS_TOKEN&&/^cnon:[A-Za-z0-9_-]{1,240}$/.test(e.SQUARE_SANDBOX_SOURCE_ID||'');}
-export function verifyPayment(p,a){
+const validIntent=i=>i&&Number.isSafeInteger(i.amountMinor)&&i.amountMinor>0&&/^[A-Z]{3}$/.test(i.currency)&&i.collection==='immediate'&&i.method==='card'&&i.partialAllowed===false&&i.tipsAllowed===false;
+const boundIntent=(a,i)=>validIntent(i)&&(!a.financialIntent||digest(a.financialIntent)===digest(i));
+export function verifyPayment(p,a,intent=a.financialIntent){
  const invalid=reason=>({status:'unresolved',reason});
+ if(!boundIntent(a,intent))return invalid('financial_intent_mismatch');
  if(!p||p.id!==a.paymentId||p.location_id!==B.locationId||p.reference_id!==a.id||p.application_details?.application_id!==B.applicationId)return invalid('provider_identity_mismatch');
- if(p.amount_money?.amount!==6000||p.amount_money?.currency!=='USD'||p.total_money?.amount!==6000||p.total_money?.currency!=='USD'||p.source_type!=='CARD'||(p.tip_money&&p.tip_money.amount!==0)||(p.app_fee_money&&p.app_fee_money.amount!==0)||(p.refunded_money&&p.refunded_money.amount!==0))return invalid('provider_terms_mismatch');
+ if(p.amount_money?.amount!==intent.amountMinor||p.amount_money?.currency!==intent.currency||p.total_money?.amount!==intent.amountMinor||p.total_money?.currency!==intent.currency||p.source_type!=='CARD'||(p.tip_money&&p.tip_money.amount!==0)||(p.app_fee_money&&p.app_fee_money.amount!==0)||(p.refunded_money&&p.refunded_money.amount!==0))return invalid('provider_terms_mismatch');
  if(!Number.isFinite(Date.parse(p.updated_at))||!Number.isFinite(Date.parse(p.created_at)))return invalid('provider_timestamp_missing');
  const status={COMPLETED:'succeeded',APPROVED:'pending',PENDING:'pending',FAILED:'failed',CANCELED:'cancelled'}[p.status];
  if(!status)return invalid('provider_status_unknown');
- return {normalizationVersion:1,status,reason:`provider_${status}`,verified:true,paymentId:p.id,referenceId:p.reference_id,integrationRef:{...integrationRef},transactionRef:qualifiedTransaction(integrationRef,p.id),amount:6000,currency:'USD',verification:{method:'authenticated_lookup',observedAt:new Date().toISOString(),evidenceDigest:digest(p)},providerEvidence:{provider:'square',environment:'sandbox',applicationId:B.applicationId,merchantId:B.merchantId,locationId:B.locationId,status:p.status,createdAt:p.created_at,updatedAt:p.updated_at}};
+ return {normalizationVersion:1,status,reason:`provider_${status}`,verified:true,paymentId:p.id,referenceId:p.reference_id,integrationRef:{...integrationRef},transactionRef:qualifiedTransaction(integrationRef,p.id),amount:intent.amountMinor,currency:intent.currency,verification:{method:'authenticated_lookup',observedAt:new Date().toISOString(),evidenceDigest:digest(p)},providerEvidence:{provider:'square',environment:'sandbox',applicationId:B.applicationId,merchantId:B.merchantId,locationId:B.locationId,status:p.status,createdAt:p.created_at,updatedAt:p.updated_at}};
 }
 export function createSquareAdapter(env,fetcher=fetch){
  async function request(path,{method='GET',body}={}){
@@ -25,11 +28,12 @@ export function createSquareAdapter(env,fetcher=fetch){
  return {
   contractVersion:1,capabilities:{immediateCard:true,idempotentSubmit:true,verifiedLookup:true},
   sourceFingerprint:()=>digest(env.SQUARE_SANDBOX_SOURCE_ID),
-  validateIntent(intent,fail){if(intent.amountMinor!==6000||intent.currency!=='USD'||intent.collection!=='immediate'||intent.method!=='card'||intent.partialAllowed!==false||intent.tipsAllowed!==false)fail('Provider capability unsupported',422);},
-  async submit(attempt){
+  validateIntent(intent,fail){if(!validIntent(intent))fail('Provider capability unsupported',422);},
+  async submit(attempt,intent=attempt.financialIntent){
+   if(!boundIntent(attempt,intent))return {status:'unresolved',reason:'financial_intent_mismatch'};
    if(!await identity())return {status:'unresolved',reason:'provider_credential_identity_unverified'};
    if(Date.now()-Date.parse(attempt.executionStartedAt||attempt.createdAt)>15*60*1000)return {status:'unresolved',reason:'create_retry_window_closed'};
-   const created=await request('/v2/payments',{method:'POST',body:{source_id:env.SQUARE_SANDBOX_SOURCE_ID,idempotency_key:attempt.idempotencyKey,amount_money:{amount:6000,currency:'USD'},location_id:B.locationId,reference_id:attempt.id,autocomplete:true,accept_partial_authorization:false}});
+   const created=await request('/v2/payments',{method:'POST',body:{source_id:env.SQUARE_SANDBOX_SOURCE_ID,idempotency_key:attempt.idempotencyKey,amount_money:{amount:intent.amountMinor,currency:intent.currency},location_id:B.locationId,reference_id:attempt.id,autocomplete:true,accept_partial_authorization:false}});
    const paymentId=created.value?.payment?.id;
    if(!created.ok||typeof paymentId!=='string'||! /^[A-Za-z0-9_-]{1,192}$/.test(paymentId)){
     const codes=created.value?.errors?.map(e=>e.code)||[];
@@ -38,10 +42,11 @@ export function createSquareAdapter(env,fetcher=fetch){
    }
    return {status:'pending',reason:'payment_id_received',paymentId,integrationRef:{...integrationRef},transactionRef:qualifiedTransaction(integrationRef,paymentId)};
   },
-  async inspect(attempt){
+  async inspect(attempt,intent=attempt.financialIntent){
+   if(!boundIntent(attempt,intent))return {status:'unresolved',reason:'financial_intent_mismatch'};
    if(!await identity())return {status:'unresolved',reason:'provider_credential_identity_unverified'};
    const r=await request(`/v2/payments/${encodeURIComponent(attempt.paymentId)}`);
-   return r.ok?verifyPayment(r.value?.payment,attempt):{status:'unresolved',reason:'get_payment_unavailable'};
+   return r.ok?verifyPayment(r.value?.payment,attempt,intent):{status:'unresolved',reason:'get_payment_unavailable'};
   }
  };
 }

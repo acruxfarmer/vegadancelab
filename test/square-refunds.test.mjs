@@ -1,6 +1,7 @@
+const REFUND_CANDIDATE='3609b576-10f1-4d16-94df-e46e10ec7a96';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createSquareRefundAdapter,REFUND_CANDIDATE} from '../src/runtime/providers/square-refunds.mjs';
+import {createSquareRefundAdapter} from '../src/runtime/providers/square-refunds.mjs';
 import {PAYMENT_BINDING as B,SQUARE_INTEGRATION} from '../src/runtime/providers/square-configuration.mjs';
 const at='2026-10-05T23:00:00Z';
 function fixture(change=()=>{}){

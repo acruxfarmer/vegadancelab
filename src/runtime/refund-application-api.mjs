@@ -3,7 +3,7 @@ import {createMediaPrincipalVerifier} from './media-resource-foundation.mjs';
 import {revokeSession} from './sign-out.mjs';
 import {createDirectPayments,sandboxPaymentEnabled,paymentPreparationEnabled} from './direct-payments.mjs';
 import {createRefundWorkflow} from './refund-workflow.mjs';
-import {createSquareRefundAdapter,refundTransportEnabled,refundProgramTransportEnabled,REFUND_CANDIDATE} from './providers/square-refunds.mjs';
+import {createSquareRefundAdapter,refundTransportEnabled,refundProgramTransportEnabled} from './providers/square-refunds.mjs';
 import {reconcileRefundInventory} from '../refund-reconciliation.mjs';
 import {createRefundProgram} from './refund-program-workflow.mjs';
 
@@ -16,7 +16,7 @@ export async function readJson(req,limit=16384){
 export function createApplicationApi(env,store,fetcher=fetch){
  const payments=createDirectPayments(env,store,fetcher);
  const refundAdapter=createSquareRefundAdapter(env,fetcher);
- const refunds=createRefundWorkflow({store,adapter:refundAdapter,enabled:()=>refundTransportEnabled(env)});
+ const refunds=createRefundWorkflow({store,adapter:refundAdapter,enabled:purchaseId=>refundTransportEnabled(env)&&env.VEGA_SANDBOX_REFUND_PURCHASE_ID===purchaseId});
  const program=createRefundProgram({store,adapter:refundAdapter,enabled:purchaseId=>refundProgramTransportEnabled(env)&&env.VEGA_REFUND_PROGRAM_PURCHASE_ID===purchaseId});
  const key=env.SUPABASE_PUBLISHABLE_KEY;
  const configured=()=>{if(!key||env.SUPABASE_URL!==origin)throw new ApplicationError('Application authentication is not configured',503);};
@@ -162,7 +162,7 @@ export function createApplicationApi(env,store,fetcher=fetch){
     const view=await store.read(userId),staff=view.context?.role==='staff';
     const allowed=p=>!staff||view.staffAccess?.permissions?.includes(p)===true;
     const pay=allowed('sales.manage')&&sandboxPaymentEnabled(env),refund=staff&&allowed('refunds.manage');
-    send(200,{...view,squareEnabled:pay,paymentExecution:{enabled:pay,purchaseId:pay?env.VEGA_SANDBOX_PURCHASE_ID:null},refundWorkflow:{enabled:refund&&refundTransportEnabled(env),purchaseId:refund?REFUND_CANDIDATE:null},refundProgram:{enabled:refund&&refundProgramTransportEnabled(env),purchaseId:refund&&refundProgramTransportEnabled(env)?env.VEGA_REFUND_PROGRAM_PURCHASE_ID:null}});return true;}
+    send(200,{...view,squareEnabled:pay,paymentExecution:{enabled:pay,purchaseId:pay?env.VEGA_SANDBOX_PURCHASE_ID:null},refundWorkflow:{enabled:refund&&refundTransportEnabled(env),purchaseId:refund&&refundTransportEnabled(env)?env.VEGA_SANDBOX_REFUND_PURCHASE_ID:null},refundProgram:{enabled:refund&&refundProgramTransportEnabled(env),purchaseId:refund&&refundProgramTransportEnabled(env)?env.VEGA_REFUND_PROGRAM_PURCHASE_ID:null}});return true;}
    const operation=url.pathname.match(/^\/api\/recovery\/operations\/([a-f0-9]{64})$/);
    if(operation&&req.method==='GET'){const result=await store.operation(userId,operation[1]);send(result.pending?202:200,result);return true;}
    if(req.method!=='POST')throw new ApplicationError('Method not allowed',405);

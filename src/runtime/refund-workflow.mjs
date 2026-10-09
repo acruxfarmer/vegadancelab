@@ -4,7 +4,7 @@ import {ApplicationError} from '../application.mjs';
 export function createRefundWorkflow({store,adapter,enabled=()=>false,id=randomUUID,now=()=>new Date().toISOString()}){
  const deny=()=>{throw new ApplicationError('Refund workflow disabled',503);};
  async function context(userId,body){
-  if(!enabled())deny();
+  if(!enabled(body?.purchaseId))deny();
   if(!body||typeof body.purchaseId!=='string'||typeof body.requestId!=='string'||!body.requestId||Object.keys(body).some(k=>!['purchaseId','requestId','reason','operationId'].includes(k)))throw new ApplicationError('Invalid refund request');
   return store.refundContext(userId,body.purchaseId);
  }
