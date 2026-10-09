@@ -1,6 +1,6 @@
 {
   "slice": "L6-S7 — Owner Rights & Placement Delegation",
-  "status": "RIGHTS PROOF VERIFIED / WORDING DEPLOYMENT PENDING",
+  "status": "L6-S7 — IMPLEMENTED / READY FOR REVIEW",
   "priorRuntime": "02ce2e9",
   "priorEvidence": "93f8945",
   "priorSlicesClosed": true,
@@ -18,8 +18,9 @@
   "temporaryPlacementCreated": false,
   "productionUntouched": true,
   "providerRequests": 0,
-  "nextAction": "Run deploy-l6-s7-wording-private.ps1 once; confirm corrected receiver text; finalize review evidence.",
+  "nextAction": "STOP for Joe + Chett review. Do not begin the next slice.",
   "runtimeCommit": "ac46eafcae040017d623921046ccef40c40daeee",
   "cleanupPending": false,
-  "deploymentId": "dep-db44d4rncjis73bol2vg"
+  "deploymentId": "dep-db44hfbl550s73ahm5i0",
+  "wordingVerified": true
 }

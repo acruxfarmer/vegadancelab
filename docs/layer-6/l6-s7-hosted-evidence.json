@@ -1,5 +1,5 @@
 {
-  "status": "hosted-delegation-verified-wording-refresh-pending",
+  "status": "IMPLEMENTED / READY FOR REVIEW",
   "runtimeCommit": "ef78d8a6837672832ca5764a6a330a014eabd6e0",
   "deploymentId": "dep-db44d4rncjis73bol2vg",
   "placementId": "ef4b9797-4675-4dd4-ae42-7a2a83c1ae19",
@@ -211,5 +211,9 @@
     "state": "ready",
     "revision": 4
   },
-  "wordingRuntimeCommit": "ac46eafcae040017d623921046ccef40c40daeee"
+  "wordingRuntimeCommit": "ac46eafcae040017d623921046ccef40c40daeee",
+  "finalRuntimeCommit": "ac46eafcae040017d623921046ccef40c40daeee",
+  "finalDeploymentId": "dep-db44hfbl550s73ahm5i0",
+  "receiverWordingVerified": true,
+  "finalBrowserObservation": "Playback follows this placement’s current Access Availability. Withdrawn legacy placement remains non-configurable."
 }
