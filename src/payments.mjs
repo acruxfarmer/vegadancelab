@@ -23,6 +23,7 @@ export function paymentTransition(state,command,a,{id,now,integrationRef,legacyI
  state.paymentAttempts||=[];
  const event=(action,attempt,extra={})=>state.activity.push({id:id(),action,actorId:a.userId,tenantId:a.tenantId,businessId:a.businessId,subjectId:d.id,attemptId:attempt.id,requestId:b.requestId,integrationRef:structuredClone(integrationRef),transactionRef:attempt.transactionRef??null,paymentId:attempt.paymentId??null,createdAt:now(),...extra});
  if(command.action==='payment-prepare'){
+  assertQuotePayable(state,d,now(),fail);
   if(HISTORICAL_DRAFTS.has(d.id))fail('Closed verification draft cannot be paid',409);
   if(!isDeepStrictEqual(d.terms,(state.commerceOffers||[]).find(o=>o.id===d.offerId&&o.version===d.offerVersion))||!Number.isSafeInteger(d.totalMinor)||d.totalMinor<=0||d.totalMinor!==d.subtotalMinor+d.taxMinor||d.subtotalMinor!==d.terms.priceMinor||d.taxMinor!==d.terms.tax.amountMinor||d.currency!==d.terms.currency)fail('Immutable purchase terms mismatch',409);
   if(d.paymentStatus==='succeeded'||d.fulfillmentStatus==='issued')fail('Purchase already paid',409);
@@ -42,6 +43,7 @@ export function paymentTransition(state,command,a,{id,now,integrationRef,legacyI
  if(attempt.integrationRef&&!sameIntegration(attempt.integrationRef,integrationRef))fail('Attempt integration mismatch',409);
  if(attempt.financialIntent&&!isDeepStrictEqual(attempt.financialIntent,financialIntent(d)))fail('Immutable financial intent mismatch',409);
  if(command.action==='payment-bind-source'){
+  assertQuotePayable(state,d,now(),fail);
   if(!/^[a-f0-9]{64}$/.test(b.sourceDigest||'')||attempt.prepareSourceDigest!==null)fail('Invalid source binding',409);
   if(attempt.sourceDigest!==null){if(attempt.sourceDigest!==b.sourceDigest)fail('Active payment source conflict',409);return {attemptId:attempt.id,purchaseId:d.id};}
   if(attempt.status!=='pending'||attempt.paymentId||attempt.offerDigest!==digest(d.terms))fail('Attempt cannot bind payment source',409);
@@ -81,4 +83,10 @@ export function paymentTransition(state,command,a,{id,now,integrationRef,legacyI
   return d.terms.fulfillmentPlan?result:{purchaseId:d.id,issuanceId:fulfilled.issuanceId,status:result.status};
  }
  fail('Payment operation unavailable',404);
+}
+// Existing quote expiry, where present, governs; a newer offer never replaces a quote.
+export function assertQuotePayable(state,d,at,fail){
+ if(d.quoteExpiresAt!==undefined&&d.quoteExpiresAt!==null&&(!Number.isFinite(Date.parse(d.quoteExpiresAt))||Date.parse(at)>=Date.parse(d.quoteExpiresAt)))fail('Checkout quote expired',409);
+ const targets=d.terms?.fulfillmentPlan?.actions?.filter(x=>x.type==='DURABLE_ACCESS').map(x=>x.target?.id)||[];
+ if((state.mediaAvailability||[]).some(x=>x.tenantId===d.tenantId&&x.businessId===d.businessId&&targets.includes(x.placementId)&&['suspended','withdrawn'].includes(x.status)))fail('Media purchase temporarily unavailable or withdrawn',409);
 }

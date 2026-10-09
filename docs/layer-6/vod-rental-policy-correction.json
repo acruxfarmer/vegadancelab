@@ -1,0 +1,58 @@
+{
+  "status": "local_policy_correction_verified_hosted_pending",
+  "recordedAt": "2026-10-09T21:53:30.029Z",
+  "checkpoint": "ccfe301",
+  "authority": "Joe final policy correction 3b96f5a9-fb4b-4014-88d8-cac987f93161 and continuation 8d110282-50ea-4b1c-8ea4-4a8768683b2f",
+  "automated": {
+    "tests": 82,
+    "passed": 82,
+    "failed": 0,
+    "log": "rental-policy-correction-test-run.log",
+    "scope": "Affected rental, player and protected delivery contract tests only; no live provider experiment or repeated restricted-role database verification"
+  },
+  "implemented": [
+    "New rental policy v2 omits grace; legacy v1 purchased data accepted without enabling grace",
+    "Expiration checked before persisted-ticket reuse/new session and after asynchronous ticket issuance",
+    "No video-duration grace, session finish deadlines, grace owner controls, expiration resume override, or exact-cutoff player timer",
+    "Provider authorization plus authenticated PRIMARY player acknowledgement; no decoded-frame claim",
+    "Confirmed no-ticket rejection recovery; one activation identity, cumulative ten-minute budget, ambiguous failures unchanged",
+    "Versioned terms, valid quotes, scoped corrections, complimentary grants, media availability and historical fulfillment retained"
+  ],
+  "retainedEvidence": [
+    "vod-rental-postgres.local.json",
+    "vod-rental-source-reconciliation.json",
+    "vod-rental-provider.local.json"
+  ],
+  "providerLimitations": [
+    "Fresh known segment returned media six seconds after ticket deletion despite manifest denial",
+    "Both tested paths denied after expiry; background cleanup may have contributed",
+    "Authorization attempts do not prove rendered frames",
+    "Absent/denied attempt logs do not establish complete failure history; ambiguous initial-play failures remain unresolved for audited correction"
+  ],
+  "remaining": [
+    "Shelly deploy exact Development commit through existing operator script rental mode",
+    "Hosted browser workflow and actual first-play acknowledgement correlation/recovery verification",
+    "Independent Chett review and Joe approval before merge/closure"
+  ],
+  "boundaries": {
+    "protectedRentalPlaybackEnabled": false,
+    "productionTouched": false,
+    "paymentRefundExecutionEnabled": false,
+    "closedS8B_S9EvidenceChanged": false,
+    "S10Started": false,
+    "merged": false,
+    "closed": false
+  },
+  "sourceSha256": {
+    "src/rental-policy.mjs": "18bd2e9d61a007546611549edb4d9379cd56e8f4cf79e8c87dca9f7276b7a1ba",
+    "src/rental-entitlement.mjs": "a57810835685608d863551d6232009e0c03a3c75e84ff1dae523d66d4f9948ec",
+    "src/runtime/rental-playback.mjs": "cc5d933f356b4d97cd5234d5a78f224dfdf5f5b1f4d3a2204893a1b9c1638414",
+    "src/runtime/rental-playback-workflow.mjs": "03a3ed5cc8933cd51cb512549a5bb165bf2b2379af2a3bd64b43cab48c219e10",
+    "src/runtime/rental-playback-store.mjs": "e5d87136da8cb110adbfc288fb29d4f8a21a59b515b2c06fb7bd00e453dc2ab3",
+    "src/runtime/providers/scaleengine-delivery.mjs": "632bdad7f162ede74401db10efb8bfcb113effdb394b82efc85d31e139f4bf34",
+    "src/application.mjs": "62a2757d4d07bbc705206d1c046ca5c502a40b9337f2296f1a063b252449d0fb",
+    "public/acrux-player.js": "fe7adf0ba357bd13a20d671bb8a7eefda36b4d90a234f5a1d6119acece9ffbd4",
+    "public/rental-ui.js": "b45a64c0587ea4f7ebc2e3d4ec3c7cb02279bd75b3be0b51c1fc71e05f691578",
+    "public/watch.js": "390bde15332cbfc6051fa81235f5ad3685cb15e3e1cb97f2f81c3ef70aafe182"
+  }
+}

@@ -1,4 +1,4 @@
-import {resolveMediaViewerAccess} from '../media-viewer-access.mjs';
+import {resolveMediaViewerAccess,rentalViewerProjection} from '../media-viewer-access.mjs';
 import {mediaAssetBytes} from '../media.mjs';
 import {ApplicationError} from '../application.mjs';
 import {mediaOfferSummary} from '../media-commerce.mjs';
@@ -17,6 +17,8 @@ export async function resolveMediaOnClient(client,viewerId,placementId,{at=new D
   }
  }
  let result=resolveMediaViewerAccess({placement:p,resourceAvailable:!!material?.video,viewerId,authority,state,at});
+ const rental=rentalViewerProjection({state,placement:p,viewerId,authority,at});
+ if(result.rental)result={allowed:false,reason:'protected_rental_delivery_required',rental:true};
  let bytes;
  if(result.allowed){try{bytes=mediaAssetBytes(material.video);}catch{result={allowed:false,reason:'resource_unavailable'};}}
  // A caller may record this allowlisted diagnostic, never the token or source.
@@ -24,7 +26,7 @@ export async function resolveMediaOnClient(client,viewerId,placementId,{at=new D
  const v=material?.video;
  const metadata=v&&p?.authorized===true&&p.visible===true?{title:v.title,description:v.description,creator:v.creator,duration:v.duration,poster:'/media-poster.svg',availability:({public:'ALL',memberships:'MEMBERS',pay_on_demand:'PAY_ON_DEMAND'})[p.policy?.kind]||null}:null;
  const commerce=p?.policy?.kind==='pay_on_demand'?(await client.query('select media_private.commerce_material($1) as material',[placementId])).rows[0]?.material:null;
- return {decision:result,metadata,...(p?.policy?.kind==='pay_on_demand'?{offer:mediaOfferSummary(commerce?.commerceState,p)}:{}),...(result.allowed?{bytes,revision:material.video.revision}: {})};
+ return {decision:result,metadata,...(rental?{rental}:{}),...(p?.policy?.kind==='pay_on_demand'?{offer:mediaOfferSummary(commerce?.commerceState,p)}:{}),...(result.allowed?{bytes,revision:material.video.revision}: {})};
 }
 export function requireMediaDecision(result){
  if(!result.decision.allowed){const e=new ApplicationError('This video is unavailable for your account.',result.decision.reason==='authentication_required'?401:403);e.mediaReason=result.decision.reason;throw e;}
@@ -37,5 +39,5 @@ export function createMediaViewerStore(pool,{observe=()=>{},now=()=>new Date().t
    const result=await resolveMediaOnClient(c,viewerId,placementId,{at:now(),observe});
    await c.query('commit');return result;
   }catch(e){await c.query('rollback').catch(()=>{});throw e;}finally{c.release();}
- },async describe(viewerId,placementId){const {decision,metadata,offer}=await this.resolve(viewerId,placementId);return {decision,metadata,...(offer?{offer}:{})};},async play(viewerId,placementId){return requireMediaDecision(await this.resolve(viewerId,placementId));}};
+ },async describe(viewerId,placementId){const {decision,metadata,offer,rental}=await this.resolve(viewerId,placementId);return {decision,metadata,...(offer?{offer}:{}),...(rental?{rental}:{})};},async play(viewerId,placementId){return requireMediaDecision(await this.resolve(viewerId,placementId));}};
 }

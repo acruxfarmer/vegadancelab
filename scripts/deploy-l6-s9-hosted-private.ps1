@@ -3,16 +3,26 @@
 # Deployment only; hosted ordinary-path playback is a separate bounded verification.
 # No ScaleEngine requests, tickets, uploads, or Production changes.
 [CmdletBinding()]
-param([switch]$InspectServiceOnly,[switch]$InspectSafetyOnly)
+param([switch]$InspectServiceOnly,[switch]$InspectSafetyOnly,[switch]$RentalVerification,[string]$RuntimeCommit)
 $ErrorActionPreference='Stop'
 $VerbosePreference='SilentlyContinue'; $DebugPreference='SilentlyContinue'; Set-PSDebug -Off
 $priorDebug=$env:BITWARDENCLI_DEBUG; $env:BITWARDENCLI_DEBUG='false'
 $commit='3ab6ce31bcecf3027dd84982e89c9ce44da8ce09'
+if($RentalVerification){
+ if($RuntimeCommit -cnotmatch '^[a-f0-9]{40}$'){throw 'Exact rental Development commit required'}
+ $commit=$RuntimeCommit
+}
 $serviceId='srv-dao5cjbm8hqs73db51j0'
 $base='https://api.render.com/v1/services/'+$serviceId
 $receiptPath=Join-Path $PSScriptRoot '../docs/layer-6/l6-s9-hosted-deployment.local.json'
 $marker=Join-Path $PSScriptRoot '../docs/layer-6/l6-s9-hosted-deployment-attempted.local.json'
 $inspectionPath=Join-Path $PSScriptRoot '../docs/layer-6/l6-s9-hosted-service-inspection.local.json'
+if($RentalVerification){
+ $receiptPath=Join-Path $PSScriptRoot '../docs/layer-6/vod-rental-hosted-deployment.local.json'
+ $marker=Join-Path $PSScriptRoot '../docs/layer-6/vod-rental-hosted-deployment-attempted.local.json'
+ $inspectionPath=Join-Path $PSScriptRoot '../docs/layer-6/vod-rental-hosted-service-inspection.local.json'
+}
+$safetyPath=if($RentalVerification){Join-Path $PSScriptRoot '../docs/layer-6/vod-rental-hosted-safety-inspection.local.json'}else{Join-Path $PSScriptRoot '../docs/layer-6/l6-s9-hosted-safety-inspection.local.json'}
 $receipt=[ordered]@{runtimeCommit=$commit;serviceId=$serviceId;status='preflight';stage='private session';environment='development';settingsUpdated=@();deployAttempted=$false;deployId=$null;productionUntouched=$true;providerRequests=0;secretsPersisted=$false}
 $headers=$null; $values=@{}; $acquired=$false
 function Save-Receipt { $receipt|ConvertTo-Json -Depth 8|Set-Content -LiteralPath $receiptPath -Encoding utf8 }
@@ -88,7 +98,7 @@ function Inspect-Safety {
   if($null -ne $_.Exception.Response.StatusCode){$safe.httpStatus=[int]$_.Exception.Response.StatusCode}
   $safe.errorCategory=if($safe.httpStatus){'http-rejection'}else{'transport-or-response-failure'}
  } finally {
-  $safe|ConvertTo-Json -Depth 6|Set-Content -LiteralPath (Join-Path $PSScriptRoot '../docs/layer-6/l6-s9-hosted-safety-inspection.local.json') -Encoding utf8
+  $safe|ConvertTo-Json -Depth 6|Set-Content -LiteralPath $safetyPath -Encoding utf8
   $envVars=$null;$v=$null;$config=$null;$active=$null
  }
  return ($null -eq $safe.errorCategory)
@@ -114,6 +124,7 @@ try {
  $safetyValid=Inspect-Safety
  if($InspectSafetyOnly){Write-Host 'Read-only safety inspection saved. Tell Astra done. No settings or deployment changed.';return}
  if(-not $safetyValid){throw 'Development safety checks not confirmed'}
+ if(-not $RentalVerification){
  $receipt.stage='restricted runtime and disposable fixture'
  $database=Record 'Vega Dev - Supabase'
  $payload=@{appDatabaseUrl=(Field $database 'APP_DATABASE_URL')}|ConvertTo-Json -Compress
@@ -123,6 +134,7 @@ try {
  $fixture=Get-Content -Raw -LiteralPath (Join-Path $PSScriptRoot '../docs/layer-6/l6-s9-fixture.local.json')|ConvertFrom-Json
  if($fixture.status -cne 'ready-for-hosted-proof'){throw 'Fixture unavailable'}
  $receipt.placementId=$fixture.placementId
+ }
  # A crash or uncertain outcome must be reconciled; never blindly redeploy.
  $lock=[IO.File]::Open($marker,[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::None)
  try{$bytes=[Text.Encoding]::UTF8.GetBytes('{"attempted":true}');$lock.Write($bytes,0,$bytes.Length);$lock.Flush($true)}finally{$lock.Dispose()}

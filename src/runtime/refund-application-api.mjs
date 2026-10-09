@@ -1,3 +1,4 @@
+import {randomBytes} from 'node:crypto';
 import { ApplicationError } from '../application.mjs';
 import {createMediaPrincipalVerifier} from './media-resource-foundation.mjs';
 import {revokeSession} from './sign-out.mjs';
@@ -35,6 +36,23 @@ export function createApplicationApi(env,store,fetcher=fetch){
   const url=new URL(req.url,'http://vega.local');if(!url.pathname.startsWith('/api/'))return false;
   const send=(status,data)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(data));};
   try{
+   const rental=url.pathname.match(/^\/api\/media\/placements\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\/rental\/(start|confirm|finish|recover)$/i);
+   if(rental){
+    if(req.method!=='POST'||url.search)throw new ApplicationError('Invalid rental request',400);
+    configured();const actor=await createMediaPrincipalVerifier({authOrigin:origin,publishableKey:key,fetcher})(req);
+    if(!store?.rentalPlayback)throw new ApplicationError('Protected rental playback unavailable',503);
+    const body=await readJson(req);
+    if(Object.keys(body).some(k=>!['requestId','sessionId','attemptId'].includes(k))||['requestId','sessionId','attemptId'].some(k=>body[k]!==undefined&&(typeof body[k]!=='string'||! /^[A-Za-z0-9_-]{1,128}$/.test(body[k]))))throw new ApplicationError('Invalid rental request');
+    let deviceId=(req.headers.cookie||'').split(';').map(x=>x.trim()).find(x=>x.startsWith('vega_rental_device='))?.slice('vega_rental_device='.length);
+    if(!/^[a-f0-9]{64}$/.test(deviceId||'')){
+     if(rental[2]!=='start')throw new ApplicationError('Playback session unavailable on this device',403);
+     deviceId=randomBytes(32).toString('hex');
+     res.setHeader('Set-Cookie',`vega_rental_device=${deviceId}; Path=/api/media/placements/; HttpOnly; SameSite=Strict; Max-Age=31536000${env.RENDER||req.socket?.encrypted?'; Secure':''}`);
+    }
+    const input={...body,deviceId},result=await store.rentalPlayback[rental[2]](actor.userId,rental[1],input);
+    if(rental[2]==='finish')await store.rentalPlayback.revokePending(actor.userId,rental[1],input);
+    send(200,result);return true;
+   }
    if(url.pathname==='/api/media-management'){
     if(url.search||!['GET','POST'].includes(req.method))throw new ApplicationError('Invalid management request',400);
     configured();const actor=await createMediaPrincipalVerifier({authOrigin:origin,publishableKey:key,fetcher})(req);
@@ -192,6 +210,9 @@ export function createApplicationApi(env,store,fetcher=fetch){
    routes['/api/classes/duplicate']='duplicate-class';
    routes['/api/commerce/drafts']='purchase-draft';
    routes['/api/commerce/media-offers/attach']='media-offer-attach';
+   routes['/api/commerce/media-offers/rental']='rental-offer-configure';
+   routes['/api/commerce/media-rentals/correct']='rental-correct';
+   routes['/api/commerce/media-rentals/availability']='rental-availability';
    routes['/api/commerce/front-desk/sales']='front-desk-sale';
    routes['/api/staff/register']='staff-register';
    routes['/api/staff/roles']='staff-role-set';

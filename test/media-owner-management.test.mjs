@@ -39,3 +39,10 @@ test('receiving UI projection exposes only delegated controls and refresh reflec
  placement.rights.access.mode='none';p=(await manage(actor)).items[0].placements[0];assert.equal(p.canEditAccess,false);
  assert.equal(result.items[0].source.reference,undefined);assert.equal(result.state,undefined);
 });
+
+test('rental-only delegate sees scoped corrections without gaining media ownership or metadata authority',async()=>{
+ const context={kind:'business',tenantId:'development',businessId:'receiver'},placement={id:owner,resourceId:'resource',context,authorized:true,visible:true,policy:{kind:'pay_on_demand'},revision:1};
+ const state={staffRoleAssignments:[{...context,userId:owner,role:'front_desk',rentalPermissions:['rentals.correct']}],accessEntitlements:[{id:'grant',principalId:'viewer',tenantId:context.tenantId,businessId:context.businessId,target:{id:owner},state:'active',rental:{availableAt:'2026-01-01T00:00:00Z',startBy:'2099-01-01T00:00:00Z'},corrections:[]},{id:'foreign',principalId:'other',tenantId:'other',businessId:context.businessId,target:{id:owner},rental:{}}],mediaAvailability:[{placementId:owner,tenantId:context.tenantId,businessId:context.businessId,status:'suspended',revision:2}]};
+ const manage=createMediaOwnerManagement({connect:async()=>({release(){},async query(sql){if(sql.includes('select m.tenant_id'))return {rows:[{tenant_id:context.tenantId,business_id:context.businessId,role:'staff',state}]};if(sql==='select document from media_private.placements order by id')return {rows:[{document:placement}]};return {rows:[]};}})});
+ const result=await manage(owner),p=result.items[0].placements[0];assert.equal(result.items[0].localOnly,true);assert.equal(p.canEditAccess,false);assert.equal(p.canOrganize,false);assert.equal(p.rental.canConfigure,false);assert.equal(p.rental.canCorrect,true);assert.equal(p.rental.availability,'suspended');assert.deepEqual(p.rental.entitlements.map(g=>g.id),['grant']);assert.deepEqual(result.businesses,[]);
+});

@@ -1,5 +1,12 @@
+import {rentalStatus} from './rental-ui.js';
 // Presentation only. Decisions come from the server; no membership inspection.
 const denied={
+ rental_scheduled:['scheduled','This rental is scheduled for a future release.'],
+ rental_expired:['expired','Your rental has expired.'],
+ rental_revoked:['revoked','Your rental access has been revoked.'],
+ media_suspended:['unavailable','This video is temporarily suspended.'],
+ media_withdrawn:['unavailable','This video has been withdrawn.'],
+ rental_delivery_unverified:['unavailable','Rental playback is not yet available. Your access terms are preserved.'],
  authentication_required:['sign_in_required','Sign in to check access.'],
  membership_required:['locked','This media is available to eligible members.'],
  membership_not_current:['locked','Your access to this media is not currently active.'],
@@ -16,5 +23,5 @@ export function mediaPresentation(decision){
 }
 export function accessNotice(decision,escape,actions=[]){
  const p=mediaPresentation(decision);
- return `<p role="status" data-access-state="${p.state}">${escape(p.message)}</p>${actions.filter(a=>a.state===p.state&&a.href?.startsWith('/')&&!a.href.startsWith('//')).map(a=>`<a class="button secondary" href="${escape(a.href)}">${escape(a.label)}</a>`).join('')}`;
+ return `<p role="status" data-access-state="${p.state}">${escape(p.message)}</p>${rentalStatus(decision?.rental,escape)}${actions.filter(a=>a.state===p.state&&a.href?.startsWith('/')&&!a.href.startsWith('//')).map(a=>`<a class="button secondary" href="${escape(a.href)}">${escape(a.label)}</a>`).join('')}`;
 }

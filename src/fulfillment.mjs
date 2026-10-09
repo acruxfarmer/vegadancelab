@@ -2,6 +2,8 @@ import {createHash} from 'node:crypto';
 import {isDeepStrictEqual as equal} from 'node:util';
 import {entitlementOperations} from './entitlements.mjs';
 import {bookingAccounting} from './cancellation.mjs';
+import {createRentalTerms} from './rental-policy.mjs';
+import {rentalEligible} from './rental-entitlement.mjs';
 
 const text=v=>typeof v==='string'&&v.length>0&&v.length<=200;
 const key=(p,id)=>createHash('sha256').update(JSON.stringify(['fulfillment/1',p.tenantId,p.businessId,p.id,id])).digest('hex');
@@ -47,6 +49,11 @@ const handlers={
    const actionId=key(p,a.id),prior=state.accessEntitlements.filter(e=>e.fulfillmentActionId===actionId);
    if(prior.length)fail('Unreconciled access entitlement already exists');
    const entitlement={id:actionId,fulfillmentActionId:actionId,purchaseId:p.id,principalId:p.buyerId,tenantId:p.tenantId,businessId:p.businessId,target:structuredClone(a.target),state:'active',createdAt:clock.now(),revokedAt:null,revocationRef:null};
+   if(p.terms.rentalPolicy){
+    if(a.target.kind!=='media_placement')fail('Rental requires media placement');
+    const availability=(state.mediaAvailability||[]).find(x=>x.placementId===a.target.id&&sameScope(x,p));
+    entitlement.rental=createRentalTerms(p.terms.rentalPolicy,{grantedAt:clock.now(),availableAt:availability?.availableAt??null});entitlement.revision=1;entitlement.corrections=[];
+   }
    state.accessEntitlements.push(entitlement);return {entitlementId:entitlement.id};
   },
   reverse(state,p,record,at,ref){
@@ -94,15 +101,21 @@ export function fulfillPurchase(state,purchaseId,authority,{id,now,requestId}){
  p.fulfillmentStatus=actions.every(a=>a.status==='fulfilled')?'issued':actions.some(a=>a.status==='revoked')?'revoked':'pending';
  return {purchaseId:p.id,...(p.issuanceId?{issuanceId:p.issuanceId}:{}),status:p.fulfillmentStatus,actions:actions.map(a=>({id:a.id,type:a.action.type,status:a.status}))};
 }
-export function hasDurableAccess(state,{principalId,tenantId,businessId,target,fulfillmentActionId}){
+export function hasEntitlementProvenance(state,e){
+ const principalId=e.principalId;
+ if((state.accessEntitlements||[]).filter(x=>x.id===e.id).length!==1)return false;
+ if(e.provenance?.kind==='staff_grant')return !!e.rental&&!!e.provenance.actorId&&!!e.provenance.reason&&(state.activity||[]).some(x=>x.action==='rental-complimentary-grant'&&x.subjectId===e.id&&x.actorId===e.provenance.actorId&&sameScope(x,e));
+ const p=state.purchaseDrafts?.find(p=>p.id===e.purchaseId&&sameScope(p,e)&&p.buyerId===principalId&&p.status==='paid'&&p.paymentStatus==='succeeded');
+ const a=state.fulfillmentActions?.find(a=>a.id===e.fulfillmentActionId&&a.purchaseId===e.purchaseId&&sameScope(a,e)&&a.principalId===principalId&&a.status==='fulfilled'&&a.action.type==='DURABLE_ACCESS'&&a.outcome?.entitlementId===e.id&&equal(a.action.target,e.target));
+ if(!p||!a||e.id!==a.id||a.id!==key(p,a.action.id)||(state.fulfillmentActions||[]).filter(x=>x.id===a.id).length!==1)return false;
+ try{if(!fulfillmentPlan(p).actions.some(action=>equal(action,a.action)))return false;}catch{return false;}
+ return !(state.refundOperations||[]).some(r=>r.purchaseId===p.id&&sameScope(r,p)&&r.status==='completed');
+}
+export function hasDurableAccess(state,{principalId,tenantId,businessId,target,fulfillmentActionId,at=new Date().toISOString()}){
  return (state.accessEntitlements||[]).some(e=>{
   if(fulfillmentActionId&&e.fulfillmentActionId!==fulfillmentActionId)return false;
   if(e.state!=='active'||e.principalId!==principalId||e.tenantId!==tenantId||e.businessId!==businessId||!equal(e.target,target))return false;
-  const p=state.purchaseDrafts?.find(p=>p.id===e.purchaseId&&sameScope(p,e)&&p.buyerId===principalId&&p.status==='paid'&&p.paymentStatus==='succeeded');
-  const a=state.fulfillmentActions?.find(a=>a.id===e.fulfillmentActionId&&a.purchaseId===e.purchaseId&&sameScope(a,e)&&a.principalId===principalId&&a.status==='fulfilled'&&a.action.type==='DURABLE_ACCESS'&&a.outcome?.entitlementId===e.id&&equal(a.action.target,e.target));
-  if(!p||!a||e.id!==a.id||a.id!==key(p,a.action.id)||(state.accessEntitlements||[]).filter(x=>x.id===e.id).length!==1||(state.fulfillmentActions||[]).filter(x=>x.id===a.id).length!==1)return false;
-  try{if(!fulfillmentPlan(p).actions.some(action=>equal(action,a.action)))return false;}catch{return false;}
-  return !(state.refundOperations||[]).some(r=>r.purchaseId===p.id&&sameScope(r,p)&&r.status==='completed');
+  return hasEntitlementProvenance(state,e)&&rentalEligible(e,at);
  });
 }
 export function durableFulfillmentComplete(state,p){
@@ -110,7 +123,8 @@ export function durableFulfillmentComplete(state,p){
   const plan=fulfillmentPlan(p),actions=plan.actions.filter(a=>a.type==='DURABLE_ACCESS');
   return actions.length>0&&plan.actions.every(a=>['BOOKING_CREDITS','DURABLE_ACCESS'].includes(a.type))&&actions.every(action=>{
    const records=(state.fulfillmentActions||[]).filter(r=>r.id===key(p,action.id));
-   return records.length===1&&equal(records[0].action,action)&&hasDurableAccess(state,{principalId:p.buyerId,tenantId:p.tenantId,businessId:p.businessId,target:action.target,fulfillmentActionId:records[0].id});
+   const grants=(state.accessEntitlements||[]).filter(e=>e.fulfillmentActionId===records[0]?.id);
+   return records.length===1&&equal(records[0].action,action)&&grants.length===1&&hasEntitlementProvenance(state,grants[0]);
   });
  }catch{return false;}
 }

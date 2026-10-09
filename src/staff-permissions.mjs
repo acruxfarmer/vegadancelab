@@ -1,6 +1,10 @@
 // Business authorization is resolved from membership plus explicit business-owned
 // assignments. Authentication, provider credentials and display names grant nothing.
+export const RENTAL_DELEGABLE_PERMISSIONS=Object.freeze(['rentals.extend','rentals.correct']);
 export const PERMISSIONS=Object.freeze({
+ 'rentals.configure':'Configure rental offers and media availability',
+ 'rentals.extend':'Extend individual rental viewing time',
+ 'rentals.correct':'Reset, replace, grant complimentary or revoke rental access',
  'attendance.read':'View class rosters and attendance',
  'attendance.write':'Record and correct attendance',
  'bookings.manage':'Book, cancel, correct and promote bookings',
@@ -22,7 +26,7 @@ export const PERMISSIONS=Object.freeze({
 // the role mapping may vary in future business policy without changing checks.
 export const ROLE_MODEL=Object.freeze({
  owner:{label:'Owner / Admin',permissions:Object.keys(PERMISSIONS)},
- manager:{label:'Manager',permissions:['attendance.read','attendance.write','bookings.manage','schedule.read','schedule.edit','schedule.cancel','history.read','sales.manage','finance.read','customers.read','customers.manage','waivers.publish','entitlements.manage','reports.read']},
+ manager:{label:'Manager',permissions:['rentals.extend','attendance.read','attendance.write','bookings.manage','schedule.read','schedule.edit','schedule.cancel','history.read','sales.manage','finance.read','customers.read','customers.manage','waivers.publish','entitlements.manage','reports.read']},
  front_desk:{label:'Front Desk',permissions:['attendance.read','attendance.write','bookings.manage','schedule.read','history.read','sales.manage','customers.read']},
  instructor:{label:'Instructor',permissions:['attendance.read','attendance.write','schedule.read','history.read']}
 });
@@ -34,13 +38,14 @@ export function resolveStaffAccess(state,authority,{initialOwners=[]}={}){
  const assigned=assignments.length===1?assignments[0]:null;
  const role=assignments.length>1?null:assigned?.role??(assignments.length===0&&initial.length===1?'owner':null);
  const policy=Object.hasOwn(ROLE_MODEL,role)?ROLE_MODEL[role]:null;
- return {role:policy?role:null,label:policy?.label||'Access needs review',permissions:policy?[...policy.permissions]:[],classIds:role==='instructor'&&Array.isArray(assigned?.classIds)?[...new Set(assigned.classIds)]:[],revision:assigned?.revision||0,tenantId:authority.tenantId,businessId:authority.businessId,userId:authority.userId};
+ return {role:policy?role:null,label:policy?.label||'Access needs review',permissions:policy?[...new Set([...policy.permissions,...(Array.isArray(assigned?.rentalPermissions)?assigned.rentalPermissions.filter(p=>RENTAL_DELEGABLE_PERMISSIONS.includes(p)):[])])]:[],classIds:role==='instructor'&&Array.isArray(assigned?.classIds)?[...new Set(assigned.classIds)]:[],revision:assigned?.revision||0,tenantId:authority.tenantId,businessId:authority.businessId,userId:authority.userId};
 }
 export function hasStaffPermission(access,authority,permission){return !!access&&same(access,authority)&&access.userId===authority.userId&&access.permissions.includes(permission);}
 export function requireStaffPermission(access,authority,permission,fail){
  if(!hasStaffPermission(access,authority,permission))fail(`Your staff role does not allow this action: ${PERMISSIONS[permission]||'unsupported operation'}. Ask your business owner for help.`,403);
 }
 const commandPermissions={
+ 'rental-offer-configure':'rentals.configure','rental-availability':'rentals.configure','rental-correct':'rentals.correct',
  'media-offer-attach':'sales.manage',
  attendance:'attendance.write',reserve:'bookings.manage',cancel:'bookings.manage','correct-cancellation':'bookings.manage',promote:'bookings.manage',
  class:'schedule.edit','edit-class':'schedule.edit','duplicate-class':'schedule.edit','class-policy':'schedule.edit','cancel-class':'schedule.cancel',
@@ -52,10 +57,10 @@ export function requireStaffCommand(state,command,authority,access,fail){
   if(!['reserve','cancel','preferences','purchase-draft','profile-update','waiver-accept'].includes(command.action)&&!command.action.startsWith('payment-'))fail('Staff access required',403);
   return;
  }
- const permission=command.action.startsWith('refund-')?'refunds.manage':command.action.startsWith('payment-')?'sales.manage':commandPermissions[command.action];
+ const permission=command.action==='rental-correct'&&command.body?.action==='extend'?'rentals.extend':command.action.startsWith('refund-')?'refunds.manage':command.action.startsWith('payment-')?'sales.manage':commandPermissions[command.action];
  requireStaffPermission(access,authority,permission,fail);
  if(command.action==='media-offer-attach')requireStaffPermission(access,authority,'customers.manage',fail);
- if(access.role==='instructor'){
+ if(access.role==='instructor'&&command.action!=='rental-correct'){
   const r=state.reservations.find(x=>x.id===command.id),classId=r?.classId??command.body?.classId;
   if(!classId||!access.classIds.includes(classId)||!state.classes.some(c=>c.id===classId))fail('This class is not assigned to you. Ask your business owner for help.',403);
  }
@@ -63,6 +68,7 @@ export function requireStaffCommand(state,command,authority,access,fail){
 export function visibleStaffData(view,authority,access){
  const result=structuredClone(view),allowed=p=>hasStaffPermission(access,authority,p);
  result.staffAccess=structuredClone(access);
+ if(!['rentals.extend','rentals.correct','rentals.configure'].some(allowed))result.rentals=[];
  if(!allowed('schedule.read'))result.classes=[];
  if(!allowed('attendance.read')){result.reservations=[];result.participants=[];}
  if(access?.role==='instructor'){
@@ -98,6 +104,7 @@ export function visibleStaffData(view,authority,access){
 // Command replies are another projection boundary, including idempotent replay.
 // Attendance does not authorize returning a full reservation's financial facts.
 export function staffCommandResult(result,a,access){
+ if(a.role==='staff'&&result?.entitlementId&&Number.isInteger(result.revision)&&['rentals.extend','rentals.correct'].some(p=>hasStaffPermission(access,a,p)))return {entitlementId:result.entitlementId,revision:result.revision};
  if(a.role!=='staff'||hasStaffPermission(access,a,'finance.read'))return result;
  if(access?.role==='instructor'){
   const {id,classId,participantId,status,attendanceStatus,attendanceRevision,attendanceHistory,outcome}=result;

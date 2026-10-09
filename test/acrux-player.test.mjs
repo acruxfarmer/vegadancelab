@@ -95,3 +95,44 @@ test('denied sequence starts no stage',async()=>{
 test('transition failure stops sequence and never skips to post-roll',async()=>{
  const calls=[];const f=fixture(async s=>{calls.push(s.stage);if(s.stage==='PRIMARY')throw Error('revoked');return {kind:'mp4'};},{getSequence:async()=>({revision:1,stages:['PRE_ROLL','PRIMARY','POST_ROLL']})});f.controls.play.emit('click');await settle();f.video.ended=true;f.video.emit('ended');await settle();assert.deepEqual(calls,['PRE_ROLL','PRIMARY']);assert.equal(f.root.dataset.state,'error');f.player.destroy();
 });
+
+test('rental player acknowledges only PRIMARY, reports finish, and disables forbidden replay',async()=>{
+ const events=[];const f=fixture(async({stage})=>({kind:'hls',...(stage==='PRIMARY'?{rental:{sessionId:'s',attemptId:'a',status:'starting',replayAllowed:false}}:{})}),{getSequence:async()=>({revision:1,stages:['PRE_ROLL','PRIMARY']}),onPlaybackEvent:async event=>events.push(event.event)});
+ f.controls.play.emit('click');await settle();assert.deepEqual(events,[]);
+ f.video.ended=true;f.video.emit('ended');await settle();assert.deepEqual(events,['confirm']);
+ f.video.ended=true;f.video.emit('ended');await settle();assert.deepEqual(events,['confirm','finish']);assert.equal(f.controls.play.disabled,true);assert.equal(f.controls.play.textContent,'Finished');f.player.destroy();
+});
+
+test('library routes rental viewers through the protected watch lifecycle instead of mounting legacy playback',async()=>{
+ const v={id:'rental-video',placementId:'placement',title:'Rental',accessDecision:{allowed:true,rental:{status:'active'}}};const ui=mediaUI({getData:()=>({context:{role:'member'},videos:[v]}),escape:s=>String(s??''),render(){}});ui.html();await ui.click({dataset:{mediaOpen:v.id},hasAttribute:()=>false});const html=ui.html();assert.match(html,/watch.html\?placement=placement/);assert.ok(!html.includes('data-acrux-player'));
+});
+
+test('library uses server rental projection when legacy delivery decision denies full-file playback',async()=>{
+ const v={id:'rental-video',placementId:'placement',title:'Rental',accessDecision:{allowed:false,reason:'protected_rental_delivery_required'}},rental={placementId:'placement',status:'expired',expiresAt:'2026-01-01T00:00:00Z'};const ui=mediaUI({getData:()=>({context:{role:'member'},videos:[v],rentals:[rental]}),escape:s=>String(s??''),render(){}});ui.html();await ui.click({dataset:{mediaOpen:v.id},hasAttribute:()=>false});const html=ui.html();assert.match(html,/Viewing expires/);assert.match(html,/watch.html\?placement=placement/);assert.ok(!html.includes('data-acrux-player'));
+});
+
+test('watch continuity writes only entitlement-scoped durable storage and preserves position on confirmation',async()=>{
+ const source=await readFile(new URL('../public/watch.js',import.meta.url),'utf8');
+ assert.ok(!/sessionStorage\.(?:setItem|removeItem)\('acrux-rental:/.test(source));
+ assert.match(source,/rentalStorageKey=rental\?\.entitlementId\?'acrux-rental:'\+rental.entitlementId:null/);
+ assert.match(source,/rentalSession=\{\.\.\.result.rental,position:rentalSession\?\.position\|\|0\};saveRental\(\)/);
+ assert.match(source,/if\(event==='finish'\)\{rentalSession=null;saveRental\(\);\}/);
+ assert.match(source,/rentalSession=\{\.\.\.grant.rental,position:resumePosition\};saveRental\(\)/);
+});
+
+test('ordinary rental expiration leaves authorized playback running without requesting renewal',async()=>{
+ const grant={kind:'hls',expiresAt:new Date(Date.now()+5000).toISOString(),rental:{sessionId:'s',replayAllowed:true,expiresAt:new Date(Date.now()+60000).toISOString(),deadlineAt:new Date(Date.now()-1000).toISOString()}};let calls=0;
+ const f=fixture(async()=>{calls++;return grant;});f.controls.play.emit('click');await settle();assert.equal(f.video.paused,false);
+ grant.rental.expiresAt=new Date(Date.now()-1000).toISOString();f.video.emit('timeupdate');await settle();
+ assert.equal(calls,1);assert.equal(f.video.paused,false);assert.equal(f.cleanups(),0);assert.equal(f.root.dataset.state,'playing');
+ f.video.ended=true;f.video.emit('ended');await settle();assert.equal(f.controls.play.disabled,true);f.controls.play.emit('click');await settle();assert.equal(calls,1);f.player.destroy();
+});
+
+test('expired rental cannot request a replacement source when an old ticket expires',async()=>{
+ const grant={kind:'hls',expiresAt:new Date(Date.now()+60000).toISOString(),rental:{sessionId:'s',replayAllowed:true,expiresAt:new Date(Date.now()+60000).toISOString()}};let calls=0;
+ const f=fixture(async()=>{calls++;return grant;});f.controls.play.emit('click');await settle();f.video.pause();grant.expiresAt=grant.rental.expiresAt=new Date(Date.now()-1000).toISOString();f.controls.play.emit('click');await settle();assert.equal(calls,1);assert.equal(f.root.dataset.state,'error');f.player.destroy();
+});
+
+test('watch no longer makes expired rentals playable or bypasses sequence on expiry',async()=>{
+ const source=await readFile(new URL('../public/watch.js',import.meta.url),'utf8');assert.ok(!source.includes('p.playable=true'));assert.ok(!source.includes("rental?.status==='expired'"));
+});

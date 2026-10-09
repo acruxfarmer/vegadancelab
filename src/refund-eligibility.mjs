@@ -38,11 +38,12 @@ export function assessRefundEligibility({state, authority, purchaseId, at, refun
   let plan;try{plan=fulfillmentPlan(d);}catch{return result('blocked','FULFILLMENT_PLAN_INVALID');}
   if(plan.actions.some(a=>!['BOOKING_CREDITS','DURABLE_ACCESS'].includes(a.type)))return result('blocked','FULFILLMENT_HANDLER_UNSUPPORTED');
   if(plan.actions.some(a=>a.type==='DURABLE_ACCESS')&&!durableFulfillmentComplete(state,d))return result('blocked','FULFILLMENT_STATE_INCONSISTENT');
+  if((state.accessEntitlements||[]).some(e=>e.purchaseId===d.id&&e.tenantId===d.tenantId&&e.businessId===d.businessId&&e.rental&&(e.rental.activation?.confirmedAt||(e.corrections||[]).some(c=>c.before?.rental?.activation?.confirmedAt))))return result('ineligible','ENTITLEMENT_CONSUMED');
   if(plan.actions.every(a=>a.type==='DURABLE_ACCESS')){
    if(d.fulfillmentStatus!=='issued')return result('blocked','FULFILLMENT_STATE_INCONSISTENT');
    if(!Array.isArray(state.reservations))return result('blocked','USAGE_HISTORY_INCOMPLETE');
    if(state.reservations.some(x=>x.participantId===d.participantId&&x.status!=='cancelled'))return result('blocked','ACTIVE_OR_UNRESOLVED_RESERVATION');
-   return {...result('eligible','OWNED_PAYMENT_CONFIRMED','WITHIN_FROZEN_REFUND_WINDOW',plan.actions.length?'DURABLE_ACCESS_ACTIVE':'FULFILLMENT_COMPLETE','NO_RECORDED_REFUND_OR_REVERSAL','OWNERSHIP_MATCH'),refundAmount:{amountMinor:d.totalMinor,currency:d.currency}};
+   return {...result('eligible','OWNED_PAYMENT_CONFIRMED','WITHIN_FROZEN_REFUND_WINDOW',plan.actions.length?'DURABLE_FULFILLMENT_COMPLETE':'FULFILLMENT_COMPLETE','NO_RECORDED_REFUND_OR_REVERSAL','OWNERSHIP_MATCH'),refundAmount:{amountMinor:d.totalMinor,currency:d.currency}};
   }
  }
  const grants=state.entitlementIssuances?.filter(x=>x.reference===`purchase:${d.id}`)||[];

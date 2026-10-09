@@ -1,3 +1,5 @@
+import {createRentalPlaybackStore} from './rental-playback-store.mjs';
+import {createRentalPlaybackWorkflow} from './rental-playback-workflow.mjs';
 import {mediaPlayback} from '../media.mjs';
 import {createPlaybackPolicyDelivery} from './media-playback-policy.mjs';
 import {createMediaOwnerManagement} from './media-owner-management.mjs';
@@ -7,6 +9,7 @@ import {manageMediaAccess} from './media-access-management.mjs';
 import {createMediaViewerStore,resolveMediaOnClient,requireMediaDecision} from './media-viewer-store.mjs';
 import {resolveStaffAccess,hasStaffPermission,requireStaffPermission,requireStaffCommand,visibleStaffData,staffCommandResult} from '../staff-permissions.mjs';
 import {mediaCommerceMaterial,publishedMediaOffers} from './media-commerce-material.mjs';
+import {mayDiscoverRentalPlacement} from '../rental-management.mjs';
 import {DEVELOPMENT_INITIAL_OWNERS,staffManagementView,staffManagementTransition} from '../staff-role-management.mjs';
 import pg from 'pg';
 import {readPublicDiscovery} from './public-discovery-store.mjs';
@@ -64,7 +67,9 @@ export function createApplicationStore(pool,{nativeAdapters=null,bookingEmails=f
  }
  const viewer=createMediaViewerStore(pool,{observe:event=>{if(event.reason==='access_policy_invalid')console.warn(JSON.stringify({event:'media_access_policy_invalid',placementId:event.placementId}));}});
  const native=nativeAdapters?createNativeMediaDelivery(pool,{adapters:nativeAdapters}):null;
+ const rentalPlayback=createRentalPlaybackWorkflow({store:createRentalPlaybackStore(pool,{receiptPublicKey}),adapters:nativeAdapters||{}});
  const store={
+  rentalPlayback,
   mediaPlaybackSequence:createPlaybackPolicyDelivery(pool,{adapters:nativeAdapters||{}}),
   mediaOwnerManagement:createMediaOwnerManagement(pool,{initialOwners}),
   mediaAccessManagement:(identity,videoId,input)=>transaction(identity,async(c,a)=>{
@@ -171,10 +176,12 @@ export function createApplicationStore(pool,{nativeAdapters=null,bookingEmails=f
    const outstanding=await c.query("select count(*)::int as count from vega_private.recovery_outbox where tenant_id=$1 and business_id=$2 and event_kind='business' and discovery_state<>'acknowledged'",[a.tenantId,a.businessId]);
    const raw={mode:'development',context:{name:a.businessId==='vega-dance-lab'?'Vega Dance Lab':a.businessId,...a},revision:row.revision,...visibleState(row.state,a),jobs,squareEnabled:false,recovery:{pendingCount:outstanding.rows[0]?.count??0}};
    raw.commerceOffers.push(...await publishedMediaOffers(c,row.state));
-   if(a.role==='member')for(const video of raw.videos||[]){
+   if(a.role==='member'){const discoverable=[];for(const video of raw.videos||[]){
     const {rows}=await c.query('select media_private.legacy_viewer_placement($1,$2,$3) as id',[a.tenantId,a.businessId,video.id]);
+    if(rows[0]?.id&&!mayDiscoverRentalPlacement(row.state,a,rows[0].id))continue;
     if(rows[0]?.id){const result=await resolveMediaOnClient(c,a.userId,rows[0].id);video.placementId=rows[0].id;video.accessDecision=result.decision;}
-   }
+    discoverable.push(video);
+   }raw.videos=discoverable;}
    if(bookingEmails&&(a.role==='member'||hasStaffPermission(access(row.state,a),a,'customers.read')))raw.bookingEmails=await readBookingEmails(c,a);
    return a.role==='staff'?{...visibleStaffData(raw,a,access(row.state,a)),...staffManagementView(row.state,a,initialOwners)}:raw;
   }),
@@ -241,6 +248,18 @@ export function createApplicationStore(pool,{nativeAdapters=null,bookingEmails=f
    return {...staffCommandResult(next.result,a,access(next.state,a)),independentReceipt:{operationId:receipt.eventId,state:'pending'}};
   }),
   close:()=>pool.end()
+ };
+ const committedCommand=store.command;
+ store.command=async(identity,command,...rest)=>{
+  const result=await committedCommand(identity,command,...rest);
+  if(['rental-correct','rental-availability'].includes(command.action)){
+   try{
+    const context=await transaction(identity,async(c,a)=>({tenantId:a.tenantId,businessId:a.businessId,userId:a.userId}),true);
+    const delivery=await rentalPlayback.reconcilePending(context.userId,context);
+    return {...result,deliveryRevocation:delivery};
+   }catch{return {...result,deliveryRevocation:{pending:true}};}
+  }
+  return result;
  };
  return store;
 }

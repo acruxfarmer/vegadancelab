@@ -3,7 +3,9 @@ import {commerceView,createPurchaseDraft} from './commerce.mjs';
 import {frontDeskView,createFrontDeskSale} from './front-desk.mjs';
 import {customerProfileView,customerProfileTransition} from './customer-profile.mjs';
 import {paymentTransition} from './payments.mjs';
-import {attachMediaOffer} from './media-commerce.mjs';
+import {attachMediaOffer,configureMediaRentalOffer,mediaOffer,mediaAccessTarget} from './media-commerce.mjs';
+import {grantComplimentaryRental,correctRentalEntitlement,rentalStatus} from './rental-entitlement.mjs';
+import {changeRentalAvailability,observeRentalAvailability} from './rental-management.mjs';
 import {classCancellationOption,cancelClass} from './class-cancellation.mjs';
 import {createClass} from './class-creation.mjs';
 import {classDuplicateOption,duplicateClass} from './class-duplication.mjs';
@@ -61,6 +63,10 @@ export function visibleState(state,authority,at=new Date().toISOString()){
  Object.assign(result,commerceView(state,authority));
  Object.assign(result,frontDeskView(state,authority));
  Object.assign(result,customerProfileView(state,authority,at));
+ result.rentals=(state.accessEntitlements||[]).filter(e=>e.rental&&e.tenantId===authority.tenantId&&e.businessId===authority.businessId&&(authority.role==='staff'||e.principalId===authority.userId)).map(e=>{
+  const availability=(state.mediaAvailability||[]).find(x=>x.placementId===e.target.id&&x.tenantId===e.tenantId&&x.businessId===e.businessId);
+  return {id:e.id,entitlementId:e.id,purchaseId:e.purchaseId??null,placementId:e.target.id,...(authority.role==='staff'?{principalId:e.principalId}:{}),revision:e.revision||1,status:rentalStatus(e,at),availability:availability?.status??'published',policy:structuredClone(e.rental.policy),availableAt:e.rental.availableAt,startBy:e.rental.startBy,expiresAt:e.rental.expiresAt,adjustments:(e.corrections||[]).map(c=>({action:c.operation,at:c.at,revision:c.revision,...(authority.role==='staff'?{reason:c.reason,actorId:c.actorId}:{})}))};
+ });
  return result;
 }
 export function transition(original, command, authority, {id=randomUUID,now=()=>new Date().toISOString(),trustedPayment=false,integrationRef,legacyIntegrationRefs,mediaCommerceMaterial}={}){
@@ -74,6 +80,24 @@ export function transition(original, command, authority, {id=randomUUID,now=()=>
  const own=participantId=>{if(!authority.participantIds.includes(participantId)&&authority.role!=='staff')fail('Participant authority required',403); if(!state.participants.some(p=>p.id===participantId))fail('Participant unavailable',404);};
  if(command.action==='purchase-draft')return {state,result:createPurchaseDraft(state,body,authority,{id,now},fail,mediaCommerceMaterial)};
  if(command.action==='media-offer-attach')return {state,result:attachMediaOffer(state,body,authority,mediaCommerceMaterial,{id,now},fail)};
+ if(command.action==='rental-offer-configure')return {state,result:configureMediaRentalOffer(state,body,authority,mediaCommerceMaterial,{id,now},fail)};
+ if(command.action==='rental-availability')return {state,result:changeRentalAvailability(state,body,authority,mediaCommerceMaterial,{id,now})};
+ if(command.action==='rental-correct'){
+  staff();if(Object.keys(body).some(k=>!['requestId','placementId','entitlementId','expectedRevision','action','reason','principalId','hours'].includes(k)))fail('Unsupported rental correction fields');
+  const p=mediaCommerceMaterial?.placement,r=mediaCommerceMaterial?.resource;
+  if(!p||p.id!==body.placementId||p.context.tenantId!==authority.tenantId||p.context.businessId!==authority.businessId||!p.authorized||!r||r.id!==p.resourceId||r.owner?.kind!=='business'||r.owner.tenantId!==authority.tenantId||r.owner.businessId!==authority.businessId)fail('Business-owned rental placement required',403);
+  if(!text(body.reason,1000))fail('A correction reason is required');
+  if(body.action==='complimentary'){
+   if(!text(body.principalId)||mediaCommerceMaterial.recipientVerified!==true)fail('Verified business recipient required',403);
+   const offer=mediaOffer(state,p,{activeOnly:false});if(!offer?.rentalPolicy)fail('Configure a rental offer first',409);
+   if(body.expectedRevision!==p.revision)fail('Placement changed. Refresh before granting access.',409);
+   const availableAt=observeRentalAvailability(state,p,mediaCommerceMaterial.binding,now());
+   const grant=grantComplimentaryRental(state,{...body,target:mediaAccessTarget(p),rentalPolicy:offer.rentalPolicy,availableAt:availableAt??null},authority,{id,now},fail);return {state,result:{entitlementId:grant.id,revision:grant.revision}};
+  }
+  const e=state.accessEntitlements?.find(e=>e.id===body.entitlementId&&e.tenantId===authority.tenantId&&e.businessId===authority.businessId&&e.target?.kind==='media_placement'&&e.target.id===p.id);
+  if(!e)fail('Rental entitlement unavailable',404);
+  const changed=correctRentalEntitlement(state,body,authority,{id,now},fail);return {state,result:{entitlementId:changed.id,revision:changed.revision}};
+ }
  if(command.action==='front-desk-sale')return {state,result:createFrontDeskSale(state,body,authority,{id,now},fail)};
  if(['profile-update','waiver-publish','waiver-accept'].includes(command.action))return {state,result:customerProfileTransition(state,command.action,body,authority,{id,now},fail)};
  const accounting=['attendance','edit-class','duplicate-class'].includes(command.action)?null:bookingAccounting(state,authority,{id,now},fail);

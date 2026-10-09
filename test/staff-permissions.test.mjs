@@ -38,3 +38,13 @@ test('role changes are read from current state; conflicting or unsupported assig
  const s=fixture('manager');assert.equal(resolveStaffAccess(s,staff).role,'manager');s.staffRoleAssignments[0].role='front_desk';s.staffRoleAssignments[0].revision++;assert.equal(resolveStaffAccess(s,staff).permissions.includes('schedule.edit'),false);
  s.staffRoleAssignments.push({...s.staffRoleAssignments[0],role:'owner'});assert.equal(resolveStaffAccess(s,staff).permissions.length,0);s.staffRoleAssignments=[{...staff,role:'made-up',permissions:['refunds.manage']}];assert.equal(resolveStaffAccess(s,staff).permissions.length,0);
 });
+
+test('rental defaults and explicit delegation remain business scoped',()=>{
+ for(const role of ['owner','manager','front_desk','instructor']){const s=fixture(role),a=resolveStaffAccess(s,staff);assert.equal(a.permissions.includes('rentals.configure'),role==='owner');assert.equal(a.permissions.includes('rentals.extend'),['owner','manager'].includes(role));assert.equal(a.permissions.includes('rentals.correct'),role==='owner');}
+ const s=fixture('front_desk');let a=resolveStaffAccess(s,staff);assert.throws(()=>requireStaffCommand(s,command('rental-correct',{action:'extend'}),staff,a,fail),e=>e.status===403);
+ s.staffRoleAssignments[0].rentalPermissions=['rentals.extend','rentals.correct','rentals.configure','refunds.manage'];a=resolveStaffAccess(s,staff);
+ for(const action of ['extend','reset','revoke','replace','complimentary'])assert.doesNotThrow(()=>requireStaffCommand(s,command('rental-correct',{action}),staff,a,fail));
+ assert.equal(a.permissions.includes('rentals.configure'),false);assert.equal(a.permissions.includes('refunds.manage'),false);
+ assert.equal(hasStaffPermission(a,{...staff,businessId:'other'},'rentals.correct'),false);
+ s.staffRoleAssignments[0].rentalPermissions=[];assert.equal(resolveStaffAccess(s,staff).permissions.includes('rentals.correct'),false);
+});

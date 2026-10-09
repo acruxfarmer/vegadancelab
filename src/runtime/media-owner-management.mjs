@@ -1,3 +1,4 @@
+import {rentalStatus} from '../rental-entitlement.mjs';
 import {effectivePlacementRights,receiverAccessOptions} from '../media-placement-rights.mjs';
 import {ApplicationError} from '../application.mjs';
 import {createMediaResourceFoundation} from './media-resource-foundation.mjs';
@@ -18,6 +19,8 @@ export function createMediaOwnerManagement(pool,{initialOwners=[]}={}){
    // receive safe organization/catalog projections; never expose whole state.
    const {rows}=await c.query("select m.tenant_id,m.business_id,m.role,s.state from vega_private.app_members m join vega_private.app_state s using(tenant_id,business_id) where m.user_id=$1 and m.role='staff'",[actor]);
    const businesses=rows.filter(row=>hasStaffPermission(resolveStaffAccess(row.state,{userId:actor,role:row.role,tenantId:row.tenant_id,businessId:row.business_id},{initialOwners}),{userId:actor,role:row.role,tenantId:row.tenant_id,businessId:row.business_id},'customers.manage'));
+   const rentalBusinesses=rows.filter(b=>{const a={userId:actor,role:b.role,tenantId:b.tenant_id,businessId:b.business_id},access=resolveStaffAccess(b.state,a,{initialOwners});return ['rentals.configure','rentals.extend','rentals.correct'].some(p=>hasStaffPermission(access,a,p));});
+   const rentalProjection=(b,p,owned=false)=>{if(!b)return undefined;const a={userId:actor,role:b.role,tenantId:b.tenant_id,businessId:b.business_id},access=resolveStaffAccess(b.state,a,{initialOwners}),can=permission=>hasStaffPermission(access,a,permission),availability=(b.state.mediaAvailability||[]).find(x=>x.placementId===p.id&&x.tenantId===b.tenant_id&&x.businessId===b.business_id);return {canConfigure:owned&&can('rentals.configure'),canExtend:can('rentals.extend'),canCorrect:can('rentals.correct'),availability:availability?.status||'published',availabilityRevision:availability?.revision||0,entitlements:can('rentals.extend')||can('rentals.correct')?(b.state.accessEntitlements||[]).filter(e=>e.rental&&e.target?.id===p.id&&e.tenantId===b.tenant_id&&e.businessId===b.business_id).map(e=>({id:e.id,principalId:e.principalId,revision:e.revision||1,status:rentalStatus(e,new Date().toISOString()),availableAt:e.rental.availableAt,startBy:e.rental.startBy,expiresAt:e.rental.expiresAt,adjustments:(e.corrections||[]).map(c=>({action:c.operation,at:c.at}))})):[]};};
    const manages=o=>o?.kind==='business'&&businesses.some(b=>b.tenant_id===o.tenantId&&b.business_id===o.businessId);
    const owns=r=>r?.owner.kind==='user'?r.owner.userId===actor:manages(r?.owner);
    const nested={connect:async()=>({release(){},async query(sql,args){if(sql==='begin')return c.query('savepoint owner_management');if(sql==='commit')return c.query('release savepoint owner_management');if(sql==='rollback'){await c.query('rollback to savepoint owner_management');return c.query('release savepoint owner_management');}return c.query(sql,args);}})};
@@ -63,9 +66,9 @@ export function createMediaOwnerManagement(pool,{initialOwners=[]}={}){
      let products=[];
      products=(await c.query('select media_private.owner_policy_choices($1) as products',[p.id])).rows[0].products;
 
-     projections.push({...p,rights:effectivePlacementRights(p),canEditAccess:true,allowedAccessModes:['public','memberships','pay_on_demand'],products,canOrganize:!!b&&effectivePlacementRights(p).organize,canPresent:!!b&&effectivePlacementRights(p).present,groups:b?(b.state.mediaGroups||[]).map(g=>({id:g.id,name:g.name,kind:g.kind})):[]});
+     projections.push({...p,rental:rentalProjection(b,p,r.owner.kind==='business'&&r.owner.tenantId===p.context.tenantId&&r.owner.businessId===p.context.businessId),rights:effectivePlacementRights(p),canEditAccess:true,allowedAccessModes:['public','memberships','pay_on_demand'],products,canOrganize:!!b&&effectivePlacementRights(p).organize,canPresent:!!b&&effectivePlacementRights(p).present,groups:b?(b.state.mediaGroups||[]).map(g=>({id:g.id,name:g.name,kind:g.kind})):[]});
      if(b&&r.owner.kind==='business'&&manages(r.owner)&&r.owner.tenantId===p.context.tenantId&&r.owner.businessId===p.context.businessId){
-      const projection=projections.at(-1),summary=o=>o?{id:o.id,version:o.version,title:o.productName,priceMinor:o.priceMinor,currency:o.currency,active:o.active}:null;
+      const projection=projections.at(-1),summary=o=>o?{id:o.id,version:o.version,title:o.productName,priceMinor:o.priceMinor,currency:o.currency,active:o.active,...(o.rentalPolicy?{rentalPolicy:o.rentalPolicy}:{})}:null;
       projection.commerce={current:summary(mediaOffer(b.state,p,{activeOnly:false})),offers:(b.state.commerceOffers||[]).flatMap(o=>{const preview={...b.state,mediaCommerceLinks:[{placementId:p.id,offerId:o.id,offerVersion:o.version,...p.context}]};const offer=mediaOffer(preview,p,{activeOnly:false});return offer?[summary(offer)]:[];})};
      }
     }
@@ -81,12 +84,13 @@ export function createMediaOwnerManagement(pool,{initialOwners=[]}={}){
    // owner's canonical metadata/source document or global management rights.
    const {rows:local}=await c.query('select document from media_private.placements order by id');
    for(const {document:p} of local){
-    const b=businesses.find(b=>b.tenant_id===p.context.tenantId&&b.business_id===p.context.businessId);
+    const b=businesses.find(b=>b.tenant_id===p.context.tenantId&&b.business_id===p.context.businessId),rentalBusiness=rentalBusinesses.find(b=>b.tenant_id===p.context.tenantId&&b.business_id===p.context.businessId);
     const existing=items.find(r=>r.id===p.resourceId);
-    if(!b||existing&&!existing.localOnly)continue;
+    if((!b&&!rentalBusiness)||existing&&!existing.localOnly)continue;
+    if(!b){const localPlacement={...p,rental:rentalProjection(rentalBusiness,p),rights:effectivePlacementRights(p),products:[],canEditAccess:false,allowedAccessModes:[],canOrganize:false,canPresent:false,groups:[]};if(existing)existing.placements.push(localPlacement);else items.push({id:p.resourceId,title:'Rental access',owner:{kind:'external'},source:{provider:'Managed by owner',kind:'external'},lifecycle:'Local placement',localOnly:true,placements:[localPlacement]});continue;}
     const rights=effectivePlacementRights(p),allowedAccessModes=receiverAccessOptions(p);
     const products=(b.state.entitlementProducts||[]).filter(x=>x.type==='membership'&&(rights.access.mode!=='restrict'||p.policy.kind==='public'||p.policy.productIds?.includes(x.id))).map(x=>({id:x.id,name:x.name}));
-    const localPlacement={...p,rights,products,canEditAccess:allowedAccessModes.length>0,allowedAccessModes,canOrganize:rights.organize,canPresent:rights.present,groups:(b.state.mediaGroups||[]).map(g=>({id:g.id,name:g.name,kind:g.kind}))};
+    const localPlacement={...p,rental:rentalProjection(b,p),rights,products,canEditAccess:allowedAccessModes.length>0,allowedAccessModes,canOrganize:rights.organize,canPresent:rights.present,groups:(b.state.mediaGroups||[]).map(g=>({id:g.id,name:g.name,kind:g.kind}))};
     if(existing)existing.placements.push(localPlacement);
     else items.push({id:p.resourceId,title:'Externally owned media',owner:{kind:'external'},source:{provider:'Managed by owner',kind:'external'},lifecycle:'Local placement',localOnly:true,placements:[localPlacement]});
    }
