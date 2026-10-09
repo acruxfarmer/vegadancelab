@@ -1,0 +1,34 @@
+{
+  "slice": "L6-S8B",
+  "status": "PLACEMENT_SCOPED_DURABLE_ACCESS_VERIFIED",
+  "runtimeCommit": "6860adbf7e9e7f50940a420ea7e1a14a32adcf3a",
+  "testCommit": "923412e64b722a877d0907a8e720b79d2666644c",
+  "supersedesScopeStop": "42ef535",
+  "runtimeChangesRequired": false,
+  "testsAdded": 2,
+  "entitlementScope": "media_placement + placement ID + tenant ID + business ID",
+  "relationship": "Placement governs authorization and commercial policy; canonical resource retains identity and ready provider binding; ordinary ScaleEngine adapter derives exact asset scope.",
+  "verified": [
+    "One durable entitlement after repeated fulfillment; no booking credits",
+    "Placement A allowed; Placement B referencing same resource denied",
+    "Valid viewer authority in Business B cannot reuse Business A entitlement, including same target ID defense",
+    "Paid L6-S2 decision flows through ordinary native delivery to exact ScaleEngine video scope using provider-returned credentials",
+    "Sibling placement and refunded placement fail before provider authorization",
+    "Full refund revokes the existing entitlement and preserves its ID, target and purchase history",
+    "ALL independent of entitlements and MEMBERS validity/non-consumption regressions unchanged"
+  ],
+  "tests": {
+    "fullPassed": 1263,
+    "targetedReport": "l6-s8b-placement-scope-targeted.local.txt",
+    "failed": 0,
+    "fullReport": "l6-s8b-placement-scope-regressions.local.txt",
+    "targetedPassed": 72
+  },
+  "limitations": [
+    "Local reconciliation uses mocked database/provider transport; no new hosted purchase or media-byte proof claimed",
+    "Prior exact-asset hosted media-byte and isolation evidence remains recorded in 793fe8b",
+    "No paid-media fixture created; no upload, Square execution, charge, refund or deployment in this reconciliation"
+  ],
+  "productionUntouched": true,
+  "next": "STOP for Joe + Chett review before paid-media fixture creation or Square enablement"
+}
