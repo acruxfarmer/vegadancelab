@@ -1,7 +1,7 @@
 {
   "slice": "L6-S8A",
   "title": "Generic Post-Purchase Fulfillment Orchestrator",
-  "status": "IMPLEMENTED_LOCALLY_AWAITING_DEVELOPMENT_POSTGRES_VERIFICATION",
+  "status": "IMPLEMENTED_READY_FOR_REVIEW",
   "runtimeCommit": "bf53e3ad81d8977d00946879aa6bc4068b889cae",
   "deployedRuntimeUnchanged": "ac46eafcae040017d623921046ccef40c40daeee",
   "architecture": {
@@ -45,10 +45,10 @@
       "unrelated legacy credits unchanged"
     ],
     "scriptSyntax": "Node and PowerShell syntax checked",
-    "postgres": "Pending Joe's existing private session; script verifies Development runtime role, JSONB round trips, replay, full refund, deferred outbox constraints and rollback baseline. No credentials available to this process.",
+    "postgres": "PASSED using the restricted Development runtime role: soda, durable video access, class-pack and multi-action JSONB persistence, unchanged replay and refund/revocation round trips. Deferred recovery-outbox constraints passed. All test writes rolled back and baseline restored.",
     "postgresScript": "scripts/verify-l6-s8a-postgres-private.ps1",
-    "postgresReceipt": "docs/layer-6/l6-s8a-postgres.local.json",
-    "postgresLimit": "Planned proof uses one rollback-only transaction against the existing aggregate. It does not claim multi-connection concurrency or independently acknowledged recovery delivery; local workflow tests cover concurrent command retries."
+    "postgresReceipt": "docs/layer-6/l6-s8a-postgres-verification.json",
+    "postgresLimit": "Real PostgreSQL proof used one rollback-only transaction against the existing aggregate. It does not claim multi-connection concurrency or independently acknowledged recovery delivery; local workflow tests cover concurrent command retries."
   },
   "files": [
     "src/fulfillment.mjs",
@@ -78,7 +78,7 @@
   "productionUntouched": true,
   "olderVegaCheckoutUntouched": true,
   "priorLayer6SlicesUnchanged": true,
-  "next": "Inspect PostgreSQL receipt after Joe replies done, reconcile evidence, return S8A review report, then stop. Do not begin S8B without Joe + Chett approval.",
+  "next": "Joe + Chett review. Stop; do not begin L6-S8B without approval.",
   "verifierCorrection": {
     "firstAttemptStage": "soda",
     "firstAttemptChecksCompleted": 0,
@@ -92,6 +92,6 @@
     "testsPassed": 25,
     "providerRequests": 0,
     "deploymentPerformed": false,
-    "next": "Joe runs the corrected private verifier once"
+    "next": "Corrected verifier passed; baseline restored."
   }
 }

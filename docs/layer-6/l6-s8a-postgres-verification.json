@@ -1,0 +1,41 @@
+{
+  "slice": "L6-S8A",
+  "status": "passed",
+  "providerRequests": 0,
+  "productionUntouched": true,
+  "committedBusinessWrites": 0,
+  "checks": [
+    {
+      "name": "soda",
+      "planRoundTrip": true,
+      "actionRoundTrip": true,
+      "replayUnchanged": true,
+      "refundRoundTrip": true
+    },
+    {
+      "name": "video",
+      "planRoundTrip": true,
+      "actionRoundTrip": true,
+      "replayUnchanged": true,
+      "refundRoundTrip": true
+    },
+    {
+      "name": "class-pack",
+      "planRoundTrip": true,
+      "actionRoundTrip": true,
+      "replayUnchanged": true,
+      "refundRoundTrip": true
+    },
+    {
+      "name": "multi-action",
+      "planRoundTrip": true,
+      "actionRoundTrip": true,
+      "replayUnchanged": true,
+      "refundRoundTrip": true
+    }
+  ],
+  "baselineRestored": true,
+  "stage": "complete",
+  "step": "rollback-and-verify-baseline",
+  "verifierCommit": "b7b50ec"
+}
