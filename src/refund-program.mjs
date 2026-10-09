@@ -2,12 +2,17 @@ import {isDeepStrictEqual as equal} from 'node:util';
 import {digest} from './payments.mjs';
 import {financialIntent,validCompletion,validIntegration} from './payment-contract.mjs';
 import {reconcileRefundInventory} from './refund-reconciliation.mjs';
+import {fulfillmentPlan,reversePurchaseFulfillment} from './fulfillment.mjs';
 
 export const REFUND_POLICY=Object.freeze({id:'whole-unused-credit-refund',version:1,allocation:'equal-whole-units-zero-tax',used:'nonrefundable',restored:'proven-single-restoration',cutoff:'exclusive',reservations:'resolve-before-refund',external:'hold-and-review'});
 const scope=(x,a)=>x?.tenantId===a.tenantId&&x?.businessId===a.businessId;
 const pos=n=>Number.isSafeInteger(n)&&n>0;
 const time=x=>Date.parse(x);
 const active=o=>!['completed','released'].includes(o.status);
+function reconcileFulfillment(state,p,op,at){
+ const units=state.creditUnits.filter(u=>p.issuanceId&&u.entitlement?.issuanceId===p.issuanceId);
+ if(units.length&&units.every(u=>u.status==='refunded'))reversePurchaseFulfillment(state,p.id,op.id,at);
+}
 export const programHolding=o=>o.contract==='refund-program/1'&&active(o);
 
 export function refundProgramFacts(state,a,purchaseId,at,{holdingOperationId,dispositionOnly=false}={}){
@@ -17,6 +22,11 @@ export function refundProgramFacts(state,a,purchaseId,at,{holdingOperationId,dis
  if(!['purchaseDrafts','paymentAttempts','entitlementIssuances','passes','creditUnits','creditEvents','reservations'].every(k=>Array.isArray(state[k])))return blocked('OWNED_HISTORY_UNAVAILABLE');
  const purchases=state.purchaseDrafts.filter(p=>p.id===purchaseId&&scope(p,a)),p=purchases[0],o=p?.terms;
  if(purchases.length!==1)return blocked('PURCHASE_UNAVAILABLE');
+ // Whole-credit allocation has no price allocation contract for mixed outcomes.
+ // Such purchases use the bounded full-purchase refund, never this credit policy.
+ if(o?.fulfillmentPlan){
+  try{const plan=fulfillmentPlan(p);if(plan.actions.length!==1||plan.actions[0].type!=='BOOKING_CREDITS')return blocked('FULFILLMENT_ALLOCATION_UNSUPPORTED');}catch{return blocked('FULFILLMENT_ALLOCATION_UNSUPPORTED');}
+ }
  const attempts=state.paymentAttempts.filter(x=>x.id===p.activeAttemptId&&x.purchaseId===p.id),attempt=attempts[0];
  if(!o||!scope(o,a)||o.productType!=='class_pack'||!pos(o.quantity)||!pos(o.priceMinor)||p.totalMinor!==o.priceMinor||p.subtotalMinor!==o.priceMinor||p.taxMinor!==0||o.tax?.amountMinor!==0||p.currency!==o.currency||!pos(p.offerVersion)||p.offerVersion!==o.version||p.offerId!==o.id||p.totalMinor%o.quantity!==0||!Array.isArray(o.categories)||!Array.isArray(o.classIds)||o.validityStart!=='confirmed_payment'||!(o.validDays===null||pos(o.validDays))||p.amendments?.length||p.reacceptances?.length)return blocked('FROZEN_ALLOCATION_UNSUPPORTED');
  const policy=o.refundPolicy;
@@ -134,7 +144,7 @@ export function refundProgramTransition(state,command,a,{now,id,evidence},fail){
   const selectedIds=new Set(items.map(x=>x.unitId));
   for(const u of held){if(selectedIds.has(u.id)){u.status='refunded';state.creditEvents.push({id:id(),type:'refund_retire',unitId:u.id,passId:u.passId,issuanceId:op.issuanceId,participantId:u.participantId,operationId:op.id,actorId:a.userId,requestId:b.requestId,createdAt:at});}else{u.status='available';delete u.refundOperationId;}}
   op.heldUnitIds=op.unitIds;op.unitIds=[...selectedIds].sort();op.allocation=items;op.status='completed';
-  audit(op,'refund-observation',{status:'completed',external:true,evidenceDigest:report.evidenceDigest});return output(op);
+  audit(op,'refund-observation',{status:'completed',external:true,evidenceDigest:report.evidenceDigest});reconcileFulfillment(state,p,op,at);return output(op);
  }
  if(op.origin==='external')fail('External refunds require reviewed disposition; never dispatch',409);
  if(command.action==='refund-program-bind'){
@@ -175,7 +185,7 @@ export function refundProgramTransition(state,command,a,{now,id,evidence},fail){
   }
   const units=holdUnits(op);op.status=status;if(evidence.refundId)op.providerRefundId=evidence.refundId;
   if(status==='completed')for(const u of units){u.status='refunded';state.creditEvents.push({id:id(),type:'refund_retire',unitId:u.id,passId:u.passId,issuanceId:op.issuanceId,participantId:u.participantId,operationId:op.id,actorId:a.userId,requestId:b.requestId,createdAt:at});}
-  audit(op,'refund-observation',{status,providerRefundId:op.providerRefundId??null,evidence:structuredClone(evidence)});return output(op);
+  audit(op,'refund-observation',{status,providerRefundId:op.providerRefundId??null,evidence:structuredClone(evidence)});if(status==='completed')reconcileFulfillment(state,p,op,at);return output(op);
  }
  fail('Unsupported refund program command',400);
 }

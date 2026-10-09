@@ -7,11 +7,12 @@ export function createPaymentWorkflow({store,resolveAdapter,policy}){
  const gate=(mode,id)=>{if(!policy(mode,id))fail('Payment operation disabled for this purchase',403);};
  const observe=(userId,purchaseId,attemptId,evidence)=>store.paymentCommand(userId,{action:'payment-observe',body:{purchaseId,attemptId,evidence,requestId:`observe:${attemptId}:${digest(evidence).slice(0,40)}`}});
  async function fulfill(userId,purchaseId,attemptId){
-  const {attempt}=await store.paymentRead(userId,purchaseId,attemptId);
+  const {attempt,draft}=await store.paymentRead(userId,purchaseId,attemptId);
   const confirmation=await observe(userId,purchaseId,attemptId,attempt.evidence);
   if(confirmation.independentReceipt?.state!=='acknowledged')return {purchaseId,attemptId,status:'succeeded',fulfillmentStatus:'pending'};
-  const issued=await store.paymentCommand(userId,{action:'payment-fulfill',body:{purchaseId,attemptId,requestId:`fulfill:${attemptId}`}});
-  return {purchaseId,attemptId,status:'succeeded',fulfillmentStatus:issued.independentReceipt?.state==='acknowledged'?'issued':'pending',issuanceId:issued.issuanceId};
+  const revision=draft?.terms.fulfillmentPlan||draft?.fulfillmentRevision?`:${draft.fulfillmentRevision||0}`:'';
+  const issued=await store.paymentCommand(userId,{action:'payment-fulfill',body:{purchaseId,attemptId,requestId:`fulfill:${attemptId}${revision}`}});
+  return {purchaseId,attemptId,status:'succeeded',fulfillmentStatus:issued.independentReceipt?.state==='acknowledged'?issued.status:'pending',issuanceId:issued.issuanceId};
  }
  async function settle(userId,purchaseId,attemptId){
   gate('execute',purchaseId);

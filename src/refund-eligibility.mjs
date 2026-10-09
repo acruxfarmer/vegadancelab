@@ -1,3 +1,4 @@
+import {fulfillmentPlan,durableFulfillmentComplete} from './fulfillment.mjs';
 import {isDeepStrictEqual as equal} from 'node:util';
 import {digest} from './payments.mjs';
 import {financialIntent, validCompletion, validIntegration} from './payment-contract.mjs';
@@ -32,6 +33,18 @@ export function assessRefundEligibility({state, authority, purchaseId, at, refun
  if(!Number.isFinite(now)||!Number.isFinite(start)||!Number.isSafeInteger(end)||!Number.isFinite(new Date(end).getTime())||now<start)return result('blocked','CLOCK_STATE_INCONSISTENT');
  if(now===end)return result('blocked','REFUND_CUTOFF_POLICY_UNRESOLVED');
  if(now>end)return result('ineligible','REFUND_WINDOW_EXPIRED');
+ // Explicit durable actions use their canonical grant provenance, not fake credits.
+ if(o.fulfillmentPlan){
+  let plan;try{plan=fulfillmentPlan(d);}catch{return result('blocked','FULFILLMENT_PLAN_INVALID');}
+  if(plan.actions.some(a=>!['BOOKING_CREDITS','DURABLE_ACCESS'].includes(a.type)))return result('blocked','FULFILLMENT_HANDLER_UNSUPPORTED');
+  if(plan.actions.some(a=>a.type==='DURABLE_ACCESS')&&!durableFulfillmentComplete(state,d))return result('blocked','FULFILLMENT_STATE_INCONSISTENT');
+  if(plan.actions.every(a=>a.type==='DURABLE_ACCESS')){
+   if(d.fulfillmentStatus!=='issued')return result('blocked','FULFILLMENT_STATE_INCONSISTENT');
+   if(!Array.isArray(state.reservations))return result('blocked','USAGE_HISTORY_INCOMPLETE');
+   if(state.reservations.some(x=>x.participantId===d.participantId&&x.status!=='cancelled'))return result('blocked','ACTIVE_OR_UNRESOLVED_RESERVATION');
+   return {...result('eligible','OWNED_PAYMENT_CONFIRMED','WITHIN_FROZEN_REFUND_WINDOW',plan.actions.length?'DURABLE_ACCESS_ACTIVE':'FULFILLMENT_COMPLETE','NO_RECORDED_REFUND_OR_REVERSAL','OWNERSHIP_MATCH'),refundAmount:{amountMinor:d.totalMinor,currency:d.currency}};
+  }
+ }
  const grants=state.entitlementIssuances?.filter(x=>x.reference===`purchase:${d.id}`)||[];
  const g=grants[0],passes=state.passes?.filter(x=>x.entitlement?.issuanceId===g?.id)||[];
  const units=state.creditUnits?.filter(x=>x.entitlement?.issuanceId===g?.id)||[];

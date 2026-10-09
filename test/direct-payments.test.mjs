@@ -64,6 +64,12 @@ function harness(){
  const service=()=>createDirectPayments(env,store,fetcher);
  return Object.assign(h,{env,purchaseId,store,raw,service,calls,providerPayments,state:()=>structuredClone(state),edit:f=>f(state),start:(requestId='intent')=>service().start(member.userId,{purchaseId,requestId}),resume:()=>service().resume(member.userId,{purchaseId,attemptId:state.paymentAttempts[0].id})});
 }
+test('explicit plan partial failure is reported pending and a later worker retry bypasses cached failure safely',async()=>{
+ const h=harness();
+ h.edit(s=>{const p=s.purchaseDrafts[0],plan={version:1,actions:[{id:'credits',type:'BOOKING_CREDITS'}]};p.terms.fulfillmentPlan=plan;s.commerceOffers[0].fulfillmentPlan=structuredClone(plan);s.passes=null;});
+ const first=await h.start();assert.equal(first.status,'succeeded');assert.equal(first.fulfillmentStatus,'pending');assert.equal(h.state().fulfillmentActions[0].status,'failed');
+ h.edit(s=>s.passes=[]);const next=await h.resume();assert.equal(next.fulfillmentStatus,'issued');await h.resume();assert.equal(h.state().creditUnits.length,3);assert.equal(h.state().fulfillmentActions[0].attempts,2);assert.equal(h.providerPayments.size,1);
+});
 test('direct flow persists before provider contact and issues existing entitlements once under concurrent retries',async()=>{
  const h=harness();await Promise.all([h.start(),h.start(),h.start('same-purchase-new-http-intent')]);await h.resume();
  const s=h.state(),d=s.purchaseDrafts[0];assert.equal(s.paymentAttempts.length,1);assert.equal(h.providerPayments.size,1);assert.equal(s.entitlementIssuances.length,1);assert.equal(s.creditUnits.length,3);

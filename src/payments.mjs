@@ -1,8 +1,7 @@
 import {createHash} from 'node:crypto';
 import {isDeepStrictEqual} from 'node:util';
 import {financialIntent,validIntegration,sameIntegration,validCompletion,qualifiedTransaction} from './payment-contract.mjs';
-import {bookingAccounting} from './cancellation.mjs';
-import {entitlementOperations} from './entitlements.mjs';
+import {fulfillPurchase} from './fulfillment.mjs';
 
 export const HISTORICAL_DRAFTS=new Set(['87d6177e-2988-4aab-973a-5e424ee9c2db','1cdb80f7-f796-4eda-a98a-3d6419649277','b0f90447-56d3-4c3d-9225-d2d29110a69a','4f9c79e5-bbc3-4792-88ea-dbdfa0181e88','f21d3bdc-0612-447b-ab22-7bdbd61ee432']);
 export function canonical(value){return JSON.stringify(sort(value));}
@@ -73,15 +72,13 @@ export function paymentTransition(state,command,a,{id,now,integrationRef,legacyI
  }
  if(command.action==='payment-fulfill'){
   if(attempt.status!=='succeeded'||!d.paymentConfirmedAt||attempt.paymentConfirmedAt!==d.paymentConfirmedAt)fail('Verified payment required',409);
-  if(d.fulfillmentStatus==='issued')return {purchaseId:d.id,issuanceId:d.issuanceId,status:'issued'};
+  if(d.fulfillmentStatus==='issued'&&!d.terms.fulfillmentPlan)return {purchaseId:d.id,issuanceId:d.issuanceId,status:'issued'};
   if(attempt.offerDigest!==digest(d.terms))fail('Immutable purchase terms mismatch',409);
-  const clock={id,now:()=>d.paymentConfirmedAt},o=d.terms;
-  const snapshot={id:o.productId,name:o.productName,type:o.productType,quantity:o.quantity,validDays:o.validDays,categories:o.categories,classIds:o.classIds};
-  const issuer=entitlementOperations(state,a,clock,fail,bookingAccounting(state,a,clock,fail),{paidProduct:snapshot});
-  const grant=issuer.issue({productId:o.productId,participantId:d.participantId,issuanceRef:`purchase:${d.id}`,reason:'Verified purchase payment',requestId:b.requestId});
-  d.issuanceId=grant.id;d.validFrom=grant.validFrom;d.expiresAt=grant.expiresAt;d.fulfillmentStatus='issued';
-  event('purchase-fulfilled',attempt,{issuanceId:grant.id,passId:grant.passId,paymentConfirmedAt:d.paymentConfirmedAt});
-  return {purchaseId:d.id,issuanceId:grant.id,status:'issued'};
+  const previousStatus=d.fulfillmentStatus;
+  const result=fulfillPurchase(state,d.id,a,{id,now,requestId:b.requestId});
+  const fulfilled=state.purchaseDrafts.find(x=>x.id===d.id);
+  if(result.status==='issued'&&previousStatus!=='issued')event('purchase-fulfilled',attempt,{issuanceId:fulfilled.issuanceId,passId:state.entitlementIssuances?.find(g=>g.id===fulfilled.issuanceId)?.passId,paymentConfirmedAt:fulfilled.paymentConfirmedAt});
+  return d.terms.fulfillmentPlan?result:{purchaseId:d.id,issuanceId:fulfilled.issuanceId,status:result.status};
  }
  fail('Payment operation unavailable',404);
 }

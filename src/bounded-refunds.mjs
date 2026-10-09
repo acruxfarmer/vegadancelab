@@ -1,3 +1,4 @@
+import {reversePurchaseFulfillment} from './fulfillment.mjs';
 import {digest} from './payments.mjs';
 import {boundedRefundReadiness} from './bounded-refund-readiness.mjs';
 
@@ -29,7 +30,7 @@ export function refundTransition(state,command,a,{now,id,evidence},fail){
   if(assessment.status!=='eligible')fail(assessment.reasonCodes.join(', '),409);
   const attempt=state.paymentAttempts.find(x=>x.id===p.activeAttemptId);
   if(evidence.paymentId!==attempt.paymentId||evidence.amountMinor!==p.totalMinor||evidence.currency!==p.currency||!evidence.paymentVersion)fail('Provider evidence mismatch',409);
-  const units=state.creditUnits.filter(u=>u.entitlement?.issuanceId===p.issuanceId);
+  const units=state.creditUnits.filter(u=>p.issuanceId&&u.entitlement?.issuanceId===p.issuanceId);
   const op={id:refundId(a,p.id),contract:'bounded-full-refund/1',tenantId:a.tenantId,businessId:a.businessId,purchaseId:p.id,paymentId:attempt.paymentId,attemptId:attempt.id,integrationRef:structuredClone(attempt.integrationRef),actorId:a.userId,reason:b.reason.trim(),amountMinor:p.totalMinor,currency:p.currency,participantId:p.participantId,issuanceId:p.issuanceId,unitIds:units.map(u=>u.id).sort(),status:'intent',createdAt:at,intentRequestId:b.requestId,providerKey:refundId(a,p.id),readiness:structuredClone(evidence),assessment,history:[]};
   op.purchaseDigest=digest(p);op.attemptDigest=digest(attempt);op.quantity=units.length;
   state.refundOperations=[...operations,op];
@@ -68,7 +69,9 @@ export function refundTransition(state,command,a,{now,id,evidence},fail){
   if(status==='completed'){
    for(const u of units){u.status='refunded';(state.creditEvents??=[]).push({id:id(),type:'refund_retire',unitId:u.id,passId:u.passId,issuanceId:op.issuanceId,participantId:u.participantId,operationId:op.id,actorId:a.userId,createdAt:at,requestId:b.requestId});}
   }
-  audit(op,'refund-observation',{status,providerRefundId:op.providerRefundId??null,evidence:structuredClone(evidence)});return output(op);
+  audit(op,'refund-observation',{status,providerRefundId:op.providerRefundId??null,evidence:structuredClone(evidence)});
+  if(status==='completed')reversePurchaseFulfillment(state,p.id,op.id,at);
+  return output(op);
  }
  if(command.action==='refund-release'){
   if(op.status==='released')return output(op);
