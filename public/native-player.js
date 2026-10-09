@@ -1,8 +1,19 @@
 // Generic HLS delivery only. The server owns access and provider authorization.
 export function scopedPlaybackUrl(raw,grant){
+ const reject=()=>{throw Error('Playback reference unavailable');};
+ if(typeof raw!=='string'||!raw||/[\s\\#]/.test(raw))reject();
+ const literalPath=raw.split('?')[0];
+ if(literalPath.includes('%')||literalPath.split('/').some(p=>p==='.'||p==='..'))reject();
  const base=new URL(grant.url),u=new URL(raw,base);
  const directory=base.pathname.slice(0,base.pathname.lastIndexOf('/')+1);
- if(base.protocol!=='https:'||u.origin!==base.origin||!u.pathname.startsWith(directory)||u.username||u.password||u.hash)throw Error('Playback reference unavailable');
+ if(base.protocol!=='https:'||u.protocol!=='https:'||u.origin!==base.origin||!u.pathname.startsWith(directory)||u.pathname===directory||u.username||u.password||u.hash||/%|\\/.test(u.pathname))reject();
+ // Query names come from the server grant; the player knows no provider policy.
+ // A child may omit the query or carry exactly that same set, once per name.
+ if(raw.includes('?')){
+  const allowed=[...base.searchParams.keys()],parts=raw.slice(raw.indexOf('?')+1).split('&');
+  const names=parts.map(p=>p.slice(0,p.indexOf('=')));
+  if(!grant.inheritQuery||!allowed.length||new Set(allowed).size!==allowed.length||parts.length!==allowed.length||new Set(names).size!==names.length||parts.some(p=>!p.includes('=')||!p.slice(p.indexOf('=')+1))||names.some(n=>!allowed.includes(n)))reject();
+ }
  if(grant.inheritQuery)for(const [key,value] of base.searchParams)u.searchParams.set(key,value);
  return u.href;
 }

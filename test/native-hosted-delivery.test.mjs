@@ -25,7 +25,7 @@ test('non-ready, hidden, withdrawn and denied placements never create native tic
 });
 test('provider adapter returns only bounded HLS authorization with provider-returned password',async()=>{
  let payload;const a=createScaleEngineDelivery({environment:'development',cdnId:'123',apiSecret:'account-secret'},async(url,o)=>{payload=JSON.parse(o.body);return Response.json({data:{key:'returned-key',pass:'returned-pass'}});});
- const result=await a.authorize(binding),u=new URL(result.url);assert.equal(u.searchParams.get('pass'),'returned-pass');assert.notEqual(payload.pass,'returned-pass');assert.equal(payload.ip,'auto');assert.equal(payload.uses,5);assert.equal(payload.video,'*');assert.equal(u.searchParams.get('key'),'returned-key');assert.equal(JSON.stringify(result).includes('account-secret'),false);assert.deepEqual(Object.keys(result).sort(),['expiresAt','inheritQuery','kind','url']);
+ const result=await a.authorize(binding),u=new URL(result.url);assert.equal(u.searchParams.get('pass'),'returned-pass');assert.notEqual(payload.pass,'returned-pass');assert.equal(payload.ip,'auto');assert.equal(payload.uses,5);assert.equal(payload.video,'sestore99/acruxanalog/file.mp4');assert.equal(u.searchParams.get('key'),'returned-key');assert.equal(JSON.stringify(result).includes('account-secret'),false);assert.deepEqual(Object.keys(result).sort(),['expiresAt','inheritQuery','kind','url']);
 });
 test('generic HLS query propagation cannot send ticket outside authorized asset directory',()=>{
  const grant={url:binding.playbackRef+'?key=short&pass=secret',inheritQuery:true};
@@ -49,4 +49,21 @@ test('owner readiness reload reads persisted generic binding state without expos
  const manage=createMediaOwnerManagement({connect:async()=>({release(){},async query(sql){if(sql.startsWith('select document from media_private.resources'))return {rows:[{document:resource}]};if(sql.includes('from media_private.provider_bindings'))return {rows:[{state}]};return {rows:[]};}})});
  assert.deepEqual((await manage(owner)).items[0].delivery,{state:'processing'});state='ready';
  for(let n=0;n<2;n++){const result=await manage(owner);assert.deepEqual(result.items[0].delivery,{state:'ready'});assert.equal(JSON.stringify(result).includes('scaleengine'),false);assert.equal(JSON.stringify(result).includes('playbackRef'),false);}
+});
+
+test('ordinary adapter scopes each resource independently and rejects ambiguous bindings before API calls',async()=>{
+ const payloads=[];const adapter=createScaleEngineDelivery({environment:'development',cdnId:'123',apiSecret:'private'},async(_u,o)=>{payloads.push(JSON.parse(o.body));return Response.json({data:{key:'ticket',pass:'returned'}});});
+ for(const name of ['first.mp4','second.mp4'])await adapter.authorize({...binding,assetRef:'/'+name,playbackRef:binding.playbackRef.replace('file.mp4',name)});
+ assert.deepEqual(payloads.map(p=>p.video),['sestore99/acruxanalog/first.mp4','sestore99/acruxanalog/second.mp4']);
+ for(const b of [{...binding,state:'uploading'},{...binding,assetRef:'/wrong.mp4'},{...binding,playbackRef:binding.playbackRef.replace('file.mp4','*.mp4')}])await assert.rejects(adapter.authorize(b));
+ assert.equal(payloads.length,2);
+});
+test('ordinary player enforces the observed query pair and rejects traversal before normalization',()=>{
+ const grant={url:binding.playbackRef+'?key=returned-key&pass=returned-pass',inheritQuery:true};
+ assert.ok(scopedPlaybackUrl('chunk.m3u8?key=other&pass=other',grant).endsWith('?key=returned-key&pass=returned-pass'));
+ for(const raw of ['chunk?key=k&pass=p&extra=x','chunk?key=k&pass=p&key=x','chunk?%6bey=k&pass=p','chunk?key=k','folder/../chunk','%2e%2e/file.mp4/chunk','chunk#fragment','https://user:pass@acruxanalog-vod.secdn.net/chunk'])assert.throws(()=>scopedPlaybackUrl(raw,grant));
+});
+test('canonical mismatch and anonymous MEMBERS never call ordinary provider authorization',async()=>{
+ const f=fixture();f.material.binding.resourceId='unrelated';await assert.rejects(f.store.resolve(null,'p',true));assert.equal(f.calls(),0);
+ const m=fixture();m.material.placement.policy={kind:'memberships',productIds:['membership']};await assert.rejects(m.store.resolve(null,'p',true));assert.equal(m.calls(),0);
 });
