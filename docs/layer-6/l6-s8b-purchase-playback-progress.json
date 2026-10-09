@@ -1,0 +1,27 @@
+{
+  "status": "purchase-and-browser-playback-verified-refund-pending",
+  "purchaseId": "6f6e63d4-2a76-4f13-9f54-1a967a6ccb24",
+  "attemptId": "bd162d2f-5c8b-4524-a69a-fab4f5feed9e",
+  "paymentId": "cbTiovC25uztWvpz7ipDrXe8wHDZY",
+  "providerStatus": "COMPLETED",
+  "verifiedAmountMinor": 100,
+  "currency": "USD",
+  "attemptCount": 1,
+  "fulfillmentAction": "DURABLE_ACCESS",
+  "fulfillmentActionCount": 1,
+  "activeEntitlementCount": 1,
+  "placementId": "19a43581-f18c-4ec8-b040-149a54a1664f",
+  "bookingIssuances": 0,
+  "browserPlayback": "ended at 0:03 / 0:03",
+  "browserReplay": "Playing",
+  "reload": "Ready to watch",
+  "businessRevisionAfterPlayback": 195,
+  "businessDigestAfterPlayback": "b4817ce6b65e8c70c3023f16f0b3c5b3",
+  "remaining": [
+    "Full refund and relock",
+    "Live finalization idempotency verification",
+    "Alternate-placement live isolation",
+    "Cleanup and execution shutdown"
+  ],
+  "productionUntouched": true
+}
