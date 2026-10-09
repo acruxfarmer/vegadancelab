@@ -6,6 +6,8 @@ import {resolveMediaViewerAccess} from '../src/media-viewer-access.mjs';
 import {createPurchaseDraft} from '../src/commerce.mjs';
 import {commerceUI} from '../public/commerce-ui.js';
 import {paymentStatusHTML} from '../public/payment-status.js';
+import {createNativeMediaDelivery} from '../src/runtime/native-media-delivery.mjs';
+import {createScaleEngineDelivery} from '../src/runtime/providers/scaleengine-delivery.mjs';
 const fail=m=>{throw Error(m);};
 function setup(){
  const h=fixture(),p=h.state.purchaseDrafts[0];
@@ -30,3 +32,50 @@ test('purchase never unlocks another principal, placement, business or resource'
 test('existing access survives offer deactivation but not publication withdrawal',()=>{const h=setup();h.attach();h.fulfill();h.state.commerceOfferAvailability[0].active=false;assert.equal(h.resolve().allowed,true);assert.equal(mediaOfferSummary(h.state,h.placement),null);h.placement.authorized=false;assert.equal(h.resolve().allowed,false);});
 test('media checkout uses offer price and access language, with return to existing player',()=>{const h=setup();h.fulfill();const p=h.state.purchaseDrafts[0];const html=commerceUI({escape:s=>String(s??''),getData:()=>({context:h.a,commerceSelfParticipantId:h.a.participantIds[0],commerceOffers:[p.terms],purchaseDrafts:[p]}),mutate(){},notify(){}}).render();assert.match(html,/Viewing access/);assert.match(html,/access granted/);assert.match(html,/watch.html\?placement=/);assert.doesNotMatch(html,/3 credits|credits issued/);const button=paymentStatusHTML({...p,fulfillmentStatus:'pending',activeAttemptId:null,paymentStatus:'not_started',totalMinor:100,currency:'USD'},String,false,{enabled:true,purchaseId:p.id});assert.match(button,/Pay USD \$1.00/);assert.doesNotMatch(button,/\$60/);});
 test('ambiguous offers/links fail closed',()=>{const h=setup();h.attach();h.state.mediaCommerceLinks.push({...h.state.mediaCommerceLinks[0]});assert.equal(mediaOffer(h.state,h.placement),null);});
+
+test('same resource placements retain independent paid, public and membership policies across businesses',()=>{
+ const h=setup();h.attach();h.fulfill();h.fulfill();
+ assert.equal(h.state.accessEntitlements.length,1);
+ assert.deepEqual(h.state.accessEntitlements[0].target,mediaAccessTarget(h.placement));
+ assert.deepEqual(h.resolve(),{allowed:true,reason:'durable_access'});
+ const b={...h.placement,id:'another-placement'};
+ assert.equal(b.resourceId,h.placement.resourceId);
+ assert.deepEqual(h.resolve({placement:b}),{allowed:false,reason:'paid_access_required'});
+ // Give the viewer valid authority in Business B: denial must come from the
+ // entitlement scope, not merely an authority/context mismatch.
+ const otherContext={...b.context,businessId:'business-b'};
+ for(const id of [b.id,h.placement.id])assert.deepEqual(h.resolve({placement:{...b,id,context:otherContext},authority:{...h.a,businessId:'business-b'}}),{allowed:false,reason:'paid_access_required'});
+ assert.deepEqual(h.resolve({placement:{...b,policy:{kind:'public'}}}),{allowed:true,reason:'public_access'});
+ assert.equal(h.resolve({placement:{...b,policy:{kind:'memberships',productIds:['unowned-membership']}}}).allowed,false);
+ const entitlement=structuredClone(h.state.accessEntitlements[0]);
+ h.refund();
+ assert.equal(h.resolve().allowed,false);
+ assert.equal(h.state.accessEntitlements.length,1);
+ assert.equal(h.state.accessEntitlements[0].id,entitlement.id);
+ assert.deepEqual(h.state.accessEntitlements[0].target,entitlement.target);
+ assert.equal(h.state.accessEntitlements[0].state,'revoked');
+ assert.equal(h.state.purchaseDrafts.length,1);
+ assert.equal(h.state.creditUnits.length,0);
+});
+
+test('paid placement resolves the canonical ready binding into exact ordinary delivery; sibling and refund deny before provider calls',async()=>{
+ const h=setup();h.attach();
+ const binding={id:'binding',resourceId:h.resource.id,provider:'scaleengine',integrationRef:'development-media',state:'ready',revision:4,assetRef:'/scope-proof.mp4',playbackRef:'https://acruxanalog-vod.secdn.net/acruxanalog-vod/play/sestore99/acruxanalog/scope-proof.mp4/playlist.m3u8'};
+ const sibling={...h.placement,id:'sibling'};const payloads=[];
+ const pool={connect:async()=>({release(){},async query(sql,args){
+  if(sql.includes('native_viewer_material'))return {rows:[{material:{resource:h.resource,binding,placement:args[0]===sibling.id?sibling:h.placement}}]};
+  if(sql.includes('app_members'))return {rows:[{role:h.a.role,participant_ids:h.a.participantIds}]};
+  if(sql.includes('app_state'))return {rows:[{state:h.state}]};
+  return {rows:[]};
+ }})};
+ const adapter=createScaleEngineDelivery({environment:'development',cdnId:'123',apiSecret:'mock-only'},async(_url,options)=>{payloads.push(JSON.parse(options.body));return Response.json({data:{key:'mock-key',pass:'mock-returned-pass'}});});
+ const delivery=createNativeMediaDelivery(pool,{adapters:{scaleengine:adapter}});
+ await assert.rejects(delivery.resolve(h.a.userId,h.placement.id,true));assert.equal(payloads.length,0);
+ h.fulfill();const before=structuredClone(h.state);
+ const grant=await delivery.resolve(h.a.userId,h.placement.id,true);
+ assert.equal(grant.kind,'hls');assert.equal(payloads[0].video,'sestore99/acruxanalog/scope-proof.mp4');
+ assert.equal(new URL(grant.url).searchParams.get('pass'),'mock-returned-pass');
+ assert.deepEqual(h.state,before);
+ await assert.rejects(delivery.resolve(h.a.userId,sibling.id,true));assert.equal(payloads.length,1);
+ h.refund();await assert.rejects(delivery.resolve(h.a.userId,h.placement.id,true));assert.equal(payloads.length,1);
+});
