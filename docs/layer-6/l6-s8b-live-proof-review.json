@@ -1,0 +1,58 @@
+{
+  "slice": "L6-S8B",
+  "status": "LIVE_PURCHASE_REFUND_CLEANED_UP_REVIEW_REQUIRED",
+  "runtime": "6860adb",
+  "purchaseEvidence": "ebd3e47",
+  "refundEvidence": "682f3f3",
+  "cleanupVerifier": "dce9094",
+  "purchaseId": "6f6e63d4-2a76-4f13-9f54-1a967a6ccb24",
+  "amountMinor": 100,
+  "currency": "USD",
+  "paymentAttempts": 1,
+  "completedRefunds": 1,
+  "entitlements": 1,
+  "entitlementState": "revoked",
+  "fulfillmentHistory": [
+    "pending",
+    "fulfilled",
+    "revoked"
+  ],
+  "bookingIssuances": 0,
+  "hosted": [
+    "Pre-purchase paid lock and $1.00 CTA",
+    "Three-second purchased asset completed playback",
+    "Replay started",
+    "Reload preserved access",
+    "Refund reload restored paid lock"
+  ],
+  "cleanup": {
+    "resource": "archived",
+    "offerActive": false,
+    "recovery": "acknowledged",
+    "providerAbsenceStatus": 404,
+    "placementAuthorized": false,
+    "providerDeleteStatus": 200,
+    "businessRevision": 200,
+    "financialHistory": "preserved",
+    "binding": "deleted"
+  },
+  "execution": {
+    "payment": "disabled",
+    "refund": "disabled",
+    "partialRefund": "disabled",
+    "shutdownDeployment": "dep-db480pss728c739t7e00",
+    "externalEffects": "disabled"
+  },
+  "tests": {
+    "failed": 0,
+    "targeted": 75,
+    "full": 1266
+  },
+  "limitations": [
+    "Alternate placement isolation was verified locally, not through a second hosted placement in this run",
+    "Safe continuation of one payment attempt was exercised, but explicit post-completion payment/refund retry proof was not performed live",
+    "Business revision intentionally includes preserved financial and audit history; full unrelated-state baseline equality was not independently established"
+  ],
+  "productionUntouched": true,
+  "next": "Joe + Chett review; do not close or repeat money/provider execution automatically"
+}
