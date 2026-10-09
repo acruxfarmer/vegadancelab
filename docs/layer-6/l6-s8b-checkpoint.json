@@ -1,0 +1,78 @@
+{
+  "slice": "L6-S8B",
+  "status": "STOPPED_BEFORE_PROVIDER_EXECUTION_FOR_DELIVERY_SCOPE_REVIEW",
+  "draftRuntimeCommit": "f24d4ed648014e55effca2c8ffac90fbaa9a0894",
+  "deployedRuntimeUnchanged": "ac46eafcae040017d623921046ccef40c40daeee",
+  "completedLocally": [
+    "Business-owned placement commercial link with active offer and exact seller/target validation",
+    "Existing draft/payment engine composition with digital-access product terms and frozen DURABLE_ACCESS plan",
+    "Placement-scoped durable-access qualification through L6-S2",
+    "Safe offer metadata and Buy access CTA leading to existing commerce screen",
+    "Offer-driven checkout price and fulfillment language with return to existing player",
+    "Minimum offer attachment and active/inactive price display in media management",
+    "Local denial, fulfillment, replay, non-consumption, refund/relock and business/placement isolation tests"
+  ],
+  "tests": {
+    "regressionsPassed": 1219,
+    "failed": 0,
+    "newMediaCommerceTests": 11
+  },
+  "database": {
+    "project": "cjdoczrxcjynjhgpgqop",
+    "migration": "supabase/migrations/20261009031304_l6_s8b_media_commerce.sql",
+    "appliedDevelopmentOnly": true,
+    "change": "Add media_private.commerce_material(uuid), a narrowly projected published business-owned media/offer lookup. No table or business-data changes.",
+    "verification": {
+      "unknownPlacementHidden": true,
+      "runtimeExecutionAllowed": true,
+      "anonExecutionAllowed": false,
+      "authenticatedExecutionAllowed": false
+    },
+    "securityAdvisors": "No finding on new function. Existing findings remain on three unrelated mutable-search-path functions and Auth leaked-password protection.",
+    "existingFindingReferences": [
+      "https://supabase.com/docs/guides/database/database-linter?lint=0011_function_search_path_mutable",
+      "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection"
+    ]
+  },
+  "stopFinding": {
+    "source": "src/runtime/providers/scaleengine-delivery.mjs:14",
+    "observedTicketPolicy": {
+      "app": "acruxanalog-vod",
+      "video": "*",
+      "ip": "auto",
+      "uses": 5,
+      "expirationSeconds": 120
+    },
+    "contradiction": "Acrux access is scoped to the purchased placement, while the existing provider ticket uses wildcard video scope. Resource-specific provider isolation for paid viewing has not been established.",
+    "scope": "This was the intentional initial S5 proving scope. S8B must not present paid-resource isolation as proven by the application resolver alone.",
+    "providerBypassAttempted": false,
+    "providerPolicyChanged": false,
+    "requiredNext": "Joe + Chett review a bounded exact-asset SEVU scope correction/proof before any paid-media provider execution. Establish exact allowed video syntax from provider guidance and prove authorized asset playback plus unrelated-asset rejection. Do not guess or change multiple ticket parameters."
+  },
+  "fixtureInventory": "Only ready native resource is personally owned; it was not attached to a commercial offer or monetized. No new provider asset created.",
+  "proposedOffer": {
+    "seller": "vega-dance-lab",
+    "environment": "development",
+    "currency": "USD",
+    "priceMinor": 100,
+    "created": false
+  },
+  "squareCharges": 0,
+  "squareRefundRequests": 0,
+  "scaleEngineRequests": 0,
+  "uploads": 0,
+  "deploymentPerformed": false,
+  "hostedPurchasePlaybackProof": "not performed",
+  "productionUntouched": true,
+  "olderVegaCheckoutUntouched": true,
+  "s8aReopened": false,
+  "completionClaimed": false,
+  "finalSafetyCheck": {
+    "developmentStateRevision": 189,
+    "developmentStateDigest": "ec6a3cbc4a395bc350244c228ec85cac",
+    "businessBaselineUnchanged": true,
+    "hostedEnvironment": "development",
+    "hostedStatus": "application_runtime_ready",
+    "squareEnabled": false
+  }
+}
