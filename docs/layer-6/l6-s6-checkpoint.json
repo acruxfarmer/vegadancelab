@@ -1,6 +1,6 @@
 {
   "slice": "L6-S6 — Acrux Media Player V1",
-  "status": "LOCAL IMPLEMENTATION VERIFIED / HOSTED VERIFICATION PENDING",
+  "status": "L6-S6 — IMPLEMENTED / READY FOR REVIEW",
   "runtimeCommit": "02ce2e9beb833922dcca0b5a448c935fb1da40df",
   "priorClosedSlices": [
     "Layer 5",
@@ -63,8 +63,8 @@
     "targetedPassed": 40,
     "failed": 0
   },
-  "hostedVerified": false,
-  "nextAction": "Run scripts/deploy-l6-s6-hosted-private.ps1 in existing private Bitwarden session; inspect receipts before browser playback",
+  "hostedVerified": true,
+  "nextAction": "STOP for Joe + Chett review. Do not begin next slice.",
   "temporaryPlacementId": "391db552-e6ff-4708-bb49-937bc920d626",
   "providerResourceId": "dcb5f610-23a2-43be-af39-706a17be8a92",
   "noNewProviderAssets": true,
@@ -75,5 +75,7 @@
     "Persistent Mirror preference",
     "Player analytics",
     "Richer media metadata"
-  ]
+  ],
+  "hostedEvidence": "docs/layer-6/l6-s6-hosted-browser-evidence.json",
+  "cleanupPending": false
 }

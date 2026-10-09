@@ -1,0 +1,67 @@
+{
+  "status": "IMPLEMENTED / READY FOR REVIEW",
+  "runtimeCommit": "02ce2e9beb833922dcca0b5a448c935fb1da40df",
+  "deploymentId": "dep-db441fnlk1mc73eoduh0",
+  "environment": "Development",
+  "browser": "Codex in-app Chromium browser",
+  "sharedShell": "acrux-player.js via player-source.js; library MP4 and watch-page protected HLS",
+  "hls": {
+    "accessDecision": "ALLOW: public_access",
+    "durationSeconds": 3.083332,
+    "playedThroughSeconds": 3.083332,
+    "ended": true,
+    "dimensions": [320, 180],
+    "errorCode": null,
+    "reloadPlaybackSucceeded": true,
+    "mirrorMuteAndFullscreenControlsVerified": true
+  },
+  "mp4": {
+    "existingMediaId": "b584d560-1f3d-4b4d-bd2f-9d4a8026122f",
+    "durationSeconds": 6,
+    "dimensions": [480, 270],
+    "observedPlayingSeconds": 3.666634,
+    "errorCode": null,
+    "playPause": true,
+    "keyboardSeekSeconds": 0.1,
+    "keyboardVolume": 0.05,
+    "mute": true,
+    "fullscreenPlayback": true,
+    "mirrorVisiblyFlipped": true,
+    "mirrorOffVisiblyRestored": true,
+    "mirrorPreservedSourceAndPausedTime": true,
+    "controlsRemainUnmirrored": true
+  },
+  "screenshots": "Original, mirrored, and fullscreen frames inspected in browser tool outputs; no screenshot files persisted.",
+  "withdrawnPlaybackHttpStatus": 403,
+  "withdrawnPage": "This media is no longer available here.",
+  "withdrawnVideoElementCount": 0,
+  "temporaryPlacementId": "391db552-e6ff-4708-bb49-937bc920d626",
+  "disposablePlacementAudit": [
+    {"action":"authorized","revision":1,"createdAt":"2026-10-09T01:18:43.299Z"},
+    {"action":"configured","revision":2,"createdAt":"2026-10-09T01:18:43.672Z"},
+    {"action":"withdrawn","revision":3,"createdAt":"2026-10-09T01:23:25.923Z"}
+  ],
+  "temporaryPlacementRemoved": true,
+  "cleanupPending": false,
+  "canonicalResourceUnchanged": true,
+  "bindingUnchanged": true,
+  "bindingState": "ready",
+  "bindingRevision": 4,
+  "remainingTestResourcePlacements": 0,
+  "baselineAfter": {
+    "stateDigest": "ec6a3cbc4a395bc350244c228ec85cac",
+    "revision": "189",
+    "runtimeVisibleMembersDigest": "18ac701b1fe9e8ca843b5c31190a2486"
+  },
+  "baselineMatches": true,
+  "providerAssetPreserved": true,
+  "secretsOrSignedUrlsPersisted": false,
+  "productionUntouched": true,
+  "limitations": [
+    "Hosted proof covers the in-app Chromium browser; no physical mobile or Safari qualification.",
+    "Mobile/tablet layout verified locally at 390px and 820px; same deployed styles.",
+    "Text-track caption isolation tested with a fixture; disposable videos have no caption track.",
+    "Playback tickets retain existing short expiry and best-effort delayed deletion; deletion was not independently audited in this UI pass.",
+    "Persistent Mirror preference and external embed adapters deferred."
+  ]
+}
