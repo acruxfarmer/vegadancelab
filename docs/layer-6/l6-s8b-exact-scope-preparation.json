@@ -1,0 +1,39 @@
+{
+  "slice": "L6-S8B",
+  "status": "AWAITING_PRIVATE_EXACT_ASSET_PROOF",
+  "priorDraftCommit": "f24d4ed648014e55effca2c8ffac90fbaa9a0894",
+  "priorCheckpointCommit": "b6f641e",
+  "ordinaryDeliveryAdapterChanged": false,
+  "liveIsolationVerified": false,
+  "providerRequestsThisPreparation": 0,
+  "payments": 0,
+  "uploads": 0,
+  "deployments": 0,
+  "productionUntouched": true,
+  "privateRunner": "scripts/run-l6-s8b-exact-scope-private.ps1",
+  "resultFile": "docs/layer-6/l6-s8b-exact-scope.local.json",
+  "resourceId": "dcb5f610-23a2-43be-af39-706a17be8a92",
+  "bindingId": "439dc92e-5036-41b8-b77c-d2f080594a9d",
+  "expectedBindingRevision": 4,
+  "assetBSelection": "1.mp4, an existing file in the saved provider-returned root inventory. Its current indexed metadata and authoritative vod_url must be verified before any ticket is created.",
+  "proof": [
+    "Read canonical resource and unique active ready binding under restricted Development database identity; no writes",
+    "Verify Asset A current provider metadata matches the persisted binding; obtain Asset B provider-returned mapping",
+    "Require no-ticket Asset B denial; reuse captured no-ticket Asset A evidence only for an identical playback mapping",
+    "Create one exact-scope ticket with unchanged app, auto IP, 5 uses and 120-second requested expiration",
+    "Use returned key and pass to obtain actual media bytes from Asset A within three requests",
+    "Use same ticket for Asset B and require HTTP 403",
+    "Recheck Asset A manifest with same ticket to rule out expiration, exhaustion and IP drift as the reason B was denied",
+    "Delete disposable ticket and re-read canonical resource/binding to verify unchanged state"
+  ],
+  "tests": {
+    "newMockAndGuardTests": 10,
+    "regressionsPassed": 1229,
+    "failed": 0,
+    "powerShellSyntaxPassed": true,
+    "liveProviderProof": "pending; mock results are not provider isolation evidence"
+  },
+  "handoffReason": "This agent process has no unlocked Bitwarden session. Credentials are read only inside Joe's private session and passed through stdin, never persisted or printed.",
+  "afterLivePass": "Update ordinary ScaleEngine delivery to use shared exact-scope resolution; add default-path regression assertions; rerun regressions; return results for Joe + Chett review. Do not enable Square or resume payment automatically.",
+  "onFailure": "Stop without changing another ticket parameter or retrying. Attempt marker prevents blind reruns. Review safe result metadata."
+}
