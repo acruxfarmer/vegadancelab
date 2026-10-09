@@ -1,5 +1,6 @@
 import {randomBytes} from 'node:crypto';
 import {scaleEngineAssetScope} from './scaleengine-asset-scope.mjs';
+import {resolveScaleEngineHlsReference} from './scaleengine-hls-reference.mjs';
 import {requireReadyMediaBinding} from '../../media-provider-binding.mjs';
 
 const fail=category=>{const e=new Error('Bounded isolation proof stopped');e.safeCategory=category;throw e;};
@@ -40,23 +41,26 @@ export async function proveScaleEngineExactScope({environment,cdnId,apiSecret,re
   ticket=await json(await request(api,{method:'PUT',headers:{Authorization:auth,'Content-Type':'application/json'},body:JSON.stringify({app:a.app,video:a.video,pass:randomBytes(24).toString('hex'),ip:'auto',uses:5,active:true,expire_date:expiresAt.replace('T',' ').slice(0,19)})}));
   const expiry=typeof ticket.expire_date==='string'?Date.parse(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(ticket.expire_date)?ticket.expire_date.replace(' ','T')+'Z':ticket.expire_date):NaN;
   if(typeof ticket.key!=='string'||!ticket.key.trim()||typeof ticket.pass!=='string'||!ticket.pass.trim()||ticket.app!==a.app||ticket.video!==a.video||![true,1,'1'].includes(ticket.active)||!(expiry>Date.now()))fail('returned-ticket-invariants-failed');
-  const base=new URL(a.playbackRef),prefix=base.pathname.slice(0,base.pathname.lastIndexOf('/')+1);
-  let u=base,media=false;
+  const base=new URL(a.playbackRef);
+  let u=base,media=false,playlists=0;
   for(let i=0;i<3;i++){
-   if(u.origin!==base.origin||!u.pathname.startsWith(prefix)||u.username||u.password||u.hash||u.search||/%|\\/.test(u.pathname))fail('playlist-reference-outside-asset');
+   try{resolveScaleEngineHlsReference(binding,u.href);}catch{fail('playlist-reference-outside-asset');}
    const r=await request(signed(u.href));await observe({stage:'asset-a-playback',request:i+1,httpStatus:r.status});
    if(r.status!==200){await r.body?.cancel();fail('asset-a-playback-failed');}
    const bytes=await boundedBytes(r),text=bytes.toString('utf8');
    if(text.trimStart().startsWith('#EXTM3U')){
+    playlists++;await observe({stage:playlists===1?'asset-a-master-confirmed':'asset-a-child-playlist-confirmed',httpStatus:200});
     if(/#EXT-X-(KEY|MAP)/.test(text))fail('unsupported-playlist');
-    const child=text.split(/\r?\n/).map(x=>x.trim()).find(x=>x&&!x.startsWith('#'));if(!child)fail('empty-playlist');u=new URL(child,u);continue;
+    const child=text.split(/\r?\n/).map(x=>x.trim()).find(x=>x&&!x.startsWith('#'));if(!child)fail('empty-playlist');
+    // Check the literal child before URL normalization can erase traversal.
+    try{resolveScaleEngineHlsReference(binding,child);u=resolveScaleEngineHlsReference(binding,new URL(child,u).href);}catch{fail('playlist-reference-outside-asset');}continue;
    }
    const ts=bytes.length>=376&&bytes[0]===0x47&&bytes[188]===0x47;
    const mp4=bytes.length>12&&['ftyp','styp'].includes(bytes.toString('ascii',4,8));
    if(!ts&&!mp4)fail('actual-media-bytes-not-proven');
    media=true;await observe({stage:'asset-a-media-confirmed',httpStatus:200,mediaBytes:bytes.length,mediaType:ts?'mpeg-ts':'mp4'});break;
   }
-  if(!media)fail('bounded-playlist-depth-exhausted');
+  if(!media||playlists!==2)fail('master-child-media-chain-not-proven');
   const denied=await request(signed(b.playbackRef));await denied.body?.cancel();
   await observe({stage:'asset-b-same-ticket',httpStatus:denied.status,sameReturnedTicket:true});
   if(denied.status!==403)fail('asset-b-isolation-failed');
@@ -65,7 +69,7 @@ export async function proveScaleEngineExactScope({environment,cdnId,apiSecret,re
   const stillValid=live.status===200&&bytes.toString('utf8').trimStart().startsWith('#EXTM3U');
   await observe({stage:'asset-a-ticket-still-valid',httpStatus:live.status,manifestConfirmed:stillValid});
   if(!stillValid)fail('asset-b-denial-cause-ambiguous');
-  return {assetAPlayback:true,assetBDenied:true,sameTicket:true,stillValidAfterDenial:true};
+  return {assetAPlayback:true,masterPlaylistConfirmed:true,childPlaylistConfirmed:true,assetBDenied:true,sameTicket:true,stillValidAfterDenial:true};
  }finally{
   if(typeof ticket?.key==='string'&&ticket.key){
    try{const r=await request(api+'/'+encodeURIComponent(ticket.key),{method:'DELETE',headers:{Authorization:auth}});await r.body?.cancel();const removed=r.ok||r.status===404;await observe({stage:'ticket-cleanup',httpStatus:r.status,ticketRemoved:removed,cleanupPending:!removed});if(!removed)fail('ticket-cleanup-unconfirmed');}

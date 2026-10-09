@@ -21,7 +21,8 @@ function fixture(options={}){
   assert.equal(u.searchParams.get('key'),'returned-key');assert.equal(u.searchParams.get('pass'),'returned-pass');
   if(u.pathname.includes('/b.mp4/'))return new Response(null,{status:options.bStatus||403});
   if(options.aFails)return new Response(null,{status:403});
-  if(u.pathname.endsWith('playlist.m3u8'))return new Response('#EXTM3U\n'+(options.child||'chunk.ts')+'\n');
+  if(u.pathname.endsWith('playlist.m3u8'))return new Response('#EXTM3U\n'+(options.child||'chunklist.m3u8?key=returned-key&pass=returned-pass')+'\n');
+  if(u.pathname.endsWith('chunklist.m3u8'))return new Response('#EXTM3U\nsegment.ts?key=returned-key&pass=returned-pass\n');
   const bytes=Buffer.alloc(376);bytes[0]=bytes[188]=0x47;return new Response(bytes);
  };
  const run=(override={})=>proveScaleEngineExactScope({environment:'development',cdnId:'123',apiSecret:'account-secret',resource,binding,otherFile:'b.mp4',observe:async e=>events.push(e),...override},fetcher);
@@ -63,4 +64,15 @@ test('cleanup failure prevents a passing proof result',async()=>{
 });
 test('production and same-asset negative controls fail before requests',async()=>{
  for(const overrides of [{environment:'production'},{otherFile:'a.mp4'}]){const f=fixture();await assert.rejects(f.run(overrides));assert.equal(f.calls.length,0);}
+});
+test('approved query pair traverses master, child and media without broadening scope',async()=>{
+ const f=fixture();const result=await f.run();assert.equal(result.masterPlaylistConfirmed,true);assert.equal(result.childPlaylistConfirmed,true);
+ assert.equal(f.events.filter(e=>e.stage==='asset-a-playback').length,3);
+ assert.equal(f.calls.filter(c=>c.u.searchParams.has('key')).length,5);
+});
+test('unknown, duplicate and traversal child references stop before following them',async()=>{
+ for(const child of ['chunklist.m3u8?key=k&pass=p&extra=x','chunklist.m3u8?key=k&pass=p&key=x','folder/../chunklist.m3u8?key=k&pass=p']){
+  const f=fixture({child});await assert.rejects(f.run(),e=>e.safeCategory==='playlist-reference-outside-asset');
+  assert.equal(f.events.filter(e=>e.stage==='asset-a-playback').length,1);assert.equal(f.events.at(-1).ticketRemoved,true);
+ }
 });

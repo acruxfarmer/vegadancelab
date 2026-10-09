@@ -1,8 +1,8 @@
 import {scaleEngineAssetScope} from './scaleengine-asset-scope.mjs';
 
 const fail=()=>{throw new Error('HLS reference rejected');};
-// Prepared for review only: neither the proof runner nor ordinary delivery uses
-// this helper yet. Validate literal paths before URL normalization hides traversal.
+// Approved for the bounded Development proof; ordinary delivery is unchanged.
+// Validate literal paths before URL normalization hides traversal.
 // Returned URLs remain private; callers must apply the provider-returned ticket.
 export function resolveScaleEngineHlsReference(binding,reference){
  const base=new URL(scaleEngineAssetScope(binding).playbackRef);
