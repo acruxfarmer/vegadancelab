@@ -1,0 +1,67 @@
+{
+  "slice": "L6-S9",
+  "name": "Playback Policy / Optional Bumpers",
+  "status": "IMPLEMENTED_LOCAL_VERIFIED_AWAITING_RESTRICTED_RUNTIME_AND_HOSTED_PROOF",
+  "directive": "User supplied L6-S9 directive",
+  "priorSlice": {
+    "id": "L6-S8B",
+    "status": "COMPLETE / VERIFIED / APPROVED / CLOSED",
+    "closureCommit": "e682ff2",
+    "reopened": false
+  },
+  "orientation": {
+    "result": "Access / policy / player / delivery separation fits existing architecture",
+    "verified": [
+      "L6-S2 viewer access resolution",
+      "placement-scoped access policy",
+      "placement-scoped DURABLE_ACCESS",
+      "canonical media identity",
+      "provider-neutral bindings",
+      "exact-asset delivery",
+      "L6-S6 Acrux Media Player",
+      "S8A Generic Fulfillment Orchestrator",
+      "S8B purchase/refund lifecycle"
+    ],
+    "sources": [
+      "src/media-viewer-access.mjs",
+      "src/media-placement-rights.mjs",
+      "src/runtime/media-placement-service.mjs",
+      "src/runtime/native-media-delivery.mjs",
+      "public/acrux-player.js",
+      "src/fulfillment.mjs",
+      "docs/layer-6/l6-s8b-canonical-closure.json"
+    ]
+  },
+  "requiredDefaults": {
+    "sequence": [
+      "PRIMARY"
+    ],
+    "policyScope": "placement",
+    "globalBumper": false,
+    "separateBumperViewerEntitlement": false
+  },
+  "implementationStarted": true,
+  "providerRequests": 0,
+  "databaseMutations": 0,
+  "productionUntouched": true,
+  "next": "Run private fixture verifier and pinned Development deployment; then hosted player proof and cleanup. No Square execution.",
+  "ownershipBoundary": {
+    "approvedBy": "Joe + Chett",
+    "rule": "Primary placement business must equal bumper owning business; personal and different-business resources rejected",
+    "thirdPartyReuse": "deferred"
+  },
+  "database": {
+    "developmentApplied": true,
+    "proposal": "db/proposals/l6-s9-playback-policy.sql",
+    "existingRecordsRewritten": false,
+    "connectorRollbackGuardsPassed": true,
+    "restrictedRuntime": "pending private-session verification",
+    "newSecurityFindings": 0
+  },
+  "tests": {
+    "targeted": 35,
+    "full": 1290,
+    "failed": 0
+  },
+  "management": "Bounded playback-policy action on existing media-management endpoint and placement service; no advertising console"
+}

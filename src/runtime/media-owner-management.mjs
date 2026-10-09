@@ -39,6 +39,7 @@ export function createMediaOwnerManagement(pool,{initialOwners=[]}={}){
      else if(input.action==='archive')await resources.archive(null,input.id,input.expectedRevision);
      else if(input.action==='withdraw')await placements.withdraw(null,input.id,input.expectedRevision);
      else if(input.action==='rights')await placements.rights(null,input.id,input.expectedRevision,input.rights);
+     else if(input.action==='playback-policy')return await placements.playbackPolicy(null,input.id,input.expectedRevision,input.configuration).then(async result=>{await c.query('commit');return result;});
      else if(input.action==='policy'){
       const {rows:pr}=await c.query('select p.document,r.document as resource from media_private.placements p join media_private.resources r on r.id=p.resource_id where p.id=$1',[input.id]);
       const p=pr[0]?.document,r=pr[0]?.resource;if(!owns(r))fail('Resource owner access required');

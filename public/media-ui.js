@@ -49,8 +49,8 @@ export function mediaUI({getData,api,mutate,escape,render}){
  function mount(){
   const host=document.querySelector('[data-acrux-player]'),v=getData()?.videos.find(v=>v.id===selected),current=generation;
   if(!host||!v)return;
-  player=mountAcruxPlayer(host,{title:v.title,poster:v.poster,getSource:async()=>{
-   if(v.placementId){const result=await api(`/api/media/placements/${encodeURIComponent(v.placementId)}`);if(!result.decision.allowed)throw Error('Media unavailable');}
+  player=mountAcruxPlayer(host,{title:v.title,poster:v.poster,...(v.placementId?{getSequence:()=>api(`/api/media/placements/${encodeURIComponent(v.placementId)}/sequence`)}:{}),getSource:async(stage)=>{
+   if(v.placementId){const result=await api(`/api/media/placements/${encodeURIComponent(v.placementId)}/sequence/${encodeURIComponent(stage.stage)}/${stage.revision}`,{media:true});if(current!==generation)throw Error('Media unavailable');return result instanceof Blob?{kind:'mp4',blob:result}:result;}
    const blob=await api(`/api/media/${encodeURIComponent(v.id)}/play?revision=${v.revision}`,{media:true});
    if(current!==generation)throw Error('Media unavailable');return {kind:'mp4',blob};
   }});

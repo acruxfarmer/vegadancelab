@@ -20,13 +20,24 @@ export function playerMarkup({title='Video',poster='/media-poster.svg'}={}){
 
 // One shell for already-authorized sources. No memberships, ownership or payment
 // rules belong here. getSource is supplied by the existing access-aware caller.
-export function mountAcruxPlayer(container,{getSource,title,poster,attachSource=attachPlayerSource}){
+export function mountAcruxPlayer(container,{getSource,getSequence,title,poster,attachSource=attachPlayerSource}){
  container.innerHTML=playerMarkup({title,poster});
  const root=container.querySelector('.acrux-player'),video=root.querySelector('video');
  const control=name=>root.querySelector(`[data-control="${name}"]`);
  const play=control('play'),timeline=control('timeline'),time=control('time'),mute=control('mute'),volume=control('volume'),mirror=control('mirror'),fullscreen=control('fullscreen');
  const status=root.querySelector('[role="status"]'),captions=root.querySelector('.acrux-player-captions');
  let disposed=false,busy=false,source=null,release=null,mirrored=false,failed=false;
+ let sequence=null,stageIndex=0,stageEnded=false,sequenceComplete=false;
+ async function loadStage(){
+  release?.();release=null;source=null;state('loading','Loading video…');
+  if(getSequence&&!sequence){sequence=await getSequence();stageIndex=0;}
+  if(disposed)return;
+  const next=await getSource(sequence?{stage:sequence.stages[stageIndex],revision:sequence.revision}:undefined);
+  if(disposed)return;
+  source=next;stageEnded=false;root.dataset.stage=sequence?.stages[stageIndex]||'PRIMARY';
+  const stop=await attachSource(video,next,()=>error('Connection interrupted. Try again.'));
+  if(disposed){stop?.();return;}release=stop;
+ }
  const listeners=[],tracks=new Set();
  const on=(target,event,handler)=>{target?.addEventListener(event,handler);listeners.push(()=>target?.removeEventListener(event,handler));};
  function state(name,message){if(disposed)return;root.dataset.state=name;status.textContent=message;play.title=play.textContent+' video';}
@@ -46,13 +57,10 @@ export function mountAcruxPlayer(container,{getSource,title,poster,attachSource=
   if(source&&!failed&&!video.paused&&!video.ended){video.pause();return;}
   busy=true;play.disabled=true;failed=false;
   try{
+   if(sequenceComplete&&getSequence){sequence=null;sequenceComplete=false;source=null;}
    if(!source||(source.expiresAt&&Date.parse(source.expiresAt)<=Date.now())){
-    release?.();release=null;source=null;state('loading','Loading video…');
-    const next=await getSource();if(disposed)return;
-    source=next;
-    const stop=await attachSource(video,next,()=>error('Connection interrupted. Try again.'));
-    if(disposed){stop?.();return;}release=stop;
-   }else{if(video.ended)video.currentTime=0;await video.play();}
+    await loadStage();
+   }else{if(video.ended){video.currentTime=0;stageEnded=false;}await video.play();}
   }catch{error();}finally{busy=false;if(!disposed)play.disabled=false;}
  }
  on(play,'click',togglePlay);
@@ -61,7 +69,16 @@ export function mountAcruxPlayer(container,{getSource,title,poster,attachSource=
  on(video,'playing',()=>{if(failed)return;play.textContent='Pause';state('playing','Playing');});
  on(video,'pause',()=>{if(!failed&&!video.ended){play.textContent='Play';state('paused','Paused');}});
  on(video,'waiting',()=>{if(!failed)state('buffering','Buffering…');});
- on(video,'ended',()=>{play.textContent='Replay';progress();state('ended','Video ended. Choose Replay to watch again.');});
+ on(video,'ended',async()=>{
+  if(disposed||failed||busy||stageEnded||sequence&&!video.ended)return;
+  stageEnded=true;
+  if(sequence&&stageIndex+1<sequence.stages.length){
+   busy=true;play.disabled=true;stageIndex++;
+   try{await loadStage();}catch{error();}finally{busy=false;if(!disposed)play.disabled=false;}
+   return;
+  }
+  sequenceComplete=true;play.textContent='Replay';progress();state('ended','Video ended. Choose Replay to watch again.');
+ });
  on(video,'timeupdate',progress);on(video,'durationchange',progress);
  on(video,'error',()=>error('This media is unavailable. Try again.'));
  on(timeline,'input',()=>{const position=Number(timeline.value);if(Number.isFinite(video.duration)&&Number.isFinite(position)){video.currentTime=Math.max(0,Math.min(video.duration,position));progress();}});

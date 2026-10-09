@@ -41,6 +41,16 @@ export function createApplicationApi(env,store,fetcher=fetch){
     if(!store?.mediaOwnerManagement)throw new ApplicationError('Media management unavailable',503);
     send(200,await store.mediaOwnerManagement(actor.userId,req.method==='POST'?await readJson(req):undefined));return true;
    }
+   const sequence=url.pathname.match(/^\/api\/media\/placements\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\/sequence(?:\/(PRE_ROLL|PRIMARY|POST_ROLL)\/(0|[1-9][0-9]{0,8}))?$/i);
+   if(sequence){
+    if(req.method!=='GET'||url.search)throw new ApplicationError('Invalid media request',400);
+    if(!store?.mediaPlaybackSequence)throw new ApplicationError('Media temporarily unavailable',503);
+    let viewerId=null;
+    if(req.headers.authorization!==undefined){configured();viewerId=(await createMediaPrincipalVerifier({authOrigin:origin,publishableKey:key,fetcher})(req)).userId;}
+    const result=await store.mediaPlaybackSequence(viewerId,sequence[1],sequence[2],sequence[3]===undefined?undefined:Number(sequence[3]));
+    if(!Buffer.isBuffer(result)){send(200,result);return true;}
+    res.writeHead(200,{'Content-Type':'video/mp4','Content-Length':result.length,'Cache-Control':'private, no-store'});res.end(result);return true;
+   }
    const placementView=url.pathname.match(/^\/api\/media\/placements\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i);
    if(placementView){
     if(req.method!=='GET'||url.search)throw new ApplicationError('Invalid media request',400);

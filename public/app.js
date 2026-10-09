@@ -41,7 +41,7 @@ async function api(path,options={}){
  if((generation!==session.generation()||scopedGeneration!==businessGeneration))throw new Error('Session changed.');
  if(protectedRequest&&response.status===401){requestToken=await session.refresh();response=await send();}
  if((generation!==session.generation()||scopedGeneration!==businessGeneration))throw new Error('Session changed.');
- if(options.media&&response.ok)return response.blob();
+ if(options.media&&response.ok)return response.headers.get('content-type')?.includes('application/json')?response.json():response.blob();
  let body;try{body=await response.json()}catch{throw new Error('The application returned an unreadable response. Please try again.');}
  if((generation!==session.generation()||scopedGeneration!==businessGeneration))throw new Error('Session changed.');
  if(!response.ok){if(protectedRequest&&[401,403].includes(response.status)&&path==='/api/app')session.clear();throw new Error(body.error?.message||body.error||body.message||`Request failed (${response.status})`);}

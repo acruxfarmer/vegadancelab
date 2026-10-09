@@ -3,6 +3,7 @@ import {randomUUID} from 'node:crypto';
 import {ApplicationError} from '../application.mjs';
 import {placementContext,placementPolicy} from '../media-placement.mjs';
 import {resolveMediaViewerAccess} from '../media-viewer-access.mjs';
+import {configurePlaybackPolicy} from './media-playback-policy.mjs';
 
 const fail=(m,status=403)=>{throw new ApplicationError(m,status);};
 // Server-only configuration/service surface, using the same verified principal
@@ -19,6 +20,7 @@ export function createMediaPlacementService({authenticate,repository,now=()=>new
  };
  const audit=(tx,p,actor,action)=>tx.audit({placementId:p.id,actorId:actor,action,revision:p.revision,createdAt:now(),details:{policy:p.policy,rights:p.rights||null}});
  return {
+  playbackPolicy:(request,placementId,expectedRevision,input)=>run(request,tx=>configurePlaybackPolicy(tx,placementId,expectedRevision,input)),
   ownerPolicy:(request,placementId,expectedRevision,input)=>run(request,async(tx,actor)=>{
    const p=await tx.get(placementId);if(!p)fail('Placement unavailable',404);
    const r=await tx.resource(p.resourceId);

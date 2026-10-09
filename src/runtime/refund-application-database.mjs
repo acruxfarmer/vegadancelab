@@ -1,4 +1,5 @@
 import {mediaPlayback} from '../media.mjs';
+import {createPlaybackPolicyDelivery} from './media-playback-policy.mjs';
 import {createMediaOwnerManagement} from './media-owner-management.mjs';
 import {createNativeMediaDelivery} from './native-media-delivery.mjs';
 import {mediaDeliveryAdapters} from './media-delivery-configuration.mjs';
@@ -64,6 +65,7 @@ export function createApplicationStore(pool,{nativeAdapters=null,bookingEmails=f
  const viewer=createMediaViewerStore(pool,{observe:event=>{if(event.reason==='access_policy_invalid')console.warn(JSON.stringify({event:'media_access_policy_invalid',placementId:event.placementId}));}});
  const native=nativeAdapters?createNativeMediaDelivery(pool,{adapters:nativeAdapters}):null;
  const store={
+  mediaPlaybackSequence:createPlaybackPolicyDelivery(pool,{adapters:nativeAdapters||{}}),
   mediaOwnerManagement:createMediaOwnerManagement(pool,{initialOwners}),
   mediaAccessManagement:(identity,videoId,input)=>transaction(identity,async(c,a)=>{
    const row=await stateRow(c,a);if(a.role!=='staff')fail('Staff access required');requirePermission(row.state,a,'customers.manage');

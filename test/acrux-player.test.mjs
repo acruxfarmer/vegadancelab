@@ -10,14 +10,14 @@ class Element extends EventTarget{
  setAttribute(k,v){this.attributes[k]=v;}removeAttribute(k){delete this.attributes[k];}
  emit(name){this.dispatchEvent(new Event(name));}
 }
-function fixture(getSource=async()=>({kind:'mp4',blob:new Blob(['fixture'])})){
+function fixture(getSource=async()=>({kind:'mp4',blob:new Blob(['fixture'])}),options={}){
  const video=new Element();Object.assign(video,{paused:true,ended:false,currentTime:0,duration:60,volume:1,muted:false,textTracks:Object.assign(new EventTarget(),{[Symbol.iterator]:function*(){}})});
- video.play=async()=>{video.paused=false;video.emit('playing');};video.pause=()=>{video.paused=true;video.emit('pause');};video.load=()=>{};
+ video.play=async()=>{video.paused=false;video.ended=false;video.emit('playing');};video.pause=()=>{video.paused=true;video.emit('pause');};video.load=()=>{};
  const root=new Element(),doc=new Element(),controls=Object.fromEntries(['play','timeline','time','mute','volume','mirror','fullscreen'].map(x=>[x,new Element()])),status=new Element(),captions=new Element();
  root.ownerDocument=doc;root.requestFullscreen=async()=>{doc.fullscreenElement=root;doc.emit('fullscreenchange');};doc.exitFullscreen=async()=>{doc.fullscreenElement=null;doc.emit('fullscreenchange');};
  root.querySelector=s=>s==='video'?video:s==='[role="status"]'?status:s==='.acrux-player-captions'?captions:controls[s.match(/data-control="(.+)"/)?.[1]];
  const host={querySelector:()=>root,replaceChildren(){this.removed=true;}};let attachments=0,cleanups=0;
- const player=mountAcruxPlayer(host,{getSource,attachSource:async(v)=>{attachments++;await v.play();return ()=>cleanups++;}});
+ const player=mountAcruxPlayer(host,{getSource,...options,attachSource:async(v)=>{attachments++;await v.play();return ()=>cleanups++;}});
  return {video,root,doc,controls,status,captions,host,player,attachments:()=>attachments,cleanups:()=>cleanups};
 }
 const settle=()=>new Promise(resolve=>setImmediate(resolve));
@@ -77,4 +77,21 @@ test('authorized HLS uses the existing isolated attachment path and cleanup',asy
  class Hls{static isSupported(){return true;}static Events={ERROR:'error'};constructor(options){instance=this;this.options=options;}on(_,cb){this.error=cb;}loadSource(url){this.url=url;}attachMedia(video){this.video=video;}destroy(){this.destroyed=true;}}
  globalThis.window={Hls};
  try{const video={play:async()=>{video.played=true;}};const grant={kind:'hls',url:'https://media.example.test/asset/playlist.m3u8?key=fixture&pass=fixture',inheritQuery:true,expiresAt:new Date(Date.now()+60000).toISOString()};const stop=await attachPlayerSource(video,grant,()=>{});assert.equal(instance.url,grant.url);assert.equal(video.played,true);let child;instance.options.xhrSetup({open:(_,url)=>child=url},'https://media.example.test/asset/part.ts');assert.ok(child.endsWith('?key=fixture&pass=fixture'));stop();assert.equal(instance.destroyed,true);}finally{globalThis.window=prior;}
+});
+
+for(const stages of [['PRIMARY'],['PRE_ROLL','PRIMARY'],['PRIMARY','POST_ROLL'],['PRE_ROLL','PRIMARY','POST_ROLL']])test('sequence automatically executes once in order: '+stages.join(' -> '),async()=>{
+ const calls=[];let manifests=0;
+ const f=fixture(async s=>{calls.push(s.stage);return {kind:'mp4'};},{getSequence:async()=>{manifests++;return {revision:2,stages};}});
+ f.controls.play.emit('click');await settle();f.controls.mirror.emit('click');
+ for(let i=0;i<stages.length;i++){
+  assert.equal(f.root.dataset.stage,stages[i]);f.video.ended=true;f.video.emit('ended');f.video.emit('ended');await settle();
+ }
+ assert.deepEqual(calls,stages);assert.equal(f.root.dataset.state,'ended');assert.equal(f.video.classes.has('acrux-video-mirrored'),true);
+ f.controls.play.emit('click');await settle();assert.equal(manifests,2);assert.equal(calls.at(-1),stages[0]);f.player.destroy();assert.equal(f.cleanups(),f.attachments());
+});
+test('denied sequence starts no stage',async()=>{
+ let calls=0;const f=fixture(async()=>{calls++;},{getSequence:async()=>{throw Error('denied');}});f.controls.play.emit('click');await settle();assert.equal(calls,0);assert.equal(f.attachments(),0);assert.equal(f.root.dataset.state,'error');f.player.destroy();
+});
+test('transition failure stops sequence and never skips to post-roll',async()=>{
+ const calls=[];const f=fixture(async s=>{calls.push(s.stage);if(s.stage==='PRIMARY')throw Error('revoked');return {kind:'mp4'};},{getSequence:async()=>({revision:1,stages:['PRE_ROLL','PRIMARY','POST_ROLL']})});f.controls.play.emit('click');await settle();f.video.ended=true;f.video.emit('ended');await settle();assert.deepEqual(calls,['PRE_ROLL','PRIMARY']);assert.equal(f.root.dataset.state,'error');f.player.destroy();
 });

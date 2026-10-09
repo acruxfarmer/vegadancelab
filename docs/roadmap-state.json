@@ -5,9 +5,9 @@
   ],
   "nextLayer": {
     "name": "Layer 6",
-    "status": "L6-S8B CLOSED — NEXT SLICE NOT SELECTED",
-    "approvalGate": "Joe + Chett must explicitly select the next slice",
-    "implementationAuthorized": false
+    "status": "IMPLEMENTED_LOCAL_VERIFIED_AWAITING_RESTRICTED_RUNTIME_AND_HOSTED_PROOF",
+    "approvalGate": "S9 authorized under same-business bumper ownership; stop for Joe + Chett review before closure",
+    "implementationAuthorized": true
   },
   "precedence": "This machine-readable checkpoint updates current roadmap status; the historical image is preserved unchanged.",
   "historicalVisualRoadmap": "D:/JOES WIP/ACRUX/Acrux System Tools/Vega Development Roadmap Dashboard.png",
@@ -75,20 +75,23 @@
     "Waitlist-expiry notices"
   ],
   "activeSlice": {
-    "id": null,
-    "status": "AWAITING EXPLICIT JOE + CHETT SELECTION",
-    "previousSlice": "L6-S8B — COMPLETE / VERIFIED / APPROVED / CLOSED",
-    "nextSlices": "Not selected. No implementation authorized."
+    "id": "L6-S9",
+    "name": "Playback Policy / Optional Bumpers",
+    "status": "IMPLEMENTED_LOCAL_VERIFIED_AWAITING_RESTRICTED_RUNTIME_AND_HOSTED_PROOF",
+    "checkpoint": "docs/layer-6/l6-s9-checkpoint.json",
+    "previousSlice": "L6-S8B CLOSED",
+    "nextSlices": "No later slice selected"
   },
   "layer6": {
-    "status": "BETWEEN SLICES — AWAITING SELECTION",
+    "status": "IMPLEMENTED_LOCAL_VERIFIED_AWAITING_RESTRICTED_RUNTIME_AND_HOSTED_PROOF",
     "lastClosedSlice": "L6-S8B",
     "lastClosedSliceName": "Pay on Demand Media Commerce",
     "closure": "docs/layer-6/l6-s8b-canonical-closure.json",
     "checkpoint": "docs/layer-6/l6-s8b-checkpoint.json",
     "nextSlice": null,
-    "implementationAuthorized": false,
-    "productionUntouched": true
+    "implementationAuthorized": true,
+    "productionUntouched": true,
+    "activeSlice": "L6-S9"
   },
   "layer5": {
     "name": "VEGA MEDIA SYSTEM",
