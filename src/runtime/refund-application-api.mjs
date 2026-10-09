@@ -57,6 +57,7 @@ export function createApplicationApi(env,store,fetcher=fetch){
     let viewerId=null;
     if(req.headers.authorization!==undefined){configured();viewerId=(await createMediaPrincipalVerifier({authOrigin:origin,publishableKey:key,fetcher})(req)).userId;}
     const bytes=await store.mediaPlacementPlayback(viewerId,placementPlay[1]);
+    if(bytes?.kind==='hls'){send(200,bytes);return true;}
     res.writeHead(200,{'Content-Type':'video/mp4','Content-Length':bytes.length,'Cache-Control':'private, no-store','Content-Disposition':'inline','X-Content-Type-Options':'nosniff'});res.end(bytes);return true;
    }
    if(url.pathname.startsWith('/api/public/')){

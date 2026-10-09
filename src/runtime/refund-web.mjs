@@ -3,6 +3,7 @@ import { receiveSquareWebhook } from './square-webhook.mjs';
 import { readFile } from 'node:fs/promises';
 import { createApplicationApi } from './refund-application-api.mjs';
 import { sandboxPaymentEnabled } from './direct-payments.mjs';
+import {mediaDeliveryOrigins} from './media-delivery-configuration.mjs';
 
 export function createDevelopmentServer(env = process.env, persistSquareEvent, checkIngestion, applicationStore) {
   if (env.VEGA_ENV !== 'development' || env.VEGA_EXTERNAL_EFFECTS !== 'disabled') {
@@ -14,13 +15,16 @@ export function createDevelopmentServer(env = process.env, persistSquareEvent, c
     res.setHeader('Cache-Control', 'no-store');
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Referrer-Policy','no-referrer');
-    res.setHeader('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; media-src 'self' blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
+    const deliveryOrigins=mediaDeliveryOrigins(env).join(' ');
+    res.setHeader('Content-Security-Policy',`default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; media-src 'self' blob: ${deliveryOrigins}; connect-src 'self' ${deliveryOrigins}; frame-ancestors 'none'; base-uri 'none'; form-action 'self'`);
     if(req.method==='GET'&&req.url==='/health/application'){
       void(async()=>{try{if(!applicationStore||env.SUPABASE_URL!=='https://cjdoczrxcjynjhgpgqop.supabase.co'||!env.SUPABASE_PUBLISHABLE_KEY)throw new Error();await applicationStore.check();res.writeHead(200);res.end(JSON.stringify({status:'application_runtime_ready',environment:'development',squareEnabled:sandboxPaymentEnabled(env)}));}catch{res.writeHead(503);res.end(JSON.stringify({status:'application_runtime_unavailable',squareEnabled:sandboxPaymentEnabled(env)}));}})();return;
     }
     if(req.url.startsWith('/api/')){void api(req,res);return;}
     const files={'/entitlements-ui.js':['entitlements-ui.js','text/javascript; charset=utf-8'],'/cancellation-ui.js':['cancellation-ui.js','text/javascript; charset=utf-8'],'/session.js':['session.js','text/javascript; charset=utf-8'],'/':['index.html','text/html; charset=utf-8'],'/app.js':['app.js','text/javascript; charset=utf-8'],'/integration.js':['integration.js','text/javascript; charset=utf-8'],'/styles.css':['styles.css','text/css; charset=utf-8']};
     files['/media-library.js']=['media-library.js','text/javascript; charset=utf-8'];
+    files['/native-player.js']=['native-player.js','text/javascript; charset=utf-8'];
+    files['/vendor/hls-1.7.3.light.min.js']=['vendor/hls-1.7.3.light.min.js','text/javascript; charset=utf-8'];
     for(const [file,type] of [['manage-media.html','text/html'],['manage-media.js','text/javascript'],['watch.html','text/html'],['watch.js','text/javascript'],['media-access.js','text/javascript']])files['/'+file]=[file,type+'; charset=utf-8'];
     files['/media-ui.js']=['media-ui.js','text/javascript; charset=utf-8'];
     files['/media-poster.svg']=['media-poster.svg','image/svg+xml'];

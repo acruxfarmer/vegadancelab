@@ -1,5 +1,7 @@
 import {mediaPlayback} from '../media.mjs';
 import {createMediaOwnerManagement} from './media-owner-management.mjs';
+import {createNativeMediaDelivery} from './native-media-delivery.mjs';
+import {mediaDeliveryAdapters} from './media-delivery-configuration.mjs';
 import {manageMediaAccess} from './media-access-management.mjs';
 import {createMediaViewerStore,resolveMediaOnClient,requireMediaDecision} from './media-viewer-store.mjs';
 import {resolveStaffAccess,hasStaffPermission,requireStaffPermission,requireStaffCommand,visibleStaffData,staffCommandResult} from '../staff-permissions.mjs';
@@ -27,7 +29,7 @@ export function applicationDatabaseOptions(value){
  if(!['postgres:','postgresql:'].includes(u.protocol)||(!direct&&!pooler)||u.pathname!=='/postgres'||!['','5432','6543'].includes(u.port)||decodeURIComponent(u.username)!==(direct?'vega_app_runtime':`vega_app_runtime.${ref}`)||!u.password)throw new Error('Invalid application database configuration');
  return {host:u.hostname,port:Number(u.port||5432),database:'postgres',user:decodeURIComponent(u.username),password:decodeURIComponent(u.password),ssl:databaseTls(u.hostname),connectionTimeoutMillis:10000,statement_timeout:10000,application_name:'vega-development-application'};
 }
-export function createApplicationStore(pool,{bookingEmails=false,initialOwners=[],receiptPublicKey=process.env.RECEIPT_PUBLIC_KEY,resolveIntegration=resolveStoredIntegration,refundInventory=()=>undefined,assessmentNow=()=>new Date().toISOString(),refundNow=()=>new Date().toISOString()}={}){
+export function createApplicationStore(pool,{nativeAdapters=null,bookingEmails=false,initialOwners=[],receiptPublicKey=process.env.RECEIPT_PUBLIC_KEY,resolveIntegration=resolveStoredIntegration,refundInventory=()=>undefined,assessmentNow=()=>new Date().toISOString(),refundNow=()=>new Date().toISOString()}={}){
  const paymentCapability=Symbol('server payment command');
  const refundCapability=Symbol('server refund command');
  const fail=(message,status=403)=>{throw new ApplicationError(message,status);};
@@ -59,14 +61,15 @@ export function createApplicationStore(pool,{bookingEmails=false,initialOwners=[
   if(rows.length!==1)throw new ApplicationError('Studio application data is not initialized',503);return rows[0];
  }
  const viewer=createMediaViewerStore(pool,{observe:event=>{if(event.reason==='access_policy_invalid')console.warn(JSON.stringify({event:'media_access_policy_invalid',placementId:event.placementId}));}});
+ const native=nativeAdapters?createNativeMediaDelivery(pool,{adapters:nativeAdapters}):null;
  const store={
   mediaOwnerManagement:createMediaOwnerManagement(pool,{initialOwners}),
   mediaAccessManagement:(identity,videoId,input)=>transaction(identity,async(c,a)=>{
    const row=await stateRow(c,a);if(a.role!=='staff')fail('Staff access required');requirePermission(row.state,a,'customers.manage');
    return manageMediaAccess(c,a,row.state,videoId,input,{initialOwners});
   }),
-  mediaPlacementView:(viewerId,placementId)=>viewer.describe(viewerId,placementId),
-  mediaPlacementPlayback:(viewerId,placementId)=>viewer.play(viewerId,placementId),
+  mediaPlacementView:async(viewerId,placementId)=>await native?.resolve(viewerId,placementId)??viewer.describe(viewerId,placementId),
+  mediaPlacementPlayback:async(viewerId,placementId)=>await native?.resolve(viewerId,placementId,true)??viewer.play(viewerId,placementId),
   mediaPlayback:(identity,id,revision)=>transaction(identity,async(c,a)=>{
    const row=await stateRow(c,a),staffAllowed=hasStaffPermission(access(row.state,a),a,'customers.manage');
    if(a.role!=='staff'){
@@ -238,7 +241,7 @@ export function createApplicationStore(pool,{bookingEmails=false,initialOwners=[
 }
 export function createApplicationDatabase(value){
  const pool=new pg.Pool({...applicationDatabaseOptions(value),max:5});pool.on('error',()=>{});
- const store=createApplicationStore(pool,{bookingEmails:true,initialOwners:DEVELOPMENT_INITIAL_OWNERS});
+ const store=createApplicationStore(pool,{nativeAdapters:mediaDeliveryAdapters(process.env),bookingEmails:true,initialOwners:DEVELOPMENT_INITIAL_OWNERS});
  const stop=startBookingEmailDelivery(pool,process.env),close=store.close;
  store.close=async()=>{await stop();await close();};return store;
 }

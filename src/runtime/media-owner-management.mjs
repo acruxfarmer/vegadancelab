@@ -59,7 +59,13 @@ export function createMediaOwnerManagement(pool,{initialOwners=[]}={}){
      else if(b)products=(b.state.entitlementProducts||[]).filter(x=>x.type==='membership').map(x=>({id:x.id,name:x.name}));
      projections.push({...p,products,canOrganize:!!b,groups:b?(b.state.mediaGroups||[]).map(g=>({id:g.id,name:g.name,kind:g.kind})):[]});
     }
-    items.push({...r,placements:projections,linkedVideo:links[0]||null});
+    let delivery;
+    if(r.source?.kind==='managed_reference'){
+     const {rows:bindings}=await c.query("select document->>'state' as state from media_private.provider_bindings where resource_id=$1 and document->>'state'<>'deleted'",[r.id]);
+     const state=bindings.length===1?bindings[0].state:null;
+     delivery={state:state==='ready'?'ready':state==='failed'?'unavailable':'processing'};
+    }
+    items.push({...r,...(delivery?{delivery}:{}),placements:projections,linkedVideo:links[0]||null});
    }
    // Target staff receive their local placement only, never the external
    // owner's canonical metadata/source document or global management rights.
