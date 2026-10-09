@@ -1,0 +1,53 @@
+{
+  "slice": "L6-S8B",
+  "status": "READY_FOR_CLOSURE_REVIEW_NOT_CLOSED",
+  "runtime": "6860adb",
+  "closureVerifier": "7e4e58f",
+  "priorLiveEvidence": "dc5acb6",
+  "baselineEvidence": "8a495de",
+  "postCompletionReplay": {
+    "status": "passed",
+    "mode": "Application reducers replayed in memory against the actual preserved Development database snapshot; not a hosted HTTP retry",
+    "repetitions": 3,
+    "revision": "200",
+    "beforeAndAfterDigest": "103e3e08ed87d27c33fff8d618571dbd4efdae7eef529dd2f3ee6ba9d120ad04",
+    "fulfillment": "rejected after completed refund without mutation",
+    "reversal": "no-op",
+    "completedRefundObservation": "no-op",
+    "paymentAttempts": 1,
+    "entitlements": 1,
+    "fulfillmentActions": 1,
+    "refunds": 1,
+    "duplicateHistoryOrAuditRows": 0,
+    "providerRequests": 0,
+    "databaseMutations": 0
+  },
+  "baseline": {
+    "businessAggregate": "Exact pre-S8B digest matches after projecting out only intended S8B additions; see l6-s8b-closure-baseline.json",
+    "membershipDigestMatches": true,
+    "originalPersonalResourceDigestMatches": true,
+    "originalPersonalBindingDigestMatches": true,
+    "limitations": "No historical comparison claimed for other business/tenant aggregates or independent media rows without recorded pre-S8B baselines"
+  },
+  "hostedAlternatePlacementIsolation": {
+    "status": "not repeated post-refund",
+    "reason": "No active entitlement remains. Resource archived and binding deleted. Reconstructing purchase/access would invalidate the requested proof boundary.",
+    "existingLocalIsolationTests": "passed, including cross-placement and cross-business isolation",
+    "financialStateReconstructed": false
+  },
+  "preserved": ["purchase history", "payment/refund history", "fulfillment/reversal history", "revoked entitlement history", "audit evidence"],
+  "cleanup": {
+    "offer": "inactive",
+    "placement": "withdrawn",
+    "resource": "archived",
+    "binding": "deleted",
+    "providerUpload": "absent, recorded exact-file HTTP 404",
+    "paymentExecution": "disabled",
+    "refundExecution": "disabled",
+    "externalEffects": "disabled",
+    "source": "l6-s8b-live-proof-review.json and l6-s8b-paid-cleanup.local.json"
+  },
+  "tests": {"targetedPreviouslyPassed": 75, "fullRegressionsRerunPassed": 1266, "failed": 0},
+  "productionUntouched": true,
+  "next": "STOP for Joe + Chett final closure approval. Do not mark S8B closed."
+}
