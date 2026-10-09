@@ -1,0 +1,65 @@
+{
+  "status": "hosted-verified-ready-for-closure",
+  "runtimeCommit": "ce63723bab8d7961371b9ccf49d8121e57587883",
+  "deploymentId": "dep-db43jv4s728c739e8jkg",
+  "placementId": "bdb7cff6-e622-4784-89b4-d1de9d5c3c11",
+  "firstPlayback": {
+    "videoWidth": 320,
+    "readyState": 4,
+    "videoHeight": 180,
+    "currentTime": 2.248893,
+    "errorCode": null,
+    "visibleFrame": "blue disposable test video",
+    "paused": false,
+    "duration": 3.083332
+  },
+  "reloadPlayback": {
+    "videoWidth": 320,
+    "readyState": 4,
+    "currentTime": 3.083332,
+    "ended": true,
+    "errorCode": null,
+    "duration": 3.083332,
+    "videoHeight": 180
+  },
+  "playClicks": 2,
+  "accessDecision": "ALLOW: public_access",
+  "signedUrlsPersisted": false,
+  "ownerUiPending": false,
+  "cleanupPending": false,
+  "productionUntouched": true,
+  "ownerReadiness": "ready after reload",
+  "withdrawnPlaybackHttpStatus": 403,
+  "disposablePlacementAudit": [
+    {
+      "action": "authorized",
+      "createdAt": "2026-10-08T17:49:53.492-07:00",
+      "revision": 1
+    },
+    {
+      "action": "configured",
+      "createdAt": "2026-10-08T17:49:53.891-07:00",
+      "revision": 2
+    },
+    {
+      "action": "withdrawn",
+      "createdAt": "2026-10-08T17:52:36.149-07:00",
+      "revision": 3
+    }
+  ],
+  "temporaryPlacementRemoved": true,
+  "canonicalResourceUnchanged": true,
+  "bindingUnchanged": true,
+  "finalBinding": {
+    "revision": 4,
+    "state": "ready",
+    "placements": 0
+  },
+  "baselineAfter": {
+    "revision": "189",
+    "state_digest": "ec6a3cbc4a395bc350244c228ec85cac",
+    "runtime_visible_members_digest": "18ac701b1fe9e8ca843b5c31190a2486"
+  },
+  "baselineMatches": true,
+  "ownerUiAfterCleanup": "Native media · 0 placement(s) · ready"
+}

@@ -1,5 +1,5 @@
 {
-  "status": "implementation-tested-private-deployment-pending",
+  "status": "L6-S5 — HOSTED VERIFIED / READY FOR CLOSURE",
   "runtimeCommit": "ce63723bab8d7961371b9ccf49d8121e57587883",
   "runtimePublished": true,
   "target": "https://vega-development-web.onrender.com",
@@ -30,21 +30,19 @@
     "ticketPasswordSource": "provider-returned ticket.pass"
   },
   "verification": {
-    "hostedReloadVerified": false,
-    "hostedBrowserDecodedPlayback": false,
+    "hostedReloadVerified": true,
+    "hostedBrowserDecodedPlayback": true,
     "regressionTestsPassed": 1167,
     "targetedTestsPassed": 23,
-    "ownerHostedReadinessVerified": false,
-    "temporaryPlacementCreated": false,
-    "failed": 0
+    "ownerHostedReadinessVerified": true,
+    "temporaryPlacementCreated": true,
+    "failed": 0,
+    "temporaryPlacementRemoved": true,
+    "withdrawnPlacementPlaybackHttpStatus": 403,
+    "baselinePreserved": true
   },
   "pending": [
-    "private Development deployment",
-    "temporary ALL placement",
-    "decoded browser playback and reload",
-    "hosted owner readiness",
-    "temporary placement cleanup and baseline comparison",
-    "final evidence commit"
+    "Joe + Chett closure review"
   ],
   "deploymentReferences": [
     "https://api-docs.render.com/reference/update-env-var",
@@ -52,5 +50,18 @@
   ],
   "productionUntouched": true,
   "providerAssetMutationsThisPass": 0,
-  "unrelatedWorkingTreePreserved": true
+  "unrelatedWorkingTreePreserved": true,
+  "browserEvidence": "docs/layer-6/l6-s5-hosted-browser-evidence.json",
+  "deploymentId": "dep-db43jv4s728c739e8jkg",
+  "noTicketProtection": {
+    "httpStatus": 403,
+    "unprotectedDeliveryPathAdded": false,
+    "source": "docs/layer-6/l6-s5-returned-pass-proof.local.json",
+    "freshProviderProbeThisHostedRun": false
+  },
+  "limitations": [
+    "Browser proof used the existing 3.08-second H.264 disposable VOD; long-form playback and other browsers were not tested.",
+    "Ticket deletion runs best-effort after 125 seconds; no deletion receipt is exposed by the hosted adapter. Short expiration bounds playback authorization.",
+    "Runtime-visible member baseline follows the restricted database role; it is not an all-account auth-user snapshot."
+  ]
 }
