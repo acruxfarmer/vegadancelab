@@ -1,0 +1,19 @@
+{
+  "status": "AWAITING_PRIVATE_DEVELOPMENT_DEPLOYMENT",
+  "runtimeCommit": "7740407196614fa14dc7257bb2d12374e333ae8e",
+  "publishedBranch": "codex/l6-s8b-exact-ordinary-7740407",
+  "changes": [
+    "Ordinary ScaleEngine adapter uses validated ready binding playback mapping for exact video scope",
+    "Provider-returned ticket key/pass retained; credentials remain server-side",
+    "Generic player limits child queries to the exact name set in the server grant, without provider-specific policy",
+    "Unknown or duplicate query names, partial pairs, encoded aliases, traversal, cross-origin and cross-asset references remain rejected"
+  ],
+  "regressionTests": {"passed": 1248, "failed": 0},
+  "deploymentScript": "scripts/deploy-l6-s8b-ordinary-hosted-private.ps1",
+  "deploymentPerformed": false,
+  "hostedOrdinaryPlaybackVerified": false,
+  "hostedOrdinaryIsolationVerified": false,
+  "payments": 0,
+  "productionUntouched": true,
+  "next": "Verify pinned Development deployment, then one bounded hosted ordinary application playback through L6-S2 and same-ticket Asset B denial. Preserve baseline and clean up disposable ticket/placement. Stop for Joe + Chett review before Square."
+}
