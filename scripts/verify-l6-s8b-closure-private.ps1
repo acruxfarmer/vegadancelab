@@ -1,7 +1,6 @@
 # Run only in Joe's unlocked private Bitwarden PowerShell.
 # Read-only database snapshot and in-memory terminal replay. No provider requests or writes.
-# New disposable asset remains for the paid-placement proof and eventual cleanup.
-# Never prints credentials or raw provider responses. Do not rerun after an attempt.
+# Never prints credentials or raw database state. Safe to rerun this read-only verifier.
 [CmdletBinding()]
 param()
 $ErrorActionPreference='Stop'
@@ -31,7 +30,7 @@ try {
  $payload | & $node (Join-Path $PSScriptRoot 'verify-l6-s8b-closure-private.mjs') 2>$null
  if($LASTEXITCODE -ne 0){throw 'Runner stopped'}
 } catch {
- Write-Host ('Paid offer preparation stopped at: '+$stage+'. No secret details printed. Review saved evidence before any retry.')
+ Write-Host ('Read-only closure verification stopped at: '+$stage+'. No secret details printed. Review saved evidence before any retry.')
 } finally {
  $raw=$null; $decoded=$null; $record=$null; $records=$null; $values=$null; $matches=$null; $databaseRecords=$null; $dbFields=$null; $payload=$null
  $operators=$null;$fields=$null;$headers=$null;$vars=$null;$keys=$null; $env:BITWARDENCLI_DEBUG=$priorDebug
