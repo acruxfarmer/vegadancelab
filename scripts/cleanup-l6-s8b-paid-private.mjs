@@ -1,0 +1,47 @@
+import fs from 'node:fs/promises';
+import pg from 'pg';
+import {randomUUID,createHash} from 'node:crypto';
+import {applicationDatabaseOptions} from '../src/runtime/refund-application-database.mjs';
+import {buildRecoveryReceipt} from '../src/recovery-receipt.mjs';
+import {createMediaOwnerManagement} from '../src/runtime/media-owner-management.mjs';
+import {createNativeMediaRepository} from '../src/runtime/native-media-repository.mjs';
+import {transitionMediaProviderBinding as move} from '../src/media-provider-binding.mjs';
+import {DEVELOPMENT_INITIAL_OWNERS as initialOwners} from '../src/staff-role-management.mjs';
+const dir=new URL('../docs/layer-6/',import.meta.url),resourceId='3d170055-f7e0-4a94-a7d9-24fcdcfd81a4',bindingId='774b5968-16fb-427b-a3c6-16ffe431fa5d',placementId='19a43581-f18c-4ec8-b040-149a54a1664f',purchaseId='6f6e63d4-2a76-4f13-9f54-1a967a6ccb24',offerId='l6-s8b-paid-media-usd1-v1';
+const a={userId:'4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124',tenantId:'vega-development',businessId:'vega-dance-lab',role:'staff'},requestId='l6-s8b-paid-cleanup-v1';
+const report={status:'preflight',stage:'input',resourceId,bindingId,placementId,purchaseId,productionUntouched:true,deleteAttempts:0};
+let pool,c,acquired=false;
+const save=()=>fs.writeFile(new URL('l6-s8b-paid-cleanup.local.json',dir),JSON.stringify(report,null,2));
+try{
+ let raw='';for await(const chunk of process.stdin){raw+=chunk;if(raw.length>65536)throw Error();}const input=JSON.parse(raw.replace(/^\uFEFF/,''));raw='';
+ const shutdown=JSON.parse((await fs.readFile(new URL('l6-s8b-execution-shutdown-deployment.local.json',dir),'utf8')).replace(/^\uFEFF/,''));if(shutdown.stage!=='complete')throw Error();
+ const response=await fetch('https://vega-development-web.onrender.com/api/config',{redirect:'error'}),config=await response.json();if(!response.ok||config.environment!=='development'||config.squareEnabled!==false||config.paymentMode!=='disabled')throw Error();
+ if(!/^\d+$/.test(input.cdnId)||!input.apiSecret)throw Error();
+ pool=new pg.Pool(applicationDatabaseOptions(input.appDatabaseUrl));c=await pool.connect();
+ await c.query('begin');await c.query("select set_config('vega.actor_id',$1,true),set_config('vega.receipt_discovery','v1',true)",[a.userId]);
+ const row=(await c.query('select state,revision from vega_private.app_state where tenant_id=$1 and business_id=$2 for update',[a.tenantId,a.businessId])).rows[0];
+ const ent=row.state.accessEntitlements.filter(e=>e.purchaseId===purchaseId),refund=row.state.refundOperations.filter(o=>o.purchaseId===purchaseId);
+ if(ent.length!==1||ent[0].state!=='revoked'||refund.length!==1||refund[0].status!=='completed'||refund[0].amountMinor!==100)throw Error();
+ const state=structuredClone(row.state),available=state.commerceOfferAvailability.filter(o=>o.offerId===offerId);if(available.length!==1||available[0].active!==true)throw Error();available[0].active=false;
+ state.activity.push({id:randomUUID(),action:'development-media-fixture-retired',actorId:a.userId,subjectId:placementId,tenantId:a.tenantId,businessId:a.businessId,requestId,createdAt:new Date().toISOString()});
+ const command={action:'development-media-fixture-retired',body:{requestId}},result={offerId,active:false};
+ const receipt=buildRecoveryReceipt({before:row.state,after:state,revision:row.revision,authority:a,command,result,occurredAt:new Date().toISOString(),publicKey:input.receiptPublicKey});
+ await fs.writeFile(new URL('l6-s8b-paid-cleanup-attempted.local.json',dir),JSON.stringify({resourceId,bindingId,placementId}),{flag:'wx'});acquired=true;report.stage='offer-deactivation';await save();
+ await c.query('update vega_private.app_state set state=$1,revision=revision+1,updated_at=now() where tenant_id=$2 and business_id=$3',[JSON.stringify(state),a.tenantId,a.businessId]);
+ await c.query('insert into vega_private.app_commands(tenant_id,business_id,actor_id,request_id,fingerprint,response) values($1,$2,$3,$4,$5,$6)',[a.tenantId,a.businessId,a.userId,requestId,createHash('sha256').update(JSON.stringify(command)).digest('hex'),JSON.stringify(result)]);
+ await c.query('insert into vega_private.recovery_outbox(event_id,tenant_id,business_id,actor_id,request_id,previous_revision,revision,payload,payload_digest) values($1,$2,$3,$4,$5,$6,$7,$8,$9)',[receipt.eventId,a.tenantId,a.businessId,a.userId,requestId,receipt.previousRevision,receipt.revision,receipt.payload,receipt.payloadDigest]);await c.query('commit');c.release();c=null;
+ report.stage='withdraw-and-archive';await save();
+ const manage=createMediaOwnerManagement(pool,{initialOwners});
+ await manage(a.userId,{action:'withdraw',id:placementId,expectedRevision:2});
+ await manage(a.userId,{action:'archive',id:resourceId,expectedRevision:1});
+ report.stage='exact-provider-asset-delete';await save();
+ const repository=createNativeMediaRepository(pool,{initialOwners}),path='/acrux-l6-s8b-'+bindingId+'.mp4';
+ await repository.mutate(a.userId,resourceId,async(tx,item)=>{if(item.binding.id!==bindingId||item.binding.assetRef!==path||item.binding.state!=='ready')throw Error();item.binding=move(item.binding,item.binding.revision,'deleting');await tx.save(item);});
+ report.deleteAttempts=1;await save();
+ const headers={Authorization:'Basic '+Buffer.from(input.cdnId+':'+input.apiSecret).toString('base64')},url='https://acruxanalog-sestore.secdn.net/v1/files'+path;
+ const deleted=await fetch(url,{method:'DELETE',headers,redirect:'error',signal:AbortSignal.timeout(60000)});report.deleteHttpStatus=deleted.status;await save();if(!deleted.ok)throw Error();
+ const absent=await fetch(url,{headers,redirect:'error',signal:AbortSignal.timeout(60000)});report.absenceHttpStatus=absent.status;await save();if(absent.status!==404)throw Error();
+ await repository.mutate(a.userId,resourceId,async(tx,item)=>{if(item.binding.id!==bindingId||item.binding.state!=='deleting')throw Error();item.binding=move(item.binding,item.binding.revision,'deleted');await tx.save(item);});
+ report.status='cleanup-complete-history-preserved';report.offerActive=false;report.placementWithdrawn=true;report.resourceArchived=true;report.bindingDeleted=true;await save();
+}catch(e){await c?.query('rollback').catch(()=>{});if(acquired){report.status='stopped-reconcile-before-retry';report.sqlState=/^[0-9A-Z]{5}$/.test(e.code||'')?e.code:null;await save();}}
+finally{c?.release();await pool?.end().catch(()=>{});console.log(JSON.stringify({status:report.status,stage:report.stage,instruction:'Tell Astra done; do not rerun.'}));}
