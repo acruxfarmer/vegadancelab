@@ -35,7 +35,17 @@ export function playlistReferenceStructure(master,child,logicalAsset,secrets=[])
  };
 }
 
-export async function inspectScaleEnginePlaylist({environment,cdnId,apiSecret,resource,binding,observe=async()=>{}},fetcher=fetch){
+export function playlistQueryNames(master,child,secrets=[]){
+ const names=[...new URL(child,master).searchParams.keys()];
+ // A malformed provider could place secret material in a parameter name.
+ // Stop without emitting that name rather than treating it as safe metadata.
+ if(names.length>32||names.some(n=>!/^[A-Za-z][A-Za-z0-9_.-]{0,63}$/.test(n)||secrets.some(s=>typeof s==='string'&&s.length&&n.includes(s))))fail('query-name-not-safe-to-record');
+ const unique=[...new Set(names)];
+ return {parameterNames:unique,parameterCount:names.length,duplicateNamesPresent:unique.length!==names.length,duplicateParameterNames:unique.filter(n=>names.filter(v=>v===n).length>1)};
+}
+
+export async function inspectScaleEnginePlaylist({environment,cdnId,apiSecret,resource,binding,capture='structure',observe=async()=>{}},fetcher=fetch){
+ if(!['structure','query-names'].includes(capture))fail('inspection-mode-invalid');
  if(environment!=='development'||!/^\d+$/.test(cdnId)||typeof apiSecret!=='string'||!apiSecret||apiSecret.trim()!==apiSecret)fail('development-configuration-required');
  requireReadyMediaBinding(resource,binding);const scope=scaleEngineAssetScope(binding);
  const auth='Basic '+Buffer.from(cdnId+':'+apiSecret,'utf8').toString('base64');
@@ -58,7 +68,12 @@ export async function inspectScaleEnginePlaylist({environment,cdnId,apiSecret,re
   if(r.status!==200){await r.body?.cancel();fail('master-playlist-http-failure');}
   const text=(await bytes(r)).toString('utf8');if(!text.trimStart().startsWith('#EXTM3U'))fail('hls-playlist-not-returned');
   const child=text.split(/\r?\n/).map(x=>x.trim()).find(x=>x&&!x.startsWith('#'));if(!child)fail('child-reference-missing');
-  const structure=playlistReferenceStructure(scope.playbackRef,child,scope.video,[ticket.key,ticket.pass,pass,cdnId,apiSecret,auth]);
+  const secrets=[ticket.key,ticket.pass,pass,cdnId,apiSecret,auth];
+  if(capture==='query-names'){
+   await observe({stage:'child-query-names-captured',...playlistQueryNames(scope.playbackRef,child,secrets)});
+   return {queryNamesCaptured:true,childFollowed:false,playbackRequests:1};
+  }
+  const structure=playlistReferenceStructure(scope.playbackRef,child,scope.video,secrets);
   await observe({stage:'child-structure-captured',...structure});
   return {structureCaptured:true,childFollowed:false,playbackRequests:1};
  }finally{
