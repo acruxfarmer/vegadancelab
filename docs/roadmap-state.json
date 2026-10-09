@@ -5,9 +5,9 @@
   ],
   "nextLayer": {
     "name": "Layer 6",
-    "status": "IMPLEMENTED_LOCAL_VERIFIED_AWAITING_RESTRICTED_RUNTIME_AND_HOSTED_PROOF",
-    "approvalGate": "S9 authorized under same-business bumper ownership; stop for Joe + Chett review before closure",
-    "implementationAuthorized": true
+    "status": "VERIFIED / AWAITING JOE + CHETT REVIEW",
+    "approvalGate": "STOP for Joe + Chett review before closure",
+    "implementationAuthorized": false
   },
   "precedence": "This machine-readable checkpoint updates current roadmap status; the historical image is preserved unchanged.",
   "historicalVisualRoadmap": "D:/JOES WIP/ACRUX/Acrux System Tools/Vega Development Roadmap Dashboard.png",
@@ -77,19 +77,19 @@
   "activeSlice": {
     "id": "L6-S9",
     "name": "Playback Policy / Optional Bumpers",
-    "status": "IMPLEMENTED_LOCAL_VERIFIED_AWAITING_RESTRICTED_RUNTIME_AND_HOSTED_PROOF",
+    "status": "VERIFIED / AWAITING JOE + CHETT REVIEW",
     "checkpoint": "docs/layer-6/l6-s9-checkpoint.json",
     "previousSlice": "L6-S8B CLOSED",
     "nextSlices": "No later slice selected"
   },
   "layer6": {
-    "status": "IMPLEMENTED_LOCAL_VERIFIED_AWAITING_RESTRICTED_RUNTIME_AND_HOSTED_PROOF",
+    "status": "VERIFIED / AWAITING JOE + CHETT REVIEW",
     "lastClosedSlice": "L6-S8B",
     "lastClosedSliceName": "Pay on Demand Media Commerce",
     "closure": "docs/layer-6/l6-s8b-canonical-closure.json",
     "checkpoint": "docs/layer-6/l6-s8b-checkpoint.json",
     "nextSlice": null,
-    "implementationAuthorized": true,
+    "implementationAuthorized": false,
     "productionUntouched": true,
     "activeSlice": "L6-S9"
   },
