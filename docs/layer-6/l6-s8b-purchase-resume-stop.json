@@ -1,0 +1,49 @@
+{
+  "slice": "L6-S8B",
+  "status": "STOPPED_BEFORE_PURCHASE_FOR_SQUARE_BOUNDARY_REVIEW",
+  "deployedRuntime": "7740407196614fa14dc7257bb2d12374e333ae8e",
+  "ordinaryDeliveryEvidence": "793fe8b",
+  "findings": [
+    {
+      "source": "src/runtime/providers/square.mjs",
+      "finding": "Intent validation, submission amount, and payment normalization remain hard-coded to 6000 USD minor units. The checkpoint's proposed 100 USD minor-unit disposable offer cannot use this ordinary adapter unchanged."
+    },
+    {
+      "source": "src/runtime/providers/square-refunds.mjs",
+      "finding": "Bounded full-refund transport remains restricted to a historical purchase/payment, USD 60 and quantity 3. It cannot execute the full refund for a new disposable media purchase."
+    },
+    {
+      "source": "src/refund-program.mjs:28",
+      "finding": "Refund program allocation accepts a single BOOKING_CREDITS action; DURABLE_ACCESS is rejected with FULFILLMENT_ALLOCATION_UNSUPPORTED. This is not an alternate media-refund route."
+    }
+  ],
+  "localChecks": {
+    "usdOneIntentRejected": true,
+    "newPurchaseFullRefundRejected": true,
+    "providerCalls": 0
+  },
+  "s8aStatus": "Generic durable-access revocation remains implemented; the blocker is provider execution composition, not a demonstrated S8A handler defect.",
+  "fixture": {
+    "businessOwnedReadyNativeResourceAvailable": false,
+    "userApprovedOneBusinessOwnedResourceAndTinyUpload": true,
+    "uploadPerformed": false,
+    "approvalPreservedForContinuation": true
+  },
+  "mutations": {
+    "database": 0,
+    "uploads": 0,
+    "offersCreated": 0,
+    "charges": 0,
+    "refunds": 0,
+    "runtimeChanges": 0,
+    "deployments": 0
+  },
+  "finalSafety": {
+    "environment": "development",
+    "squareEnabled": false,
+    "paymentMode": "disabled",
+    "externalEffects": "disabled",
+    "productionUntouched": true
+  },
+  "requiredReview": "Reconcile ordinary Square intent amounts and bounded full-refund execution for a new DURABLE_ACCESS purchase before creating the fixture or enabling Sandbox execution. Do not reuse historical purchase identities or bypass the refund-program allocation guard."
+}
