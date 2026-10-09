@@ -1,7 +1,7 @@
 {
   "slice": "L6-S9",
   "name": "Playback Policy / Optional Bumpers",
-  "status": "VERIFIED / AWAITING JOE + CHETT REVIEW",
+  "status": "COMPLETE / VERIFIED / APPROVED / CLOSED",
   "directive": "User supplied L6-S9 directive",
   "priorSlice": {
     "id": "L6-S8B",
@@ -44,7 +44,7 @@
   "providerRequests": 0,
   "databaseMutations": "Additive policy schema and temporary proof records; temporary records removed; existing business state unchanged",
   "productionUntouched": true,
-  "next": "STOP for Joe + Chett review before closure",
+  "next": "No next slice selected or authorized. Await explicit Joe + Chett selection.",
   "ownershipBoundary": {
     "approvedBy": "Joe + Chett",
     "rule": "Primary placement business must equal bumper owning business; personal and different-business resources rejected",
@@ -68,5 +68,11 @@
   "verifier": "112e18e",
   "evidence": "docs/layer-6/l6-s9-verified.json",
   "hostedVerified": true,
-  "cleanupComplete": true
+  "cleanupComplete": true,
+  "closure": "docs/layer-6/l6-s9-canonical-closure.json",
+  "canonicalHashes": {
+    "runtime": "3ab6ce3",
+    "verifier": "112e18e",
+    "evidence": "91645de"
+  }
 }

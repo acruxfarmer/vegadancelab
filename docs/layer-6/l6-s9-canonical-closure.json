@@ -1,0 +1,125 @@
+{
+  "slice": "L6-S9",
+  "status": "COMPLETE / VERIFIED / APPROVED / CLOSED",
+  "runtime": "3ab6ce31bcecf3027dd84982e89c9ce44da8ce09",
+  "verifier": "112e18e",
+  "deploymentId": "dep-db48j0vlot8c7386mcf0",
+  "architecture": "L6-S2 access resolution precedes placement playback policy; one existing Acrux player executes stages through provider-neutral delivery. No commerce, fulfillment or entitlement changes.",
+  "default": "PRIMARY ONLY; no policy required, no global or business-wide bumper",
+  "policy": {
+    "scope": "placement",
+    "slots": [
+      "PRE_ROLL",
+      "PRIMARY",
+      "POST_ROLL"
+    ],
+    "reference": "media_resource + canonical resourceId",
+    "ownership": "Bumper owner must be the same business and tenant as primary placement context; personal and other-business resources rejected",
+    "management": "Bounded playback-policy action through existing media-management endpoint and authorized placement service; expected policy revision required",
+    "delivery": "L6-S2 rechecked on every stage request; current policy revision and configured stage required; native stages use exact ready binding and existing provider adapter; legacy stages use established MP4 integrity check"
+  },
+  "tests": {
+    "targeted": 35,
+    "full": 1290,
+    "failed": 0,
+    "coverage": [
+      "no-policy primary-only",
+      "pre-roll only",
+      "post-roll only",
+      "both stages",
+      "deterministic order",
+      "duplicate ended-event protection",
+      "automatic transition",
+      "deny before policy lookup or delivery",
+      "placement independence",
+      "business management authority",
+      "same-business bumper ownership",
+      "different-business and personal-owner rejection",
+      "generic references",
+      "provider-neutral exact binding dispatch",
+      "policy revision invalidation",
+      "policy removal",
+      "mirror and existing controls"
+    ]
+  },
+  "restrictedRuntime": {
+    "passed": true,
+    "personalOwnerRejected": true,
+    "deniedAccessVerified": true,
+    "removalVerified": true,
+    "allThreeStageBytesVerified": true
+  },
+  "hosted": {
+    "placementId": "56b191f5-3ea3-45cf-95ab-c2d5a719abb1",
+    "observed": [
+      {
+        "stage": "PRE_ROLL",
+        "state": "playing",
+        "timeSeconds": 2.08185
+      },
+      {
+        "stage": "PRIMARY",
+        "state": "playing",
+        "timeSeconds": 0.114204
+      },
+      {
+        "stage": "POST_ROLL",
+        "state": "playing",
+        "timeSeconds": 3.262702
+      },
+      {
+        "stage": "POST_ROLL",
+        "state": "ended",
+        "timeSeconds": 6,
+        "control": "Replay"
+      }
+    ],
+    "transition": "Automatic without further user clicks after Play",
+    "source": "Existing six-second published Development business-owned legacy video, reused in all three semantic positions",
+    "uploads": 0,
+    "scaleEngineRequests": 0
+  },
+  "cleanup": {
+    "temporaryPlacementRemoved": true,
+    "temporaryPolicyRemoved": true,
+    "temporaryPlacementAuditRowsRemoved": 4,
+    "existingResourcePreserved": true,
+    "businessRevision": 200,
+    "preAndPostBusinessDigest": "2fc8eef504312d572c76b1ab31ffca33",
+    "businessBaselineMatched": true
+  },
+  "execution": {
+    "payment": "disabled",
+    "refund": "disabled",
+    "externalEffects": "disabled",
+    "settingsChanged": false
+  },
+  "limitations": [
+    "Hosted proof reused the same existing media source for all three positions; separate-source sequencing is covered by domain/delivery tests",
+    "Hosted proof used existing legacy MP4 delivery; this run did not create ScaleEngine tickets. Exact-asset ordinary delivery was previously verified and its adapter remains unchanged",
+    "Management is a bounded existing API/service capability, not a new editor or advertising dashboard",
+    "Third-party bumper reuse, future external adapters, ad-free product rules and advertising features remain deferred"
+  ],
+  "productionUntouched": true,
+  "s8bReopened": false,
+  "next": "No next slice selected or authorized. Await explicit Joe + Chett selection.",
+  "name": "Playback Policy / Optional Bumpers",
+  "approval": {
+    "authority": "Joe + Chett",
+    "source": "Explicit L6-S9 final closure approval in this chat",
+    "limitationsAccepted": true,
+    "limitationsBlockClosure": false
+  },
+  "canonicalHashes": {
+    "runtime": "3ab6ce3",
+    "verifier": "112e18e",
+    "evidence": "91645de"
+  },
+  "verificationArtifact": "docs/layer-6/l6-s9-verified.json",
+  "acceptedLimitations": [
+    "Hosted sequencing proof reused one existing MP4 across all stages",
+    "No new ScaleEngine ticket was exercised in S9",
+    "Explicit third-party bumper reuse rights remain deferred",
+    "Advertising campaign management, targeting, scheduling, billing, analytics and media-placement console remain deferred"
+  ]
+}

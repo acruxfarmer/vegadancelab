@@ -5,13 +5,13 @@
   ],
   "nextLayer": {
     "name": "Layer 6",
-    "status": "VERIFIED / AWAITING JOE + CHETT REVIEW",
-    "approvalGate": "STOP for Joe + Chett review before closure",
+    "status": "L6-S9 CLOSED — NEXT SLICE NOT SELECTED",
+    "approvalGate": "Joe + Chett must explicitly select the next slice",
     "implementationAuthorized": false
   },
   "precedence": "This machine-readable checkpoint updates current roadmap status; the historical image is preserved unchanged.",
   "historicalVisualRoadmap": "D:/JOES WIP/ACRUX/Acrux System Tools/Vega Development Roadmap Dashboard.png",
-  "authority": "Joe approved canonical Layers 1–4 closure and the bounded Layer 5 Publish → Discover → Watch and Organized Practice Library builds. Production remains deferred. Joe + Chett explicitly approved L6-S8B final closure; further slices require explicit selection.",
+  "authority": "Joe approved canonical Layers 1–4 closure and the bounded Layer 5 Publish → Discover → Watch and Organized Practice Library builds. Production remains deferred. Joe + Chett explicitly approved L6-S8B final closure; further slices require explicit selection. Joe + Chett explicitly approved L6-S9 final closure; further slices require explicit selection.",
   "layer2": {
     "slices": "6.8 through 6.16",
     "closure": "docs/layer-2/canonical-closure.json",
@@ -75,23 +75,21 @@
     "Waitlist-expiry notices"
   ],
   "activeSlice": {
-    "id": "L6-S9",
-    "name": "Playback Policy / Optional Bumpers",
-    "status": "VERIFIED / AWAITING JOE + CHETT REVIEW",
-    "checkpoint": "docs/layer-6/l6-s9-checkpoint.json",
-    "previousSlice": "L6-S8B CLOSED",
-    "nextSlices": "No later slice selected"
+    "id": null,
+    "status": "AWAITING EXPLICIT JOE + CHETT SELECTION",
+    "previousSlice": "L6-S9 — COMPLETE / VERIFIED / APPROVED / CLOSED",
+    "nextSlices": "Not selected. No implementation authorized."
   },
   "layer6": {
-    "status": "VERIFIED / AWAITING JOE + CHETT REVIEW",
-    "lastClosedSlice": "L6-S8B",
-    "lastClosedSliceName": "Pay on Demand Media Commerce",
-    "closure": "docs/layer-6/l6-s8b-canonical-closure.json",
-    "checkpoint": "docs/layer-6/l6-s8b-checkpoint.json",
+    "status": "BETWEEN SLICES — AWAITING SELECTION",
+    "lastClosedSlice": "L6-S9",
+    "lastClosedSliceName": "Playback Policy / Optional Bumpers",
+    "closure": "docs/layer-6/l6-s9-canonical-closure.json",
+    "checkpoint": "docs/layer-6/l6-s9-checkpoint.json",
     "nextSlice": null,
     "implementationAuthorized": false,
     "productionUntouched": true,
-    "activeSlice": "L6-S9"
+    "activeSlice": null
   },
   "layer5": {
     "name": "VEGA MEDIA SYSTEM",
