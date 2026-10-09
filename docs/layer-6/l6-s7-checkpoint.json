@@ -18,5 +18,6 @@
   "temporaryPlacementCreated": false,
   "productionUntouched": true,
   "providerRequests": 0,
-  "nextAction": "Run bounded private deployment handoff; inspect receipts before browser proof."
+  "nextAction": "Run bounded private deployment handoff; inspect receipts before browser proof.",
+  "runtimeCommit": "ef78d8a6837672832ca5764a6a330a014eabd6e0"
 }
