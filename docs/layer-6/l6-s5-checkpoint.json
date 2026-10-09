@@ -1,0 +1,107 @@
+{
+  "slice": "L6-S5 — Provider-Neutral Native Media Ingestion & Delivery",
+  "status": "SERVER VERIFIED / HOSTED IMPLEMENTED LOCALLY / PRIVATE DEPLOYMENT HANDOFF PENDING",
+  "workspace": "D:\\JOES WIP\\ACRUX\\Codex Projects\\vega-commerce-68a",
+  "branch": "product/layer3-public-entry",
+  "runtimeCommit": "ce63723bab8d7961371b9ccf49d8121e57587883",
+  "runtimePublished": true,
+  "closedSlices": [
+    "L6-S1A",
+    "L6-S1B",
+    "L6-S2",
+    "L6-S3",
+    "L6-S4"
+  ],
+  "provider": "ScaleEngine",
+  "resourceId": "dcb5f610-23a2-43be-af39-706a17be8a92",
+  "bindingId": "439dc92e-5036-41b8-b77c-d2f080594a9d",
+  "bindingState": "ready",
+  "bindingRevision": 4,
+  "placementCountAtReadOnlyCheck": 0,
+  "serverEvidence": "docs/layer-6/l6-s5-returned-pass-proof.local.json",
+  "hostedIntegrationEvidence": "docs/layer-6/l6-s5-hosted-integration.json",
+  "nextAction": "Joe runs scripts/deploy-l6-s5-hosted-private.ps1 in existing unlocked Bitwarden session; inspect deployment and placement receipts before browser proof",
+  "hostedVerified": false,
+  "providerAssetPreserved": true,
+  "productionUntouched": true,
+  "priorCheckpointHistorical": {
+    "slice": "L6-S5 — Provider-Neutral Native Media Ingestion & Delivery",
+    "status": "AUTH AND SEVU VERIFIED — STOPPED AT FILE RESPONSE SHAPE MISMATCH; UPLOAD OUTCOME UNKNOWN",
+    "uploadReconciliation": "docs/layer-6/l6-s5-upload-reconciliation.json",
+    "nativeProofProgress": "docs/layer-6/l6-s5-native-proof-progress.json",
+    "latestReadOnlyVerification": {
+      "checkedAt": "2026-10-08T16:45:50.0908061Z",
+      "method": "GET",
+      "endpoint": "https://api.scaleengine.net/v2/streams/",
+      "authentication": "HTTP Basic: CDN ID + API Secret Key",
+      "httpStatus": 200,
+      "responseDescription": "JSON object with data field; no error indicated",
+      "automaticRetries": 0,
+      "providerMutations": false,
+      "evidence": "docs/layer-6/l6-s5-scaleengine-readiness.local.json",
+      "operatorContext": "Joe reported correcting a key mistake and rerunning the private script. Credential values were not inspected."
+    },
+    "shutdown": "SHOP CLOSED — CLEAN CHECKPOINT PRESERVED",
+    "localDate": "2026-10-07",
+    "directive": "docs/layer-6/2026-10-07-end-of-day-directive.txt",
+    "verifiedDevelopmentRuntime": "49dd901",
+    "priorEvidenceCommit": "197ca94",
+    "branch": "product/layer3-public-entry",
+    "closedSlices": [
+      "L6-S1A",
+      "L6-S1B",
+      "L6-S2",
+      "L6-S3",
+      "L6-S4"
+    ],
+    "architecture": "Acrux canonical resource -> replaceable provider binding -> delivery provider. Identity, ownership, placements, access, entitlement truth and business relationships remain Acrux-owned.",
+    "provider": "ScaleEngine",
+    "account": "acruxanalog",
+    "credentialLocation": "Bitwarden Dev Stack / ScaleEngine",
+    "credentialFields": [
+      "CDN ID",
+      "API Public Key",
+      "API Secret Key"
+    ],
+    "credentialsConfirmedByUser": true,
+    "finalReadOnlyAttempt": {
+      "method": "GET",
+      "endpoint": "https://api.scaleengine.net/v2/streams/",
+      "authentication": "HTTPS Basic: API Public Key + API Secret Key",
+      "loginUsernameUsed": false,
+      "httpStatus": 401,
+      "automaticRetries": 0
+    },
+    "support": {
+      "status": "Sent — per Joe's end-of-day directive; not independently verified through a messaging connector",
+      "questions": [
+        "Dashboard credential mapping to API Private Key",
+        "Separate v2 credential model",
+        "Demo API enablement or permissions",
+        "Demo support for v2/streams",
+        "VOD upload and protected playback authentication"
+      ]
+    },
+    "dacast": "API verified; protected server-signed playback unconfirmed. Future candidate retained. Do not reopen without Joe + Chett direction.",
+    "implementation": "Readiness scripts and evidence only; native ingestion/delivery not implemented",
+    "providerAssetsCreated": [],
+    "providerSettingsChanged": false,
+    "uploadsPerformed": false,
+    "databaseOrDeploymentChanges": false,
+    "paymentEmailSmsExecution": false,
+    "productionUntouched": true,
+    "wakeRule": "First determine whether ScaleEngine support has responded. If not, remain parked. If clear guidance arrives, verify read-only access once, then resume the approved L6-S5 upload/binding/protected playback/direct-denial/cleanup proof and stop for review.",
+    "prohibitedWhileParked": [
+      "Authentication permutations",
+      "Credential re-entry requests",
+      "Dacast experimentation",
+      "Broad infrastructure diagnostics",
+      "Provider asset creation",
+      "Closed-slice reopening",
+      "Commerce",
+      "Ads",
+      "Social features"
+    ],
+    "workspacePreservation": "Existing branch and unrelated working-tree edits retained. No stashing, resetting, service shutdown or integration disconnection."
+  }
+}

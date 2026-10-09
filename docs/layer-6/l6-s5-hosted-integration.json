@@ -1,0 +1,56 @@
+{
+  "status": "implementation-tested-private-deployment-pending",
+  "runtimeCommit": "ce63723bab8d7961371b9ccf49d8121e57587883",
+  "runtimePublished": true,
+  "target": "https://vega-development-web.onrender.com",
+  "serviceId": "srv-dao5cjbm8hqs73db51j0",
+  "databaseProject": "cjdoczrxcjynjhgpgqop",
+  "canonicalResourceId": "dcb5f610-23a2-43be-af39-706a17be8a92",
+  "binding": {
+    "readOnlyDatabaseConfirmed": true,
+    "revision": 4,
+    "state": "ready",
+    "id": "439dc92e-5036-41b8-b77c-d2f080594a9d"
+  },
+  "implementation": {
+    "ownerReadiness": "generic persisted binding state",
+    "ticketCleanup": "best-effort deletion after 125 seconds; expiration enforced independently",
+    "player": "self-hosted pinned hls.js 1.7.3 light build; legacy MP4 retained",
+    "secrets": "server-only Render variables from existing private vault records",
+    "ticketPolicy": {
+      "video": "*",
+      "app": "acruxanalog-vod",
+      "uses": 5,
+      "lifetimeSeconds": 120,
+      "ip": "auto"
+    },
+    "hlsRequests": "query authorization inherited only within the authorized asset directory and origin",
+    "authorization": "existing L6-S2 resolver",
+    "ticketKeySource": "provider-returned ticket.key",
+    "ticketPasswordSource": "provider-returned ticket.pass"
+  },
+  "verification": {
+    "hostedReloadVerified": false,
+    "hostedBrowserDecodedPlayback": false,
+    "regressionTestsPassed": 1167,
+    "targetedTestsPassed": 23,
+    "ownerHostedReadinessVerified": false,
+    "temporaryPlacementCreated": false,
+    "failed": 0
+  },
+  "pending": [
+    "private Development deployment",
+    "temporary ALL placement",
+    "decoded browser playback and reload",
+    "hosted owner readiness",
+    "temporary placement cleanup and baseline comparison",
+    "final evidence commit"
+  ],
+  "deploymentReferences": [
+    "https://api-docs.render.com/reference/update-env-var",
+    "https://api-docs.render.com/reference/create-deploy"
+  ],
+  "productionUntouched": true,
+  "providerAssetMutationsThisPass": 0,
+  "unrelatedWorkingTreePreserved": true
+}
