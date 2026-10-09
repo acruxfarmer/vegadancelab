@@ -1,0 +1,25 @@
+{
+  "slice": "L6-S8B",
+  "status": "STOPPED_DURABLE_ACCESS_SCOPE_MISMATCH",
+  "runtimeCommit": "6860adbf7e9e7f50940a420ea7e1a14a32adcf3a",
+  "deployId": "dep-db4777bncjis73c22gsg",
+  "deploymentReceipt": "l6-s8b-commerce-hosted-deployment.local.json",
+  "hostedHealth": "application_runtime_ready",
+  "environment": "development",
+  "squareEnabled": false,
+  "paymentMode": "disabled",
+  "externalEffects": "disabled",
+  "requestedTarget": "exact canonical media resource",
+  "implementedTarget": "media_placement: placement.id + tenantId + businessId",
+  "evidence": [
+    "src/media-commerce.mjs: mediaAccessTarget uses placement.id; mediaOffer requires exact equality with this target",
+    "src/media-viewer-access.mjs: PAY_ON_DEMAND uses hasDurableAccess with mediaAccessTarget(placement)"
+  ],
+  "impact": "A different placement of the same canonical resource does not share this entitlement. A resource-targeted offer is rejected by the current offer guard.",
+  "newResources": 0,
+  "uploads": 0,
+  "payments": 0,
+  "refunds": 0,
+  "productionUntouched": true,
+  "next": "Joe + Chett review must resolve resource-scoped versus placement-scoped durable access before fixture creation and purchase proof."
+}
