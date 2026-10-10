@@ -1,0 +1,88 @@
+{
+  "status": "provider-enforcement-limitation-observed",
+  "stage": "cleanup",
+  "productionUntouched": true,
+  "databaseReadOnly": true,
+  "uploads": 0,
+  "payments": 0,
+  "refunds": 0,
+  "protectedRentalPlaybackEnabled": false,
+  "events": [
+    {
+      "stage": "unsigned-baseline",
+      "httpStatus": 403
+    },
+    {
+      "stage": "ticket-issuance",
+      "issuanceAttempts": 1,
+      "cleanupPending": true
+    },
+    {
+      "stage": "protected-media-confirmed",
+      "mediaBytes": 15416
+    },
+    {
+      "stage": "ticket-issuance",
+      "issuanceAttempts": 2,
+      "cleanupPending": true
+    },
+    {
+      "stage": "targeted-ticket-revoked",
+      "waitingSeconds": 6
+    },
+    {
+      "stage": "revocation-observed",
+      "manifestStatus": 403,
+      "existingSegmentStatus": 200,
+      "manifestDenied": true,
+      "existingSegmentDenied": false,
+      "freshMediaReturned": true
+    },
+    {
+      "stage": "waiting-for-original-expiry",
+      "seconds": 115
+    },
+    {
+      "stage": "cleanup",
+      "ticketsIssued": 2,
+      "cleanupPending": 0,
+      "secretValuesPersisted": false
+    }
+  ],
+  "result": {
+    "runtimeRentalDeliveryEnabled": false,
+    "checks": {
+      "unsignedDenied": true,
+      "protectedMediaBytes": 15416,
+      "attemptLog": {
+        "httpStatus": 200,
+        "records": 1,
+        "authorizationAllowedObserved": true,
+        "decodedPlaybackProven": false
+      },
+      "separateTicketRenewalMediaBytes": 15416,
+      "sameTicketReconnectManifest": true,
+      "revocation": {
+        "manifestStatus": 403,
+        "existingSegmentStatus": 200,
+        "manifestDenied": true,
+        "existingSegmentDenied": false,
+        "freshMediaReturned": true
+      },
+      "expiration": {
+        "manifestStatus": 403,
+        "existingSegmentStatus": 403,
+        "manifestDenied": true,
+        "existingSegmentDenied": true,
+        "freshMediaReturned": false
+      }
+    },
+    "limitations": [
+      "HTTP delivery observations do not prove decoded primary playback or physical device identity.",
+      "Already-buffered media cannot be recalled. Browser continuity, replay and grace still require hosted player verification."
+    ],
+    "materialLimitation": true,
+    "status": "provider-enforcement-limitation-observed"
+  },
+  "resourceAndBindingUnchanged": true
+}

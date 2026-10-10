@@ -1,0 +1,11 @@
+{
+  "status": "awaiting-unambiguous-read-only-reconciliation",
+  "supersedes": "vod-rental-control-stop-diagnosis.local.json",
+  "correction": "Shelly parsed expiry as System.String and old comparison passes. Local DateTime reproduction does not establish the original stop cause.",
+  "evidence": "liveCommit in first reconciliation is an array of five commits although scalar expected; API results require explicit enumeration in Windows PowerShell.",
+  "fix": "Explicitly enumerate one REST array response level; preserve single objects. Verify exact environment-key match count.",
+  "verification": "Parser and two-record environment response test pass; disabled OTHER key cannot be mistaken for target configuration.",
+  "controlSetting": "unknown: previous disabled classification may reflect another key in the nested array",
+  "mutations": 0,
+  "originalEvidencePreserved": true
+}

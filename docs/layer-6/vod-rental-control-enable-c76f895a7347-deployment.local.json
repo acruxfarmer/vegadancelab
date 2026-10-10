@@ -1,0 +1,15 @@
+﻿{
+    "runtimeCommit":  "c76f895a734719b6a42c8b87b0412fa8414a3179",
+    "serviceId":  "srv-dao5cjbm8hqs73db51j0",
+    "status":  "stopped-reconcile-before-retry",
+    "stage":  "bounded rental verification setting",
+    "environment":  "development",
+    "settingsUpdated":  [
+
+                        ],
+    "deployAttempted":  false,
+    "deployId":  null,
+    "productionUntouched":  true,
+    "providerRequests":  0,
+    "secretsPersisted":  false
+}

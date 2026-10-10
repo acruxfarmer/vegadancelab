@@ -1,0 +1,57 @@
+{
+  "at": "2026-10-09T21:59:41.625Z",
+  "commit": "281c5c4e57553c9de2cef05ddb5c44c2c91584e9",
+  "checks": [
+    {
+      "path": "/health/application",
+      "status": 200,
+      "development": true,
+      "paymentsDisabled": true,
+      "ready": true
+    },
+    {
+      "path": "/api/config",
+      "status": 200,
+      "development": true,
+      "paymentsDisabled": true,
+      "paymentModeDisabled": true,
+      "externalEffectsDisabled": true
+    },
+    {
+      "path": "/watch.js",
+      "status": 200,
+      "matchesCheckpoint": true,
+      "sha256": "c81d5251fec3ef397bf3ad63f24148ef578c35b66a85ebc244f04081f88434e9"
+    },
+    {
+      "path": "/rental-ui.js",
+      "status": 200,
+      "matchesCheckpoint": true,
+      "sha256": "9617f5d122fb0be36a5a8b0d2d93d14505d34ef7cf8af1022a032ba1f31ef870"
+    },
+    {
+      "path": "/rental-management.js",
+      "status": 200,
+      "matchesCheckpoint": true,
+      "sha256": "b1ecc4a4f70609aa6d3fca2215b57b26e410c6eeeaa04b68041b9058de247dea"
+    },
+    {
+      "path": "/acrux-player.js",
+      "status": 200,
+      "matchesCheckpoint": true,
+      "sha256": "fe7adf0ba357bd13a20d671bb8a7eefda36b4d90a234f5a1d6119acece9ffbd4"
+    },
+    {
+      "path": "/manage-media.js",
+      "status": 200,
+      "matchesCheckpoint": true,
+      "sha256": "192f309b64e96614fa9301db47d0472988288bb42b2c190ee2cc13e2a4a61ca0"
+    },
+    {
+      "unauthenticatedRentalStartStatus": 401
+    }
+  ],
+  "authenticatedWorkflowVerified": false,
+  "providerRequests": 0,
+  "productionTouched": false
+}

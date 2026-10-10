@@ -1,0 +1,24 @@
+{
+  "observedAt": "2026-10-09T22:58:47.712Z",
+  "status": "fixture-visible-awaiting-scoped-deployment",
+  "fixtureReceipt": "vod-rental-fixture.local.json",
+  "businessOwned": true,
+  "resourceId": "6c3a7236-9132-4be8-a64a-f4b6f80db360",
+  "placementId": "2960abdf-bfb3-49b1-87db-f9f95011d47f",
+  "readiness": "ready",
+  "placement": "visible pay_on_demand",
+  "rental": {
+    "principalId": "4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124",
+    "status": "ready_to_start",
+    "viewingHours": 1,
+    "activationDays": 1,
+    "replayAllowed": false
+  },
+  "browserBeforeEnable": {
+    "playAttempt": "Playback could not start. Try again.",
+    "activationStillUnverified": true
+  },
+  "historicalFixture": "Archived disposable paid fixture remains archived",
+  "productionUntouched": true,
+  "payments": 0
+}

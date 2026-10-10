@@ -1,0 +1,19 @@
+{
+  "runtimeCommit": "c76f895a734719b6a42c8b87b0412fa8414a3179",
+  "savedStage": "bounded rental verification setting",
+  "deployAttempted": false,
+  "causeReproduced": "ConvertFrom-Json yields System.DateTime for fixture.expiresAt; case-sensitive comparison against the ISO string rejects equal instants before PUT.",
+  "localChecks": {
+    "fixtureStatus": true,
+    "placement": true,
+    "legacyExpiryComparison": false,
+    "correctedUtcComparison": true,
+    "stringInput": true,
+    "wrongExpiryRejected": true,
+    "powershellParser": true
+  },
+  "operatorScriptCorrected": true,
+  "originalAttemptEvidencePreserved": true,
+  "remoteSetting": "unknown pending read-only reconciliation",
+  "mutationsThisInvestigation": 0
+}

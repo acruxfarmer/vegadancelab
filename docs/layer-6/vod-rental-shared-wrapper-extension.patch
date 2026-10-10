@@ -1,0 +1,23 @@
+diff --git a/scripts/run-l6-s5-sevu-auto-proof-private.ps1 b/scripts/run-l6-s5-sevu-auto-proof-private.ps1
+index 7ee3a1e..44fe791 100644
+--- a/scripts/run-l6-s5-sevu-auto-proof-private.ps1
++++ b/scripts/run-l6-s5-sevu-auto-proof-private.ps1
+@@ -3,7 +3,7 @@
+ # Rolls back the temporary placement; preserves the existing provider asset.
+ # Never prints credentials or raw provider responses. Do not rerun after an attempt.
+ [CmdletBinding()]
+-param()
++param([switch]$RentalVerification)
+ $ErrorActionPreference='Stop'
+ $VerbosePreference='SilentlyContinue'; $DebugPreference='SilentlyContinue'; Set-PSDebug -Off
+ $priorDebug=$env:BITWARDENCLI_DEBUG; $env:BITWARDENCLI_DEBUG='false'
+@@ -44,7 +44,8 @@ try {
+  $payload=@{cdnId=$values['CDN ID'];apiSecret=$values['API Secret Key'];appDatabaseUrl=[string]$dbFields[0].value}|ConvertTo-Json -Compress
+  $stage='bounded SEVU rejection diagnostic'
+  $node='C:/Users/Joe Graham/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe'
+- $payload | & $node (Join-Path $PSScriptRoot 'run-l6-s5-sevu-auto-proof-private.mjs') 2>$null
++ $runner=if($RentalVerification){'verify-vod-rental-provider-private.mjs'}else{'run-l6-s5-sevu-auto-proof-private.mjs'}
++ $payload | & $node (Join-Path $PSScriptRoot $runner) 2>$null
+  if($LASTEXITCODE -ne 0){throw 'Runner stopped'}
+ } catch {
+  Write-Host ('Native upload handoff stopped at: '+$stage+'. No secret details printed. Review saved evidence before any retry.')

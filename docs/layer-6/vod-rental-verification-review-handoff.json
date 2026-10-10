@@ -1,0 +1,66 @@
+{
+  "status": "shutdown-confirmed-evidence-ready-for-independent-review-with-open-hosted-gaps",
+  "recordedAt": "2026-10-10T00:18:19.473Z",
+  "runtimeCommit": "c76f895a734719b6a42c8b87b0412fa8414a3179",
+  "shutdown": {
+    "receipt": "vod-rental-control-disable-c76f895a7347-deployment.local.json",
+    "deploymentId": "dep-db4o7nt9fdbs73aa0td0",
+    "control": "disabled",
+    "deployment": "live",
+    "browser": "Expired; no playback control",
+    "qualification": "Configuration readback and exact-commit deployment confirm guard restoration. The expired fixture alone does not isolate control-denial from entitlement-expiry denial."
+  },
+  "hostedEvidence": {
+    "fixture": "vod-rental-fixture.local.json",
+    "playback": "vod-rental-hosted-playback.local.json",
+    "persistedState": "vod-rental-hosted-state.local.json",
+    "expiration": "vod-rental-hosted-expiration.local.json",
+    "passed": [
+      "Business-owned ready fixture with audited complimentary entitlement and no paid transaction",
+      "Protected playback completed",
+      "One persisted first-play activation corroborated by provider authorization and player acknowledgement",
+      "Replay attempt denied after completed viewing",
+      "Session ended and persisted provider ticket revoked",
+      "Natural expiry displayed after the original one-hour deadline; player absent",
+      "Disabled setting confirmed by operator readback and successful deployment"
+    ]
+  },
+  "independentEvidence": {
+    "newTests": "vod-rental-independent-continuation.local.json",
+    "priorDatabase": "vod-rental-postgres.local.json",
+    "historicalSources": "vod-rental-source-reconciliation.json",
+    "control": "vod-rental-verification-control.json"
+  },
+  "openHostedGaps": [
+    "Successful startup recovery was not exercised live; confirmed rejection recovery is locally verified and ambiguous provider outcomes remain fail closed.",
+    "Successful active saved-session continuation was not exercised live because the short no-replay fixture had already ended; local restart/renewal/device/expiry tests pass.",
+    "No direct authenticated start request was made after expiry or against an otherwise-active rental after control shutdown.",
+    "Unrelated-scope and invalid-configuration denial checks are local tests, not a separate hosted multi-account exercise."
+  ],
+  "fixturePreserved": {
+    "placementId": "2960abdf-bfb3-49b1-87db-f9f95011d47f",
+    "expiresAt": "2026-10-10T00:13:53.059Z",
+    "reset": false,
+    "shortened": false,
+    "clockChanged": false
+  },
+  "reviewScope": {
+    "operatorCorrections": "Windows PowerShell REST array enumeration and date-type comparison; bounded resume and read-only reconciliation with preserved attempt evidence",
+    "localAdditions": [
+      "scripts/inspect-vod-rental-state-private.mjs",
+      "test/rental-playback-workflow.test.mjs additional recovery and saved-session tests"
+    ],
+    "note": "Post-c76f895 operator/evidence changes remain in the working tree for review; hosted application commit unchanged."
+  },
+  "boundaries": {
+    "productionUntouched": true,
+    "paymentRefundExecution": "disabled",
+    "historicalFixtures": "unchanged",
+    "s8bS9": "closed",
+    "s10": "not started",
+    "merged": false,
+    "closed": false,
+    "allHostedObjectivesComplete": false
+  },
+  "next": "Chett independent review of evidence and explicit gaps; Joe retains authorization. No automatic deployment, merge, closure or fixture alteration."
+}

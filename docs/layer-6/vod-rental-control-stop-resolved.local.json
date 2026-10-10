@@ -1,0 +1,24 @@
+{
+  "status": "cause-confirmed-ready-for-bounded-deployment-resume",
+  "evidence": "vod-rental-control-enable-c76f895a7347-reconcile-v2.local.json",
+  "cause": "Render PUT succeeded. Windows PowerShell REST array nesting caused the subsequent exact-value confirmation to fail before deployment.",
+  "controlSetting": "expected-expiration-configured",
+  "controlMatchCount": 1,
+  "liveCommit": "281c5c4e57553c9de2cef05ddb5c44c2c91584e9",
+  "activeDeployments": 0,
+  "fixturePreserved": true,
+  "operatorCorrection": "Enumerate REST result records; compare expiration instants; retain sanitized failure line/type/status.",
+  "resume": {
+    "targetCommit": "c76f895a734719b6a42c8b87b0412fa8414a3179",
+    "configurationWrites": 0,
+    "rechecks": [
+      "exact existing control value",
+      "existing fixture",
+      "current live checkpoint",
+      "no active deployment",
+      "existing Development safety settings"
+    ],
+    "evidence": "new resume filenames; original attempt untouched"
+  },
+  "productionUntouched": true
+}

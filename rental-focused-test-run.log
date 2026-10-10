@@ -1,0 +1,36 @@
+✔ rental HTTP authenticates, supplies server device cookie and rejects authority injection (8.8976ms)
+✔ rental finish needs existing device continuity and reconciles revoked tickets (2.0171ms)
+✔ policy rejects unknown/version/unsafe duration values and freezes normalized defaults (1.0734ms)
+✔ actual late availability controls full allowance and clock boundaries (1.5831ms)
+✔ expired or staff-revoked paid rental remains historically fulfilled; provenance corruption does not (4.2609ms)
+✔ complimentary grants need no purchase and audited correction preserves snapshot and revokes sessions (1.1683ms)
+✔ owner policy revisions preserve purchased and unfinished quote terms and sale withdrawal is separate (2.1898ms)
+✔ application corrections reject forged policy, unverified recipients and wrong placement (3.3419ms)
+✔ expired unused rental remains fulfilled, while played or staff-reset usage preserves wholly-unused refund policy (2.4072ms)
+✔ rental terms show advance purchase, first primary playback and bounded continuation without ownership promise (20.9686ms)
+✔ rental customer status escapes adjustment messages and separates suspension from expiration (1.2583ms)
+✔ manager sees extension only while owner corrections and pricing require server authority (0.3546ms)
+✔ owner sees versioned offer and withdrawal controls with reason and immutable quote notice (0.2725ms)
+✔ rental form parser preserves unchecked replay and explicit numeric policy (0.7314ms)
+✔ concurrent requests reserve once, provider network outside transaction, persisted ticket survives workflow restart (5.335ms)
+✔ uncertain provider issuance cannot duplicate ticket or consume another window (0.4362ms)
+✔ browser confirmation cannot fabricate provider evidence; trusted observation settles once (1.5653ms)
+✔ real store contract locks aggregate, writes receipt atomically, rolls back unavailable receipt and failures (3.5871ms)
+✔ one pending activation across requests; other device cannot mint parallel window (3.4022ms)
+✔ ticket issuance and browser playing alone do not activate (0.4393ms)
+✔ video-aware grace has fixed deadline; refresh/restart preserves same device only (0.7033ms)
+✔ grace cap, replay restriction, ended session and revocation enforced (0.7672ms)
+✔ recovery requires server failure and confirmed revocation, retains activation history and budget (1.1942ms)
+✔ asset duration and delivery capability required; ScaleEngine does not advertise unproven enforcement (0.5975ms)
+✔ readiness retains exact asset duration, and release allowance uses persisted actual availability (0.9064ms)
+✔ owner delegates sensitive rental correction without granting finance and instructor receives the minimal result (2.4286ms)
+✔ unpublish retains sessions, suspension revokes delivery but preserves clocks, withdrawal blocks restoration (2.1104ms)
+✔ processing is not availability and delayed provider readiness moves the first availability forward (0.2807ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 395.8834

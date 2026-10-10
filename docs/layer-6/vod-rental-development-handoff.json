@@ -1,0 +1,115 @@
+{
+  "status": "hosted_build_verified_authenticated_browser_verification_pending",
+  "recordedAt": "2026-10-09T19:51:54.057398+00:00",
+  "checkpoint": "ccfe301",
+  "implementationAuthorization": "Joe build authorization attachment 2e30f454-377b-43e1-a213-454a43be6010",
+  "implemented": [
+    "Versioned rental offers and immutable purchase snapshots; existing quote preservation",
+    "Paid and complimentary entitlement policy; historical fulfillment independent from access expiry",
+    "Scoped owner configuration, delegated staff corrections and before/after audit",
+    "Transactional playback reservation, activation evidence contract, bounded startup recovery and denial of new access at expiration",
+    "Persisted same-browser session continuity and pending ticket reconciliation",
+    "Customer statuses and owner/staff controls in existing interfaces",
+    "Unpublish discovery/new-sale controls, suspension without clock pause, mandatory withdrawal",
+    "Rental denial on stateless native delivery and full-file MP4 paths"
+  ],
+  "verification": {
+    "fullSuite": {
+      "total": 3101,
+      "passed": 3094,
+      "failed": 7,
+      "log": "rental-final-test-run.log",
+      "failures": "Historical frozen-source hashes: six application.mjs assertions, one refund-eligibility.mjs assertion. Baselines and closed-slice records not rewritten. No other failures in this run."
+    },
+    "database": {
+      "project": "cjdoczrxcjynjhgpgqop",
+      "migrationsApplied": [
+        "vod_rental_binding_duration",
+        "vod_rental_commerce_availability"
+      ],
+      "rollbackChecks": [
+        "Asset duration must match binding asset",
+        "Future readiness rejected",
+        "Duration/readiness deletion and mutation rejected",
+        "Valid binding lifecycle preserved",
+        "Public commerce availability scope filtering and private reason exclusion"
+      ],
+      "runtimeRoleRls": "passed via established Shelly private operator workflow; actual vega_app_runtime role, lock contention, permissions, receipts, rollback and binding guards verified",
+      "residualDurationTestResources": 0,
+      "runtimeRoleEvidence": "vod-rental-postgres.local.json"
+    },
+    "hostedExistingService": {
+      "environment": "development",
+      "paymentMode": "disabled",
+      "squareEnabled": false,
+      "externalEffects": "disabled",
+      "newBuildDeployed": true,
+      "commit": "281c5c4e57553c9de2cef05ddb5c44c2c91584e9",
+      "deploymentId": "dep-db4m6u2j9qps73d34org",
+      "evidence": "vod-rental-hosted-http.local.json",
+      "authenticatedBrowserVerification": false
+    },
+    "providerEvidence": "vod-rental-provider.local.json",
+    "sourceReconciliation": "vod-rental-source-reconciliation.json",
+    "policyCorrection": {
+      "passed": 82,
+      "failed": 0,
+      "evidence": "vod-rental-policy-correction.json"
+    }
+  },
+  "limitations": [
+    "ScaleEngine residual segment access after revocation is accepted and documented; ordinary expiry requires no precise midstream cutoff. Actual hosted first-play correlation and recovery remain unverified; protected rentals stay disabled.",
+    "Restricted application-role verification now passed through Shelly. Hosted rental build verification remains pending; no deployment performed.",
+    "Initial rental setup requires an already-attached existing digital-access commerce offer; no alternative commerce creator was introduced.",
+    "Device continuity uses authenticated account plus a durable HttpOnly browser token, not physical-device attestation.",
+    "Valid legacy checkout quotes without a pre-existing expiry are not assigned a new expiration.",
+    "No final merge, canonical closure, or Chett acceptance has occurred."
+  ],
+  "nextWork": [
+    "Joe sign in to the open Development browser using the established test account; no credentials in chat",
+    "Verify hosted build identity, disabled execution settings, customer/owner/staff interfaces and first-play/recovery behavior; no cutoff experiment required",
+    "Retain completed restricted-role DB, historical hash reconciliation, and saved provider evidence without rerunning",
+    "Return completed evidence for Chett independent review and Joe approval before merge or closure"
+  ],
+  "boundaries": {
+    "productionTouched": false,
+    "paymentOrRefundExecutionEnabled": false,
+    "deployed": true,
+    "merged": false,
+    "closed": false,
+    "S8B": "closed record unchanged from checkpoint",
+    "S9": "closed record unchanged from checkpoint",
+    "L6S10": "next planned assignment; not started",
+    "preExistingWork": "preserved"
+  },
+  "sourceSha256": {
+    "src/rental-policy.mjs": "2feae321947268a1842525b611ad09c512fa40cb693d7e0ca752dc26da66a0fa",
+    "src/rental-entitlement.mjs": "e586c6fc1bb92694e73bcfe465c65d53248fd4a1a26a493621c8d2f5be06fdc9",
+    "src/rental-management.mjs": "55d8580e648f08d9a71bd4a6a40b6d9bf02c2fb0df195a16c2ee224b0ecf4831",
+    "src/application.mjs": "00030f9f6b6239c11bbaf7a3e19fc999fe217070765d74b89b4c515ce72634e3",
+    "src/fulfillment.mjs": "24c4c1231fc88957d2da49b6f8dde588a84c7a294680a2546ae369c01d83dcee",
+    "src/media-commerce.mjs": "8f22562f7ab7aa8dffe5bdfc4a489042891ad22b10feead6531e04c6196814fb",
+    "src/payments.mjs": "f743bb6961d26899cefd48262c1f659587045ada869f272d27558db4ace574a6",
+    "src/refund-eligibility.mjs": "6650776b6cd488ac734bcd55702e0276b7f55181b92482c98ec99f3341a3b1a6",
+    "src/staff-permissions.mjs": "3414ab26c3464596f2e8dc0c6310e87002ba008484cb405a948d54a771b44e84",
+    "src/staff-role-management.mjs": "db97a665f9aa76ace5178ee798f4ccfb68e23f266f813ba536007ee79e0c8e91",
+    "src/runtime/rental-playback.mjs": "17c59d78753db089c84bc8725ceaab8f602512aa9d057a546a15a421cbaa86bd",
+    "src/runtime/rental-playback-store.mjs": "2318d94cab709a46dc8f5b65474742fc8d38027861ad04056d59de2a46deb302",
+    "src/runtime/rental-playback-workflow.mjs": "0e3e4dc4d01a72dee8959448cd25d8218784934c2f1f812899f8f7dd181ff81e",
+    "src/runtime/refund-application-api.mjs": "d42acf899ca6d59974b79c19092b834ac5e8344692158c2f6b09cb7e033f8f58",
+    "src/runtime/refund-application-database.mjs": "93859ef6a6d61bb15d289170d8c90ab92840dd81568205625da833acd17b8e3e",
+    "src/runtime/media-owner-management.mjs": "0acadb196e3e10fd6bccb66f95b35f2a2e7eb54808cc3c58812298ff895391a3",
+    "src/runtime/native-media-service.mjs": "ed46dcb3fb6b3823e6519b7cffcf57042a16a967affd13c1b1e4909d9338eb07",
+    "src/runtime/native-media-delivery.mjs": "f3fc8c193061ce6f4d0eeed5a34bb15a5fb5600beed6c62dd14ec4ec062d7a4c",
+    "src/runtime/providers/scaleengine-delivery.mjs": "e946cd39a50e368b099c61f3b237cd5c605699cab0b1998d1df0f53fb51a95ff",
+    "public/watch.js": "e54e41bfaf0997d53d6f42d71e2ed49ff55c903c3944eb668e90ef98beb8bd76",
+    "public/acrux-player.js": "09c1a3e6469f63c5c45c52860fc820dfb32d7ef8d4ef622c920ed090a8da9c2a",
+    "public/rental-ui.js": "f043f594c483538ba207af24556fe6dd1d2880a5b2520b835364de1bbf050e19",
+    "public/rental-management.js": "bc763078d57b8d8108e26e10a1aea226b515c6c3ce89dee50c0fef96798fd285",
+    "db/proposals/vod-rental-binding-duration.sql": "2e030d4fac9c0b0990722766762306d27f1840827e478a160f9d2dc57705b4da",
+    "db/proposals/vod-rental-commerce-availability.sql": "a40b692cd346bfd7bbba954801a85cc2122a66472dbbbea74dc80949daaaa71d"
+  },
+  "latestVerification": "vod-rental-policy-correction.json",
+  "currentDevelopmentCommit": "281c5c4e57553c9de2cef05ddb5c44c2c91584e9",
+  "publishedVerificationBranch": "codex/vod-rental-development"
+}

@@ -3,7 +3,7 @@
 # New disposable asset remains for the paid-placement proof and eventual cleanup.
 # Never prints credentials or raw provider responses. Do not rerun after an attempt.
 [CmdletBinding()]
-param([switch]$RentalFixture)
+param([switch]$RentalFixture,[switch]$RentalEvidence)
 $ErrorActionPreference='Stop'
 $VerbosePreference='SilentlyContinue'; $DebugPreference='SilentlyContinue'; Set-PSDebug -Off
 $priorDebug=$env:BITWARDENCLI_DEBUG; $env:BITWARDENCLI_DEBUG='false'
@@ -39,7 +39,8 @@ try {
  $payload=@{appDatabaseUrl=[string]$dbFields[0].value;receiptPublicKey=[string]$keys[0].envVar.value}|ConvertTo-Json -Compress
  $stage='bounded offer fixture'
  $node='C:/Users/Joe Graham/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe'
- $runner=if($RentalFixture){'prepare-vod-rental-fixture-private.mjs'}else{'prepare-l6-s8b-paid-offer-private.mjs'}
+ if($RentalFixture -and $RentalEvidence){throw 'Choose fixture preparation or read-only evidence'}
+ $runner=if($RentalEvidence){'inspect-vod-rental-state-private.mjs'}elseif($RentalFixture){'prepare-vod-rental-fixture-private.mjs'}else{'prepare-l6-s8b-paid-offer-private.mjs'}
  $payload | & $node (Join-Path $PSScriptRoot $runner) 2>$null
  if($LASTEXITCODE -ne 0){throw 'Runner stopped'}
 } catch {

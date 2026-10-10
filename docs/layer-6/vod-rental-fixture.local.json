@@ -1,0 +1,26 @@
+{
+  "status": "fixture-ready",
+  "stage": "complete",
+  "fixture": {
+    "reference": "vod-rental-development-verification-v1",
+    "serviceId": "srv-dao5cjbm8hqs73db51j0",
+    "hostname": "vega-development-web.onrender.com",
+    "tenantId": "vega-development",
+    "businessId": "vega-dance-lab",
+    "actorId": "4c3dcc3b-34cf-4664-bdf5-e16bbd6cd124",
+    "resourceId": "6c3a7236-9132-4be8-a64a-f4b6f80db360",
+    "placementId": "2960abdf-bfb3-49b1-87db-f9f95011d47f",
+    "bindingId": "348eac96-fc56-45a0-807d-c32d5056f7d5",
+    "entitlementId": "7566b16f-5d71-4c72-9ec5-6b0355a5d9f1",
+    "expiresAt": "2026-10-10T23:59:00.000Z"
+  },
+  "providerRequests": 0,
+  "payments": 0,
+  "historicalWrites": 0,
+  "productionUntouched": true,
+  "secretsPersisted": false,
+  "sourceResourceId": "dcb5f610-23a2-43be-af39-706a17be8a92",
+  "sourceBindingDigest": "0bd0ee79ea5a87e1f64ba78dfcbee3ab6051a6210fc076ee4ee05794caf1195d",
+  "recoveryEventId": "b54f44159428bbd40b86a6ac2fc8129dfd10dc50d1e99b0468301d43aa51ef66",
+  "revision": "201"
+}

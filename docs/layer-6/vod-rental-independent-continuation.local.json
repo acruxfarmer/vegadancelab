@@ -1,0 +1,31 @@
+{
+  "observedAt": "2026-10-09T23:23:55.933Z",
+  "status": "two-independent-checks-passed-natural-expiration-pending",
+  "fixtureMutations": 0,
+  "providerRequests": 0,
+  "tests": {
+    "command": "node --test --test-name-pattern=\"confirmed rejection retries|saved active session survives\" test/rental-playback-workflow.test.mjs",
+    "passed": 2,
+    "environment": "isolated local state and synthetic provider responses",
+    "checks": [
+      "Confirmed no-ticket rejection recovers then activates successfully with the same activation record, full viewing duration and accumulated recovery budget",
+      "Saved active session survives workflow restart and ticket renewal without changing activation or expiry; another device and expired session are denied"
+    ]
+  },
+  "hostedEvidenceUnchanged": {
+    "expiresAt": "2026-10-10T00:13:53.059Z",
+    "session": "ended",
+    "ticket": "revoked"
+  },
+  "remainingHostedLimitations": [
+    "Active-session successful continuation cannot be proven with this already-ended no-replay fixture without changing evidence",
+    "Successful startup recovery was not exercised by the successful hosted playback"
+  ],
+  "next": [
+    "Natural expiration after preserved deadline",
+    "Existing Shelly Disable deployment",
+    "Hosted disabled-state denial",
+    "Evidence handoff with explicit local/hosted distinctions; no merge or closure"
+  ],
+  "scheduledFollowUp": "not created; automatic approval review rejected scheduling without explicit user authorization"
+}

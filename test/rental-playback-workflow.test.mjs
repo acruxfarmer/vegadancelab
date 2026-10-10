@@ -111,3 +111,34 @@ test('scoped verification rechecks saved tickets, expiry during issuance and exi
  const b=adapter({rentalCapabilitiesFor(){return {...capabilities,rentalAccessVerified:enabled};},async authorize(){enabled=false;return {kind:'hls',expiresAt:new Date(Date.parse(at)+120000).toISOString(),ticket:{key:'late'}};},async revoke(){revoked=true;}});
  enabled=true;await assert.rejects(createRentalPlaybackWorkflow({store:g.store,adapters:{fake:b}}).start('viewer','p',{deviceId}));assert.equal(revoked,true);
 });
+
+test('confirmed rejection retries successfully without a second activation record or clock consumption',async()=>{
+ const f=fixture();let calls=0;
+ const a=adapter({async authorize(){calls++;if(calls===1){f.setTime(new Date(Date.parse(at)+5000).toISOString());const e=Error('Synthetic provider rejection');e.code='RENTAL_TICKET_REJECTED';throw e;}return {kind:'hls',url:'https://synthetic.invalid/rental',expiresAt:new Date(Date.parse(at)+125000).toISOString(),ticket:{key:'recovered-ticket'}};},async observePlayback(ticket,attemptId){return {kind:'provider_authorization_plus_player_ack',ticketKey:ticket.key,attemptId,reference:'synthetic-recovered-playback'};}});
+ const w=createRentalPlaybackWorkflow({store:f.store,adapters:{fake:a}});
+ assert.equal((await w.start('viewer','p',{deviceId})).recovered,true);
+ const activationId=f.state.accessEntitlements[0].rental.activation.id;
+ assert.equal(f.state.accessEntitlements[0].rental.expiresAt,null);
+ const recovered=await w.start('viewer','p',{deviceId});
+ f.setTime(new Date(Date.parse(at)+10000).toISOString());
+ await w.confirm('viewer','p',{...recovered.rental,deviceId});
+ const rental=f.state.accessEntitlements[0].rental;
+ assert.equal(rental.activation.id,activationId);assert.equal(rental.activation.attempts.length,2);
+ assert.equal(rental.recoveryUsedMs,5000);assert.equal(rental.activation.confirmedAt,new Date(Date.parse(at)+10000).toISOString());
+ assert.equal(Date.parse(rental.expiresAt)-Date.parse(rental.activation.confirmedAt),rental.policy.viewingHours*3600000);
+ assert.equal(f.state.rentalPlaybackTickets.length,1);
+});
+test('saved active session survives workflow restart and ticket renewal without extending purchased expiry',async()=>{
+ const f=fixture();let current=Date.parse(at),calls=0;
+ const a=adapter({async authorize(){calls++;return {kind:'hls',url:'https://synthetic.invalid/rental',expiresAt:new Date(current+120000).toISOString(),ticket:{key:'ticket-'+calls}};},async observePlayback(ticket,attemptId){return {kind:'provider_authorization_plus_player_ack',ticketKey:ticket.key,attemptId,reference:'synthetic-active-session'};}});
+ const w=createRentalPlaybackWorkflow({store:f.store,adapters:{fake:a}}),first=await w.start('viewer','p',{deviceId});
+ await w.confirm('viewer','p',{...first.rental,deviceId});
+ const before=structuredClone(f.state.accessEntitlements[0].rental);
+ const restarted=createRentalPlaybackWorkflow({store:f.store,adapters:{fake:a}});
+ await restarted.start('viewer','p',{deviceId,sessionId:first.rental.sessionId});assert.equal(calls,1);
+ current+=130000;f.setTime(new Date(current).toISOString());
+ const renewed=await restarted.start('viewer','p',{deviceId,sessionId:first.rental.sessionId});assert.equal(calls,2);
+ assert.equal(renewed.rental.sessionId,first.rental.sessionId);assert.deepEqual(f.state.accessEntitlements[0].rental,before);
+ await assert.rejects(restarted.start('viewer','p',{deviceId:'other-device',sessionId:first.rental.sessionId}));assert.equal(calls,2);
+ f.setTime(before.expiresAt);await assert.rejects(restarted.start('viewer','p',{deviceId,sessionId:first.rental.sessionId}),/expired/);assert.equal(calls,2);
+});

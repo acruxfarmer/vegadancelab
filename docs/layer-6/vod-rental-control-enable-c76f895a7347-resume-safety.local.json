@@ -1,0 +1,44 @@
+﻿{
+    "stage":  "checks-complete",
+    "httpStatus":  null,
+    "environmentChecks":  {
+                              "VEGA_ENV":  {
+                                               "expectedValueMatches":  true,
+                                               "matchCount":  1
+                                           },
+                              "VEGA_EXTERNAL_EFFECTS":  {
+                                                            "expectedValueMatches":  true,
+                                                            "matchCount":  1
+                                                        },
+                              "VEGA_NATIVE_MEDIA_ENABLED":  {
+                                                                "expectedValueMatches":  true,
+                                                                "matchCount":  1
+                                                            },
+                              "VEGA_SANDBOX_PAYMENT_EXECUTION":  {
+                                                                     "expectedValueMatches":  true,
+                                                                     "matchCount":  1
+                                                                 },
+                              "VEGA_PAYMENT_ATTEMPT_PREPARATION":  {
+                                                                       "expectedValueMatches":  true,
+                                                                       "matchCount":  1
+                                                                   },
+                              "VEGA_SANDBOX_REFUND_EXECUTION":  {
+                                                                    "expectedValueMatches":  true,
+                                                                    "matchCount":  1
+                                                                },
+                              "VEGA_REFUND_PROGRAM_EXECUTION":  {
+                                                                    "expectedValueMatches":  true,
+                                                                    "matchCount":  1
+                                                                }
+                          },
+    "applicationChecks":  {
+                              "development":  true,
+                              "squareDisabled":  true,
+                              "externalEffectsDisabled":  true,
+                              "paymentModeDisabled":  true
+                          },
+    "activeDeploymentCount":  0,
+    "errorCategory":  null,
+    "mutations":  0,
+    "secretsPersisted":  false
+}

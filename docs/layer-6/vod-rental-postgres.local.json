@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "stage": "complete",
+  "checks": [
+    "restricted_runtime_role",
+    "independent_connection_contends_on_same_business_lock",
+    "owner_extension_atomic_journal_receipt_and_idempotent_replay",
+    "stale_entitlement_revision_rejected",
+    "manager_extension_only_front_desk_instructor_default_denial_explicit_delegation",
+    "cross_business_denial",
+    "playback_mutation_receipt_and_entitlement_revision",
+    "missing_receipt_rolls_back",
+    "unassigned_actor_cannot_read_business_or_binding",
+    "restricted_role_binding_duration_readiness_and_foreign_actor_guards"
+  ],
+  "productionUntouched": true,
+  "providerCalls": 0,
+  "committedBusinessWrites": 0,
+  "baselineRestored": true
+}

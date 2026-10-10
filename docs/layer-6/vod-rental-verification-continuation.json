@@ -1,0 +1,122 @@
+{
+  "status": "material_provider_limitation_for_joe_and_chett_review",
+  "recordedAt": "2026-10-09T20:07:38.422425+00:00",
+  "sourceReconciliation": {
+    "status": "passed",
+    "artifact": "vod-rental-source-reconciliation.json",
+    "historicalBaselinesEdited": false,
+    "baselineGroups": 7,
+    "uniqueChangedFiles": 9,
+    "preExistingAtCleanCheckpoint": 5,
+    "rentalBuildChanges": 4,
+    "originalHistoricalAssertionsStillFail": 7
+  },
+  "localVerification": {
+    "targetedTestsPassed": 10,
+    "tests": [
+      "rental-development-server",
+      "rental-provider-probe",
+      "rental-api",
+      "rental-playback-workflow"
+    ],
+    "notHostedProof": true
+  },
+  "correction": {
+    "path": "src/runtime/rental-playback-store.mjs",
+    "change": "Set existing vega.receipt_discovery=v1 transaction marker in playback mutations and ticket reconciliation, matching the established app transaction contract.",
+    "sha256": "2318d94cab709a46dc8f5b65474742fc8d38027861ad04056d59de2a46deb302"
+  },
+  "operatorWorkflow": {
+    "privateSession": "Joe confirmed Shelly unlocked; credentials remain in that process",
+    "databaseCommand": "& 'D:\\JOES WIP\\ACRUX\\Codex Projects\\vega-commerce-68a\\scripts\\verify-l6-s8a-postgres-private.ps1' -RentalVerification",
+    "databaseReport": "vod-rental-postgres.local.json",
+    "providerCommand": "& 'D:\\JOES WIP\\ACRUX\\Codex Projects\\vega-commerce-68a\\scripts\\run-l6-s5-sevu-auto-proof-private.ps1' -RentalVerification",
+    "providerReport": "vod-rental-provider.local.json",
+    "change": "Existing wrappers gain explicit rental runner selection; original behavior retained; rental output uses new filenames."
+  },
+  "providerProbe": {
+    "existingAdapter": true,
+    "exactAssetTicketsMaximum": 2,
+    "ticketDurationSeconds": 120,
+    "databaseReadOnly": true,
+    "cleanupRequired": true,
+    "sameIPHttpContinuityOnly": true,
+    "doesNotProve": [
+      "decoded first-play activation",
+      "physical device binding",
+      "hosted grace/replay behavior",
+      "immediate removal of buffered media"
+    ],
+    "automaticRetry": false
+  },
+  "hosted": {
+    "newBuildDeployed": false,
+    "existingS9DeploymentScriptPinnedToOldCommit": true,
+    "oldScriptNotRunForRentalBuild": true,
+    "runtimeDependencyGraph": {
+      "modules": 82,
+      "missing": 0
+    }
+  },
+  "boundaries": {
+    "protectedRentalDeliveryEnabled": false,
+    "productionTouched": false,
+    "paymentRefundExecutionEnabled": false,
+    "S8B_S9EvidenceEdited": false,
+    "S10Started": false,
+    "merged": false,
+    "closed": false
+  },
+  "operatorResults": {
+    "database": {
+      "status": "passed",
+      "checksPassed": 10,
+      "baselineRestored": true,
+      "committedBusinessWrites": 0,
+      "report": "vod-rental-postgres.local.json"
+    },
+    "provider": {
+      "status": "provider-enforcement-limitation-observed",
+      "report": "vod-rental-provider.local.json",
+      "unsignedManifestStatus": 403,
+      "protectedMediaBytes": 15416,
+      "sameTicketReconnectManifest": true,
+      "revocationAfterSixSeconds": {
+        "manifestStatus": 403,
+        "knownSegmentFreshRequestStatus": 200
+      },
+      "expirationObserved": {
+        "manifestStatus": 403,
+        "knownSegmentStatus": 403
+      },
+      "ticketsIssued": 2,
+      "cleanupPending": 0,
+      "resourceAndBindingUnchanged": true
+    }
+  },
+  "decisionRequired": {
+    "finding": "An already-known segment returned fresh video bytes six seconds after ticket deletion, while manifest access was denied. This is beyond merely retaining bytes already buffered by a player.",
+    "scope": "One established Development fixture, two tickets; does not establish the duration or breadth of residual segment access, nor universal provider behavior.",
+    "recommendation": "Keep timed rental playback disabled. Seek a documented and testable bounded revocation behavior within the existing ScaleEngine integration before changing product promises.",
+    "alternativesForReview": [
+      "Confirm and verify an existing ScaleEngine setting or supported enforcement mechanism that satisfies the approved behavior.",
+      "If no compatible mechanism exists, Joe and Chett must explicitly decide whether a measured bounded revocation delay is acceptable; do not silently weaken behavior or add infrastructure."
+    ],
+    "notAuthorizedByThisFinding": [
+      "Enable protected rentals",
+      "Add a streaming proxy, DRM or another provider",
+      "Claim decoded first-play, physical-device enforcement, or hosted grace/replay verification"
+    ]
+  },
+  "remainingVerification": [
+    "Hosted rental build and customer/staff workflow verification",
+    "First-play activation evidence integration and ambiguous startup recovery",
+    "Hosted grace, replay, buffering, reconnection and device restrictions",
+    "Provider revocation residual-access bound and acceptance decision"
+  ],
+  "evidenceSha256": {
+    "vod-rental-postgres.local.json": "2b7759947f5a805c14844dac72dab33961948c748fef309c67b9a97c3c79fa91",
+    "vod-rental-provider.local.json": "5172cde646d507bf606d4df89957f6cb43a8b20ba1b9e90ece057adec0ce7cd8",
+    "vod-rental-source-reconciliation.json": "60404a60fb5ebc4880617115e2f11d68e5c730c35d75a9ac8fb74ddf04002925"
+  }
+}

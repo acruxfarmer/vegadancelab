@@ -1,0 +1,37 @@
+✔ rental HTTP authenticates, supplies server device cookie and rejects authority injection (8.2393ms)
+✔ rental finish needs existing device continuity and reconciles revoked tickets (1.8884ms)
+✔ policy rejects unknown/version/unsafe duration values and freezes normalized defaults (1.3359ms)
+✔ actual late availability controls full allowance and clock boundaries (2.1008ms)
+✔ expired or staff-revoked paid rental remains historically fulfilled; provenance corruption does not (4.0358ms)
+✔ complimentary grants need no purchase and audited correction preserves snapshot and revokes sessions (1.3466ms)
+✔ owner policy revisions preserve purchased and unfinished quote terms and sale withdrawal is separate (2.1328ms)
+✔ application corrections reject forged policy, unverified recipients and wrong placement (3.3389ms)
+✔ expired unused rental remains fulfilled, while played or staff-reset usage preserves wholly-unused refund policy (2.2071ms)
+✔ retired grace fields remain historical data only; new policies omit them (0.1912ms)
+✔ rental terms show advance purchase, first primary playback and ordinary expiration without continuation promises (21.2836ms)
+✔ rental customer status escapes adjustment messages and separates suspension from expiration (1.4861ms)
+✔ manager sees extension only while owner corrections and pricing require server authority (0.549ms)
+✔ owner sees versioned offer and withdrawal controls with reason and immutable quote notice (0.3843ms)
+✔ rental form parser preserves unchecked replay and explicit numeric policy (0.9088ms)
+✔ retired grace data cannot surface settings, finish deadlines, or customer promises (0.3348ms)
+✔ concurrent requests reserve once, provider network outside transaction, persisted ticket survives workflow restart (5.7131ms)
+✔ uncertain provider issuance cannot duplicate ticket or consume another window (0.456ms)
+✔ browser confirmation cannot fabricate provider evidence; trusted observation settles once (1.638ms)
+✔ real store contract locks aggregate, writes receipt atomically, rolls back unavailable receipt and failures (3.7018ms)
+✔ persisted entitlement changes invalidate staff revision; no-op and session-only writes preserve it (3.9465ms)
+✔ persisted ticket and new session cannot bypass expiry; late provider response is revoked (0.9221ms)
+✔ ambiguous startup evidence does not reset entitlement or recovery budget (0.5884ms)
+✔ confirmed no-ticket rejection recovers once and cumulative ten-minute budget stops retry (0.8011ms)
+✔ scoped verification rechecks saved tickets, expiry during issuance and existing entitlement eligibility (0.8182ms)
+✔ confirmed rejection retries successfully without a second activation record or clock consumption (0.8184ms)
+✔ saved active session survives workflow restart and ticket renewal without extending purchased expiry (0.9297ms)
+✔ only pinned Development service, full fixture scope and unexpired exact configuration enable verification (0.8875ms)
+✔ real provider adapter gates rental issuance before network and clamps ticket to verification expiry (21.026ms)
+ℹ tests 29
+ℹ suites 0
+ℹ pass 29
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 269.6782

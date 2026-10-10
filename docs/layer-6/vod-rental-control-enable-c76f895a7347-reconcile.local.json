@@ -1,0 +1,21 @@
+﻿{
+    "status":  "read-only-reconciled",
+    "serviceId":  "srv-dao5cjbm8hqs73db51j0",
+    "fixtureReady":  true,
+    "fixturePlacementMatches":  true,
+    "fixtureExpiryMatches":  true,
+    "parsedExpiryType":  "System.String",
+    "oldComparisonWouldReject":  false,
+    "controlSetting":  "disabled",
+    "activeDeploymentCount":  0,
+    "liveCommit":  [
+                       "281c5c4e57553c9de2cef05ddb5c44c2c91584e9",
+                       "3ab6ce31bcecf3027dd84982e89c9ce44da8ce09",
+                       "6860adbf7e9e7f50940a420ea7e1a14a32adcf3a",
+                       "6860adbf7e9e7f50940a420ea7e1a14a32adcf3a",
+                       "6860adbf7e9e7f50940a420ea7e1a14a32adcf3a"
+                   ],
+    "mutations":  0,
+    "providerRequests":  0,
+    "secretsPersisted":  false
+}

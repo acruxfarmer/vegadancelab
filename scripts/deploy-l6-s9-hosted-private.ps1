@@ -3,7 +3,7 @@
 # Deployment only; hosted ordinary-path playback is a separate bounded verification.
 # No ScaleEngine requests, tickets, uploads, or Production changes.
 [CmdletBinding()]
-param([switch]$InspectServiceOnly,[switch]$InspectSafetyOnly,[switch]$RentalVerification,[string]$RuntimeCommit,[ValidateSet('Enable','Disable')][string]$RentalControl)
+param([switch]$ResumeRentalControl,[switch]$InspectRentalControlOnly,[switch]$InspectServiceOnly,[switch]$InspectSafetyOnly,[switch]$RentalVerification,[string]$RuntimeCommit,[ValidateSet('Enable','Disable')][string]$RentalControl)
 $ErrorActionPreference='Stop'
 $VerbosePreference='SilentlyContinue'; $DebugPreference='SilentlyContinue'; Set-PSDebug -Off
 $priorDebug=$env:BITWARDENCLI_DEBUG; $env:BITWARDENCLI_DEBUG='false'
@@ -14,7 +14,7 @@ if($RentalVerification){
 }
 if($RentalControl -and -not $RentalVerification){throw 'Rental control requires rental verification mode'}
 $controlExpiry='2026-10-10T23:59:00.000Z'
-if($RentalControl -ceq 'Enable' -and [datetimeoffset]::UtcNow -ge [datetimeoffset]::Parse($controlExpiry)){throw 'Verification window expired'}
+if(-not $InspectRentalControlOnly -and $RentalControl -ceq 'Enable' -and [datetimeoffset]::UtcNow -ge [datetimeoffset]::Parse($controlExpiry)){throw 'Verification window expired'}
 $serviceId='srv-dao5cjbm8hqs73db51j0'
 $base='https://api.render.com/v1/services/'+$serviceId
 $receiptPath=Join-Path $PSScriptRoot '../docs/layer-6/l6-s9-hosted-deployment.local.json'
@@ -33,13 +33,32 @@ if($RentalControl){
  $inspectionPath=Join-Path $PSScriptRoot ('../docs/layer-6/'+$prefix+'-service.local.json')
  $safetyPath=Join-Path $PSScriptRoot ('../docs/layer-6/'+$prefix+'-safety.local.json')
 }
+if($InspectRentalControlOnly){
+ if(-not $RentalVerification -or -not $RentalControl){throw 'Rental inspection requires exact rental verification scope'}
+ $inspectionPath=Join-Path $PSScriptRoot ('../docs/layer-6/'+$prefix+'-reconcile-v2-service.local.json')
+}
+if($ResumeRentalControl){
+ if(-not $RentalVerification -or $RentalControl -cne 'Enable' -or $InspectRentalControlOnly -or $InspectServiceOnly -or $InspectSafetyOnly -or $commit -cne 'c76f895a734719b6a42c8b87b0412fa8414a3179'){throw 'Resume scope invalid'}
+ $prior=Get-Content -Raw -LiteralPath $receiptPath|ConvertFrom-Json
+ $reconciled=Get-Content -Raw -LiteralPath (Join-Path $PSScriptRoot ('../docs/layer-6/'+$prefix+'-reconcile-v2.local.json'))|ConvertFrom-Json
+ if($prior.status -cne 'stopped-reconcile-before-retry' -or $prior.deployAttempted -ne $false -or $prior.runtimeCommit -cne $commit -or $reconciled.controlMatchCount -ne 1 -or $reconciled.controlSetting -cne 'expected-expiration-configured' -or $reconciled.liveCommit -cne '281c5c4e57553c9de2cef05ddb5c44c2c91584e9' -or $reconciled.activeDeploymentCount -ne 0){throw 'Resume evidence mismatch'}
+ $prefix+='-resume'
+ $receiptPath=Join-Path $PSScriptRoot ('../docs/layer-6/'+$prefix+'-deployment.local.json')
+ $marker=Join-Path $PSScriptRoot ('../docs/layer-6/'+$prefix+'-attempted.local.json')
+ $inspectionPath=Join-Path $PSScriptRoot ('../docs/layer-6/'+$prefix+'-service.local.json')
+ $safetyPath=Join-Path $PSScriptRoot ('../docs/layer-6/'+$prefix+'-safety.local.json')
+}
 $receipt=[ordered]@{runtimeCommit=$commit;serviceId=$serviceId;status='preflight';stage='private session';environment='development';settingsUpdated=@();deployAttempted=$false;deployId=$null;productionUntouched=$true;providerRequests=0;secretsPersisted=$false}
 $headers=$null; $values=@{}; $acquired=$false
 function Save-Receipt { $receipt|ConvertTo-Json -Depth 8|Set-Content -LiteralPath $receiptPath -Encoding utf8 }
 function Api([string]$url,[string]$method='GET',$body=$null){
  $requestOptions=@{Uri=$url;Method=$method;Headers=$headers;TimeoutSec=30;MaximumRedirection=0;ErrorAction='Stop'}
  if($null -ne $body){$requestOptions.ContentType='application/json';$requestOptions.Body=($body|ConvertTo-Json -Compress)}
- Invoke-RestMethod @requestOptions
+ # Windows PowerShell can emit a REST JSON array as one pipeline object.
+ # Enumerate exactly one response level so callers receive individual records.
+ $apiResult=Invoke-RestMethod @requestOptions
+ if($apiResult -is [array]){foreach($apiItem in $apiResult){Write-Output -NoEnumerate $apiItem}}
+ else{Write-Output -NoEnumerate $apiResult}
 }
 function Field($record,[string]$name){
  $f=@($record.fields|Where-Object name -CEQ $name)
@@ -114,7 +133,7 @@ function Inspect-Safety {
  return ($null -eq $safe.errorCategory)
 }
 try {
- if(-not ($InspectServiceOnly -or $InspectSafetyOnly) -and (Test-Path -LiteralPath $marker)){throw 'Prior attempt requires reconciliation'}
+ if(-not ($InspectRentalControlOnly -or $InspectServiceOnly -or $InspectSafetyOnly) -and (Test-Path -LiteralPath $marker)){throw 'Prior attempt requires reconciliation'}
  $bw='C:/Users/Joe Graham/Tools/BitwardenCLI/bw.exe'
  $raw=& $bw status --nointeraction 2>$null
  if($LASTEXITCODE -ne 0 -or (($raw -join "`n")|ConvertFrom-Json).status -cne 'unlocked'){throw 'Private session unavailable'}
@@ -130,6 +149,23 @@ try {
  $identityValid=Inspect-Service
  if($InspectServiceOnly){Write-Host 'Read-only service inspection saved. Tell Astra done. No settings or deployment changed.';return}
  if(-not $identityValid){throw 'Service identity not confirmed'}
+ if($InspectRentalControlOnly){
+  $receipt.stage='read-only rental control reconciliation'
+  $fixture=Get-Content -Raw -LiteralPath (Join-Path $PSScriptRoot '../docs/layer-6/vod-rental-fixture.local.json')|ConvertFrom-Json
+  $expiryMatches=(([datetimeoffset]$fixture.fixture.expiresAt).UtcDateTime -eq ([datetimeoffset]$controlExpiry).UtcDateTime)
+  $vars=@(Api ($base+'/env-vars?limit=100'))
+  $entry=@($vars|Where-Object {$_.envVar.key -ceq 'VEGA_RENTAL_VERIFICATION'})
+  if(@($vars|Where-Object { $_ -is [array] }).Count){throw 'Environment response remains nested'}
+  $setting=if($entry.Count -eq 0){'absent'}elseif($entry.Count -ne 1){'ambiguous'}elseif($entry[0].envVar.value -ceq 'disabled'){'disabled'}elseif($entry[0].envVar.value -ceq $controlExpiry){'expected-expiration-configured'}else{'unexpected-value'}
+  $deployments=@(Api ($base+'/deploys?limit=5'))
+  $live=@($deployments|Where-Object {$_.deploy.status -ceq 'live'})
+  $active=@($deployments|Where-Object {$_.deploy.status -in @('created','queued','build_in_progress','pre_deploy_in_progress','update_in_progress')})
+  $safe=[ordered]@{environmentRecordCount=$vars.Count;controlMatchCount=$entry.Count;deploymentRecordCount=$deployments.Count;liveDeploymentCount=$live.Count;status='read-only-reconciled';serviceId=$serviceId;fixtureReady=($fixture.status -ceq 'fixture-ready');fixturePlacementMatches=($fixture.fixture.placementId -ceq '2960abdf-bfb3-49b1-87db-f9f95011d47f');fixtureExpiryMatches=$expiryMatches;parsedExpiryType=$fixture.fixture.expiresAt.GetType().FullName;oldComparisonWouldReject=($fixture.fixture.expiresAt -cne $controlExpiry);controlSetting=$setting;activeDeploymentCount=$active.Count;liveCommit=if($live.Count){$live[0].deploy.commit.id}else{$null};mutations=0;providerRequests=0;secretsPersisted=$false}
+  $safe|ConvertTo-Json -Depth 5|Set-Content -LiteralPath (Join-Path $PSScriptRoot ('../docs/layer-6/'+$prefix+'-reconcile-v2.local.json')) -Encoding utf8
+  $vars=$null;$entry=$null;$deployments=$null
+  Write-Host 'Read-only rental reconciliation saved. No settings or deployment changed. Tell Astra done.'
+  return
+ }
  $receipt.stage='existing Development safety settings'
  $safetyValid=Inspect-Safety
  if($InspectSafetyOnly){Write-Host 'Read-only safety inspection saved. Tell Astra done. No settings or deployment changed.';return}
@@ -153,14 +189,19 @@ try {
   $receipt.stage='bounded rental verification setting';Save-Receipt
   if($RentalControl -ceq 'Enable'){
    $fixture=Get-Content -Raw -LiteralPath (Join-Path $PSScriptRoot '../docs/layer-6/vod-rental-fixture.local.json')|ConvertFrom-Json
-   if($fixture.status -cne 'fixture-ready' -or $fixture.fixture.placementId -cne '2960abdf-bfb3-49b1-87db-f9f95011d47f' -or $fixture.fixture.expiresAt -cne $controlExpiry){throw 'Isolated rental fixture not confirmed'}
+   if($fixture.status -cne 'fixture-ready' -or $fixture.fixture.placementId -cne '2960abdf-bfb3-49b1-87db-f9f95011d47f' -or ([datetimeoffset]$fixture.fixture.expiresAt).UtcDateTime -ne ([datetimeoffset]$controlExpiry).UtcDateTime){throw 'Isolated rental fixture not confirmed'}
   }
   $controlValue=if($RentalControl -ceq 'Enable'){$controlExpiry}else{'disabled'}
-  $null=Api ($base+'/env-vars/VEGA_RENTAL_VERIFICATION') 'PUT' @{value=$controlValue}
+  if(-not $ResumeRentalControl){$null=Api ($base+'/env-vars/VEGA_RENTAL_VERIFICATION') 'PUT' @{value=$controlValue}}
   $verify=@(Api ($base+'/env-vars?limit=100'))
   $found=@($verify|Where-Object {$_.envVar.key -ceq 'VEGA_RENTAL_VERIFICATION'})
   if($found.Count -ne 1 -or $found[0].envVar.value -cne $controlValue){throw 'Rental control setting not confirmed'}
-  $receipt.settingsUpdated=@('VEGA_RENTAL_VERIFICATION');$receipt.rentalControl=$RentalControl;$receipt.controlExpiry=$controlExpiry;Save-Receipt
+  if($ResumeRentalControl){
+   $current=@(Api ($base+'/deploys?limit=5'))
+   $liveNow=@($current|Where-Object {$_.deploy.status -ceq 'live'})
+   if($liveNow.Count -ne 1 -or $liveNow[0].deploy.commit.id -cne '281c5c4e57553c9de2cef05ddb5c44c2c91584e9'){throw 'Live checkpoint changed'}
+   $receipt.settingsUpdated=@();$receipt.existingControlConfirmed=$true
+  }else{$receipt.settingsUpdated=@('VEGA_RENTAL_VERIFICATION')};$receipt.rentalControl=$RentalControl;$receipt.controlExpiry=$controlExpiry;Save-Receipt
   $verify=$null;$found=$null
  }
  $receipt.stage='exact runtime deployment';$receipt.deployAttempted=$true;Save-Receipt
@@ -185,7 +226,7 @@ try {
  $receipt.status='live-awaiting-browser-proof';$receipt.stage='complete';Save-Receipt
  Write-Host 'Development deployment ready. Tell Astra done. No playback or provider request was made.'
 } catch {
- if($acquired){$receipt.status='stopped-reconcile-before-retry';Save-Receipt}
+ if($acquired){$receipt.status='stopped-reconcile-before-retry';$receipt.failureLine=$_.InvocationInfo.ScriptLineNumber;$receipt.failureType=$_.Exception.GetType().FullName;if($null -ne $_.Exception.Response.StatusCode){$receipt.failureHttpStatus=[int]$_.Exception.Response.StatusCode};Save-Receipt}
  Write-Host ('Stopped at: '+$receipt.stage+'. No secret details printed. Tell Astra; do not rerun after a deployment attempt.')
 } finally {
  $raw=$null;$folders=$null;$folder=$null;$operator=$null;$scale=$null;$headers=$null;$values=$null;$envVars=$null;$v=$null;$database=$null;$appDatabaseUrl=$null;$payload=$null

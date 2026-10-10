@@ -1,0 +1,77 @@
+{
+  "status": "qualified-development-acceptance-recommended-pending-chett-and-joe",
+  "recordedAt": "2026-10-10T00:25:05.027Z",
+  "sourceHandoff": "vod-rental-verification-review-handoff.json",
+  "inventory": "vod-rental-final-implementation-inventory.json",
+  "applicationCommit": "c76f895a734719b6a42c8b87b0412fa8414a3179",
+  "shutdownDeployment": "dep-db4o7nt9fdbs73aa0td0",
+  "authorizationDisposition": {
+    "expiredDirectHostedStart": {
+      "performed": false,
+      "reason": "Existing authenticated viewer exposes no start action after expiry. Available browser controls do not expose a supported arbitrary authenticated POST mechanism. In any case the disabled adapter capability guard runs before reserveRentalPlayback checks entitlement expiry, so denial now cannot independently isolate expiration. No new harness, credential extraction, fixture, or control re-enablement introduced.",
+      "support": [
+        "Hosted natural expiration with absent player",
+        "Persisted immutable one-hour deadline",
+        "Existing local tests deny new and saved sessions at expiry and revoke late tickets"
+      ]
+    },
+    "disabledControl": {
+      "additionalHostedIsolation": false,
+      "assessment": "Adequate evidence for retaining the disabled Development state: server capability gate checks exact configuration before session reservation/provider issuance; existing local tests cover invalid/off scope and saved ticket reuse; corrected operator readback and exact-commit live shutdown receipt establish deployed state.",
+      "qualification": "This is a composite evidence assessment, not a new hosted otherwise-active-entitlement test."
+    }
+  },
+  "hostedEvidence": [
+    "vod-rental-hosted-playback.local.json",
+    "vod-rental-hosted-state.local.json",
+    "vod-rental-hosted-expiration.local.json",
+    "vod-rental-control-disable-c76f895a7347-deployment.local.json"
+  ],
+  "testEvidence": {
+    "policyCorrection": {
+      "passed": 82,
+      "failed": 0
+    },
+    "scopedControl": {
+      "passed": 31
+    },
+    "additionalIndependent": {
+      "passed": 2
+    },
+    "broadHistorical": {
+      "total": 3101,
+      "passed": 3094,
+      "failedHistoricalHashAssertions": 7
+    },
+    "restrictedDatabase": {
+      "checks": 10,
+      "passed": true,
+      "committedBusinessWrites": 0
+    },
+    "qualification": "Existing runs overlap and refer to their recorded checkpoints; no additional tests run for this reconciliation."
+  },
+  "remainingHostedCoverage": {
+    "recovery": "Local successful rejection recovery and bounded retry; hosted success unproven. Ambiguous provider outcomes remain fail closed for audited correction.",
+    "savedSession": "Local workflow restart, ticket renewal, unchanged expiration, device/expiry denial; successful hosted active continuation unproven.",
+    "assessment": "No observed implementation failure in these paths establishes a new blocker to acceptance of the disabled Development build. Coverage gaps remain explicit acceptance qualifications; this is not approval for general rental enablement or Production."
+  },
+  "providerLimitations": [
+    "Fresh known segment returned bytes six seconds after revocation while manifest denied",
+    "Later expiry denied both tested paths; cleanup may have contributed",
+    "No claim of immediate segment cutoff, decoded-frame attestation, physical-device identity, or buffered-media recall",
+    "Ordinary expiry denies new authorization; mandatory withdrawal retains application denial and provider revocation without immediate segment cutoff guarantee"
+  ],
+  "boundaries": {
+    "fixturePreserved": true,
+    "verificationControl": "disabled",
+    "generalRentalPlayback": "disabled",
+    "productionUntouched": true,
+    "paymentRefundExecution": "disabled",
+    "historicalBaselinesUnchanged": true,
+    "s8bS9": "closed",
+    "s10": "not started",
+    "merged": false,
+    "closed": false
+  },
+  "recommendation": "Qualified acceptance of the Development implementation for independent review, contingent on explicit acceptance of hosted coverage limits and inclusion/review of all listed outstanding safety/operator/verification files before any eventual authorized merge. Joe retains final approval. No full hosted PASS or release authorization claimed."
+}

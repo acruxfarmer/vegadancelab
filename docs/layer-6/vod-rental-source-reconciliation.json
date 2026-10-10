@@ -1,0 +1,209 @@
+{
+  "status": "reconciled_without_baseline_edits",
+  "checkpoint": "ccfe301",
+  "originalAssertionsStillFail": 7,
+  "baselines": [
+    {
+      "file": "docs/refund-readiness/acquisition-trust-baseline-hashes.json",
+      "sha256": "110a361019d81de7a6bc5f31581964dd19585358849644078bdbf60a1a8bf422",
+      "entries": 76,
+      "unchanged": 67,
+      "differences": [
+        "src/application.mjs",
+        "src/commerce.mjs",
+        "src/payments.mjs",
+        "src/refund-eligibility.mjs",
+        "src/runtime/application-api.mjs",
+        "src/runtime/application-database.mjs",
+        "src/runtime/payment-workflow.mjs",
+        "src/runtime/web.mjs",
+        "src/runtime/providers/square.mjs"
+      ]
+    },
+    {
+      "file": "docs/refund-readiness/authorization-lifecycle-baseline-hashes.json",
+      "sha256": "77b0516811f81d995d8e1b48dd3191cbe4c75c37b2c4abc2c07efb10dbde367a",
+      "entries": 82,
+      "unchanged": 73,
+      "differences": [
+        "src/application.mjs",
+        "src/commerce.mjs",
+        "src/payments.mjs",
+        "src/refund-eligibility.mjs",
+        "src/runtime/application-api.mjs",
+        "src/runtime/application-database.mjs",
+        "src/runtime/payment-workflow.mjs",
+        "src/runtime/web.mjs",
+        "src/runtime/providers/square.mjs"
+      ]
+    },
+    {
+      "file": "docs/refund-readiness/operational-coordinator-baseline-hashes.json",
+      "sha256": "0bf1a91f7d2d6c8e4559716adf72e73ecaeec92688402d50d04e382cdeb55b4b",
+      "entries": 78,
+      "unchanged": 69,
+      "differences": [
+        "src/application.mjs",
+        "src/commerce.mjs",
+        "src/payments.mjs",
+        "src/refund-eligibility.mjs",
+        "src/runtime/application-api.mjs",
+        "src/runtime/application-database.mjs",
+        "src/runtime/payment-workflow.mjs",
+        "src/runtime/web.mjs",
+        "src/runtime/providers/square.mjs"
+      ]
+    },
+    {
+      "file": "docs/refund-readiness/original-acceptance-baseline-hashes.json",
+      "sha256": "b35057bd33374205c6a11fee9b780345f4c199ce5a342465c25add55ce61da68",
+      "entries": 74,
+      "unchanged": 65,
+      "differences": [
+        "src/application.mjs",
+        "src/commerce.mjs",
+        "src/payments.mjs",
+        "src/refund-eligibility.mjs",
+        "src/runtime/application-api.mjs",
+        "src/runtime/application-database.mjs",
+        "src/runtime/payment-workflow.mjs",
+        "src/runtime/web.mjs",
+        "src/runtime/providers/square.mjs"
+      ]
+    },
+    {
+      "file": "docs/commerce-610/projection-compatibility-baseline-hashes.json",
+      "sha256": "5536b7623b9e98619e5df2f7244ffe34fc63b1d1461efc6293ae9556bb930ca1",
+      "entries": 11,
+      "unchanged": 10,
+      "differences": [
+        "src/refund-eligibility.mjs"
+      ]
+    },
+    {
+      "file": "docs/refund-readiness/purchase-acquisition-receipt-baseline-hashes.json",
+      "sha256": "93b7b9d273210aedd075abfa33dde07c53ba6558e175aec89dee6acbbc57d607",
+      "entries": 72,
+      "unchanged": 63,
+      "differences": [
+        "src/application.mjs",
+        "src/commerce.mjs",
+        "src/payments.mjs",
+        "src/refund-eligibility.mjs",
+        "src/runtime/application-api.mjs",
+        "src/runtime/application-database.mjs",
+        "src/runtime/payment-workflow.mjs",
+        "src/runtime/providers/square.mjs",
+        "src/runtime/web.mjs"
+      ]
+    },
+    {
+      "file": "docs/commerce-610/single-consumption-correction-baseline-hashes.json",
+      "sha256": "7dc535792a0fb1aa5cecd2622d73324c45eabcad0009c80354788cfa3109335e",
+      "entries": 46,
+      "unchanged": 42,
+      "differences": [
+        "src/application.mjs",
+        "src/commerce.mjs",
+        "src/payments.mjs",
+        "src/refund-eligibility.mjs"
+      ]
+    }
+  ],
+  "files": {
+    "src/application.mjs": {
+      "historicalCommit": "d9dffd4f2125612448d5fbcb28f0c0b6b5723d9e",
+      "historicalEncoding": "checkout_crlf",
+      "historicalSha256": "0a777d8b14a5e90d07f94ee9daac82d15380b3752139d21eaa8b3709043ff745",
+      "currentSha256": "00030f9f6b6239c11bbaf7a3e19fc999fe217070765d74b89b4c515ce72634e3",
+      "checkpointRepositorySha256": "b8d9c8694feacbdfc41f1a03a69e4e8e9ba2af3742eb7495a5653e14a1e7d846",
+      "changedSinceCheckpoint": true,
+      "reason": "Rental commands and safe status projection"
+    },
+    "src/commerce.mjs": {
+      "historicalCommit": "d9dffd4f2125612448d5fbcb28f0c0b6b5723d9e",
+      "historicalEncoding": "repository",
+      "historicalSha256": "78ce352db6e164ad2aa4d2ce55015793b55f34144c5f82ffc083dbba58f07448",
+      "currentSha256": "a0063718914d4ddb5c02071f3442b02aacf16ae9dae3ede033d549a31645fa95",
+      "checkpointRepositorySha256": "a0063718914d4ddb5c02071f3442b02aacf16ae9dae3ede033d549a31645fa95",
+      "changedSinceCheckpoint": false,
+      "reason": "Pre-existing commerce evolution, unchanged by rental build"
+    },
+    "src/payments.mjs": {
+      "historicalCommit": "d9dffd4f2125612448d5fbcb28f0c0b6b5723d9e",
+      "historicalEncoding": "repository",
+      "historicalSha256": "48e98e8ec011bcc9d82ac7909fb11e9fc0ed47128def3ec50e535d8f2286a946",
+      "currentSha256": "f743bb6961d26899cefd48262c1f659587045ada869f272d27558db4ace574a6",
+      "checkpointRepositorySha256": "ce9058208cc23fcc5527573574eec8090acac09501a588540c998211a5bcaee8",
+      "changedSinceCheckpoint": true,
+      "reason": "Frozen quote expiry and legitimate withdrawal checks"
+    },
+    "src/refund-eligibility.mjs": {
+      "historicalCommit": "697de1a7f3b7f7be350a4db9215df01d4a59d375",
+      "historicalEncoding": "repository",
+      "historicalSha256": "b07eb348776ccc8b58ed3c98f2483544a787ee3eaa984d29a2a90362768a9968",
+      "currentSha256": "6650776b6cd488ac734bcd55702e0276b7f55181b92482c98ec99f3341a3b1a6",
+      "checkpointRepositorySha256": "94ee6146958011f302f9d4d76d7228a7dd02172adcfe55e5dfbae7d38e095a99",
+      "changedSinceCheckpoint": true,
+      "reason": "Historical fulfillment independent of rental expiry; consumed viewing remains consumed"
+    },
+    "src/runtime/application-api.mjs": {
+      "historicalCommit": "697de1a7f3b7f7be350a4db9215df01d4a59d375",
+      "historicalEncoding": "checkout_crlf",
+      "historicalSha256": "9e5212aa62f5ca80b423649b7818306ecd66681b2ddbfc9b0b5e3cfa694ce7fe",
+      "currentSha256": "714f809f0d42b514b60510d53cf5ced96a95fb781a806416305e6e3eba05f404",
+      "checkpointRepositorySha256": "8fb437d94bf3d257964acb528a0212580cd9c1bbd0248725b703a6778e360331",
+      "changedSinceCheckpoint": true,
+      "reason": "Three rental management routes using existing authenticated commands"
+    },
+    "src/runtime/application-database.mjs": {
+      "historicalCommit": "697de1a7f3b7f7be350a4db9215df01d4a59d375",
+      "historicalEncoding": "checkout_crlf",
+      "historicalSha256": "f211d79a16025eb6af15a6e65b49ff28d5cb390c021d41f535f40c71730b0e06",
+      "currentSha256": "9879f30a37ff2be6031dcf0a237fbfb2ee006d7f95c4513fc74660d8dbc6eeee",
+      "checkpointRepositorySha256": "7d99b436ecee418b90897716c718cbd4f6750b189833691d213869ab89e68272",
+      "changedSinceCheckpoint": false,
+      "reason": "Pre-existing database evolution, unchanged by rental build"
+    },
+    "src/runtime/payment-workflow.mjs": {
+      "historicalCommit": "d9dffd4f2125612448d5fbcb28f0c0b6b5723d9e",
+      "historicalEncoding": "repository",
+      "historicalSha256": "f9d46d7d86195f42ec1048da2b15f180f0cca9bb1137f354f255b2e349444053",
+      "currentSha256": "4ccbe3ced2db74cd193e0e0bd2ad60b4ce9d69c61ad483178e651ca8c63d83d5",
+      "checkpointRepositorySha256": "4ccbe3ced2db74cd193e0e0bd2ad60b4ce9d69c61ad483178e651ca8c63d83d5",
+      "changedSinceCheckpoint": false,
+      "reason": "Pre-existing payment evolution, unchanged by rental build"
+    },
+    "src/runtime/web.mjs": {
+      "historicalCommit": "56d03e745add11a253078cdadf9b673f13b64f67",
+      "historicalEncoding": "checkout_crlf",
+      "historicalSha256": "3af2406444ab525226d56a3ead68070ae936fd006580cd1cd887f58b7ef1110b",
+      "currentSha256": "d4cdf764b9cd49fa129403054569fbd21d5d26b76e268c109c91c9a630ad6447",
+      "checkpointRepositorySha256": "92f03113a64c57a54b0b3419fa4ba98d068f7bc9079a18c47eb651b8400497b5",
+      "changedSinceCheckpoint": false,
+      "reason": "Pre-existing web evolution, unchanged by rental build"
+    },
+    "src/runtime/providers/square.mjs": {
+      "historicalCommit": "d9dffd4f2125612448d5fbcb28f0c0b6b5723d9e",
+      "historicalEncoding": "repository",
+      "historicalSha256": "99b4200911d44daec65d90f7211607df6cb90180948bec662b38d268513df314",
+      "currentSha256": "13625772105e7458bc1dbffed714c3ba5de1e58a64872d0c28c36a5d8fb7d7a7",
+      "checkpointRepositorySha256": "13625772105e7458bc1dbffed714c3ba5de1e58a64872d0c28c36a5d8fb7d7a7",
+      "changedSinceCheckpoint": false,
+      "reason": "Pre-existing provider evolution, unchanged by rental build"
+    }
+  },
+  "limitations": "Historical byte-equality assertions remain historical assertions. This additive reconciliation verifies their original bytes and binds authorized current deltas; it does not replace behavioral, hosted or provider tests.",
+  "closedSlices": [
+    {
+      "path": "docs/layer-6/l6-s8b-canonical-closure.json",
+      "unchanged": true,
+      "sha256": "bd60b5bc337fd50bd0409466a77179741ec11d577e1ea259f5db1eff59537dd1"
+    },
+    {
+      "path": "docs/layer-6/l6-s9-canonical-closure.json",
+      "unchanged": true,
+      "sha256": "648be2b8c6bab215e85b1ddbf2321ebbc67c00be804bf92a831f3b1736fa563b"
+    }
+  ]
+}

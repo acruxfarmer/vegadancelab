@@ -1,0 +1,20 @@
+{
+  "recordedAt": "2026-10-09T22:41:21.959Z",
+  "commit": "281c5c4e57553c9de2cef05ddb5c44c2c91584e9",
+  "ownerSessionConfirmed": true,
+  "displayedRole": "Owner / Admin",
+  "rentalDelegationControlsVisible": true,
+  "permissionsChanged": false,
+  "businessOwnedMediaVisible": true,
+  "activeBusinessRentalFixtureAvailable": false,
+  "observations": [
+    "Business legacy resource has zero placements",
+    "Disposable paid native fixture is archived and placement withdrawn",
+    "Remaining local placement externally owned"
+  ],
+  "rentalWorkflowVerificationComplete": false,
+  "protectedRentalPlaybackEnabled": false,
+  "productionTouched": false,
+  "paymentRefundExecutionEnabled": false,
+  "closedEvidenceModified": false
+}

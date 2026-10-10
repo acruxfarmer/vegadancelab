@@ -1,0 +1,61 @@
+{
+  "status": "read-only-rental-evidence-saved",
+  "observedAt": "2026-10-09T23:15:45.286Z",
+  "mutations": 0,
+  "providerRequests": 0,
+  "secretsPersisted": false,
+  "serverTime": "2026-10-09T23:15:43.949Z",
+  "businessRevision": "206",
+  "entitlement": {
+    "id": "7566b16f-5d71-4c72-9ec5-6b0355a5d9f1",
+    "state": "active",
+    "revision": 3,
+    "provenanceKind": "staff_grant",
+    "rental": {
+      "policy": {
+        "version": 2,
+        "releaseAt": null,
+        "viewingHours": 1,
+        "replayAllowed": false,
+        "activationDays": 1,
+        "startupRecoveryMinutes": 10
+      },
+      "availableAt": "2026-10-09T22:57:22.934Z",
+      "startBy": "2026-10-10T22:57:22.934Z",
+      "expiresAt": "2026-10-10T00:13:53.059Z",
+      "recoveryUsedMs": 0,
+      "activation": {
+        "id": "5db723cb-d8f5-4eb7-9276-a9c5c1897528",
+        "sessionId": "4460d70a-cdb3-4ed0-a799-96e13218f16d",
+        "attemptId": "30fdbd65-b59b-471a-a951-df74d7263a68",
+        "confirmedAt": "2026-10-09T23:13:53.059Z",
+        "evidenceKind": "provider_authorization_plus_player_ack",
+        "evidenceReference": "sevu-attempt-sha256:0cadd9428a2ecc338ff84bf47bd256dbe454d3745705d61f07fbb90462977255"
+      }
+    },
+    "correctionCount": 0
+  },
+  "sessions": [
+    {
+      "id": "4460d70a-cdb3-4ed0-a799-96e13218f16d",
+      "state": "ended",
+      "createdAt": "2026-10-09T23:13:50.785Z",
+      "startedAt": "2026-10-09T23:13:53.059Z",
+      "endedAt": "2026-10-09T23:13:55.991Z",
+      "attemptId": "30fdbd65-b59b-471a-a951-df74d7263a68",
+      "verificationReference": "vod-rental-development-verification-v1",
+      "ticketIssuance": "confirmed"
+    }
+  ],
+  "tickets": [
+    {
+      "provider": "scaleengine",
+      "sessionId": "4460d70a-cdb3-4ed0-a799-96e13218f16d",
+      "attemptId": "30fdbd65-b59b-471a-a951-df74d7263a68",
+      "state": "revoked",
+      "issuedAt": "2026-10-09T23:13:51.509Z",
+      "expiresAt": "2026-10-09T23:15:51.185Z",
+      "revokedAt": "2026-10-09T23:13:56.548Z"
+    }
+  ]
+}

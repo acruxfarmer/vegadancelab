@@ -1,0 +1,29 @@
+﻿{
+    "method":  "GET",
+    "endpoint":  "https://api.render.com/v1/services/srv-dao5cjbm8hqs73db51j0",
+    "httpStatus":  200,
+    "responseParsed":  true,
+    "checks":  {
+                   "serviceId":  true,
+                   "serviceName":  true,
+                   "serviceType":  true,
+                   "ownerId":  true,
+                   "environmentId":  true,
+                   "repository":  true,
+                   "branch":  false,
+                   "startCommand":  true
+               },
+    "errorCategory":  null,
+    "providerRequests":  0,
+    "mutations":  0,
+    "secretsPersisted":  false,
+    "responseShape":  {
+                          "hasId":  true,
+                          "hasServiceWrapper":  false,
+                          "hasServiceDetails":  true,
+                          "hasEnvironmentId":  true,
+                          "hasBranch":  true
+                      },
+    "branchMatchRequired":  false,
+    "deploymentSelection":  "explicit-reviewed-commit"
+}

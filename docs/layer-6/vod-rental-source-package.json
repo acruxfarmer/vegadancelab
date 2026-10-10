@@ -1,0 +1,272 @@
+{
+  "status": "selected-not-yet-integrated",
+  "head": "c76f895a734719b6a42c8b87b0412fa8414a3179",
+  "selected": [
+    {
+      "path": "scripts/deploy-l6-s9-hosted-private.ps1",
+      "sha256": "aa33b3446677d0891d330b4ce43c967a80efabcf06426b35c3d81959915cad94"
+    },
+    {
+      "path": "scripts/prepare-l6-s8b-paid-offer-private.ps1",
+      "sha256": "a920c6ccfb13597571745f03cf8b19e748156da7f86834388de93b63357a3bfb"
+    },
+    {
+      "path": "scripts/verify-l6-s8a-postgres-private.ps1",
+      "sha256": "e298ad3df5b63b797dbd1cf0d056499da686b0f74d1fe84bcc2b9a6d5c62bdb5"
+    },
+    {
+      "path": "test/rental-playback-workflow.test.mjs",
+      "sha256": "8661de3ca3aa8a29b9359a95e3f9e626e747c68e69248069fd3ebb6c6889ddea"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-control-disable-c76f895a7347-attempted.local.json",
+      "sha256": "0d75000b5ba16c9a8b2442c6be3d01a922a18d44a050e4d96a4a6db82e88a475"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-control-disable-c76f895a7347-deployment.local.json",
+      "sha256": "6fc53a8f23b56cc9bd82826c8324846264a6957688ecbe02975e5dc6d48d39bf"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-control-disable-c76f895a7347-safety.local.json",
+      "sha256": "eef9c5c8ad21b3a662c8456c084f701a012f18b47c31759d256b70a772744302"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-control-disable-c76f895a7347-service.local.json",
+      "sha256": "3a8a24a270b0e508cb73976c6910bf9edb285a8fca2f8d4880ebe41b0a8933b6"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-control-enable-c76f895a7347-attempted.local.json",
+      "sha256": "0d75000b5ba16c9a8b2442c6be3d01a922a18d44a050e4d96a4a6db82e88a475"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-control-enable-c76f895a7347-deployment.local.json",
+      "sha256": "79d2baf8c4c12d90cd3c3ce7db5c2bb237617c56b564b07dea82c3b556c43307"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-control-enable-c76f895a7347-reconcile-service.local.json",
+      "sha256": "3a8a24a270b0e508cb73976c6910bf9edb285a8fca2f8d4880ebe41b0a8933b6"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-control-enable-c76f895a7347-reconcile-v2-service.local.json",
+      "sha256": "3a8a24a270b0e508cb73976c6910bf9edb285a8fca2f8d4880ebe41b0a8933b6"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-control-enable-c76f895a7347-reconcile-v2.local.json",
+      "sha256": "a04d9089c19a1edfa3523e8d7f3b938c831e295cd72b8856e3e1437dd0fb5df9"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-control-enable-c76f895a7347-reconcile.local.json",
+      "sha256": "1529f1fee045d0f81f186986eacdc04aedaba1c7bdb7a90a475ea785374bd0a6"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-control-enable-c76f895a7347-resume-attempted.local.json",
+      "sha256": "0d75000b5ba16c9a8b2442c6be3d01a922a18d44a050e4d96a4a6db82e88a475"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-control-enable-c76f895a7347-resume-deployment.local.json",
+      "sha256": "d4c7fd606f9ce929bf250890a378c681ef017666a4d7d73a6bb1a066445df3a0"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-control-enable-c76f895a7347-resume-safety.local.json",
+      "sha256": "eef9c5c8ad21b3a662c8456c084f701a012f18b47c31759d256b70a772744302"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-control-enable-c76f895a7347-resume-service.local.json",
+      "sha256": "3a8a24a270b0e508cb73976c6910bf9edb285a8fca2f8d4880ebe41b0a8933b6"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-control-enable-c76f895a7347-safety.local.json",
+      "sha256": "eef9c5c8ad21b3a662c8456c084f701a012f18b47c31759d256b70a772744302"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-control-enable-c76f895a7347-service.local.json",
+      "sha256": "3a8a24a270b0e508cb73976c6910bf9edb285a8fca2f8d4880ebe41b0a8933b6"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-control-stop-diagnosis-v2.local.json",
+      "sha256": "d59d229cc54b7eafd6d64fcccebfde819576d2df51f10df642898f3f704ed8ab"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-control-stop-diagnosis.local.json",
+      "sha256": "c09fe5596a51f2df920dfe8ee7359401c2184fdc21b364f9148495817705c923"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-control-stop-resolved.local.json",
+      "sha256": "17ab1a3b8488fc6304995658bc337da95b7e047470a7bf0d61f080ad2385e364"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-development-handoff.json",
+      "sha256": "a2a1afe5cf91b931b5028f0d3a2d7c7e2a135ef4ddb9801abb7556826afaddcd"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-fixture-attempted.local.json",
+      "sha256": "5df1e21f6a6589b19f47516acd7314162cf6392a9a486021a0d383bb7a728e3e"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-fixture.local.json",
+      "sha256": "228cbbdde1e956e6427e314f726d8680892a1ed87d9b6004307f55280c0a7fd9"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-hosted-deployment-attempted.local.json",
+      "sha256": "0d75000b5ba16c9a8b2442c6be3d01a922a18d44a050e4d96a4a6db82e88a475"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-hosted-deployment.local.json",
+      "sha256": "827830b3c771aa81d6f1307baa461d3206f87644418e3e862e9b4982bbd52e1d"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-hosted-expiration.local.json",
+      "sha256": "5130cd68bd0ba42970f96fdb67a06338c209fefea0236a828728115c9bb6a27a"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-hosted-fixture.local.json",
+      "sha256": "fa2b113693fe473a7f7e4da7de6f891adf3ac58f9c5cc82ff1096531cb7f3dad"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-hosted-http.local.json",
+      "sha256": "63148f093acfc22ff3360bc8159457a0495285ab11faeeb5fcad1ef0836e91e8"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-hosted-owner.local.json",
+      "sha256": "08a31d0a674dde74840ba8e168327f8f40009d7f0973a375cc91ab26c1ed8982"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-hosted-playback.local.json",
+      "sha256": "c11e88dc46f7332f0aecdbbfcd4d5454d04330cd01effb981a49742c90550ab5"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-hosted-safety-inspection.local.json",
+      "sha256": "eef9c5c8ad21b3a662c8456c084f701a012f18b47c31759d256b70a772744302"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-hosted-service-inspection.local.json",
+      "sha256": "3a8a24a270b0e508cb73976c6910bf9edb285a8fca2f8d4880ebe41b0a8933b6"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-hosted-state-1791587745854.local.json",
+      "sha256": "6b69d9cabb0324b8ef1bc3df21700022b2a2610926f0b3ddd640d589cb82b4ef"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-hosted-state.local.json",
+      "sha256": "6b69d9cabb0324b8ef1bc3df21700022b2a2610926f0b3ddd640d589cb82b4ef"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-independent-continuation.local.json",
+      "sha256": "770314e7dd9b8477ed0e2460342fa725558a0b0ce35455d9d06302e69de3fd65"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-postgres.local.json",
+      "sha256": "2b7759947f5a805c14844dac72dab33961948c748fef309c67b9a97c3c79fa91"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-provider-attempted.local.json",
+      "sha256": "ed528e906b469b32fceee4c2b6096396124a3d41322bd9b847152fc0784d8ce1"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-provider.local.json",
+      "sha256": "5172cde646d507bf606d4df89957f6cb43a8b20ba1b9e90ece057adec0ce7cd8"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-source-reconciliation.json",
+      "sha256": "60404a60fb5ebc4880617115e2f11d68e5c730c35d75a9ac8fb74ddf04002925"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-verification-continuation.json",
+      "sha256": "83b894ccf1df34d0948f9a4d0d724e709ae41eb139d706fd45145a69896cc491"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-verification-review-handoff.json",
+      "sha256": "398853bad20f674e378894730c043604addd000c996d7b7a462ea82d8377b0b1"
+    },
+    {
+      "path": "rental-domain-test-run.log",
+      "sha256": "27232b3b32304d7b98bda9851b17a162d1474ad9e1278f5dd50631209a8a4e94"
+    },
+    {
+      "path": "rental-final-test-run.log",
+      "sha256": "bbf57549c602127d003a715027315ab583cd75028e1adcf5df2cfe5d6800e3fb"
+    },
+    {
+      "path": "rental-focused-test-run.log",
+      "sha256": "c1f414e01537ae0aa8b073b737ecc0ca0258eff846c6ac97dadaf8956d1a2ac3"
+    },
+    {
+      "path": "rental-policy-correction-test-run.log",
+      "sha256": "14a37e206da71301cfe4a1d27f86c48fdf20e39985f823f3d74ef695bc1cb613"
+    },
+    {
+      "path": "scripts/inspect-vod-rental-state-private.mjs",
+      "sha256": "c50035a8da7c6faeff2c2446dd04648968f1afab9ed74ce5942d496cf6cd6c61"
+    },
+    {
+      "path": "scripts/verify-vod-rental-binding.sql",
+      "sha256": "ae60085c64122a37c38dd808c481ae18d4110ecf7c641d5bd0c7c4e1edc5b883"
+    },
+    {
+      "path": "scripts/verify-vod-rental-postgres-private.mjs",
+      "sha256": "01b8c6a57900af1b5fad2eb4c8f3f7345ea2ccbdb8af7ea9c20c6e136e83ce61"
+    },
+    {
+      "path": "scripts/verify-vod-rental-provider-private.mjs",
+      "sha256": "6249a5a7427d80eb07c31a0bd4fb20ac4c56a74ec964a4bed0ac60c2deef7a9d"
+    },
+    {
+      "path": "scripts/verify-vod-rental-source-reconciliation.mjs",
+      "sha256": "b8f6fb2535850154eb574236f60e5d861b8d3c70f12c4b68ebf34504b9481efd"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-final-implementation-inventory.json",
+      "sha256": "e3f8e6925f3cc0c4ac53b69a3bcd64fa64c47e8581b9e540d8b7e56990f57085"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-final-acceptance-preparation.json",
+      "sha256": "430ec8d4d6a63388cd19dad5012af0cbbbfde2fe981a4438e840872ac60eebe6"
+    },
+    {
+      "path": "docs/layer-6/vod-rental-shared-wrapper-extension.patch",
+      "sha256": "e68264315d2e01e2064325da74d0cb75b5a942791569b7b81a670f6f8fc74346"
+    }
+  ],
+  "excludedTracked": [
+    {
+      "path": "docs/layer-6/l6-s4-checkpoint.json",
+      "sha256": "4048833d335cbb147dcdd2683a8d386a18e2042491a33fc5d8a7f80b1c0c6dc3"
+    },
+    {
+      "path": "scripts/refund-composition-render-operator.ps1",
+      "sha256": "9518e5a38430c71b27d5bdb202b0fc3aea038be9071b650fb0435f0b7af098aa"
+    },
+    {
+      "path": "scripts/refund-source-render-operator.ps1",
+      "sha256": "594ebcf83f903923b48c89537852798264a6eaab75196376dbef011909504bef"
+    },
+    {
+      "path": "test/refund-composition-render-operator.test.ps1",
+      "sha256": "046154684f76afa9eae1bd0a9b4d9b9cf4368a6a620c58b5e077ad3a64c15eed"
+    },
+    {
+      "path": "test/refund-source-render-operator.test.ps1",
+      "sha256": "71581e317de6ba9855c3ea0e384f53be0cf53d99a9fc34b5065720646113fad8"
+    }
+  ],
+  "sharedWrapper": {
+    "localPath": "scripts/run-l6-s5-sevu-auto-proof-private.ps1",
+    "localSha256": "ca3549d0ada4b86c483404bc8f808025f9a9b57274dd14a383977ff145be7d29",
+    "packagedAs": "docs/layer-6/vod-rental-shared-wrapper-extension.patch",
+    "provenance": "Only the RentalVerification parameter and runner-selection delta are packaged. Patch preimage is reconstructed by removing those additions, not asserted to be a historical committed blob. Full pre-existing shared wrapper and unrelated default runner/dependencies remain local and excluded."
+  },
+  "secretScan": {
+    "findings": 0,
+    "scope": "Selected files; known credential formats and private keys. Source references to existing private vault variables are not credential values."
+  },
+  "deployment": "No deployment. Hosted application remains c76f895 with disabled control.",
+  "packagingVerification": {
+    "tests": 29,
+    "passed": 29,
+    "failed": 0,
+    "log": "docs/layer-6/vod-rental-packaging-tests.local.txt",
+    "powershellScriptsParsed": 3,
+    "historicalBaselineAndClosedSliceHashesMatch": true,
+    "unrelatedTrackedBytesPreserved": true
+  }
+}

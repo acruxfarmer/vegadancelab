@@ -1,0 +1,39 @@
+{
+  "observedAt": "2026-10-09T23:14:54.992Z",
+  "commit": "c76f895a734719b6a42c8b87b0412fa8414a3179",
+  "deployment": "dep-db4n8h3ncjis73c7mr90",
+  "placementId": "2960abdf-bfb3-49b1-87db-f9f95011d47f",
+  "browser": {
+    "firstPlay": "0:03 / 0:03; This viewing session has ended.",
+    "persistedAfterReload": "Active; Viewing expires Oct 9 2026 5:13 PM America/Los_Angeles",
+    "replayAttempt": "Playback could not start. Try again."
+  },
+  "outstanding": [
+    "private persisted activation/ticket evidence",
+    "natural expiration",
+    "saved-session authorization evidence",
+    "recovery evidence limits",
+    "disable control and verify denial"
+  ],
+  "generalRentalPlayback": "disabled; designated verification scope only",
+  "productionUntouched": true,
+  "payments": 0,
+  "persistedEvidence": {
+    "source": "vod-rental-hosted-state.local.json",
+    "activationConfirmedAt": "2026-10-09T23:13:53.059Z",
+    "expiresAt": "2026-10-10T00:13:53.059Z",
+    "evidenceKind": "provider_authorization_plus_player_ack",
+    "activationCount": 1,
+    "sessionState": "ended",
+    "ticketState": "revoked",
+    "ticketRevokedAt": "2026-10-09T23:13:56.548Z",
+    "correctionCount": 0,
+    "recoveryUsedMs": 0
+  },
+  "status": "first-play-and-replay-verified-awaiting-natural-expiration",
+  "limitations": [
+    "Automatic recovery was not exercised by this successful provider playback; retain previous synthetic verification and unresolved-startup fail-closed limitation.",
+    "Saved-session continuation was not exercised during the three-second clip.",
+    "Expiry denial and final disabled-state verification remain outstanding."
+  ]
+}
