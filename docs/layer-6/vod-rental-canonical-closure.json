@@ -1,0 +1,115 @@
+{
+  "enhancement": "VOD Rental Lifecycle",
+  "status": "COMPLETE / VERIFIED WITH QUALIFICATIONS / JOE APPROVED / DEVELOPMENT CLOSED",
+  "recordedAt": "2026-10-10T00:30:30.431Z",
+  "authority": {
+    "productOwner": "Joe",
+    "independentReview": "Chett",
+    "implementationLead": "Astra",
+    "approval": "Explicit qualified Development acceptance and source-packaging, merge, canonical-closure authorization supplied in this conversation",
+    "authorizationAttachment": "5ef6044e-b85d-4454-8359-55ffb3c76987"
+  },
+  "source": {
+    "mainImplementation": "281c5c4e57553c9de2cef05ddb5c44c2c91584e9",
+    "hostedImplementation": "c76f895a734719b6a42c8b87b0412fa8414a3179",
+    "packagingAndIntegrationCommit": "d3075cdab1d1e48a814a023aac3995e9ebf53a1a",
+    "mergeMethod": "fast-forward",
+    "sourceBranch": "codex/vod-rental-development",
+    "canonicalLayer6Branch": "product/layer3-public-entry",
+    "remotePreviousTip": "91645deb36fc5390a52eae19cc9c4f9316f6f8a8",
+    "remoteIntegrationPublished": true,
+    "closureCommitReference": "Commit containing this record; see git log for exact closure publication identity",
+    "inventory": "vod-rental-final-implementation-inventory.json",
+    "packageManifest": "vod-rental-source-package.json",
+    "selectedPackagingFiles": 58,
+    "excludedTrackedModificationsPreserved": [
+      "docs/layer-6/l6-s4-checkpoint.json",
+      "scripts/refund-composition-render-operator.ps1",
+      "scripts/refund-source-render-operator.ps1",
+      "test/refund-composition-render-operator.test.ps1",
+      "test/refund-source-render-operator.test.ps1"
+    ],
+    "sharedWrapper": "Only reviewed rental-selection delta packaged in vod-rental-shared-wrapper-extension.patch; pre-existing full local wrapper and unrelated legacy dependencies excluded. Patch preimage reconstruction explicitly documented.",
+    "historicalLogs": "Original bytes retained; whitespace warnings confined to preserved evidence logs, not corrected by rewriting history."
+  },
+  "scope": [
+    "Configurable activation allowance and viewing duration",
+    "First qualifying PRIMARY playback activation using server time and provider authorization plus player acknowledgement",
+    "Persistent entitlement/session/ticket records",
+    "No new authorization after expiration; no automatic grace or exact-second interruption promise",
+    "Bounded automatic recovery for confirmed startup rejection; ambiguous outcomes remain fail closed",
+    "Versioned offers, valid checkout quotes and purchased terms preserved",
+    "Owner configuration, delegated staff corrections, complimentary and replacement grants",
+    "Customer rental status",
+    "Separate Unpublish, Suspend and Mandatory Withdrawal",
+    "Historical fulfillment and legacy entitlement compatibility"
+  ],
+  "architecture": "Offer → Purchase → Fulfillment → Entitlement → Authorization → Protected Playback; existing business aggregate, authorization, encrypted recovery journal, player and ScaleEngine adapter. No parallel rental platform or new streaming infrastructure.",
+  "verification": {
+    "packagedSource": {
+      "passed": 29,
+      "failed": 0,
+      "log": "vod-rental-packaging-tests.local.txt",
+      "powershellScriptsParsed": 3,
+      "credentialPatternFindings": 0
+    },
+    "priorRuns": {
+      "policyCorrectionPassed": 82,
+      "scopedChecksPassed": 31,
+      "additionalWorkflowPassed": 2,
+      "broadHistorical": {
+        "total": 3101,
+        "passed": 3094,
+        "historicalHashFailures": 7
+      },
+      "qualification": "Runs overlap and refer to their recorded checkpoints; not additive unique test totals."
+    },
+    "database": {
+      "checksPassed": 10,
+      "restrictedRole": true,
+      "committedBusinessWrites": 0,
+      "baselineRestored": true,
+      "receipt": "vod-rental-postgres.local.json"
+    },
+    "hosted": {
+      "protectedPlayback": "completed",
+      "activationConfirmedAt": "2026-10-09T23:13:53.059Z",
+      "expiresAt": "2026-10-10T00:13:53.059Z",
+      "replay": "second browser attempt denied",
+      "session": "ended",
+      "ticketRevokedAt": "2026-10-09T23:13:56.548Z",
+      "naturalExpiration": "Authenticated viewer displayed Expired with no playback control after unchanged deadline",
+      "persistedEvidence": "vod-rental-hosted-state.local.json",
+      "expirationEvidence": "vod-rental-hosted-expiration.local.json"
+    },
+    "historicalReconciliation": "vod-rental-source-reconciliation.json"
+  },
+  "acceptedQualifications": [
+    "Successful hosted startup recovery was not independently demonstrated; isolated local tests passed.",
+    "Successful hosted active saved-session continuation and renewal were not independently demonstrated; isolated local tests passed.",
+    "Hosted natural expiration displayed the correct expired state; no separately captured authenticated post-expiration start request was made.",
+    "Disabled-control isolation rests on local tests, server configuration checks/readback and live shutdown deployment, not a fresh otherwise-active hosted rental after shutdown.",
+    "Unrelated-scope and invalid-configuration negatives are locally tested, not a separate hosted multi-account exercise.",
+    "ScaleEngine manifest denied after ticket deletion, but a fresh known segment returned bytes six seconds later. Later expiry checks denied both paths, with background cleanup a possible contributor. No immediate segment cutoff, decoded-frame attestation, physical-device identity or buffered-media recall is claimed.",
+    "Historical source-hash assertions remain reconciled, not rewritten or relabelled as passing."
+  ],
+  "deliveryPolicy": "Ordinary expiration prevents new authorization. Already-authorized playback may continue or stop naturally. Mandatory withdrawal retains application denial and provider revocation without claiming immediate midstream segment cutoff.",
+  "environment": {
+    "development": "accepted with qualifications and closed",
+    "shutdownDeployment": "dep-db4o7nt9fdbs73aa0td0",
+    "shutdownReceipt": "vod-rental-control-disable-c76f895a7347-deployment.local.json",
+    "generalProtectedRentalPlayback": "disabled",
+    "scopedVerificationControl": "disabled",
+    "configurationChangesDuringClosure": 0,
+    "deploymentsDuringClosure": 0,
+    "production": "untouched; no release authorization",
+    "paymentRefundExecution": "disabled",
+    "historicalFixtures": "unchanged",
+    "s8b": "closed; canonical record preserved",
+    "s9": "closed; canonical record preserved",
+    "s10": "not started"
+  },
+  "releaseDisposition": "Development closure only. Accepted hosted coverage and provider limitations remain documented for future release decisions; no automatic follow-on project or general playback enablement.",
+  "evidenceHandoff": "vod-rental-verification-review-handoff.json",
+  "acceptancePreparation": "vod-rental-final-acceptance-preparation.json"
+}
