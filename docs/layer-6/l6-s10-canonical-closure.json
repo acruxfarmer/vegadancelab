@@ -1,0 +1,90 @@
+{
+  "slice": "L6-S10 External Media Source Connections",
+  "status": "COMPLETE / VERIFIED WITH QUALIFICATIONS / JOE APPROVED / DEVELOPMENT CLOSED",
+  "recordedAt": "2026-10-13T20:45:42.6122133Z",
+  "authority": {
+    "authorizationAttachment": "2bc36242-0462-498a-888e-399646433051",
+    "implementationAndClosure": "Astra",
+    "independentReview": "Chett",
+    "productOwner": "Joe"
+  },
+  "source": {
+    "packagingAndIntegrationCommit": "c56ed8512f15bb66db6156b9e603965360b75bfd",
+    "service": "srv-dao5cjbm8hqs73db51j0",
+    "mergeMethod": "fast-forward",
+    "canonicalLayer6Branch": "product/layer3-public-entry",
+    "inventory": "l6-s10-final-acceptance-package.json",
+    "closureCommitReference": "Commit containing this record; see git log for exact closure publication identity",
+    "deployment": "dep-db77sfd9fdbs73d74u70",
+    "sourceBranch": "build/l6-s10-media-connections",
+    "acceptedHostedImplementation": "c61be62c322431ae3e1cb43e3a49172357e85b40",
+    "previousCanonicalTip": "9c76fbac388dbd6bda14d6fbabd6ce96614ac772",
+    "remoteIntegrationPublished": true,
+    "packagingDisposition": "l6-s10-source-packaging-disposition.json",
+    "selectedPackagingFiles": 46
+  },
+  "delivered": [
+    "Business-scoped owner-authorized external provider connection lifecycle",
+    "Provider-specific Vimeo and YouTube read-only OAuth, identity and granted-scope persistence",
+    "Encrypted credentials, single-use state, browser binding, permission checks and authorization audit history",
+    "Bounded authenticated media-list reads as connection proof; no media ingestion, upload or publishing; no independent library or generic integration platform"
+  ],
+  "hostedEvidence": {
+    "vimeo": {
+      "receipt": "l6-s10-vimeo-hosted-connection.local.json",
+      "sampleCount": 2,
+      "scope": "public",
+      "account": "/users/147572282"
+    },
+    "credentials": "Encrypted persistence and authorization audit history verified in existing receipts",
+    "connectionPreservation": "Both last verified connected; no connection mutation or new hosted verification during packaging and closure",
+    "youtube": {
+      "sampleCount": 1,
+      "identityConfirmation": "Joe confirmed exact ID matches intended Trade Waters channel",
+      "scope": "https://www.googleapis.com/auth/youtube.readonly",
+      "channel": "UClrGrvL3_zZgHiFdloANdmg",
+      "providerTitle": "Joe Graham",
+      "receipt": "l6-s10-youtube-hosted-connection.local.json"
+    }
+  },
+  "verification": {
+    "reconciliation": "l6-s10-existing-isolation-reconciliation.local.json",
+    "failed": 0,
+    "verifierDiscrepancy": "Successful restricted-role verifier report preserved alongside erroneous wrapper launch-failure receipt",
+    "database": "Restricted-role database isolation passed: original 11 checks and existing-connection 5 checks",
+    "focusedProvisioningOfflinePassed": 15,
+    "focusedReceipt": "l6-s10-final-source-verification.json",
+    "focusedApplicationPassed": 36,
+    "local": "Authorization, permission and callback-security tests passed; simulated provider lifecycle evidence is not hosted lifecycle proof"
+  },
+  "outstanding": [
+    "Authenticated unauthorized-member HTTP 403 without protected connection details was not completed through a successful hosted test. Database isolation and local authorization tests do not substitute for that proof.",
+    "Hosted token refresh and expiration remain unverified.",
+    "Hosted disconnect, provider revocation and reconnection of established connections remain unverified. Clearing pending attempts is not equivalent proof.",
+    "Specific video in the authenticated YouTube one-item sample was not independently identified."
+  ],
+  "historicalRegression": {
+    "baselines": "unchanged",
+    "originalLog": "l6-s10-local-regression.local.txt",
+    "total": 3144,
+    "disposition": "Joe and Chett accept disclosed historical source-hash qualifications for Development closure; no demonstrated new behavioral regression. Not a clean full regression pass.",
+    "passed": 3137,
+    "failedHashAssertionGroups": 7
+  },
+  "releaseBoundaries": {
+    "paymentRefundExecution": "disabled, unchanged",
+    "s11": "not started; identifier provisional",
+    "qualification": "Development closure only; not unrestricted Production release readiness",
+    "mediaIngestion": false,
+    "generalRentalPlayback": "disabled, unchanged",
+    "deploymentPerformed": false,
+    "unrelatedWork": "preserved and excluded",
+    "confirmedReleaseCriticalApplicationDefect": "none identified in accepted evidence",
+    "providerConnectionsCredentialsAndAudit": "preserved",
+    "additionalOAuthOrProviderCalls": 0,
+    "production": "untouched",
+    "s8bS9QualifiedVodClosures": "preserved unchanged",
+    "scopedRentalVerification": "disabled, unchanged"
+  },
+  "evidencePreservation": "Original receipts, historical milestones, acceptance inventory and failure logs retained. Their historical OPEN states are superseded by this authorized closure, not rewritten."
+}

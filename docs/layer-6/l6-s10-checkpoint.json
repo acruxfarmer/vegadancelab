@@ -1,9 +1,9 @@
 {
   "slice": "L6-S10 — External Media Source Connections",
-  "status": "QUALIFIED DEVELOPMENT CONNECTION MILESTONE — JOE APPROVED; RECORDED; S10 OPEN; NOT FULL SLICE ACCEPTANCE",
-  "authorization": "Joe's 2026-10-12 Development implementation authorization; attachment 19952f2d-cae6-4c59-a1ee-ed183e9fd599",
+  "status": "COMPLETE / VERIFIED WITH QUALIFICATIONS / JOE APPROVED / DEVELOPMENT CLOSED",
+  "authorization": "Joe approved qualified Development closure following Chett review; attachment 2bc36242-0462-498a-888e-399646433051",
   "baseCommit": "9c76fbac388dbd6bda14d6fbabd6ce96614ac772",
-  "sourceState": "Issuer correction c61be62c322431ae3e1cb43e3a49172357e85b40 last verified live as dep-db77sfd9fdbs73d74u70. Both hosted connections verified. Joe approved qualified Development milestone with Chett independent review; no merge, full acceptance or closure.",
+  "sourceState": "Accepted c61be62 implementation remains last verified live as dep-db77sfd9fdbs73d74u70. Source integrated as c56ed8512f15bb66db6156b9e603965360b75bfd into product/layer3-public-entry. Qualified Development closed; no Production authorization.",
   "roadmap": {
     "s10": "Approved source connections responsibility",
     "s11": "Separate library integration responsibility; identifier remains provisional",
@@ -114,12 +114,11 @@
     }
   },
   "remaining": [
-    "Hosted authenticated non-owner/business-isolation checks where existing supported test accounts are available; restricted database-role proof already passed",
-    "Hosted disconnect/revoke/reconnect and expiry remain unverified; do not disturb preserved Vimeo connection merely to reproduce evidence",
-    "Complete source reinspection and historical source-hash reconciliation for final evidence without changing historical baselines",
-    "Document actual provider limitations and distinguish hosted from simulated lifecycle evidence",
-    "Separate Chett review and Joe authorization required before any future merge or full S10 closure; qualified milestone approval does not authorize either.",
-    "Exact sample video identity is not independently verified; one-item authenticated sample remains verified."
+    "Authenticated unauthorized-member HTTP 403 without protected connection details was not completed through a successful hosted test. Database isolation and local authorization tests do not substitute for that proof.",
+    "Hosted token refresh and expiration remain unverified.",
+    "Hosted disconnect, provider revocation and reconnection of established connections remain unverified. Clearing pending attempts is not equivalent proof.",
+    "Specific video in the authenticated YouTube one-item sample was not independently identified.",
+    "Seven historical source-hash assertion groups remain disclosed qualifications. Later release-readiness decisions must retain these limitations."
   ],
   "configuration": {
     "enabledByDefault": false,
@@ -174,5 +173,6 @@
     "Hosted connected-provider disconnect, revocation and reconnection remain unverified; clearing abandoned pending attempts is not equivalent lifecycle proof.",
     "The specific video represented by the one-item YouTube sample has not been independently identified."
   ],
-  "verificationDisposition": "Additional operator wrappers, HTTP diagnostics and provider lifecycle experiments paused. Remaining coverage retained for later release-readiness decisions, not active instructions to run checks."
+  "verificationDisposition": "Additional operator wrappers, HTTP diagnostics and provider lifecycle experiments paused. Remaining coverage retained for later release-readiness decisions, not active instructions to run checks.",
+  "canonicalClosure": "l6-s10-canonical-closure.json"
 }
