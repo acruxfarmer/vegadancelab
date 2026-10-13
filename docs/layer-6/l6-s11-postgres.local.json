@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "stage": "complete",
+  "providerCalls": 0,
+  "committedFixtureWrites": 0,
+  "productionUntouched": true,
+  "baselineRestored": true,
+  "checks": [
+    "hidden",
+    "explicit_publication",
+    "unsupported_paid_denial",
+    "duplicate_constraint",
+    "metadata_deleted",
+    "resource_preserved",
+    "publication_preserved",
+    "expired_source_denial",
+    "outsider_cache_isolation",
+    "browser_denial"
+  ]
+}

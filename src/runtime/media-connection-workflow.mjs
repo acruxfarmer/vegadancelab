@@ -7,6 +7,11 @@ export function createMediaConnectionWorkflow({repository,secrets,adapters,now=D
  const adapter=provider=>{if(!Object.hasOwn(adapters,provider))throw new ApplicationError('Provider connection is not configured',503);return adapters[provider];};
  const context=(identity,provider)=>({...identity,provider,purpose:'credentials'});
  const update=(identity,provider,fn)=>repository.transaction(identity,provider,fn);
+ async function usableCredentials(row,current,identity,provider){
+  let credentials=secrets.open(row.sealedCredentials,context(identity,provider)),renewed;
+  if(current.refresh&&Number.isFinite(Date.parse(credentials.expiresAt))&&Date.parse(credentials.expiresAt)<=now()+60000){credentials=await current.refresh(credentials);renewed=secrets.seal(credentials,context(identity,provider));}
+  return {credentials,renewed};
+ }
  async function failure(identity,provider,revision,error){
   return update(identity,provider,row=>{
    connectionRevision(row,revision);
@@ -15,6 +20,25 @@ export function createMediaConnectionWorkflow({repository,secrets,adapters,now=D
   });
  }
  return {
+  async libraryRead(identity,provider,operation,value){
+   if(!['discover','media'].includes(operation))throw new ApplicationError('Unsupported source read',400);
+   const current=adapter(provider);
+   const result=await update(identity,provider,async row=>{
+    if(!['connected','unavailable'].includes(row.status)||!row.sealedCredentials||!row.accountId)throw new ApplicationError('Connection needs attention',409);
+    let renewed,credentials;
+    try{
+     ({credentials,renewed}=await usableCredentials(row,current,identity,provider));
+     if(JSON.stringify(credentials.scopes)!==JSON.stringify(current.requestedScopes))throw Object.assign(Error(),{code:'scope_mismatch'});
+     if(credentials.expiresAt&&(!Number.isFinite(Date.parse(credentials.expiresAt))||Date.parse(credentials.expiresAt)<=now()))throw Object.assign(Error(),{code:'reconnect_required'});
+     const data=await current[operation](credentials,row.accountId,value);
+     return {...(renewed?{next:{...row,sealedCredentials:renewed,expiresAt:credentials.expiresAt,revision:row.revision+1},action:'credentials_saved'}:{}),value:{data,accountId:row.accountId}};
+    }catch(error){
+     return {...(renewed?{next:{...row,sealedCredentials:renewed,expiresAt:credentials.expiresAt,revision:row.revision+1},action:'credentials_saved'}:{}),value:{error:safeError(error)}};
+    }
+   });
+   if(result.error)throw new ApplicationError('Source read unavailable: '+result.error,503);
+   return result;
+  },
   status:(identity,provider)=>update(identity,provider,row=>({value:{...mediaConnectionView(row,now()),configured:Object.hasOwn(adapters,provider)}})),
   async begin(identity,provider,expectedRevision){
    const current=adapter(provider);
@@ -59,8 +83,7 @@ export function createMediaConnectionWorkflow({repository,secrets,adapters,now=D
     if(!['connected','unavailable'].includes(row.status)||!row.sealedCredentials)throw new ApplicationError('Reconnect this account before checking access',409);
     let renewed;
     try{
-     let credentials=secrets.open(row.sealedCredentials,context(identity,provider));
-     if(current.refresh&&Number.isFinite(Date.parse(credentials.expiresAt))&&Date.parse(credentials.expiresAt)<=now()+60000){credentials=await current.refresh(credentials);renewed=secrets.seal(credentials,context(identity,provider));}
+     let credentials;({credentials,renewed}=await usableCredentials(row,current,identity,provider));
      const proof=await current.verify(credentials);
      if(row.accountId&&proof.accountId!==row.accountId)throw new ApplicationError('Provider account changed',409);
      const next={...row,...(renewed?{sealedCredentials:renewed}:{}),revision:row.revision+1,status:'connected',...proof,scopes:credentials.scopes,expiresAt:credentials.expiresAt,lastError:null};

@@ -4,6 +4,7 @@ import {ApplicationError} from '../application.mjs';
 import {placementContext,placementPolicy} from '../media-placement.mjs';
 import {resolveMediaViewerAccess} from '../media-viewer-access.mjs';
 import {configurePlaybackPolicy} from './media-playback-policy.mjs';
+import {externalPolicy} from '../external-media.mjs';
 
 const fail=(m,status=403)=>{throw new ApplicationError(m,status);};
 // Server-only configuration/service surface, using the same verified principal
@@ -30,6 +31,7 @@ export function createMediaPlacementService({authenticate,repository,now=()=>new
    if(!input||Object.keys(input).some(k=>k!=='policy'))fail('Only Access Availability may be changed',400);
    // This narrow validator never returns business state or member records.
    const policy=await tx.validateOwnerPolicy(p.id,input.policy);
+   if(r.externalLibrary)externalPolicy(policy);
    const next={...p,policy,...(p.rights?{rights:{...p.rights,access:{...p.rights.access,ceiling:policy}}}:{}),revision:p.revision+1};
    await tx.update(next);await audit(tx,next,actor,'configured');return next;
   }),
@@ -49,6 +51,7 @@ export function createMediaPlacementService({authenticate,repository,now=()=>new
    const existing=await tx.find(resourceId,context);
    if(existing){if(!existing.authorized)fail('Placement was withdrawn; explicit reauthorization is not supported in this slice',409);return existing;}
    const policy=placementPolicy(initialPolicy,initialPolicy?.kind==='memberships'?await tx.businessState(context):{});
+   if(r.externalLibrary)externalPolicy(policy);
    const p={id:id(),resourceId,context,authorized:true,authorizedBy:actor,authorizedAt:now(),withdrawnAt:null,visible:false,policy,categoryIds:[],collectionIds:[],revision:1};
    await tx.insert(p);await audit(tx,p,actor,'authorized');return p;
   }),
@@ -60,6 +63,7 @@ export function createMediaPlacementService({authenticate,repository,now=()=>new
    if(!input||Object.keys(input).some(k=>!['visible','policy','categoryIds','collectionIds'].includes(k))||typeof input.visible!=='boolean')fail('Unsupported placement configuration',400);
    const state=await tx.businessState(p.context),policy=placementPolicy(input.policy,state);
    const r=await tx.resource(p.resourceId),o=r?.owner;
+   if(r?.externalLibrary)externalPolicy(policy);
    const sameBusiness=o?.kind==='business'&&o.tenantId===p.context.tenantId&&o.businessId===p.context.businessId;
    const samePolicy=sameAccess(policy,p.policy),rights=effectivePlacementRights(p);
    if(input.visible&&!rights.present)fail('Presentation is not granted by the resource owner');

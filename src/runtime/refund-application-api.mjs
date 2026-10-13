@@ -1,5 +1,6 @@
 import {randomBytes} from 'node:crypto';
 import {handleMediaConnectionApi} from './media-connection-api.mjs';
+import {handleExternalMediaApi} from './external-media-api.mjs';
 import { ApplicationError } from '../application.mjs';
 import {createMediaPrincipalVerifier} from './media-resource-foundation.mjs';
 import {revokeSession} from './sign-out.mjs';
@@ -38,6 +39,7 @@ export function createApplicationApi(env,store,fetcher=fetch){
   const send=(status,data)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(data));};
   try{
    if(await handleMediaConnectionApi(req,res,{service:store?.mediaConnections,principal,readJson,send}))return true;
+   if(await handleExternalMediaApi(req,{service:store?.externalMedia,principal,readJson,send}))return true;
    const rental=url.pathname.match(/^\/api\/media\/placements\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\/rental\/(start|confirm|finish|recover)$/i);
    if(rental){
     if(req.method!=='POST'||url.search)throw new ApplicationError('Invalid rental request',400);
@@ -87,7 +89,7 @@ export function createApplicationApi(env,store,fetcher=fetch){
     let viewerId=null;
     if(req.headers.authorization!==undefined){configured();viewerId=(await createMediaPrincipalVerifier({authOrigin:origin,publishableKey:key,fetcher})(req)).userId;}
     const bytes=await store.mediaPlacementPlayback(viewerId,placementPlay[1]);
-    if(bytes?.kind==='hls'){send(200,bytes);return true;}
+    if(['hls','external'].includes(bytes?.kind)){send(200,bytes);return true;}
     res.writeHead(200,{'Content-Type':'video/mp4','Content-Length':bytes.length,'Cache-Control':'private, no-store','Content-Disposition':'inline','X-Content-Type-Options':'nosniff'});res.end(bytes);return true;
    }
    if(url.pathname.startsWith('/api/public/')){

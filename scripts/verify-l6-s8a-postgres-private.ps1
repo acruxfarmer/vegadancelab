@@ -1,8 +1,8 @@
 # Run in Joe's existing unlocked Bitwarden PowerShell. No deployment/provider I/O.
 [CmdletBinding()]
-param([switch]$RentalVerification,[switch]$MediaConnectionVerification)
+param([switch]$RentalVerification,[switch]$MediaConnectionVerification,[switch]$MediaLibraryVerification)
 $ErrorActionPreference='Stop'
-if($RentalVerification -and $MediaConnectionVerification){throw 'Choose one verification mode'}
+if(([int][bool]$RentalVerification+[int][bool]$MediaConnectionVerification+[int][bool]$MediaLibraryVerification) -gt 1){throw 'Choose one verification mode'}
 $VerbosePreference='SilentlyContinue';$DebugPreference='SilentlyContinue';Set-PSDebug -Off
 $priorDebug=$env:BITWARDENCLI_DEBUG;$env:BITWARDENCLI_DEBUG='false'
 $raw=$null;$record=$null;$field=$null;$payload=$null
@@ -22,8 +22,9 @@ try {
  if($field.Count -ne 1 -or [string]::IsNullOrWhiteSpace([string]$field[0].value)){throw 'Field unavailable'}
  $payload=@{appDatabaseUrl=[string]$field[0].value}|ConvertTo-Json -Compress
  $node='C:/Users/Joe Graham/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe'
- $runner=if($MediaConnectionVerification){'verify-l6-s10-postgres-private.mjs'}elseif($RentalVerification){'verify-vod-rental-postgres-private.mjs'}else{'verify-l6-s8a-postgres-private.mjs'}
- $payload|& $node (Join-Path $PSScriptRoot $runner) 2>$null
+ $runner=if($MediaConnectionVerification -or $MediaLibraryVerification){'verify-l6-s10-postgres-private.mjs'}elseif($RentalVerification){'verify-vod-rental-postgres-private.mjs'}else{'verify-l6-s8a-postgres-private.mjs'}
+ $runnerArguments=@();if($MediaLibraryVerification){$runnerArguments=@('--external-library')}
+ $payload|& $node (Join-Path $PSScriptRoot $runner) @runnerArguments 2>$null
  if($LASTEXITCODE -ne 0){throw 'Proof stopped'}
  Write-Host 'Tell Astra done. No provider calls, deployment, or committed business changes.'
 }catch{Write-Host 'L6-S8A database verification stopped. No secret details printed. Tell Astra.'}

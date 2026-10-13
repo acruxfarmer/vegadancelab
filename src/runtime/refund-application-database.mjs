@@ -1,5 +1,6 @@
 import {createRentalPlaybackStore} from './rental-playback-store.mjs';
 import {createConfiguredMediaConnections} from './media-connection-configuration.mjs';
+import {createExternalMediaLibrary,startExternalMetadataExpiry} from './external-media-library.mjs';
 import {createRentalPlaybackWorkflow} from './rental-playback-workflow.mjs';
 import {mediaPlayback} from '../media.mjs';
 import {createPlaybackPolicyDelivery} from './media-playback-policy.mjs';
@@ -77,8 +78,8 @@ export function createApplicationStore(pool,{nativeAdapters=null,bookingEmails=f
    const row=await stateRow(c,a);if(a.role!=='staff')fail('Staff access required');requirePermission(row.state,a,'customers.manage');
    return manageMediaAccess(c,a,row.state,videoId,input,{initialOwners});
   }),
-  mediaPlacementView:async(viewerId,placementId)=>await native?.resolve(viewerId,placementId)??viewer.describe(viewerId,placementId),
-  mediaPlacementPlayback:async(viewerId,placementId)=>await native?.resolve(viewerId,placementId,true)??viewer.play(viewerId,placementId),
+  mediaPlacementView:async(viewerId,placementId)=>await store.externalMedia?.resolve(viewerId,placementId)??await native?.resolve(viewerId,placementId)??viewer.describe(viewerId,placementId),
+  mediaPlacementPlayback:async(viewerId,placementId)=>await store.externalMedia?.resolve(viewerId,placementId,true)??await native?.resolve(viewerId,placementId,true)??viewer.play(viewerId,placementId),
   mediaPlayback:(identity,id,revision)=>transaction(identity,async(c,a)=>{
    const row=await stateRow(c,a),staffAllowed=hasStaffPermission(access(row.state,a),a,'customers.manage');
    if(a.role!=='staff'){
@@ -177,6 +178,7 @@ export function createApplicationStore(pool,{nativeAdapters=null,bookingEmails=f
    const outstanding=await c.query("select count(*)::int as count from vega_private.recovery_outbox where tenant_id=$1 and business_id=$2 and event_kind='business' and discovery_state<>'acknowledged'",[a.tenantId,a.businessId]);
    const raw={mode:'development',context:{name:a.businessId==='vega-dance-lab'?'Vega Dance Lab':a.businessId,...a},revision:row.revision,...visibleState(row.state,a),jobs,squareEnabled:false,recovery:{pendingCount:outstanding.rows[0]?.count??0}};
    raw.commerceOffers.push(...await publishedMediaOffers(c,row.state));
+   if(store.externalMedia)raw.videos.push(...await store.externalMedia.list(c,a));
    if(a.role==='member'){const discoverable=[];for(const video of raw.videos||[]){
     const {rows}=await c.query('select media_private.legacy_viewer_placement($1,$2,$3) as id',[a.tenantId,a.businessId,video.id]);
     if(rows[0]?.id&&!mayDiscoverRentalPlacement(row.state,a,rows[0].id))continue;
@@ -268,6 +270,12 @@ export function createApplicationDatabase(value){
  const pool=new pg.Pool({...applicationDatabaseOptions(value),max:5});pool.on('error',()=>{});
  const store=createApplicationStore(pool,{nativeAdapters:mediaDeliveryAdapters(process.env),bookingEmails:true,initialOwners:DEVELOPMENT_INITIAL_OWNERS});
  store.mediaConnections=createConfiguredMediaConnections(pool,process.env,{initialOwners:DEVELOPMENT_INITIAL_OWNERS});
+ const expiry=startExternalMetadataExpiry(pool);
+ store.externalReady=expiry.ready;
+ if(process.env.VEGA_MEDIA_LIBRARY_ENABLED==='true'&&store.mediaConnections){
+  store.externalMedia=createExternalMediaLibrary(pool,{connections:store.mediaConnections,initialOwners:DEVELOPMENT_INITIAL_OWNERS});
+  store.mediaOwnerManagement=createMediaOwnerManagement(pool,{initialOwners:DEVELOPMENT_INITIAL_OWNERS,externalLibrary:true});
+ }
  const stop=startBookingEmailDelivery(pool,process.env),close=store.close;
- store.close=async()=>{await stop();await close();};return store;
+ store.close=async()=>{await expiry.stop();await stop();await close();};return store;
 }
