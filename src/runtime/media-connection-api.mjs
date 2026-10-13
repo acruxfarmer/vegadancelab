@@ -16,7 +16,10 @@ export async function handleMediaConnectionApi(req,res,{service,principal,readJs
    if(entries.length!==1)throw Error();
    const binding=service.secrets.open(entries[0].slice(cookieName.length+1),callbackContext);
    if(binding.provider!==provider||!Number.isFinite(binding.expiresAt)||binding.expiresAt<=Date.now())throw Error();
-   if([...url.searchParams.keys()].some(k=>!['code','state','error','error_description'].includes(k))||url.searchParams.getAll('code').length!==1||url.searchParams.getAll('state').length!==1||url.searchParams.has('error'))throw Error();
+   // Google's callback includes informational metadata. Never use it to
+   // establish identity or granted scopes: those come from server-side reads.
+   const allowed=['code','state','error','error_description',...(provider==='youtube'?['scope','authuser','hd','prompt']:[])];
+   if([...url.searchParams.keys()].some(k=>!allowed.includes(k)||url.searchParams.getAll(k).length!==1)||url.searchParams.getAll('code').length!==1||url.searchParams.getAll('state').length!==1||url.searchParams.has('error'))throw Error();
    const result=await service.workflow.complete(binding.identity,provider,{state:url.searchParams.get('state'),browser:binding.browser,code:url.searchParams.get('code')});
    succeeded=result.status==='connected';
   }catch{} // Never return a provider response, authorization code or cookie.

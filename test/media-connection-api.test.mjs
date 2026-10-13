@@ -4,6 +4,26 @@ import {handleMediaConnectionApi} from '../src/runtime/media-connection-api.mjs'
 import {createMediaConnectionSecrets} from '../src/runtime/media-connection-secrets.mjs';
 import {callbackContext,mediaConnectionOrigin,createConfiguredMediaConnections} from '../src/runtime/media-connection-configuration.mjs';
 function response(){return {headers:{},setHeader(k,v){this.headers[k]=v;},writeHead(status,headers){this.status=status;Object.assign(this.headers,headers);},end(){}};}
+test('Google callback metadata is tolerated but never trusted or forwarded as authorization',async()=>{
+ const secrets=createMediaConnectionSecrets('ab'.repeat(32)),identity={userId:'u',tenantId:'t',businessId:'b'};let received;
+ const service={secrets,workflow:{complete:async(...args)=>{received=args;return {status:'connected'};}}};
+ const binding={provider:'youtube',expiresAt:Date.now()+10000,identity,browser:'browser-proof'};
+ const res=response();
+ await handleMediaConnectionApi({url:'/api/media-connections/youtube/callback?code=one-code&state=one-state&scope=untrusted-scope&authuser=0&hd=example.test&prompt=consent',method:'GET',headers:{cookie:'vega_media_oauth_youtube='+secrets.seal(binding,callbackContext)}},res,{service});
+ assert.equal(res.headers.Location,'/media-connections.html#connected');
+ assert.deepEqual(received,[identity,'youtube',{state:'one-state',browser:'browser-proof',code:'one-code'}]);
+ assert.equal(JSON.stringify(res.headers).includes('one-code'),false);
+});
+test('callback rejects duplicate parameters and unknown metadata before exchanging code',async()=>{
+ const secrets=createMediaConnectionSecrets('ab'.repeat(32));let called=false;
+ const service={secrets,workflow:{complete:async()=>{called=true;return {status:'connected'};}}};
+ for(const [provider,suffix] of [['youtube','&state=second'],['youtube','&code=second'],['youtube','&scope=a&scope=b'],['youtube','&unknown=value'],['vimeo','&scope=public']]){
+  const res=response(),binding={provider,expiresAt:Date.now()+10000};
+  await handleMediaConnectionApi({url:`/api/media-connections/${provider}/callback?code=one&state=one${suffix}`,method:'GET',headers:{cookie:`vega_media_oauth_${provider}=`+secrets.seal(binding,callbackContext)}},res,{service});
+  assert.equal(res.headers.Location,'/media-connections.html#authorization-incomplete');
+ }
+ assert.equal(called,false);
+});
 test('disabled and other-environment connection configuration fails closed',()=>{
  assert.equal(createConfiguredMediaConnections(null,{}),null);
  for(const env of [{VEGA_ENV:'production'},{VEGA_ENV:'development',RENDER_SERVICE_ID:'different'},{VEGA_ENV:'development',RENDER_SERVICE_ID:'srv-dao5cjbm8hqs73db51j0',VEGA_EXTERNAL_EFFECTS:'enabled'}])assert.throws(()=>createConfiguredMediaConnections(null,{VEGA_MEDIA_CONNECTIONS_ENABLED:'true',...env}));
