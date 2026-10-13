@@ -47,10 +47,25 @@ test('Google callback metadata is tolerated but never trusted or forwarded as au
  const service={secrets,workflow:{complete:async(...args)=>{received=args;return {status:'connected'};}}};
  const binding={provider:'youtube',expiresAt:Date.now()+10000,identity,browser:'browser-proof'};
  const res=response();
- await handleMediaConnectionApi({url:'/api/media-connections/youtube/callback?code=one-code&state=one-state&scope=untrusted-scope&authuser=0&hd=example.test&prompt=consent',method:'GET',headers:{cookie:'vega_media_oauth_youtube='+secrets.seal(binding,callbackContext)}},res,{service});
+ await handleMediaConnectionApi({url:'/api/media-connections/youtube/callback?code=one-code&state=one-state&scope=untrusted-scope&authuser=0&hd=example.test&prompt=consent&iss=https%3A%2F%2Faccounts.google.com',method:'GET',headers:{cookie:'vega_media_oauth_youtube='+secrets.seal(binding,callbackContext)}},res,{service});
  assert.equal(res.headers.Location,'/media-connections.html#connected');
  assert.deepEqual(received,[identity,'youtube',{state:'one-state',browser:'browser-proof',code:'one-code'}]);
  assert.equal(JSON.stringify(res.headers).includes('one-code'),false);
+});
+test('issuer validation rejects altered, empty, duplicate and Vimeo issuer parameters before workflow',async()=>{
+ const secrets=createMediaConnectionSecrets('ab'.repeat(32));
+ for(const [provider,suffix,stage] of [
+  ['youtube','&iss=','callback_issuer_mismatch'],
+  ['youtube','&iss=https://other.test','callback_issuer_mismatch'],
+  ['youtube','&iss=https://accounts.google.com/','callback_issuer_mismatch'],
+  ['youtube','&iss=https://accounts.google.com&iss=https://accounts.google.com','callback_duplicate_parameter'],
+  ['vimeo','&iss=https://accounts.google.com',null]
+ ]){
+  let called=false;const events=[],res=response();
+  await handleMediaConnectionApi({url:`/api/media-connections/${provider}/callback?code=secret&state=secret${suffix}`,method:'GET',headers:{cookie:`vega_media_oauth_${provider}=`+secrets.seal({provider,expiresAt:Date.now()+60000},callbackContext)}},res,{service:{secrets,workflow:{complete:async()=>{called=true;}}},observeCallback:e=>events.push(e)});
+  assert.equal(called,false);assert.equal(res.headers.Location,'/media-connections.html#authorization-incomplete');
+  assert.deepEqual(events,stage?[{event:'youtube_oauth_callback_incomplete',stage}]:[]);
+ }
 });
 test('callback rejects duplicate parameters and unknown metadata before exchanging code',async()=>{
  const secrets=createMediaConnectionSecrets('ab'.repeat(32));let called=false;

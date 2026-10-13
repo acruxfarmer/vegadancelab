@@ -22,11 +22,15 @@ export async function handleMediaConnectionApi(req,res,{service,principal,readJs
    if(!Number.isFinite(binding.expiresAt)||binding.expiresAt<=Date.now())throw Error();
    // Google's callback includes informational metadata. Never use it to
    // establish identity or granted scopes: those come from server-side reads.
-   const allowed=['code','state','error','error_description',...(provider==='youtube'?['scope','authuser','hd','prompt']:[])];
+   const allowed=['code','state','error','error_description',...(provider==='youtube'?['scope','authuser','hd','prompt','iss']:[])];
    stage='callback_unknown_parameter';
    if([...url.searchParams.keys()].some(k=>!allowed.includes(k)))throw Error();
    stage='callback_duplicate_parameter';
    if([...url.searchParams.keys()].some(k=>url.searchParams.getAll(k).length!==1))throw Error();
+   // RFC 9207 issuer metadata is not account identity. Validate exactly when
+   // present; never use it to select a token endpoint or authorization scope.
+   stage='callback_issuer_mismatch';
+   if(provider==='youtube'&&url.searchParams.has('iss')&&url.searchParams.get('iss')!=='https://accounts.google.com')throw Error();
    stage='provider_error_returned';
    if(url.searchParams.has('error'))throw Error();
    stage='callback_code_or_state_missing';
