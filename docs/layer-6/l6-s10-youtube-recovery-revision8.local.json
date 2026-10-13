@@ -1,0 +1,29 @@
+{
+  "status": "pending-authorization-not-consumed",
+  "inspectedAt": "2026-10-13T18:07:43.375714Z",
+  "youtube": {
+    "credentialsSavedEvents": 0,
+    "revision": 8,
+    "authorizationStartedRevisions": [
+      2,
+      5,
+      8
+    ],
+    "authorizationConsumedEvents": 0,
+    "pendingExpiresAt": "2026-10-13T18:14:56.075Z",
+    "encryptedCredentialPresent": false,
+    "lastError": null,
+    "status": "authorizing",
+    "verifiedAt": null,
+    "accountName": null
+  },
+  "vimeo": {
+    "encryptedCredentialPresent": true,
+    "revision": 5,
+    "verifiedAt": "2026-10-13T02:04:13.119Z",
+    "status": "connected"
+  },
+  "mutations": 0,
+  "providerCalls": 0,
+  "recommendation": "Clear YouTube pending attempt through existing Disconnect action; no stored YouTube credentials means no provider revocation. Capture next consent outcome before completing another callback. Channel setup is not established as the cause."
+}

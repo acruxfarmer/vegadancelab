@@ -1,0 +1,65 @@
+{
+  "status": "hosted-vimeo-connection-persisted",
+  "runtimeCommit": "d1bc2941487a708fccb150809bf44f57f17d75e3",
+  "deploymentId": "dep-db6ov78u01pc73b0fu60",
+  "inspection": "Read-only, explicitly projected Development database fields; encrypted payload and tokens were not retrieved",
+  "business": "vega-dance-lab",
+  "tenant": "vega-development",
+  "provider": "vimeo",
+  "connection": {
+    "status": "connected",
+    "revision": 5,
+    "accountId": "/users/147572282",
+    "accountName": "Joe Graham",
+    "scopes": [
+      "public"
+    ],
+    "capabilities": [
+      "account.read",
+      "media.sample.read"
+    ],
+    "verifiedAt": "2026-10-13T02:04:13.119Z",
+    "sampleCount": 2,
+    "expiresAt": null,
+    "lastError": null,
+    "encryptedCredentialPresent": true,
+    "authorizationPendingCleared": true,
+    "noTopLevelTokensOrMediaCatalog": true
+  },
+  "audit": [
+    {
+      "designatedOwner": true,
+      "action": "authorization_started",
+      "at": "2026-10-13T02:04:06.457206Z",
+      "revision": 2
+    },
+    {
+      "designatedOwner": true,
+      "action": "authorization_consumed",
+      "at": "2026-10-13T02:04:12.039487Z",
+      "revision": 3
+    },
+    {
+      "designatedOwner": true,
+      "action": "credentials_saved",
+      "at": "2026-10-13T02:04:12.553045Z",
+      "revision": 4
+    },
+    {
+      "designatedOwner": true,
+      "action": "connection_verified",
+      "at": "2026-10-13T02:04:13.130049Z",
+      "revision": 5
+    }
+  ],
+  "ownerUiConfirmation": "Joe confirmed Connected, correct account, public scope, sample count 2, No media imported",
+  "inspectionProviderCalls": 0,
+  "connectionMutatedDuringInspection": false,
+  "limitations": [
+    "No hosted disconnect, revocation, reconnect, or expiry experiment performed on preserved working connection",
+    "No Vimeo expiry value was returned; this is not proof that provider access cannot be revoked",
+    "No media ingestion or playback verified or claimed",
+    "YouTube actual authorization remains pending approved access"
+  ],
+  "recordedAt": "2026-10-13T02:06:20.1170276Z"
+}

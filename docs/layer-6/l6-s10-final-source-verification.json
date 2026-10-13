@@ -1,0 +1,19 @@
+{
+  "status": "PASSED — bounded local source verification",
+  "acceptedImplementation": "c61be62c322431ae3e1cb43e3a49172357e85b40",
+  "applicationSourceDiff": "empty",
+  "applicationTests": {
+    "failed": 0,
+    "passed": 36,
+    "transport": "local mocks"
+  },
+  "provisioningOfflineTests": {
+    "passed": 15,
+    "failed": 0
+  },
+  "inventoryHashesMatched": 86,
+  "hostedTestsRun": false,
+  "providerCalls": 0,
+  "whitespaceQualification": "Original regression receipt trailing whitespace and three selected PowerShell files with blank EOF preserved unchanged; no behavior discrepancy.",
+  "broadRegression": "Historical 3144 total / 3137 passed / 7 source-hash assertion groups failed; accepted qualification, not a clean full regression pass."
+}

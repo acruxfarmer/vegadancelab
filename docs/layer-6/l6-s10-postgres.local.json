@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "stage": "complete",
+  "providerCalls": 0,
+  "committedFixtureWrites": 0,
+  "productionUntouched": true,
+  "baselineRestored": true,
+  "checks": [
+    "restricted_runtime_role",
+    "no_runtime_delete_or_audit_update_delete",
+    "no_browser_role_read",
+    "owner_insert_update_and_audit",
+    "scope_column_mutation_denied",
+    "foreign_actor_read_hidden",
+    "foreign_actor_update_noop",
+    "foreign_actor_insert_denied",
+    "forged_audit_actor_denied",
+    "rollback_leaves_zero_business_connections",
+    "runtime_cannot_read_audit_history"
+  ]
+}

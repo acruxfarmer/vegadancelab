@@ -1,0 +1,12 @@
+﻿{
+    "status":  "ready-for-private-provisioning",
+    "stage":  "complete",
+    "provider":  "vimeo",
+    "record":  "Vega Dev - Vimeo",
+    "requiredFieldsPresent":  true,
+    "providerCalls":  0,
+    "deployments":  0,
+    "settingsChanged":  false,
+    "secretValuesPersisted":  false,
+    "checkedAt":  "2026-10-13T01:29:35.9378391Z"
+}

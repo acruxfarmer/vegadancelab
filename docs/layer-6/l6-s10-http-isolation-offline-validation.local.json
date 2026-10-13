@@ -1,0 +1,12 @@
+{
+  "status": "offline-validated-awaiting-controlled-Shelly-run",
+  "priorPartialReceiptPresent": false,
+  "cause": "System.Net.Http assembly was not explicitly loaded before HttpClientHandler construction; initialization was outside prior try/finally",
+  "correction": "Explicit Add-Type System.Net.Http and initialization within guarded block; existing sign-in and one GET only",
+  "runtime": "Windows PowerShell 5.1.26100.9444",
+  "offlineCasesPassed": 5,
+  "retryGuardsPassed": true,
+  "hostedRequests": 0,
+  "script": "scripts/verify-l6-s10-http-isolation-private.ps1",
+  "checkedAt": "2026-10-13T19:46:54.1372546Z"
+}

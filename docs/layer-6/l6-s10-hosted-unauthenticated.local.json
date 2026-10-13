@@ -1,0 +1,17 @@
+{
+  "checks": [
+    {
+      "unauthenticatedDenied": true,
+      "status": 401,
+      "path": "/api/media-connections/vimeo"
+    },
+    {
+      "unauthenticatedDenied": true,
+      "status": 401,
+      "path": "/api/media-connections/youtube"
+    }
+  ],
+  "providerCalls": 0,
+  "mutations": 0,
+  "checkedAt": "2026-10-13T02:06:20.6234750Z"
+}

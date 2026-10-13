@@ -1,0 +1,21 @@
+﻿{
+    "status":  "inspected",
+    "stage":  "complete",
+    "serviceId":  "srv-dao5cjbm8hqs73db51j0",
+    "inspectOnly":  true,
+    "settingsUpdated":  [
+
+                        ],
+    "mutationAttempted":  false,
+    "deployments":  0,
+    "providerCalls":  0,
+    "secretValuesInReceipt":  false,
+    "productionUntouched":  true,
+    "matches":  {
+                    "clientId":  false,
+                    "clientSecret":  false,
+                    "encryptionKey":  true,
+                    "connectionsEnabled":  true
+                },
+    "checkedAt":  "2026-10-13T17:33:56.9369529Z"
+}

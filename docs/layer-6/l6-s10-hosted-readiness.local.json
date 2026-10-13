@@ -1,0 +1,10 @@
+{
+  "applicationReady": true,
+  "development": true,
+  "squareDisabled": true,
+  "paymentModeDisabled": true,
+  "externalEffectsDisabled": true,
+  "connectionPageAvailable": true,
+  "providerCalls": 0,
+  "checkedAt": "2026-10-13T01:58:17.5056859Z"
+}

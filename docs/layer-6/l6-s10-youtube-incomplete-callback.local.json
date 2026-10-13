@@ -1,0 +1,27 @@
+{
+  "status": "callback-incomplete-pending-not-consumed",
+  "inspection": "Read-only projected Development fields and YouTube audit actions; no tokens, hashes or encrypted payload retrieved",
+  "providerCalls": 0,
+  "mutations": 0,
+  "youtube": {
+    "auditActions": [
+      "authorization_started"
+    ],
+    "pendingExpiresAt": "2026-10-13T17:56:38.159Z",
+    "lastError": null,
+    "status": "authorizing",
+    "revision": 2,
+    "pendingPresent": true,
+    "authorizationStartedAt": "2026-10-13T17:46:37.98754Z",
+    "encryptedCredentialPresent": false
+  },
+  "vimeo": {
+    "pendingPresent": false,
+    "verifiedAt": "2026-10-13T02:04:13.119Z",
+    "encryptedCredentialPresent": true,
+    "status": "connected",
+    "revision": 5
+  },
+  "cause": "Callback did not consume pending authorization; exact rejection reason not recorded by current callback handler",
+  "inspectedAt": "2026-10-13T17:56:02.862891Z"
+}

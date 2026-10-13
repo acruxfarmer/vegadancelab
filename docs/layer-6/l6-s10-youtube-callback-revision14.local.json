@@ -1,0 +1,16 @@
+﻿{
+    "status":  "diagnostic-captured",
+    "stage":  "complete",
+    "serviceId":  "srv-dao5cjbm8hqs73db51j0",
+    "connectionRevision":  14,
+    "events":  [
+                   {
+                       "event":  "youtube_oauth_callback_incomplete",
+                       "failureCategory":  "callback_unknown_parameter"
+                   }
+               ],
+    "providerCalls":  0,
+    "mutations":  0,
+    "rawLogsSaved":  false,
+    "checkedAt":  "2026-10-13T18:48:48.0495486Z"
+}

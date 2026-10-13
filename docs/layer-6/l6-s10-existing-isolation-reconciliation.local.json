@@ -1,0 +1,22 @@
+{
+  "status": "read-only-database-isolation-passed-wrapper-reporting-inconsistent",
+  "verifierReceipt": "l6-s10-existing-isolation-v2.local.json",
+  "verifierReceiptWriteUtc": "2026-10-13T19:27:59.5698435Z",
+  "operatorReceipt": "l6-s10-existing-isolation-operator-v2.local.json",
+  "operatorReceiptWriteUtc": "2026-10-13T19:27:59.6062289Z",
+  "finding": "Verifier launched and completed five read-only assertions. Wrapper launch failure classification is contradicted by contemporaneous successful verifier receipt.",
+  "wrapperDifference": "Local LASTEXITCODE initialized to null before native invocation, unlike established launcher; native exit status can be masked by local scope.",
+  "verified": [
+    "actual restricted runtime role",
+    "bounded runtime privileges",
+    "no direct browser-role connection read",
+    "owner sees two existing connections",
+    "synthetic unrelated actor sees zero"
+  ],
+  "historicalProof": "l6-s10-postgres.local.json: 11 restricted-role rollback checks retained",
+  "remaining": "Authenticated non-owner/wrong-business HTTP route check with existing supported test identity; synthetic actor SQL proof is not equivalent to authenticated browser coverage",
+  "action": "Retain both receipts and reconciliation; no wrapper patch or hosted rerun",
+  "providerCalls": 0,
+  "databaseCallsDuringReconciliation": 0,
+  "recordedAt": "2026-10-13T19:30:57.5097757Z"
+}

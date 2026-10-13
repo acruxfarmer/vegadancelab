@@ -1,0 +1,12 @@
+﻿{
+    "status":  "stopped",
+    "stage":  "verifier_launch_failed",
+    "provider":  "none",
+    "record":  "Vega Dev - Supabase",
+    "requiredFieldsPresent":  true,
+    "providerCalls":  0,
+    "deployments":  0,
+    "settingsChanged":  false,
+    "secretValuesPersisted":  false,
+    "checkedAt":  "2026-10-13T19:27:59.6027184Z"
+}

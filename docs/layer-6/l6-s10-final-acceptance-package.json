@@ -1,0 +1,676 @@
+{
+  "status": "FINAL QUALIFIED DEVELOPMENT CLOSURE RECOMMENDATION — AWAITING CHETT REVIEW AND JOE DECISION",
+  "slice": "L6-S10",
+  "sliceStillOpen": true,
+  "milestone": "l6-s10-qualified-development-milestone.json",
+  "source": {
+    "service": "srv-dao5cjbm8hqs73db51j0",
+    "branch": "build/l6-s10-media-connections",
+    "deployment": "dep-db77sfd9fdbs73d74u70",
+    "head": "c61be62c322431ae3e1cb43e3a49172357e85b40",
+    "baseCommit": "9c76fbac388dbd6bda14d6fbabd6ce96614ac772"
+  },
+  "recommendation": "Approve qualified Development-only S10 closure if Joe and Chett explicitly accept the outstanding coverage and historical regression disposition. No confirmed application defect blocks that qualified disposition; no all-tests-pass or Production-ready claim.",
+  "browserDisposition": "Read-only inspection found only the existing authorized management tab, displaying both connected providers. No established authenticated non-owner session was available for a simple check. No sign-out, sign-in, status request, provider operation or new tool was attempted. Authenticated HTTP denial remains unverified.",
+  "coverage": {
+    "lifecycleInterpretation": "Abandoned pending-authorization clearing was recorded; it does not prove disconnect/revoke/reconnect of an established provider connection. Token expiry timestamps and implemented refresh support do not prove hosted refresh execution.",
+    "hostedVerified": [
+      "Vimeo business-authorized OAuth, correct account /users/147572282, public scope, two-item sample, encrypted credential presence and audit events",
+      "YouTube OAuth, channel UClrGrvL3_zZgHiFdloANdmg titled Joe Graham, intended Trade Waters identity confirmed by Joe, youtube.readonly, one-item sample, encrypted credentials and audit events",
+      "Restricted database role: original 11-check rollback proof; later five read-only isolation checks with existing connections passed",
+      "Historical unsigned provider-status requests denied with 401; not authenticated unauthorized-member proof"
+    ],
+    "localVerified": [
+      "Permission and business/actor/browser/state/expiry bindings",
+      "Issuer callback validation and duplicate/unknown parameter rejection: 16 targeted tests passed",
+      "Simulated refresh/retry and disconnect/revocation handling; no hosted lifecycle claim"
+    ],
+    "unverified": [
+      "Authenticated unauthorized-member HTTP denial and protected-detail suppression",
+      "Hosted refresh and expiry behavior",
+      "Hosted connected-provider disconnect, revocation and reconnection",
+      "Specific identity of sampled YouTube video"
+    ]
+  },
+  "regressionDisposition": "Existing broad run: 3144 total, 3137 passed, seven historical source-hash assertion groups failed. No rerun or baseline modification. Explicit reviewer disposition is required before any clean-regression/full-release claim; this package does not reclassify them.",
+  "reviewDecisionPoints": [
+    "Chett reviews exact inventory and accepts qualified coverage",
+    "Joe explicitly authorizes any future closure; merge is separate and remains unauthorized",
+    "Decide disposition of seven historical source-hash failures; no green regression claim",
+    "Local untracked evidence/operator history is inventoried but not yet committed or merged; packaging is not permission to stage unrelated work"
+  ],
+  "evidenceAnchors": [
+    "l6-s10-vimeo-hosted-connection.local.json",
+    "l6-s10-youtube-hosted-connection.local.json",
+    "l6-s10-postgres.local.json",
+    "l6-s10-existing-isolation-v2.local.json",
+    "l6-s10-existing-isolation-operator-v2.local.json",
+    "l6-s10-existing-isolation-reconciliation.local.json",
+    "l6-s10-youtube-independent-review.local.json",
+    "l6-s10-local-regression.local.txt"
+  ],
+  "inventoryScope": "Exact relative paths and SHA256 of current local S10 files. This package excludes itself. References only; no copied archive, vault contents, environment files, credentials or tokens. Historical operator scripts are retained as history, not recommended execution commands.",
+  "inventoryCount": 86,
+  "inventory": [
+    {
+      "path": "db/proposals/l6-s10-media-connections.sql",
+      "category": "application/schema",
+      "tracked": true,
+      "sha256": "2e90e05f127063a41f3380ac758e3397ec822b4a1dd9a8dab7a4cc923d288848",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "docs/layer-6/l6-s10-checkpoint.json",
+      "category": "evidence/documentation",
+      "tracked": true,
+      "sha256": "9eca606d7647f4e66401cf7e2c6be3784c760bbbb4974b6bb3399d4c6d6107ae",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "docs/layer-6/l6-s10-d1bc2941487a708fccb150809bf44f57f17d75e3-attempted.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "0d75000b5ba16c9a8b2442c6be3d01a922a18d44a050e4d96a4a6db82e88a475",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-d1bc2941487a708fccb150809bf44f57f17d75e3-deployment.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "1ecd170ed7d8226b22df1c21caa65bdce7a34ce3f36591fe58dd8d46d2e550c7",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-existing-isolation-operator-v2.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "4f9698b31575f1bb6ebb84aeed354289b97ddb9296c3804778c07762542ff88f",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-existing-isolation-operator.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "a295285ceff28259f51e2ff58977aa032b3813c3d8f7f5b12ebfe732888b8da6",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-existing-isolation-reconciliation.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "c6c60e2de3e9b421ade86b86127482fa4388bcc0cd04d129249f036c04a1d1f6",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-existing-isolation-v2.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "1e0d797bb0d77fcb538c32f6884b6becc655fb3fcb923980fcda393006b8ed63",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-hosted-readiness.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "ddea57dab156b2d06f620777b4415aadb0e1a847f674c887fed172e7399f48ee",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-hosted-unauthenticated.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "13114938e27efa8566a32fb85be29ed6c1e6b423fcf2be5c03375f920a85810c",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-http-isolation-identity.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "bdd5700c33efc391dfce2e1a757002341a708458682643744f55683954718b1b",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-http-isolation-offline-validation.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "08b80bd020ad46e0f424d0663be4fcebc219ee4777a6af288f8b29cf322fba65",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-local-regression.local.txt",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "5ec1350a91aec4aa03a8bef60ae074a4bdba02868929ac9f22f9b9280416e635",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-postgres.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "a852fd273878871d8babc8262eebd7ff752cbd61dcb9926f64d5a375a6aa6c2c",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-qualified-development-milestone.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "92bcfed2324a54e2e93e1b892103d4ff178d71f72b76224295ede72c7d8bb4d1",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-source-package.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "c7dfc0c29c0e6eb1656c81b377bb1de0a1e25a461dcb43eda6bf211991bb297f",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-vimeo-hosted-connection.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "c26c4c28e8d2df4ea34e55c4af2dd82b9172f25c4a83f6e33b35704b34109358",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-vimeo-provisioning-attempted.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "0d75000b5ba16c9a8b2442c6be3d01a922a18d44a050e4d96a4a6db82e88a475",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-vimeo-provisioning.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "0affa93cba26a1e18656d627c83de3739ba6b3dbf929d7c083830c0af6100207",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-vimeo-vault.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "4609e043c7eef968278d12a6a0103473807b908126fb51d90f9843dae1826029",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-youtube-callback-review-revision11.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "aab8d81ae81b2e1cea337e7ccfd3006908ac6776f970801e392e7fd84e7b0b03",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-youtube-callback-revision14.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "3b32a66b0d6ae3befd892d7fbfbb31085182c19bd22df0dc466623816368c53a",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-youtube-d1bc2941487a708fccb150809bf44f57f17d75e3-inspection.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "7539b958fb7b78b08dd75a649b598dfda62c6bbc1be089cbe2498ebbe16b5ef9",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-youtube-diagnostic-a210cd63e2652bf26680865bb2c6df4020a5247d-attempted.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "0d75000b5ba16c9a8b2442c6be3d01a922a18d44a050e4d96a4a6db82e88a475",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-youtube-diagnostic-a210cd63e2652bf26680865bb2c6df4020a5247d-deployment.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "2c8ce82e988510b9f31c36193b147ecaea36ffa1f96f1422f6ec6fdebc3f796d",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-youtube-diagnostic-source-package.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "af3f4b250e0fe4cf2f21ddb68f1ce6dcaa9ed700de8dd83a1db25351940a33a3",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-youtube-e23ce9e7f9f0007921b729d1464730d1e0722cf5-attempted.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "0d75000b5ba16c9a8b2442c6be3d01a922a18d44a050e4d96a4a6db82e88a475",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-youtube-e23ce9e7f9f0007921b729d1464730d1e0722cf5-deployment.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "d3bc4fb9600fcce55035f58a245f27a94bfb47a3ea38fd1e267abc37d13399a5",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-youtube-hosted-connection.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "f1cb98ec4939b37f55127686ae840c676e8bc619da55c681dae02df26e71978b",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-youtube-incomplete-callback.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "c9f12af9be88fc56e86272aea48ad5892cd7c31f418862969e46e4ee36f76ad4",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-youtube-independent-review.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "3d072ba29709335dac5aee59d3f0527be49d1ca0b9ff4aa89b1312cb582d818e",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-youtube-issuer-c61be62c322431ae3e1cb43e3a49172357e85b40-attempted.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "0d75000b5ba16c9a8b2442c6be3d01a922a18d44a050e4d96a4a6db82e88a475",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-youtube-issuer-c61be62c322431ae3e1cb43e3a49172357e85b40-deployment.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "91994ef86847a4e3df101b37f42741be2bb05d0e91081dac418b749e86a3bdcb",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-youtube-issuer-correction.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "1dfbaa28af01fa84d7993ed07f0188a0682af6acb0e82dfff4fbe59093055bc1",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-youtube-issuer-source-package.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "98fb898245b6097b11faba9033b09123c1b1ff3ba2e7550dc6f09cf6440b0b9e",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-youtube-provisioning-attempted.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "0d75000b5ba16c9a8b2442c6be3d01a922a18d44a050e4d96a4a6db82e88a475",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-youtube-provisioning-inspection.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "aea5ef5160f1b6d7a49a03215e7c7c11c1147ddd1211e59d5885dbdb578897f0",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-youtube-provisioning.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "07bb64240ec165095e24b281b37015fc1e9c51ebb43a1e7864e54367c592eab7",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-youtube-recovery-revision8.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "8867e83ea3a52e0663b1c35ac88fa182bc59510f1def7da5158b6a92cf5a3cd7",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-youtube-source-package.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "adb0c83e2255f15b531dd11573085da1829e427b750e75e94e86826b0f1130cb",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "docs/layer-6/l6-s10-youtube-vault.local.json",
+      "category": "evidence/documentation",
+      "tracked": false,
+      "sha256": "267a22127dc75a72816c3c62738d12fec0fe10f5bef0ae9402685220ef267144",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "public/manage-media.html",
+      "category": "application/schema",
+      "tracked": true,
+      "sha256": "05f2524cb3b703086b7dbe4bac3896ec43eb2cc56401937ffb84b0ea9d170ba7",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "public/media-connections.html",
+      "category": "application/schema",
+      "tracked": true,
+      "sha256": "be14300308c62601ebfc90c0a092e9a48b5f3875d1403ef2dc0aa8403b2d2559",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "public/media-connections.js",
+      "category": "application/schema",
+      "tracked": true,
+      "sha256": "d6071f6c1f8022f860c4a1bbc7a50a8182eb52ffdb726c53a5a288cfca11cd71",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "scripts/deploy-l6-s10-hosted-private.ps1",
+      "category": "operator/verification history — not authorized for rerun",
+      "tracked": true,
+      "sha256": "25f37c96df1148582ab6c7810a614a9b1663c31c60d77fde3d3a0f05894d9b95",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "scripts/deploy-l6-s10-youtube-diagnostic-private.ps1",
+      "category": "operator/verification history — not authorized for rerun",
+      "tracked": false,
+      "sha256": "69f984a456254c3f7621399966371ffc4577e47a89fc737164005ccf4ce9c932",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "scripts/deploy-l6-s10-youtube-issuer-private.ps1",
+      "category": "operator/verification history — not authorized for rerun",
+      "tracked": false,
+      "sha256": "55403b5c9a1395f19beca52e117b04d10f561311af7c89ffe0591f3d9a6d5ac7",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "scripts/deploy-l6-s10-youtube-private.ps1",
+      "category": "operator/verification history — not authorized for rerun",
+      "tracked": false,
+      "sha256": "2648afe424873f029c0da55824695eed1d2c89de05a50f053b4cf3c61f57d242",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "scripts/inspect-l6-s10-existing-isolation-private.ps1",
+      "category": "operator/verification history — not authorized for rerun",
+      "tracked": false,
+      "sha256": "166a0f9fe3ca82919cbf58e33f6d6f0175a202bb070ac227582415be57ff02b0",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "scripts/inspect-l6-s10-vimeo-private.ps1",
+      "category": "operator/verification history — not authorized for rerun",
+      "tracked": true,
+      "sha256": "462f9fdbe60b1d531c1e25f720c77fa02fd19dbdd5ffb4d09807a471921a3c67",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "scripts/inspect-l6-s10-youtube-callback-private.ps1",
+      "category": "operator/verification history — not authorized for rerun",
+      "tracked": false,
+      "sha256": "1ca0c4601415529b0a7af4d389b8ec41e7a906ada705ef361e6744e38557bb73",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "scripts/inspect-l6-s10-youtube-private.ps1",
+      "category": "operator/verification history — not authorized for rerun",
+      "tracked": false,
+      "sha256": "1c2b9fd7e589c738ff26567f46c790f905fe01afe7ff7896559a9fadd074c9ce",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "scripts/provision-l6-s10-vimeo-private.ps1",
+      "category": "operator/verification history — not authorized for rerun",
+      "tracked": true,
+      "sha256": "f95f3a5068407e129dc6e20d084e83b73bd3d13f1963409f16f41611717542b5",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "scripts/provision-l6-s10-youtube-private.ps1",
+      "category": "operator/verification history — not authorized for rerun",
+      "tracked": false,
+      "sha256": "611b17384cef5e5350ee71f6cb1d5461de4951caa6ec8fe2d7ee7b228f84d9ea",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "scripts/verify-l6-s10-connections.sql",
+      "category": "operator/verification history — not authorized for rerun",
+      "tracked": true,
+      "sha256": "4a99be033929ad3873a92eddaf82341dbf9358a50244f5671c7d8cef7fa60182",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "scripts/verify-l6-s10-existing-isolation-private.mjs",
+      "category": "operator/verification history — not authorized for rerun",
+      "tracked": false,
+      "sha256": "63e97ae99fe55e36f59d6c84702b2b988f8f5187caaf58a11324393c3d56d943",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "scripts/verify-l6-s10-existing-isolation.sql",
+      "category": "operator/verification history — not authorized for rerun",
+      "tracked": false,
+      "sha256": "fbf2b5d8a7c800d976b6f8987eb46f043f9c6f1929953950cf2229131333657c",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "scripts/verify-l6-s10-http-isolation-private.ps1",
+      "category": "operator/verification history — not authorized for rerun",
+      "tracked": false,
+      "sha256": "0628316ca837cfe8c722e83f42929af6734dcafee3f99f45e7e1eb21d672a753",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "scripts/verify-l6-s10-postgres-private.mjs",
+      "category": "operator/verification history — not authorized for rerun",
+      "tracked": true,
+      "sha256": "31c1e140a7ea808f42468dbf681a0afc1538593650cd89cf9ec11ca6cae119b8",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "scripts/verify-l6-s8a-postgres-private.ps1",
+      "category": "operator/verification history — not authorized for rerun",
+      "tracked": true,
+      "sha256": "99716f6f244677ea851471dbabc4c29bd403d9023b36f52e252e49c56126266c",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "src/media-connections.mjs",
+      "category": "application/schema",
+      "tracked": true,
+      "sha256": "4227e5eb8614b7afee6709abd3097ad36a528c21200ac3b256259e49ac7b807d",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "src/runtime/media-connection-api.mjs",
+      "category": "application/schema",
+      "tracked": true,
+      "sha256": "eed31c366423c6f8d1ba29820c0e7723352042e97c38965c470ad9264b5e6b9c",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "src/runtime/media-connection-configuration.mjs",
+      "category": "application/schema",
+      "tracked": true,
+      "sha256": "d7394d294ad2a174a2f937107b5aa887a83642ec4271c798abab223801ddfb27",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "src/runtime/media-connection-repository.mjs",
+      "category": "application/schema",
+      "tracked": true,
+      "sha256": "c29d012267eaa7d883a32dcfb2991a813bd4e5e889dedea91f209478753cf41d",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "src/runtime/media-connection-secrets.mjs",
+      "category": "application/schema",
+      "tracked": true,
+      "sha256": "50496fab90cae98b6d72ef02457ba34a7ca673c96d1041576f91c792faf13344",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "src/runtime/media-connection-workflow.mjs",
+      "category": "application/schema",
+      "tracked": true,
+      "sha256": "dd78aceabdfd889a2799be019f4b95f1cea2a797dff64015680ec8e02e1380f1",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "src/runtime/providers/external-media-vimeo.mjs",
+      "category": "application/schema",
+      "tracked": true,
+      "sha256": "c185293ae2dfafa0054ab67c76ad5a4e59fdd1aa9329c64cdd62a6e13fb9e0bf",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "src/runtime/providers/external-media-youtube.mjs",
+      "category": "application/schema",
+      "tracked": true,
+      "sha256": "37de5f263b38b8a6bb568e435f72077d926782636376573f950888a2ae3a9d31",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "src/runtime/refund-application-api.mjs",
+      "category": "application/schema",
+      "tracked": true,
+      "sha256": "b49bee8008700567e1c4342bef5f3c72728abcd645afef036c106567b8fd8b18",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "src/runtime/refund-application-database.mjs",
+      "category": "application/schema",
+      "tracked": true,
+      "sha256": "4b4f98a3b30ca3b8135bd07dc7ff001fdab5683a5afc07c30ae3b7a4c2604071",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "src/runtime/refund-web.mjs",
+      "category": "application/schema",
+      "tracked": true,
+      "sha256": "791b3ff6fd9b5177cce8fdb33b88c3ba32ec33e0a1613df9e7db6aa994755da8",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "test/external-media-vimeo.test.mjs",
+      "category": "verification source",
+      "tracked": true,
+      "sha256": "0c71f4b3ac1b68dc010db6d7c4c91b45e3c8df60e404d3907b350cc288364526",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "test/external-media-youtube.test.mjs",
+      "category": "verification source",
+      "tracked": true,
+      "sha256": "03c97388f67c02d8b06497213f10de86c419dcb7d8a722042bea0a4735c7c8a3",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "test/l6-s10-existing-isolation-diagnostics.test.mjs",
+      "category": "verification source",
+      "tracked": false,
+      "sha256": "491dc65eb6897a4ebd12d349c8853979fa64c967ea8b0dae602f82e6c78ed016",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "test/l6-s10-existing-isolation-wrapper.test.ps1",
+      "category": "verification source",
+      "tracked": false,
+      "sha256": "0d55099cae0fe4d0f6e16feecb35ed5aec475e704f393938a43be7a91c88e6b6",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "test/l6-s10-http-isolation-wrapper.test.ps1",
+      "category": "verification source",
+      "tracked": false,
+      "sha256": "8a592e142a74411846a5e6a29cf2a72c2e587e657eb7c2e4eb7385e8aa84e935",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "test/l6-s10-vimeo-provisioning.test.ps1",
+      "category": "verification source",
+      "tracked": true,
+      "sha256": "55716e5a313d025bad2a582659a8a9213373e96a5c201ac9ae826e908dd90260",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "test/l6-s10-youtube-deployment.test.ps1",
+      "category": "verification source",
+      "tracked": false,
+      "sha256": "1a4230cb3abf4f52b8220fa3eca98c9885c9304f405872194a0c2db52381e0ed",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "test/l6-s10-youtube-diagnostic-deployment.test.ps1",
+      "category": "verification source",
+      "tracked": false,
+      "sha256": "9552c139fb5efd4959206c8bcaa980d842514f04cf639d3ea83a217507f81bf0",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "test/l6-s10-youtube-issuer-deployment.test.ps1",
+      "category": "verification source",
+      "tracked": false,
+      "sha256": "6bc57c6f460a64c4d45a817f45088dbb8019fcb7642326026f6107bde6993ccc",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "test/l6-s10-youtube-provisioning.test.ps1",
+      "category": "verification source",
+      "tracked": false,
+      "sha256": "d83fa015fec19d1156246d100b83facda8628825aad5351a9b3a57c064c91c4f",
+      "inCommittedS10Delta": false
+    },
+    {
+      "path": "test/media-connection-api.test.mjs",
+      "category": "verification source",
+      "tracked": true,
+      "sha256": "1e18baf8d02255dd551a80eef7bca9680191cf33a3660e36431d772e45d7f794",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "test/media-connection-screen.test.mjs",
+      "category": "verification source",
+      "tracked": true,
+      "sha256": "975bdfa6fda543174d15c1da6d061fe466b3994462aa3bb9fb1d4e3eb7f88c53",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "test/media-connection-secrets.test.mjs",
+      "category": "verification source",
+      "tracked": true,
+      "sha256": "a1921772d1e36e03b6f9ec0a341b76e9e5f369b4006a0f1674dd0712938840c0",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "test/media-connection-workflow.test.mjs",
+      "category": "verification source",
+      "tracked": true,
+      "sha256": "60a13ed2c0b54367a1e3ed7a6b294b8dff0a307662bb7f54b01500ff77ce50ba",
+      "inCommittedS10Delta": true
+    },
+    {
+      "path": "test/media-connections.test.mjs",
+      "category": "verification source",
+      "tracked": true,
+      "sha256": "b1f092160090ad5bb2c3606b61a38255c6fac648f25f8678aa37805df6eed660",
+      "inCommittedS10Delta": true
+    }
+  ],
+  "excludedUnrelatedChanges": [
+    "docs/layer-6/l6-s4-checkpoint.json",
+    "scripts/refund-composition-render-operator.ps1",
+    "scripts/refund-source-render-operator.ps1",
+    "test/refund-composition-render-operator.test.ps1",
+    "test/refund-source-render-operator.test.ps1",
+    "All other unrelated untracked workspace files"
+  ],
+  "sharedFileQualification": "scripts/verify-l6-s8a-postgres-private.ps1 is included because its committed S10 delta adds the MediaConnectionVerification selector; it is not a reopening of S8A.",
+  "boundaries": [
+    "Both provider connections and audit histories preserved",
+    "No provider calls, permission or credential changes",
+    "Production untouched; rental playback, scoped rental verification and payment/refund execution remain disabled",
+    "S8B/S9/qualified VOD closure unchanged",
+    "S11 not begun; identifier remains provisional",
+    "No deployment, merge or S10 closure"
+  ],
+  "preparedAt": "2026-10-13T20:23:43.7831333Z"
+}

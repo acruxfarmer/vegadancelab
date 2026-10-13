@@ -1,0 +1,85 @@
+{
+  "slice": "L6-S10 — External Media Source Connections",
+  "disposition": "QUALIFIED DEVELOPMENT CONNECTION MILESTONE / JOE APPROVED / RECORDED / SLICE OPEN",
+  "approvalDate": "2026-10-13",
+  "authority": {
+    "product": "Joe",
+    "documentation": "Astra",
+    "basis": "Explicit Joe-approved canonical checkpoint instruction in this chat",
+    "independentReview": "Chett"
+  },
+  "scope": "Working Development connection milestone only; not full S10 acceptance, canonical slice closure, merge approval or Production release authorization",
+  "sliceStatus": "OPEN",
+  "checkpoint": "l6-s10-checkpoint.json",
+  "implementation": {
+    "deploymentId": "dep-db77sfd9fdbs73d74u70",
+    "serviceId": "srv-dao5cjbm8hqs73db51j0",
+    "branch": "build/l6-s10-media-connections",
+    "initialDeploymentId": "dep-db6ov78u01pc73b0fu60",
+    "initialHostedCommit": "d1bc2941487a708fccb150809bf44f57f17d75e3",
+    "runtimeCommit": "c61be62c322431ae3e1cb43e3a49172357e85b40"
+  },
+  "verified": {
+    "vimeo": {
+      "revision": 5,
+      "authorizationAuditRecorded": true,
+      "evidence": "l6-s10-vimeo-hosted-connection.local.json",
+      "accountName": "Joe Graham",
+      "scope": "public",
+      "encryptedCredentialsPersisted": true,
+      "authorization": "Real business-authorized OAuth",
+      "authenticatedSampleCount": 2,
+      "accountId": "/users/147572282"
+    },
+    "shared": [
+      "Existing business-scoped authorization and ownership boundaries preserved",
+      "Restricted runtime-role database isolation passed: original 11-check proof and 5 read-only existing-connection checks",
+      "Local permission and callback-security tests passed; issuer correction has 16 passing targeted tests",
+      "No media imported, uploaded or published by S10; Joe separately uploaded the provider-side test video",
+      "Existing canonical media architecture retained; no independent media library or generic integration platform"
+    ],
+    "youtube": {
+      "revision": 20,
+      "providerTitle": "Joe Graham",
+      "authorizationAuditRecorded": true,
+      "evidence": "l6-s10-youtube-hosted-connection.local.json",
+      "channelId": "UClrGrvL3_zZgHiFdloANdmg",
+      "scope": "https://www.googleapis.com/auth/youtube.readonly",
+      "intendedIdentity": "Trade Waters Development test channel; exact channel ID confirmed by Joe in Google account settings",
+      "authorization": "Real OAuth",
+      "authenticatedSampleCount": 1,
+      "encryptedCredentialsPersisted": true
+    }
+  },
+  "acceptedUnverifiedQualifications": [
+    "Authenticated unauthorized-member HTTP denial has not been demonstrated by a successful hosted test.",
+    "Hosted token refresh and expiration behavior remains unverified.",
+    "Hosted connected-provider disconnect, revocation and reconnection remain unverified; clearing abandoned pending attempts is not equivalent lifecycle proof.",
+    "The specific video represented by the one-item YouTube sample has not been independently identified."
+  ],
+  "coverageInterpretation": "Database isolation and local authorization tests support confidence but do not substitute for hosted authenticated HTTP denial proof. These limitations remain relevant to later release-readiness decisions.",
+  "releaseAssessment": "No confirmed release-critical application defect identified; qualified Development evidence does not establish Production readiness.",
+  "evidence": {
+    "databaseOriginal": "l6-s10-postgres.local.json",
+    "targetedTests": "l6-s10-youtube-issuer-source-package.local.json",
+    "historicalRegression": "l6-s10-local-regression.local.txt",
+    "deployment": "l6-s10-youtube-issuer-c61be62c322431ae3e1cb43e3a49172357e85b40-deployment.local.json",
+    "discrepancyReconciliation": "l6-s10-existing-isolation-reconciliation.local.json",
+    "operatorDiscrepancy": "l6-s10-existing-isolation-operator-v2.local.json",
+    "scopedIndependentReview": "l6-s10-youtube-independent-review.local.json",
+    "databaseExisting": "l6-s10-existing-isolation-v2.local.json"
+  },
+  "historicalQualification": "Seven historical source-hash assertion groups remain reported as failed in the existing checkpoint; baselines and original receipts are unchanged.",
+  "boundaries": {
+    "additionalVerification": "Paused; no further Shelly wrappers, ad hoc HTTP diagnostics or lifecycle experiments authorized by this record",
+    "scopedRentalVerification": "disabled",
+    "providerConnections": "Preserved; no disconnect, credential change or OAuth repeat",
+    "paymentRefundExecution": "disabled",
+    "generalRentalPlayback": "disabled",
+    "production": "Untouched",
+    "s11": "Not begun; proposed identifier remains provisional; library integration remains separate from S10 connections",
+    "s10": "OPEN; no merge or canonical closure",
+    "s8bS9QualifiedVodClosures": "unchanged"
+  },
+  "documentationAction": "One milestone record plus pointer/status reconciliation in existing checkpoint. No application changes, deployment, provider/database calls or verification performed."
+}

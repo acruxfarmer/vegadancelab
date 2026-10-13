@@ -1,0 +1,71 @@
+{
+  "status": "hosted-youtube-connection-persisted",
+  "runtimeCommit": "c61be62c322431ae3e1cb43e3a49172357e85b40",
+  "deploymentId": "dep-db77sfd9fdbs73d74u70",
+  "business": "vega-dance-lab",
+  "tenant": "vega-development",
+  "connection": {
+    "authorizationPendingCleared": true,
+    "accountName": "Joe Graham",
+    "lastError": null,
+    "sampleCount": 1,
+    "accountId": "UClrGrvL3_zZgHiFdloANdmg",
+    "capabilities": [
+      "account.read",
+      "media.sample.read"
+    ],
+    "verifiedAt": "2026-10-13T19:08:33.197Z",
+    "expiresAt": "2026-10-13T20:08:31.722Z",
+    "encryptedCredentialPresent": true,
+    "scopes": [
+      "https://www.googleapis.com/auth/youtube.readonly"
+    ],
+    "status": "connected",
+    "revision": 20
+  },
+  "audit": [
+    {
+      "revision": 17,
+      "at": "2026-10-13T19:08:22.040038Z",
+      "action": "authorization_started"
+    },
+    {
+      "revision": 18,
+      "at": "2026-10-13T19:08:32.315784Z",
+      "action": "authorization_consumed"
+    },
+    {
+      "revision": 19,
+      "at": "2026-10-13T19:08:32.732659Z",
+      "action": "credentials_saved"
+    },
+    {
+      "revision": 20,
+      "at": "2026-10-13T19:08:33.207488Z",
+      "action": "connection_verified"
+    }
+  ],
+  "inspectionProviderCalls": 0,
+  "inspectionMutations": 0,
+  "secretPayloadRetrieved": false,
+  "vimeoPreserved": {
+    "verifiedAt": "2026-10-13T02:04:13.119Z",
+    "revision": 5,
+    "sampleCount": 2,
+    "status": "connected"
+  },
+  "limitations": [
+    "Sample count proves one uploads item read; video identity is deliberately not persisted, so exact uploaded test-video match is not independently proved.",
+    "Hosted refresh, expiry, disconnect, revocation and reconnection remain unverified.",
+    "No media imported or playback verified."
+  ],
+  "recordedAt": "2026-10-13T19:10:53.5245513Z",
+  "ownerIdentityConfirmation": {
+    "confirmedBy": "Joe",
+    "channelId": "UClrGrvL3_zZgHiFdloANdmg",
+    "intendedChannel": "Trade Waters Development channel",
+    "method": "Joe compared exact channel ID in Google account settings",
+    "confirmed": true,
+    "recordedAt": "2026-10-13T19:18:39.9058130Z"
+  }
+}

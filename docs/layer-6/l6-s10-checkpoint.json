@@ -1,9 +1,9 @@
 {
   "slice": "L6-S10 — External Media Source Connections",
-  "status": "DEVELOPMENT IMPLEMENTATION IN PROGRESS — NOT HOSTED OR ACCEPTED",
+  "status": "QUALIFIED DEVELOPMENT CONNECTION MILESTONE — JOE APPROVED; RECORDED; S10 OPEN; NOT FULL SLICE ACCEPTANCE",
   "authorization": "Joe's 2026-10-12 Development implementation authorization; attachment 19952f2d-cae6-4c59-a1ee-ed183e9fd599",
   "baseCommit": "9c76fbac388dbd6bda14d6fbabd6ce96614ac772",
-  "sourceState": "Development source package prepared on build/l6-s10-media-connections; no S10 deployment, merge or closure. Exact source identity recorded separately after commit.",
+  "sourceState": "Issuer correction c61be62c322431ae3e1cb43e3a49172357e85b40 last verified live as dep-db77sfd9fdbs73d74u70. Both hosted connections verified. Joe approved qualified Development milestone with Chett independent review; no merge, full acceptance or closure.",
   "roadmap": {
     "s10": "Approved source connections responsibility",
     "s11": "Separate library integration responsibility; identifier remains provisional",
@@ -33,9 +33,9 @@
       "qualification": "Seven historical source-hash assertion groups still fail. Historical baselines remain unchanged; not relabelled as passing."
     },
     "database": "PASSED through Shelly using the restricted Development runtime role: 11 checks; zero provider calls; zero committed fixture writes; baseline restored. Receipt: l6-s10-postgres.local.json.",
-    "hosted": "not run",
-    "vimeoActualAuthorization": "not verified",
-    "youtubeActualAuthorization": "not verified",
+    "hosted": "Exact runtime commit deployed as dep-db6ov78u01pc73b0fu60; receipt confirms disabled controls. Owner confirms UI. Unsigned Vimeo and YouTube status GETs each returned 401; no mutation or provider calls during inspection.",
+    "vimeoActualAuthorization": "HOSTED VERIFIED: Vega Dance Lab; Vimeo account /users/147572282; public scope; sample count 2; revision 5; verifiedAt 2026-10-13T02:04:13.119Z. Read-only persisted connection and four audit events inspected; encrypted credential presence confirmed without retrieving payload. Evidence: l6-s10-vimeo-hosted-connection.local.json.",
+    "youtubeActualAuthorization": "HOSTED VERIFIED: revision20; channel UClrGrvL3_zZgHiFdloANdmg, provider title Joe Graham; youtube.readonly; sample1; verifiedAt 2026-10-13T19:08:33.197Z. Encrypted credential presence and four audit events verified; pending cleared. Joe confirmed exact channel-ID match in Google account settings; intended Trade Waters identity confirmed. Receipt: l6-s10-youtube-hosted-connection.local.json.",
     "vimeoReinspection": {
       "passed": 16,
       "failed": 0,
@@ -66,16 +66,60 @@
       "deploymentOperatorOfflineChecksFailed": 0,
       "provisioningOperatorOfflineChecksPassed": 10,
       "script": "scripts/deploy-l6-s10-hosted-private.ps1"
+    },
+    "lifecycleReinspection": {
+      "passed": 7,
+      "failed": 0,
+      "transport": "simulated",
+      "newChecks": [
+        "late OAuth exchange cannot revive disconnected connection",
+        "refreshed credentials retained across failed read and successful retry"
+      ],
+      "hostedWorkingConnection": "preserved; no disconnect, OAuth repeat, or provider verification repeat"
+    },
+    "youtubeCallbackReinspection": {
+      "passed": 18,
+      "failed": 0,
+      "transport": "simulated",
+      "change": "Allow Google informational callback metadata only for YouTube; ignore it for authorization; reject duplicate and unknown callback parameters",
+      "documentation": "https://developers.google.com/identity/oauth2/web/guides/use-code-model",
+      "deployed": true
+    },
+    "youtubeProvisioning": {
+      "receipt": "l6-s10-youtube-provisioning.local.json",
+      "status": "provisioned-awaiting-runtime",
+      "offlineProvisioningChecksPassed": 15,
+      "offlineDeploymentChecksPassed": 12,
+      "callbackAndLifecycleTestsPassed": 13,
+      "deploymentScript": "scripts/deploy-l6-s10-youtube-private.ps1",
+      "deployed": true
+    },
+    "youtubeDeployment": {
+      "receipt": "l6-s10-youtube-issuer-c61be62c322431ae3e1cb43e3a49172357e85b40-deployment.local.json",
+      "commit": "c61be62c322431ae3e1cb43e3a49172357e85b40",
+      "deploymentId": "dep-db77sfd9fdbs73d74u70",
+      "status": "live-youtube-connected",
+      "providerCalls": 0,
+      "settingsChanged": false,
+      "disabledControlsConfirmed": true
+    },
+    "existingConnectionIsolation": {
+      "status": "passed-through-Shelly-runtime-role",
+      "checks": 5,
+      "receipt": "l6-s10-existing-isolation-v2.local.json",
+      "reconciliation": "l6-s10-existing-isolation-reconciliation.local.json",
+      "qualification": "Wrapper emitted incorrect launch failure; successful verifier receipt from same execution retained. SQL proof uses synthetic unrelated actor, not authenticated browser identity.",
+      "providerCalls": 0,
+      "committedFixtureWrites": 0
     }
   },
   "remaining": [
-    "Complete source reinspection and hosted owner UI verification",
-    "Confirm callback registration during initial Vimeo authorization",
-    "Run exact-commit Development deployment through Shelly; inspect safe receipt and hosted runtime",
-    "Actual Vimeo authorization, account identity, bounded read, reconnect and revocation proof",
-    "Actual YouTube authorization when approved application credentials and consent access are available",
-    "Document actual provider approval dependencies and limitations; do not substitute mock results",
-    "Chett independent review and Joe approval before merge or closure"
+    "Hosted authenticated non-owner/business-isolation checks where existing supported test accounts are available; restricted database-role proof already passed",
+    "Hosted disconnect/revoke/reconnect and expiry remain unverified; do not disturb preserved Vimeo connection merely to reproduce evidence",
+    "Complete source reinspection and historical source-hash reconciliation for final evidence without changing historical baselines",
+    "Document actual provider limitations and distinguish hosted from simulated lifecycle evidence",
+    "Separate Chett review and Joe authorization required before any future merge or full S10 closure; qualified milestone approval does not authorize either.",
+    "Exact sample video identity is not independently verified; one-item authenticated sample remains verified."
   ],
   "configuration": {
     "enabledByDefault": false,
@@ -91,7 +135,7 @@
       "YOUTUBE_CLIENT_SECRET"
     ],
     "settingsChanged": true,
-    "deployedConnectionControl": "false; provisioned but no S10 deployment yet"
+    "deployedConnectionControl": "true on pinned Development service; Vimeo and YouTube configured and connected; rental and payment/refund controls disabled"
   },
   "boundaries": {
     "s11Implementation": false,
@@ -111,7 +155,7 @@
   },
   "vimeoApplication": {
     "name": "Acrux Media Connector - Development",
-    "readiness": "Private Development provisioning verified from l6-s10-vimeo-provisioning.local.json, checkedAt 2026-10-13T01:49:11.1973673Z; connections disabled; no deployment or provider calls",
+    "readiness": "Hosted OAuth and bounded read verified; existing connection preserved",
     "vaultRecord": "Vega Dev - Vimeo",
     "vaultFolder": "Dev Stack",
     "fields": [
@@ -122,5 +166,13 @@
     "inspectionExecuted": true,
     "scope": "public",
     "scopeLimitation": "Public account data and public media only; private/unlisted discovery is not verified"
-  }
+  },
+  "canonicalMilestone": "l6-s10-qualified-development-milestone.json",
+  "milestoneQualifications": [
+    "Authenticated unauthorized-member HTTP denial has not been demonstrated by a successful hosted test.",
+    "Hosted token refresh and expiration behavior remains unverified.",
+    "Hosted connected-provider disconnect, revocation and reconnection remain unverified; clearing abandoned pending attempts is not equivalent lifecycle proof.",
+    "The specific video represented by the one-item YouTube sample has not been independently identified."
+  ],
+  "verificationDisposition": "Additional operator wrappers, HTTP diagnostics and provider lifecycle experiments paused. Remaining coverage retained for later release-readiness decisions, not active instructions to run checks."
 }

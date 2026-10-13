@@ -1,0 +1,18 @@
+﻿{
+    "runtimeCommit":  "e23ce9e7f9f0007921b729d1464730d1e0722cf5",
+    "serviceId":  "srv-dao5cjbm8hqs73db51j0",
+    "status":  "live-awaiting-youtube-authorization",
+    "stage":  "complete",
+    "inspectOnly":  false,
+    "settingsUpdated":  [
+
+                        ],
+    "settingMutationAttempted":  false,
+    "deployAttempted":  true,
+    "deployId":  "dep-db76rdei0phs738pc4rg",
+    "providerCalls":  0,
+    "productionUntouched":  true,
+    "secretValuesInReceipt":  false,
+    "disabledControlsConfirmed":  true,
+    "checkedAt":  "2026-10-13T17:44:12.7660329Z"
+}

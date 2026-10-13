@@ -1,0 +1,20 @@
+﻿{
+    "status":  "provisioned-disabled-awaiting-runtime",
+    "stage":  "complete",
+    "serviceId":  "srv-dao5cjbm8hqs73db51j0",
+    "inspectOnly":  false,
+    "settingsUpdated":  [
+                            "VEGA_MEDIA_CONNECTIONS_ENABLED",
+                            "VEGA_MEDIA_CONNECTION_KEY",
+                            "VIMEO_CLIENT_ID",
+                            "VIMEO_CLIENT_SECRET"
+                        ],
+    "mutationAttempted":  true,
+    "deployments":  0,
+    "providerCalls":  0,
+    "secretValuesInReceipt":  false,
+    "productionUntouched":  true,
+    "encryptionKey":  "generated-for-Development-secret-storage",
+    "unrelatedSettingsUnchanged":  true,
+    "checkedAt":  "2026-10-13T01:49:11.1973673Z"
+}

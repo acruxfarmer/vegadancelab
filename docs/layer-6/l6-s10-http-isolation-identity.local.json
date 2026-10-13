@@ -1,0 +1,19 @@
+{
+  "status": "existing-member-identity-proposed-awaiting-private-sign-in",
+  "email": "joe@tradewaters.co",
+  "userId": "e5946b40-9839-4a96-99d5-93262d9573f0",
+  "emailConfirmed": true,
+  "tenant": "vega-development",
+  "business": "vega-dance-lab",
+  "membershipRole": "member",
+  "staffAssignmentCount": 0,
+  "initialOwner": false,
+  "mediaConnectionAuthority": false,
+  "establishedFixture": "scripts/verify-fresh-preparation.ps1: existing private member Login-Fresh",
+  "currentAuthenticatedSessionVerified": false,
+  "proposedRequest": "GET /api/media-connections/youtube with Vega tenant/business context",
+  "expectedStatus": 403,
+  "providerCalls": 0,
+  "permissionChanges": 0,
+  "recordedAt": "2026-10-13T19:35:08.0271477Z"
+}

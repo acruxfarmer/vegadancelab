@@ -1,0 +1,15 @@
+{
+  "status": "published-awaiting-Shelly-deployment",
+  "runtimeCommit": "c61be62c322431ae3e1cb43e3a49172357e85b40",
+  "baseCommit": "a210cd63e2652bf26680865bb2c6df4020a5247d",
+  "expectedLiveDeployment": "dep-db77mgks728c73fe8s8g",
+  "deploymentScript": "scripts/deploy-l6-s10-youtube-issuer-private.ps1",
+  "applicationTestsPassed": 16,
+  "deploymentOfflineChecksPassed": 12,
+  "deploymentAttempted": false,
+  "oauthAttemptStarted": false,
+  "merged": false,
+  "closed": false,
+  "pendingEvidencePreserved": "l6-s10-youtube-callback-revision14.local.json",
+  "checkedAt": "2026-10-13T18:52:56.1052998Z"
+}

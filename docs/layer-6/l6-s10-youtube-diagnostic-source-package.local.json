@@ -1,0 +1,17 @@
+{
+  "status": "published-awaiting-Shelly-diagnostic-deployment",
+  "runtimeCommit": "a210cd63e2652bf26680865bb2c6df4020a5247d",
+  "baseCommit": "e23ce9e7f9f0007921b729d1464730d1e0722cf5",
+  "expectedLiveDeployment": "dep-db76rdei0phs738pc4rg",
+  "authorization": "Joe and Chett approved one Development diagnostic deployment and one observed OAuth attempt",
+  "applicationTestsPassed": 15,
+  "deploymentOfflineChecksPassed": 12,
+  "deploymentScript": "scripts/deploy-l6-s10-youtube-diagnostic-private.ps1",
+  "deploymentAttempted": false,
+  "observedOAuthAttemptStarted": false,
+  "merged": false,
+  "closed": false,
+  "diagnosticEvent": "youtube_oauth_callback_incomplete",
+  "diagnosticData": "Fixed stage label only; no request contents or exception details",
+  "checkedAt": "2026-10-13T18:39:27.3205206Z"
+}

@@ -1,0 +1,15 @@
+{
+  "status": "published-for-Development-deployment",
+  "runtimeCommit": "d1bc2941487a708fccb150809bf44f57f17d75e3",
+  "branch": "build/l6-s10-media-connections",
+  "baseCommit": "9c76fbac388dbd6bda14d6fbabd6ce96614ac772",
+  "remoteTrackingMatches": true,
+  "deploymentAttempted": false,
+  "merged": false,
+  "closed": false,
+  "providerVerified": false,
+  "applicationTestsPassed": 29,
+  "operatorDeploymentOfflineChecksPassed": 12,
+  "provisioningReceipt": "l6-s10-vimeo-provisioning.local.json",
+  "checkedAt": "2026-10-13T01:54:21.8006083Z"
+}

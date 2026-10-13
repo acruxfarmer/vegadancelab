@@ -1,0 +1,12 @@
+{
+  "status": "local-correction-tested-not-deployed",
+  "observedFailure": "callback_unknown_parameter",
+  "confirmed": "Callback reached application and passed binding-cookie presence, decryption, provider and expiry checks; failed parameter allowlist before state consumption",
+  "contractGap": "Google documented iss response parameter absent from YouTube allowlist",
+  "qualification": "Diagnostic intentionally did not retain rejected parameter name; iss as the observed parameter is an inference, not captured proof",
+  "correction": "Accept iss for YouTube only; when present require exact https://accounts.google.com; duplicate and unknown rejection retained",
+  "testsPassed": 16,
+  "deployed": false,
+  "oauthRepeated": false,
+  "source": "https://developers.google.com/identity/openid-connect/reference#authorization-endpoint"
+}

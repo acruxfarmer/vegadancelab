@@ -1,0 +1,12 @@
+﻿{
+    "status":  "ready-for-private-provisioning",
+    "stage":  "complete",
+    "provider":  "youtube",
+    "record":  "Acrux Dev - YouTube",
+    "requiredFieldsPresent":  true,
+    "providerCalls":  0,
+    "deployments":  0,
+    "settingsChanged":  false,
+    "secretValuesPersisted":  false,
+    "checkedAt":  "2026-10-13T17:32:19.6969141Z"
+}

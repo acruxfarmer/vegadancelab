@@ -1,0 +1,18 @@
+﻿{
+    "status":  "provisioned-awaiting-runtime",
+    "stage":  "complete",
+    "serviceId":  "srv-dao5cjbm8hqs73db51j0",
+    "inspectOnly":  false,
+    "settingsUpdated":  [
+                            "YOUTUBE_CLIENT_ID",
+                            "YOUTUBE_CLIENT_SECRET"
+                        ],
+    "mutationAttempted":  true,
+    "deployments":  0,
+    "providerCalls":  0,
+    "secretValuesInReceipt":  false,
+    "productionUntouched":  true,
+    "encryptionKey":  "preserved",
+    "unrelatedSettingsUnchanged":  true,
+    "checkedAt":  "2026-10-13T17:35:35.1168167Z"
+}

@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "stage": "complete",
+  "providerCalls": 0,
+  "committedFixtureWrites": 0,
+  "productionUntouched": true,
+  "baselineRestored": true,
+  "checks": [
+    "actual_runtime_role",
+    "runtime_privilege_bounds",
+    "no_browser_direct_read",
+    "owner_sees_two_connections",
+    "synthetic_unrelated_actor_sees_zero"
+  ]
+}

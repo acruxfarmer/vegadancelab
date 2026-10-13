@@ -1,0 +1,18 @@
+﻿{
+    "runtimeCommit":  "d1bc2941487a708fccb150809bf44f57f17d75e3",
+    "serviceId":  "srv-dao5cjbm8hqs73db51j0",
+    "status":  "live-awaiting-vimeo-authorization",
+    "stage":  "complete",
+    "inspectOnly":  false,
+    "settingsUpdated":  [
+                            "VEGA_MEDIA_CONNECTIONS_ENABLED"
+                        ],
+    "settingMutationAttempted":  true,
+    "deployAttempted":  true,
+    "deployId":  "dep-db6ov78u01pc73b0fu60",
+    "providerCalls":  0,
+    "productionUntouched":  true,
+    "secretValuesInReceipt":  false,
+    "disabledControlsConfirmed":  true,
+    "checkedAt":  "2026-10-13T01:57:05.6513149Z"
+}

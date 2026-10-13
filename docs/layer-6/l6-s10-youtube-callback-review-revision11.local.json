@@ -1,0 +1,14 @@
+{
+  "status": "callback-rejected-before-authorization-consumption",
+  "revision": 11,
+  "pendingExpiresAt": "2026-10-13T18:36:11.747Z",
+  "inspectedAt": "2026-10-13T18:29:43.177014Z",
+  "credentialsPresent": false,
+  "lastError": null,
+  "latestAuditAction": "authorization_started",
+  "authorizationStartedAt": "2026-10-13T18:26:11.546971Z",
+  "mutations": 0,
+  "providerCalls": 0,
+  "exactCause": "Not established: callback catch suppresses rejection detail; focused browser history lookup returned no callback entry",
+  "nextEvidence": "Existing callback request parameter names/counts and presence of named binding cookie only; no query values, tokens, cookies or raw request export"
+}
