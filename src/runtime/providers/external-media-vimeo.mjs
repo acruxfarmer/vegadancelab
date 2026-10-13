@@ -1,4 +1,5 @@
 // S10: authorization and bounded connection proof only. No library ingestion.
+import {EXTERNAL_PAGE_SIZE,externalMediaId,externalPage,providerItem} from '../../external-media.mjs';
 export class MediaConnectionError extends Error {
  constructor(code){super(code);this.name='MediaConnectionError';this.code=code;}
 }
@@ -6,11 +7,12 @@ const fail=code=>{throw new MediaConnectionError(code);};
 const token=value=>typeof value==='string'&&value.length>0&&value.length<=8192&&!/[\s\u0000-\u001f]/.test(value);
 export function createVimeoConnectionAdapter({clientId,clientSecret,redirectUri,fetcher=fetch,now=Date.now}){
  if(!token(clientId)||!token(clientSecret)||redirectUri!=='https://vega-development-web.onrender.com/api/media-connections/vimeo/callback')fail('provider_not_configured');
- async function request(path,{accessToken,method='GET',body,basic=false}={}){
+ async function request(path,{accessToken,method='GET',body,basic=false,missing=false}={}){
   if(!basic&&!token(accessToken))fail('reconnect_required');
   let response;
   try{response=await fetcher('https://api.vimeo.com'+path,{method,redirect:'error',headers:{Authorization:basic?'Basic '+Buffer.from(clientId+':'+clientSecret).toString('base64'):'Bearer '+accessToken,Accept:'application/vnd.vimeo.*+json;version=3.4',...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{}),signal:AbortSignal.timeout(10000)});}catch{fail('provider_unavailable');}
   if(!response.ok){
+   if(missing&&response.status===404)return null;
    // Never propagate provider bodies, URLs, token values or transport errors.
    if(response.status===401)fail('reconnect_required');
    if(response.status===403)fail('permission_denied');
@@ -27,6 +29,20 @@ export function createVimeoConnectionAdapter({clientId,clientSecret,redirectUri,
  }
  return {
   provider:'vimeo',requestedScopes:['public'],refreshSupported:false,
+  async discover(credentials,accountId,page=''){
+   externalPage('vimeo',page);
+   const number=Number(page||1);
+   const list=await request('/me/videos?per_page='+EXTERNAL_PAGE_SIZE+'&page='+number+'&fields=uri,name,user.uri,user.name,status,privacy,paging.next',{accessToken:credentials.accessToken});
+   if(!Array.isArray(list.data)||list.data.length>EXTERNAL_PAGE_SIZE)fail('provider_response_invalid');
+   // Never follow a provider-supplied URL with credentials. Build the next page locally.
+   return {items:list.data.map(x=>providerItem('vimeo',x,accountId,now())),nextPage:list.paging?.next&&number<99999?String(number+1):null};
+  },
+  async media(credentials,accountId,id){
+   externalMediaId('vimeo',id);
+   const raw=await request('/videos/'+id+'?fields=uri,name,user.uri,user.name,status,privacy',{accessToken:credentials.accessToken,missing:true});
+   if(!raw)return {provider:'vimeo',id,status:'unavailable',eligible:false,checkedAt:new Date(now()).toISOString()};
+   return providerItem('vimeo',raw,accountId,now());
+  },
   authorizationUrl(state){
    if(!/^[a-f0-9]{64}$/.test(state))fail('authorization_state_invalid');
    const url=new URL('https://api.vimeo.com/oauth/authorize');

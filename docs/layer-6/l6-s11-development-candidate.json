@@ -1,0 +1,150 @@
+{
+  "slice": "L6-S11 External Media Library Integration",
+  "status": "DEVELOPMENT CANDIDATE / LOCAL AND RESTRICTED DATABASE CHECKS PASSED / HOSTED APPLICATION VERIFICATION PENDING",
+  "authority": {
+    "developmentBuild": "Joe approved; implementation attachment cc754c02-2d1c-433e-b64b-529bd77b1408",
+    "metadataExpiry": "Joe and Chett approved retention-only automatic metadata deletion; no background provider synchronization",
+    "merge": false,
+    "closure": false,
+    "production": false
+  },
+  "source": {
+    "branch": "build/l6-s11-external-media-library",
+    "base": "ee4b8a5dfdb7f9159814dbf710feb2876fcd2de4",
+    "implementationCommit": "Commit containing this candidate record; exact published hash recorded in the deployment receipt",
+    "inventory": [
+      "db/proposals/l6-s11-external-media-library.sql",
+      "docs/layer-6/l6-s11-browser-preview.local.json",
+      "docs/layer-6/l6-s11-compatibility-tests.local.txt",
+      "docs/layer-6/l6-s11-deployment-tests.local.txt",
+      "docs/layer-6/l6-s11-development-candidate.json",
+      "docs/layer-6/l6-s11-owner-preview.local.png",
+      "docs/layer-6/l6-s11-postgres.local.json",
+      "docs/layer-6/l6-s11-regression.local.txt",
+      "docs/layer-6/l6-s11-targeted-tests.local.txt",
+      "docs/roadmap-state.json",
+      "public/external-media-management.js",
+      "public/external-media-player.js",
+      "public/manage-media.js",
+      "public/media-library.js",
+      "public/media-ui.js",
+      "public/styles.css",
+      "public/watch.js",
+      "scripts/deploy-l6-s11-private.ps1",
+      "scripts/start-web.mjs",
+      "scripts/verify-l6-s10-postgres-private.mjs",
+      "scripts/verify-l6-s11-external-media.sql",
+      "scripts/verify-l6-s8a-postgres-private.ps1",
+      "src/external-media.mjs",
+      "src/media-resource.mjs",
+      "src/runtime/external-media-api.mjs",
+      "src/runtime/external-media-library.mjs",
+      "src/runtime/media-connection-workflow.mjs",
+      "src/runtime/media-owner-management.mjs",
+      "src/runtime/media-placement-service.mjs",
+      "src/runtime/providers/external-media-vimeo.mjs",
+      "src/runtime/providers/external-media-youtube.mjs",
+      "src/runtime/refund-application-api.mjs",
+      "src/runtime/refund-application-database.mjs",
+      "src/runtime/refund-web.mjs",
+      "test/external-media-library.test.mjs",
+      "test/l6-s11-deployment.test.ps1"
+    ]
+  },
+  "development": {
+    "service": "srv-dao5cjbm8hqs73db51j0",
+    "supabaseProject": "cjdoczrxcjynjhgpgqop",
+    "previousDeployment": "dep-db77sfd9fdbs73d74u70",
+    "previousHostedCommit": "c61be62c322431ae3e1cb43e3a49172357e85b40",
+    "applicationDeployed": false,
+    "migration": {
+      "name": "l6_s11_external_media_library",
+      "version": "20261013213418",
+      "source": "db/proposals/l6-s11-external-media-library.sql",
+      "applied": true,
+      "compatibility": "Additive private cache/audit extension of canonical resources; existing resource and placement data preserved. Browser roles have no private grants."
+    }
+  },
+  "implemented": [
+    "Business-authorized Vimeo and YouTube discovery with 12-item pages through S10 adapters and encrypted credentials",
+    "Explicit idempotent reference registration into canonical business-owned resources and hidden placements",
+    "Existing categories, mixed collections, source filters, owner presentation and explicit publication",
+    "Supported public/membership policies using canonical viewer resolver; protected paid/rental policy rejected in service and database",
+    "Provider-native private owner preview and member/public watch integration; no external video copying",
+    "Manual metadata refresh preserving canonical resource and placement organization; transient errors do not replace valid cache",
+    "Retention-only startup and hourly deletion, independent of library feature flag, with 29-day deadline; owner fields, identity, placements and audit preserved"
+  ],
+  "verified": {
+    "canonicalCheckoutRegression": {
+      "passed": 1398,
+      "failed": 0,
+      "receipt": "l6-s11-regression.local.txt"
+    },
+    "targeted": {
+      "passed": 52,
+      "failed": 0,
+      "receipt": "l6-s11-targeted-tests.local.txt"
+    },
+    "windowsPowerShellOfflineDeployment": {
+      "passed": 13,
+      "failed": 0,
+      "receipt": "l6-s11-deployment-tests.local.txt",
+      "realVaultOrNetworkAccess": false
+    },
+    "restrictedDevelopmentDatabase": {
+      "receipt": "l6-s11-postgres.local.json",
+      "status": "passed",
+      "rolledBack": true,
+      "providerCalls": 0,
+      "committedFixtureWrites": 0
+    },
+    "browser": {
+      "receipt": "l6-s11-browser-preview.local.json",
+      "screenshot": "l6-s11-owner-preview.local.png",
+      "mode": "Local actual browser and UI with mocked HTTP; NOT hosted provider proof",
+      "checks": [
+        "Owner discovery",
+        "Explicit hidden registration UI",
+        "Private preview UI; external network blocked"
+      ]
+    },
+    "preservation": "Before/after schema and connector attempt: source connection digest unchanged; source audit count 23, resources 6, placements 4 unchanged. No provider calls or connection operations performed."
+  },
+  "retention": {
+    "providerData": "Normalized source title, source creator, eligibility/status and checkedAt live only in expiring cache. Canonical default is generic; owner edits are independent. No thumbnails retained.",
+    "cleanup": "Clears metadata, increments cache revision, records fixed metadata_expired audit. Also clears cache after detected disconnection/account replacement. No provider calls.",
+    "limitations": [
+      "Cleanup requires the application process to run; a prolonged outage beyond the 29-day margin is not a demonstrated 30-day deletion guarantee. Production retention readiness remains unverified.",
+      "Current connected-source member library projection is bounded to 100 published placements per business; pagination beyond that is not implemented.",
+      "Provider reference identity remains canonical provenance; no claim that cached API metadata is retained after expiry."
+    ]
+  },
+  "pendingHostedProof": [
+    "Owner discovery and registration against each real connected provider",
+    "Organization, manual refresh preservation and explicit public/membership publication",
+    "Authorized member and unauthorized/cross-business HTTP behavior",
+    "Actual provider-native playback and provider restriction presentation"
+  ],
+  "providerLimitations": [
+    "Only public embeddable processed non-live YouTube media without reported region/age restriction and publicly embeddable Vimeo media are eligible in this candidate.",
+    "Provider restrictions can change after a cached read; native player may deny independently.",
+    "Acrux access does not protect direct provider URLs; paid/rental delivery is unsupported.",
+    "Provider access tokens may refresh on authorized owner operations through existing S10 infrastructure; no automatic discovery or synchronization."
+  ],
+  "s10QualificationsPreserved": [
+    "Hosted unauthorized-member HTTP403 not demonstrated",
+    "Hosted token refresh/expiry unverified",
+    "Hosted established-connection disconnect, revocation and reconnection unverified",
+    "Specific S10 sampled YouTube video not independently identified",
+    "Historical dirty-checkout hash-test qualifications remain as recorded; this clean canonical regression is a separate evidence set."
+  ],
+  "boundaries": {
+    "providerConnections": "Both existing connections preserved; no OAuth repeats or disconnections",
+    "rentalPaymentControls": "Unchanged; deployment preflight requires disabled controls",
+    "productionUntouched": true,
+    "canonicalMerge": false,
+    "sliceClosed": false,
+    "s10ClosureUnchanged": true
+  },
+  "next": "Publish isolated source branch and use scripts/deploy-l6-s11-private.ps1 with exact candidate commit in Shelly existing unlocked session. The wrapper changes only VEGA_MEDIA_LIBRARY_ENABLED, checks pinned checkpoint and preserves all other environment values, then deploys exactly once. Inspect receipt before hosted provider workflow."
+}

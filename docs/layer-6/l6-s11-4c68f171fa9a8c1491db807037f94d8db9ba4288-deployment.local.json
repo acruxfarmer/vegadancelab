@@ -1,0 +1,20 @@
+﻿{
+    "runtimeCommit":  "4c68f171fa9a8c1491db807037f94d8db9ba4288",
+    "serviceId":  "srv-dao5cjbm8hqs73db51j0",
+    "status":  "live-awaiting-s11-hosted-verification",
+    "stage":  "complete",
+    "inspectOnly":  false,
+    "settingsUpdated":  [
+
+                        ],
+    "settingMutationAttempted":  false,
+    "deployAttempted":  true,
+    "deployId":  "dep-db7avsqvcj2c73cum5tg",
+    "providerCalls":  0,
+    "productionUntouched":  true,
+    "secretValuesInReceipt":  false,
+    "unrelatedSettingsUnchanged":  true,
+    "disabledControlsConfirmed":  true,
+    "connectionSettingsPreserved":  true,
+    "checkedAt":  "2026-10-13T22:26:50.0088104Z"
+}

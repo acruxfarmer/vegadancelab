@@ -1,0 +1,14 @@
+PASS fresh
+PASS inspect
+PASS auto-deploy
+PASS wrong-service
+PASS rental-enabled
+PASS payment-enabled
+PASS bad-key
+PASS missing-vimeo
+PASS checkpoint-changed
+PASS active-deploy
+PASS partial-failure
+PASS wrong-commit
+PASS deploy-failed
+13 offline operator checks passed. No live vault or network access.

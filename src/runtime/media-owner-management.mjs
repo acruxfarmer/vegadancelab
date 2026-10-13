@@ -7,9 +7,10 @@ import {createMediaPlacementService} from './media-placement-service.mjs';
 import {createMediaPlacementRepository} from './media-placement-repository.mjs';
 import {resolveStaffAccess,hasStaffPermission} from '../staff-permissions.mjs';
 import {mediaOffer} from '../media-commerce.mjs';
+import {cachedSource,externalMetadata} from './external-media-library.mjs';
 const fail=(message,status=403)=>{throw new ApplicationError(message,status);};
 const uuid=value=>typeof value==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
-export function createMediaOwnerManagement(pool,{initialOwners=[]}={}){
+export function createMediaOwnerManagement(pool,{initialOwners=[],externalLibrary=false}={}){
  return async(actor,input)=>{
   if(!uuid(actor))fail('Sign in to continue',401);
   const c=await pool.connect();
@@ -78,7 +79,12 @@ export function createMediaOwnerManagement(pool,{initialOwners=[]}={}){
      const state=bindings.length===1?bindings[0].state:null;
      delivery={state:state==='ready'?'ready':state==='failed'?'unavailable':'processing'};
     }
-    items.push({...r,...(delivery?{delivery}:{}),placements:projections,linkedVideo:links[0]||null});
+    let external;
+    if(r.externalLibrary){
+     for(const p of projections){p.allowedAccessModes=p.allowedAccessModes.filter(k=>k!=='pay_on_demand');delete p.commerce;delete p.rental;}
+     if(externalLibrary){const cache=(await c.query('select metadata,expires_at,revision from media_private.external_media_cache where resource_id=$1',[r.id])).rows[0];external={...externalMetadata(r,cachedSource(cache)),revision:cache?.revision,eligible:cachedSource(cache)?.eligible===true};}
+    }
+    items.push({...r,...(delivery?{delivery}:{}),...(external?{external}:{}),placements:projections,linkedVideo:links[0]||null});
    }
    // Target staff receive their local placement only, never the external
    // owner's canonical metadata/source document or global management rights.
@@ -94,7 +100,7 @@ export function createMediaOwnerManagement(pool,{initialOwners=[]}={}){
     if(existing)existing.placements.push(localPlacement);
     else items.push({id:p.resourceId,title:'Externally owned media',owner:{kind:'external'},source:{provider:'Managed by owner',kind:'external'},lifecycle:'Local placement',localOnly:true,placements:[localPlacement]});
    }
-   const result={userId:actor,items,businesses:businesses.map(b=>({kind:'business',tenantId:b.tenant_id,businessId:b.business_id,products:(b.state.entitlementProducts||[]).filter(p=>p.type==='membership').map(p=>({id:p.id,name:p.name}))}))};
+   const result={userId:actor,items,externalLibraryEnabled:externalLibrary,businesses:businesses.map(b=>({kind:'business',tenantId:b.tenant_id,businessId:b.business_id,products:(b.state.entitlementProducts||[]).filter(p=>p.type==='membership').map(p=>({id:p.id,name:p.name}))}))};
    await c.query('commit');return result;
   }catch(error){await c.query('rollback').catch(()=>{});throw error;}finally{c.release();}
  };

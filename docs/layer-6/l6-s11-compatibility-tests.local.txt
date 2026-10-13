@@ -1,0 +1,66 @@
+{"event":"youtube_oauth_callback_incomplete","stage":"callback_duplicate_parameter"}
+{"event":"youtube_oauth_callback_incomplete","stage":"callback_duplicate_parameter"}
+{"event":"youtube_oauth_callback_incomplete","stage":"callback_duplicate_parameter"}
+{"event":"youtube_oauth_callback_incomplete","stage":"callback_unknown_parameter"}
+✔ YouTube callback diagnostic labels distinguish rejection gates without exposing request or exception data (4.6092ms)
+✔ callback diagnostics cannot disrupt redirect and remain silent for success or Vimeo (0.9706ms)
+✔ Google callback metadata is tolerated but never trusted or forwarded as authorization (0.4133ms)
+✔ issuer validation rejects altered, empty, duplicate and Vimeo issuer parameters before workflow (1.0341ms)
+✔ callback rejects duplicate parameters and unknown metadata before exchanging code (1.3992ms)
+✔ disabled and other-environment connection configuration fails closed (0.3625ms)
+✔ begin cookie is HttpOnly and contains no raw provider credential (0.5279ms)
+✔ cross-origin mutations and unscoped authority are denied before operation (0.3684ms)
+✔ callback rejects missing, expired or wrong-provider binding without echoing query (0.5336ms)
+✔ vega: reusable categories/collections, multiple membership and protected playback (15.6479ms)
+✔ willow: reusable categories/collections, multiple membership and protected playback (1.1179ms)
+✔ search matches title description and instructor, combines filters and handles empty results (0.4329ms)
+✔ foreign groups, media source and organization cannot cross business boundary (1.7753ms)
+✔ only established authorized staff may organize; members and instructors denied (1.6629ms)
+✔ renaming is revision checked; duplicate names and invalid references rejected (0.8247ms)
+✔ organization preserves all unrelated state; unpublished content never enters member search (1.241ms)
+✔ approved asset reuse creates an independent draft without exposing bytes (0.6055ms)
+✔ member controls, empty states and staff organization are distinct (1.1054ms)
+✔ owner management uses verified principal without any staff or business headers (6.0013ms)
+✔ owner list and business choices apply server authorization and omit business state (1.4439ms)
+✔ management rejects unauthenticated identities before connecting and rolls back invalid actions (0.6405ms)
+✔ receiving UI projection exposes only delegated controls and refresh reflects revocation (1.3011ms)
+✔ rental-only delegate sees scoped corrections without gaining media ownership or metadata authority (1.8704ms)
+✔ personal owner changes only policy on existing active placement without business authority (9.6025ms)
+✔ owner authorizes one resource into two contexts without ownership or business mutations (2.2617ms)
+✔ unrelated user and target staff cannot authorize another owner resource; owner is not context staff (0.921ms)
+✔ business ownership uses the same placement semantics and scoped management (0.7664ms)
+✔ public placement needs no entitlement or sign-in, but hidden and withdrawn placements deny (1.2712ms)
+✔ withdrawal retains resource, other placement, audit and all entitlement state (1.2367ms)
+✔ vega: membership OR uses existing periods, ignores zero credits, expires exactly, remains non-consumptive (1.934ms)
+✔ willow: membership OR uses existing periods, ignores zero credits, expires exactly, remains non-consumptive (1.656ms)
+✔ business-specific policy references and member linkage cannot cross contexts (0.9903ms)
+✔ invalid/deferred products, arbitrary policies and ownership fields are rejected (0.8052ms)
+✔ inconsistent issuance/period, missing product and ambiguous participant linkage fail closed (0.5153ms)
+✔ archived resource invalidates all placement decisions without mutating placements (0.701ms)
+✔ repository rolls back and releases on failures (0.3195ms)
+✔ same-business staff edit availability without changing identity or ownership; external context cannot (0.8447ms)
+✔ owner grants bounded edits, prevents membership expansion, revokes immediately and preserves identity (1.6336ms)
+✔ rights cannot be forged by receiver or unrelated owner; withdrawn grants are inert (1.0714ms)
+✔ business owner delegates to another business through the same rights service (1.0644ms)
+✔ owner metadata editing preserves identity, source and audit; denies stale and foreign edits (5.118ms)
+✔ ordinary authenticated user owns an independent resource without a business or entitlement (0.2882ms)
+✔ unrelated users cannot read, archive, or create on behalf of another owner (0.595ms)
+✔ business ownership reuses business authorization and does not equate submitter with owner (0.6253ms)
+✔ owning a user resource never confers business administration (0.4351ms)
+✔ legacy adoption is repeatable, preserves IDs and does not copy asset bytes (0.458ms)
+✔ missing and foreign legacy records cannot be adopted (0.4569ms)
+✔ standalone archive retains identity ownership and provenance with optimistic revision (0.4551ms)
+✔ linked archive fails closed until coordinated Layer 5 lifecycle exists (0.4516ms)
+✔ legacy projection and private playback remain unchanged after adoption (0.9521ms)
+✔ commerce fields and malformed sources are rejected (0.2819ms)
+✔ existing provider subject is reused without business headers or editable role claims (0.7417ms)
+✔ invalid and anonymous provider subjects are rejected (0.3011ms)
+✔ repository rolls back failed work and releases the connection (0.4269ms)
+ℹ tests 54
+ℹ suites 0
+ℹ pass 54
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 181.5007

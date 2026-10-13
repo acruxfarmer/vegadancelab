@@ -1,4 +1,5 @@
 import {MediaConnectionError} from './external-media-vimeo.mjs';
+import {EXTERNAL_PAGE_SIZE,externalMediaId,externalPage,providerItem} from '../../external-media.mjs';
 const scope='https://www.googleapis.com/auth/youtube.readonly';
 const fail=code=>{throw new MediaConnectionError(code);};
 const valid=value=>typeof value==='string'&&value.length>0&&value.length<=8192&&!/[\s\u0000-\u001f]/.test(value);
@@ -32,6 +33,27 @@ export function createYouTubeConnectionAdapter({clientId,clientSecret,redirectUr
  }
  return {
   provider:'youtube',requestedScopes:[scope],refreshSupported:true,
+  async discover(credentials,accountId,page=''){
+   externalPage('youtube',page);
+   const channels=await request('https://www.googleapis.com/youtube/v3/channels?part=contentDetails&mine=true&maxResults=2',{accessToken:credentials.accessToken});
+   if(channels.items?.length!==1||channels.items[0].id!==accountId)fail('provider_account_selection_required');
+   const uploads=channels.items[0].contentDetails?.relatedPlaylists?.uploads;
+   if(!/^[A-Za-z0-9_-]{1,128}$/.test(uploads||''))fail('provider_response_invalid');
+   const list=await request('https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&maxResults='+EXTERNAL_PAGE_SIZE+'&playlistId='+encodeURIComponent(uploads)+(page?'&pageToken='+encodeURIComponent(page):''),{accessToken:credentials.accessToken});
+   if(!Array.isArray(list.items)||list.items.length>EXTERNAL_PAGE_SIZE)fail('provider_response_invalid');
+   const ids=list.items.map(x=>externalMediaId('youtube',x.contentDetails?.videoId));
+   const videos=ids.length?await request('https://www.googleapis.com/youtube/v3/videos?part=snippet,status,contentDetails&fields=items(id,snippet(title,channelId,channelTitle,liveBroadcastContent),status(privacyStatus,embeddable,uploadStatus),contentDetails(regionRestriction,contentRating))&id='+ids.join(','),{accessToken:credentials.accessToken}):{items:[]};
+   if(!Array.isArray(videos.items)||videos.items.length>ids.length||videos.items.some(x=>!ids.includes(x.id)))fail('provider_response_invalid');
+   return {items:videos.items.map(x=>providerItem('youtube',x,accountId,now())),nextPage:externalPage('youtube',list.nextPageToken||'')||null};
+  },
+  async media(credentials,accountId,id){
+   externalMediaId('youtube',id);
+   const result=await request('https://www.googleapis.com/youtube/v3/videos?part=snippet,status,contentDetails&fields=items(id,snippet(title,channelId,channelTitle,liveBroadcastContent),status(privacyStatus,embeddable,uploadStatus),contentDetails(regionRestriction,contentRating))&id='+id,{accessToken:credentials.accessToken});
+   if(!Array.isArray(result.items)||result.items.length>1)fail('provider_response_invalid');
+   if(!result.items.length)return {provider:'youtube',id,status:'unavailable',eligible:false,checkedAt:new Date(now()).toISOString()};
+   if(result.items[0].id!==id)fail('provider_response_invalid');
+   return providerItem('youtube',result.items[0],accountId,now());
+  },
   authorizationUrl(state){
    if(!/^[a-f0-9]{64}$/.test(state))fail('authorization_state_invalid');
    const url=new URL('https://accounts.google.com/o/oauth2/v2/auth');
