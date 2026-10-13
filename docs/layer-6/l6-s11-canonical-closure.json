@@ -1,0 +1,271 @@
+{
+  "slice": "L6-S11 External Media Library Integration",
+  "status": "COMPLETE / VERIFIED WITH QUALIFICATIONS / JOE APPROVED / DEVELOPMENT CLOSED",
+  "date": "2026-10-13",
+  "authority": {
+    "product": "Joe",
+    "independentReview": "Chett; completed independent acceptance review per Joe closure authorization",
+    "implementationAndClosure": "Astra",
+    "authorizationAttachment": "09556d91-06ca-41be-9a8c-e798d6f9dc25",
+    "scope": "Qualified Development only"
+  },
+  "source": {
+    "branch": "build/l6-s11-external-media-library",
+    "commit": "4c68f171fa9a8c1491db807037f94d8db9ba4288",
+    "deployment": "dep-db7avsqvcj2c73cum5tg",
+    "service": "srv-dao5cjbm8hqs73db51j0",
+    "environment": "Development",
+    "url": "https://vega-development-web.onrender.com",
+    "initialCommit": "5d6babf10bbdf622602dc01ef91dd0b323f72c13",
+    "initialDeployment": "dep-db7aelvavr4c73ff9he0",
+    "s10CanonicalBase": "ee4b8a5dfdb7f9159814dbf710feb2876fcd2de4",
+    "canonicalTargetBranch": "product/layer3-public-entry",
+    "databaseProject": "cjdoczrxcjynjhgpgqop",
+    "migration": {
+      "version": "20261013213418",
+      "name": "l6_s11_external_media_library",
+      "source": "db/proposals/l6-s11-external-media-library.sql",
+      "alreadyAppliedDevelopment": true,
+      "reapplyAuthorized": false
+    },
+    "integrationCommit": "443770453c2a2248750a720b13f4369b1d8d9182",
+    "closureCommitReference": "Commit containing this record, following the established S10 convention; exact hash returned in publication receipt. A commit cannot embed its own hash.",
+    "closureCommitLookup": "git log -1 --format=%H -- docs/layer-6/l6-s11-canonical-closure.json",
+    "canonicalBranch": "product/layer3-public-entry",
+    "method": "Explicit 38-path selection; no merge or fast-forward of the source branch",
+    "acceptancePackage": "docs/layer-6/l6-s11-final-acceptance-package.json",
+    "acceptancePackageSha256": "092ffb68780b19d1d273318cf2b5fca715ea0ea950ae8183e1d280e10a806740"
+  },
+  "packaging": {
+    "selectedPathCount": 38,
+    "selectedPaths": [
+      "db/proposals/l6-s11-external-media-library.sql",
+      "docs/layer-6/l6-s11-4c68f171fa9a8c1491db807037f94d8db9ba4288-deployment.local.json",
+      "docs/layer-6/l6-s11-5d6babf10bbdf622602dc01ef91dd0b323f72c13-deployment.local.json",
+      "docs/layer-6/l6-s11-anonymous-http.hosted.json",
+      "docs/layer-6/l6-s11-browser-preview.local.json",
+      "docs/layer-6/l6-s11-compatibility-tests.local.txt",
+      "docs/layer-6/l6-s11-deployment-tests.local.txt",
+      "docs/layer-6/l6-s11-development-candidate.json",
+      "docs/layer-6/l6-s11-hosted-qa-deployment-tests.local.txt",
+      "docs/layer-6/l6-s11-hosted-qa-regression.local.txt",
+      "docs/layer-6/l6-s11-hosted-reinspection.json",
+      "docs/layer-6/l6-s11-postgres.local.json",
+      "docs/layer-6/l6-s11-regression.local.txt",
+      "docs/layer-6/l6-s11-targeted-tests.local.txt",
+      "docs/roadmap-state.json",
+      "public/external-media-management.js",
+      "public/external-media-player.js",
+      "public/manage-media.js",
+      "public/media-library.js",
+      "public/media-ui.js",
+      "public/styles.css",
+      "public/watch.js",
+      "scripts/start-web.mjs",
+      "scripts/verify-l6-s11-external-media.sql",
+      "src/external-media.mjs",
+      "src/media-resource.mjs",
+      "src/runtime/external-media-api.mjs",
+      "src/runtime/external-media-library.mjs",
+      "src/runtime/media-connection-workflow.mjs",
+      "src/runtime/media-owner-management.mjs",
+      "src/runtime/media-placement-service.mjs",
+      "src/runtime/providers/external-media-vimeo.mjs",
+      "src/runtime/providers/external-media-youtube.mjs",
+      "src/runtime/refund-application-api.mjs",
+      "src/runtime/refund-application-database.mjs",
+      "src/runtime/refund-web.mjs",
+      "test/external-media-library.test.mjs",
+      "docs/layer-6/l6-s11-final-acceptance-package.json"
+    ],
+    "referenceOnlyPaths": [
+      "docs/layer-6/l6-s10-canonical-closure.json",
+      "docs/layer-6/l6-s10-checkpoint.json",
+      "docs/layer-6/l6-s11-4c68f171fa9a8c1491db807037f94d8db9ba4288-attempted.local.json",
+      "docs/layer-6/l6-s11-5d6babf10bbdf622602dc01ef91dd0b323f72c13-attempted.local.json",
+      "docs/layer-6/l6-s11-anonymous-membership-denial.hosted.jpg",
+      "docs/layer-6/l6-s11-corrected-member-controls.hosted.jpg",
+      "docs/layer-6/l6-s11-corrected-owner-controls.hosted.jpg",
+      "docs/layer-6/l6-s11-hosted-qa.json",
+      "docs/layer-6/l6-s11-member-connection-denial.hosted.jpg",
+      "docs/layer-6/l6-s11-member-management-isolation.hosted.jpg",
+      "docs/layer-6/l6-s11-mixed-collection.hosted.jpg",
+      "docs/layer-6/l6-s11-owner-preview.local.png",
+      "docs/layer-6/l6-s11-vimeo-member-playback.hosted.jpg",
+      "docs/layer-6/l6-s11-youtube-member-playback.hosted.jpg",
+      "docs/layer-6/l6-s11-youtube-owner-preview.hosted.jpg",
+      "scripts/deploy-l6-s11-private.ps1",
+      "scripts/verify-l6-s10-postgres-private.mjs",
+      "scripts/verify-l6-s8a-postgres-private.ps1",
+      "test/l6-s11-deployment.test.ps1"
+    ],
+    "disposition": "Exact approved selection integrated. Closure record and closure-only roadmap update are separately authorized documentation, not enlargement of implementation selection.",
+    "archiveLocations": "Original accepted source branch build/l6-s11-external-media-library at 4c68f171fa9a8c1491db807037f94d8db9ba4288 for tracked archives; original vega-s11 workspace for later untracked receipts/screenshots. See acceptance inventory tracked status and hashes. Originals remain untouched.",
+    "excludedFiles": "No excluded screenshots, account-identifying hosted QA, operator wrappers, attempt markers or secrets newly integrated. Existing canonical older operator files are unchanged; S11-specific excluded changes not included.",
+    "lineEndings": "Exact current file SHA-256 checked before copy and after copy. Git normalizes text line endings under existing configuration; selected committed implementation blobs verified equal to accepted commit. Acceptance package preserved byte-for-byte."
+  },
+  "deliveredCapabilities": [
+    {
+      "capability": "Business-authorized Vimeo and YouTube discovery",
+      "proof": "Hosted original candidate: Vimeo 7 returned / 6 eligible / 1 restricted with registration disabled; YouTube 1 eligible. Local authority and provider boundary tests. Beyond-first-page hosted coverage absent."
+    },
+    {
+      "capability": "Selective canonical registration and hidden placements",
+      "proof": "Hosted original candidate: one selected canonical reference and initially hidden placement per provider; database identities recorded. No bulk import or external file copy."
+    },
+    {
+      "capability": "Repeatable registration and duplicate prevention",
+      "proof": "Local idempotency tests and restricted-role database duplicate constraint passed. Repeated live registration was not independently demonstrated."
+    },
+    {
+      "capability": "Existing categories, mixed collections and source filters",
+      "proof": "Hosted: existing categories and Daily practice collection with two native plus two external videos; provider filters each returned one matching reference."
+    },
+    {
+      "capability": "Owner preview, supported access and explicit publication",
+      "proof": "Hosted actual provider playback while hidden for both; explicit public/free Vimeo and membership YouTube publication. Public/membership policy only; no paid/rental enforcement claim."
+    },
+    {
+      "capability": "Authorized member viewing",
+      "proof": "Hosted actual playback: Vimeo 17.263679 seconds / 1399.233 duration; YouTube 7.041205 seconds / 30.041 duration; both paused false, readyState 4. Existing member entitlement used without modification."
+    },
+    {
+      "capability": "Manual metadata refresh preserving organization",
+      "proof": "Hosted Vimeo cache revision advanced to 2 with refresh audit, preserving UUID, owner title, categories, collection and hidden state before publication. YouTube preservation has local proof only."
+    },
+    {
+      "capability": "Actual metadata deletion with canonical preservation",
+      "proof": "Local lifecycle tests and restricted Development database rollback proof: metadata deleted, resource/publication preserved, expired source denied. Startup/hourly retention-only process, 29-day deadline. No elapsed 29-day hosted proof."
+    },
+    {
+      "capability": "Unavailable or restricted source presentation",
+      "proof": "Hosted restricted Vimeo item disabled; anonymous membership watch unavailable without source title/embed. Local provider eligibility, expiry and error checks; no comprehensive hosted provider-failure matrix."
+    }
+  ],
+  "acceptedVerification": [
+    {
+      "revision": "5d6babf10bbdf622602dc01ef91dd0b323f72c13",
+      "level": "local",
+      "results": "1398 regression, 52 targeted, 13 offline deployment checks passed; 54 compatibility checks are earlier build evidence, not an additional final-candidate rerun.",
+      "receipts": [
+        "docs/layer-6/l6-s11-regression.local.txt",
+        "docs/layer-6/l6-s11-targeted-tests.local.txt",
+        "docs/layer-6/l6-s11-deployment-tests.local.txt",
+        "docs/layer-6/l6-s11-compatibility-tests.local.txt"
+      ]
+    },
+    {
+      "revision": "5d6babf10bbdf622602dc01ef91dd0b323f72c13",
+      "level": "restricted Development database",
+      "results": "10 recorded checks passed; rolled back, baseline restored, zero committed fixture writes and provider calls.",
+      "receipts": [
+        "docs/layer-6/l6-s11-postgres.local.json"
+      ],
+      "checks": [
+        "hidden",
+        "explicit_publication",
+        "unsupported_paid_denial",
+        "duplicate_constraint",
+        "metadata_deleted",
+        "resource_preserved",
+        "publication_preserved",
+        "expired_source_denial",
+        "outsider_cache_isolation",
+        "browser_denial"
+      ]
+    },
+    {
+      "revision": "5d6babf10bbdf622602dc01ef91dd0b323f72c13",
+      "level": "local browser",
+      "results": "Actual UI with mocked HTTP: discovery, hidden registration, private preview UI. Not hosted provider proof.",
+      "receipts": [
+        "docs/layer-6/l6-s11-browser-preview.local.json"
+      ]
+    },
+    {
+      "revision": "5d6babf10bbdf622602dc01ef91dd0b323f72c13",
+      "level": "hosted Development",
+      "results": "Owner-to-member workflow and anonymous HTTP denials demonstrated; see capability-specific qualifications.",
+      "receipts": [
+        "docs/layer-6/l6-s11-hosted-qa.json",
+        "docs/layer-6/l6-s11-anonymous-http.hosted.json"
+      ]
+    },
+    {
+      "revision": "4c68f171fa9a8c1491db807037f94d8db9ba4288",
+      "level": "local corrected worktree subsequently committed",
+      "results": "1398 regression and 14 offline deployment checks passed. No claim that the original 52 targeted or database checks were rerun.",
+      "receipts": [
+        "docs/layer-6/l6-s11-hosted-qa-regression.local.txt",
+        "docs/layer-6/l6-s11-hosted-qa-deployment-tests.local.txt"
+      ]
+    },
+    {
+      "revision": "4c68f171fa9a8c1491db807037f94d8db9ba4288",
+      "level": "hosted Development",
+      "results": "Three focused UI corrections passed; original successful provider workflow retained, not repeated.",
+      "receipts": [
+        "docs/layer-6/l6-s11-hosted-reinspection.json",
+        "docs/layer-6/l6-s11-4c68f171fa9a8c1491db807037f94d8db9ba4288-deployment.local.json"
+      ]
+    }
+  ],
+  "correctedUiDefects": [
+    {
+      "name": "Stale preview after resource switching",
+      "status": "passed",
+      "evidence": "Existing owner session opened Vimeo private preview from persisted cache. Load Vimeo player appeared. Back to owned media removed both preview heading and load button (each count0). Selecting the existing YouTube resource displayed no previous Vimeo preview. No provider player was loaded and no provider discovery or refresh requested."
+    },
+    {
+      "name": "Unsupported external Pay on Demand option",
+      "status": "passed",
+      "evidence": "Inspected both existing Vimeo and YouTube resources. Access Availability and delegation Permitted modes offer All and Members only. No Pay on Demand option appears. No policy or rights save was performed."
+    },
+    {
+      "name": "Non-owner discovery visibility",
+      "status": "passed",
+      "evidence": "Existing privately authenticated member session opened Manage media I own. No business-owned resources or connected-source entry were displayed; connected-source button count0. Personal Register media remains available."
+    }
+  ],
+  "integrationVerification": {
+    "selectedHashes": "All 38 match authorized package/input hashes",
+    "exactPathSelection": "Integration commit changes exactly 38 approved paths",
+    "acceptedImplementationGitBytes": "All selected previously committed files except approved roadmap packaging update match accepted commit blobs",
+    "focusedOfflineTests": {
+      "command": "node --test test/external-media-library.test.mjs",
+      "passed": 14,
+      "failed": 0,
+      "scope": "Existing mocked/local S11 tests; no hosted provider calls or database execution"
+    },
+    "diffCheck": "passed",
+    "priorS10": "Canonical base retained as ancestor; prior S10 records unchanged",
+    "security": "Accepted packaging exclusions preserved; synthetic test credentials only; no private environment/vault material read or added",
+    "runtime": "Accepted shared runtime wiring unchanged; no additional implementation or rental/payment behavior changes"
+  },
+  "qualifications": [
+    "Exact authenticated unauthorized-member HTTP status and protected-detail suppression were not fully established. Member management/connection denial UI is narrower evidence, not a captured HTTP403 proof.",
+    "Hosted cross-business registration, refresh, placement modification and publication denial remain unverified. Local and restricted-role database evidence do not substitute.",
+    "Hosted forged paid-policy HTTP denial remains unverified; local service and restricted database rejection passed.",
+    "S10 hosted token refresh/expiry and established-connection disconnect, provider revocation and reconnection qualifications remain outstanding. An additional credentials_saved audit is consistent with existing refresh infrastructure, not complete lifecycle proof.",
+    "Provider pagination beyond the first returned page and YouTube manual-refresh preservation were not hosted-demonstrated.",
+    "Elapsed-time retention deletion was not hosted-demonstrated. Cleanup requires a running application; an outage beyond the 29-day margin is not a demonstrated 30-day deletion guarantee. This remains a Production retention-readiness qualification.",
+    "Published connected-source library projection is bounded to 100 placements per business; pagination beyond that is not implemented.",
+    "Eligibility is limited to publicly embeddable Vimeo and public, processed, embeddable, non-live YouTube without reported region/age restrictions. Provider restrictions may change and native playback may independently deny.",
+    "Acrux placement access cannot protect direct provider URLs. External protected paid/rental delivery, uniform playback controls and native Mirror enforcement are not supported.",
+    "Original S10 specific sampled-video identity and historical dirty-checkout test qualifications remain unchanged. S11 identified current selected videos; this does not retroactively identify the original S10 sample.",
+    "Original local preview used mocked HTTP and blocked external network. Corrected local browser preview was unreachable, not passed; subsequent hosted re-inspection provides the three UI results."
+  ],
+  "releaseReadiness": "Development closure only. Not Production-ready. Security isolation, provider lifecycle, elapsed retention/outage and capacity limitations are retained, not waived. No new confirmed application defect identified within accepted bounded evidence.",
+  "preservation": {
+    "s10Connections": "Both preserved at last verified state; no new live verification, OAuth, provider calls, disconnects or credential modifications during closure",
+    "developmentDeployment": "Existing dep-db7avsqvcj2c73cum5tg unchanged; no deployment initiated",
+    "migration": "20261013213418 l6_s11_external_media_library already applied in Development; source included, not re-executed",
+    "productionUntouched": true,
+    "generalRentalPlayback": "disabled; unchanged",
+    "scopedRentalVerification": "disabled; unchanged",
+    "paymentRefundExecution": "disabled; unchanged",
+    "priorClosures": "S8B, S9, qualified VOD and S10 unchanged",
+    "newSliceStarted": false
+  },
+  "publication": "Record is complete only once its containing commit is published to product/layer3-public-entry; final receipt verifies remote identity."
+}
