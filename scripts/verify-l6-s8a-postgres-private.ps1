@@ -1,7 +1,8 @@
 # Run in Joe's existing unlocked Bitwarden PowerShell. No deployment/provider I/O.
 [CmdletBinding()]
-param([switch]$RentalVerification)
+param([switch]$RentalVerification,[switch]$MediaConnectionVerification)
 $ErrorActionPreference='Stop'
+if($RentalVerification -and $MediaConnectionVerification){throw 'Choose one verification mode'}
 $VerbosePreference='SilentlyContinue';$DebugPreference='SilentlyContinue';Set-PSDebug -Off
 $priorDebug=$env:BITWARDENCLI_DEBUG;$env:BITWARDENCLI_DEBUG='false'
 $raw=$null;$record=$null;$field=$null;$payload=$null
@@ -21,7 +22,7 @@ try {
  if($field.Count -ne 1 -or [string]::IsNullOrWhiteSpace([string]$field[0].value)){throw 'Field unavailable'}
  $payload=@{appDatabaseUrl=[string]$field[0].value}|ConvertTo-Json -Compress
  $node='C:/Users/Joe Graham/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe'
- $runner=if($RentalVerification){'verify-vod-rental-postgres-private.mjs'}else{'verify-l6-s8a-postgres-private.mjs'}
+ $runner=if($MediaConnectionVerification){'verify-l6-s10-postgres-private.mjs'}elseif($RentalVerification){'verify-vod-rental-postgres-private.mjs'}else{'verify-l6-s8a-postgres-private.mjs'}
  $payload|& $node (Join-Path $PSScriptRoot $runner) 2>$null
  if($LASTEXITCODE -ne 0){throw 'Proof stopped'}
  Write-Host 'Tell Astra done. No provider calls, deployment, or committed business changes.'

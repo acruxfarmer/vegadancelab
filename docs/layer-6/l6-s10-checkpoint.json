@@ -1,0 +1,126 @@
+{
+  "slice": "L6-S10 — External Media Source Connections",
+  "status": "DEVELOPMENT IMPLEMENTATION IN PROGRESS — NOT HOSTED OR ACCEPTED",
+  "authorization": "Joe's 2026-10-12 Development implementation authorization; attachment 19952f2d-cae6-4c59-a1ee-ed183e9fd599",
+  "baseCommit": "9c76fbac388dbd6bda14d6fbabd6ce96614ac772",
+  "sourceState": "Development source package prepared on build/l6-s10-media-connections; no S10 deployment, merge or closure. Exact source identity recorded separately after commit.",
+  "roadmap": {
+    "s10": "Approved source connections responsibility",
+    "s11": "Separate library integration responsibility; identifier remains provisional",
+    "qualification": "Existing roadmap-state.json predates VOD closure. Detailed historical S10 specification and prior S11 assignment were not established; no numbering investigation or historical rewrite performed."
+  },
+  "implementedLocally": [
+    "Vimeo read-only OAuth adapter and bounded account/media sample proof",
+    "YouTube read-only OAuth adapter, token refresh and bounded channel/uploads sample proof",
+    "Business/provider/purpose-bound encrypted credential envelopes with dedicated server-side key",
+    "Single-use authorization state and HttpOnly browser binding",
+    "Existing customers.manage permission checks and transaction-scoped business authorization",
+    "Revision-bound connection lifecycle and local disconnect before remote revocation",
+    "Development-only configuration, authenticated API routes and owner management screen",
+    "Additive private-schema connection and audit SQL applied to pinned Development project"
+  ],
+  "verification": {
+    "targeted": {
+      "passed": 51,
+      "failed": 0,
+      "providerTransport": "simulated"
+    },
+    "broad": {
+      "total": 3144,
+      "passed": 3137,
+      "failed": 7,
+      "log": "l6-s10-local-regression.local.txt",
+      "qualification": "Seven historical source-hash assertion groups still fail. Historical baselines remain unchanged; not relabelled as passing."
+    },
+    "database": "PASSED through Shelly using the restricted Development runtime role: 11 checks; zero provider calls; zero committed fixture writes; baseline restored. Receipt: l6-s10-postgres.local.json.",
+    "hosted": "not run",
+    "vimeoActualAuthorization": "not verified",
+    "youtubeActualAuthorization": "not verified",
+    "vimeoReinspection": {
+      "passed": 16,
+      "failed": 0,
+      "providerTransport": "simulated",
+      "change": "Unexpected Vimeo DELETE success response fails closed; only 204 or already-invalid 401 accepted",
+      "operatorScript": "PowerShell syntax passed; not executed against vault"
+    },
+    "provisioningPreparation": {
+      "offlineChecksPassed": 10,
+      "failed": 0,
+      "liveExecution": "PASSED; receipt confirms unrelated settings unchanged, Production untouched, generated dedicated key retained in Render secret storage",
+      "script": "scripts/provision-l6-s10-vimeo-private.ps1",
+      "test": "test/l6-s10-vimeo-provisioning.test.ps1",
+      "behavior": "Pinned Development service only; copies Vimeo vault credentials, generates or preserves dedicated encryption key in existing Render secret storage, connections disabled; no deployment or provider calls"
+    },
+    "screenReinspection": {
+      "targetedPassed": 19,
+      "failed": 0,
+      "change": "Business scope captured before authentication wait; obsolete status responses ignored; session loss clears displayed connection state",
+      "providerTransport": "simulated",
+      "browserHosted": false
+    },
+    "sourcePackaging": {
+      "s10ApplicationTestsPassed": 29,
+      "s10ApplicationTestsFailed": 0,
+      "providerTransport": "simulated",
+      "deploymentOperatorOfflineChecksPassed": 12,
+      "deploymentOperatorOfflineChecksFailed": 0,
+      "provisioningOperatorOfflineChecksPassed": 10,
+      "script": "scripts/deploy-l6-s10-hosted-private.ps1"
+    }
+  },
+  "remaining": [
+    "Complete source reinspection and hosted owner UI verification",
+    "Confirm callback registration during initial Vimeo authorization",
+    "Run exact-commit Development deployment through Shelly; inspect safe receipt and hosted runtime",
+    "Actual Vimeo authorization, account identity, bounded read, reconnect and revocation proof",
+    "Actual YouTube authorization when approved application credentials and consent access are available",
+    "Document actual provider approval dependencies and limitations; do not substitute mock results",
+    "Chett independent review and Joe approval before merge or closure"
+  ],
+  "configuration": {
+    "enabledByDefault": false,
+    "deploymentService": "srv-dao5cjbm8hqs73db51j0",
+    "vimeoCallback": "https://vega-development-web.onrender.com/api/media-connections/vimeo/callback",
+    "youtubeCallback": "https://vega-development-web.onrender.com/api/media-connections/youtube/callback",
+    "privateSettings": [
+      "VEGA_MEDIA_CONNECTIONS_ENABLED",
+      "VEGA_MEDIA_CONNECTION_KEY",
+      "VIMEO_CLIENT_ID",
+      "VIMEO_CLIENT_SECRET",
+      "YOUTUBE_CLIENT_ID",
+      "YOUTUBE_CLIENT_SECRET"
+    ],
+    "settingsChanged": true,
+    "deployedConnectionControl": "false; provisioned but no S10 deployment yet"
+  },
+  "boundaries": {
+    "s11Implementation": false,
+    "mediaIngestion": false,
+    "production": "untouched",
+    "paymentRefundExecution": "unchanged; disabled",
+    "rentalPlaybackAndVerificationControl": "unchanged; disabled",
+    "s8bS9AndVodClosures": "unchanged",
+    "unrelatedLocalWork": "preserved"
+  },
+  "developmentMigration": {
+    "version": "20261013010522",
+    "applied": true,
+    "name": "l6_s10_external_media_connections",
+    "projectId": "cjdoczrxcjynjhgpgqop",
+    "existingBusinessAndMediaRecordsModified": false
+  },
+  "vimeoApplication": {
+    "name": "Acrux Media Connector - Development",
+    "readiness": "Private Development provisioning verified from l6-s10-vimeo-provisioning.local.json, checkedAt 2026-10-13T01:49:11.1973673Z; connections disabled; no deployment or provider calls",
+    "vaultRecord": "Vega Dev - Vimeo",
+    "vaultFolder": "Dev Stack",
+    "fields": [
+      "VIMEO_CLIENT_ID",
+      "VIMEO_CLIENT_SECRET"
+    ],
+    "inspectionScript": "scripts/inspect-l6-s10-vimeo-private.ps1",
+    "inspectionExecuted": true,
+    "scope": "public",
+    "scopeLimitation": "Public account data and public media only; private/unlisted discovery is not verified"
+  }
+}

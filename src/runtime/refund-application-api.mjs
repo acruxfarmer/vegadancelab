@@ -1,4 +1,5 @@
 import {randomBytes} from 'node:crypto';
+import {handleMediaConnectionApi} from './media-connection-api.mjs';
 import { ApplicationError } from '../application.mjs';
 import {createMediaPrincipalVerifier} from './media-resource-foundation.mjs';
 import {revokeSession} from './sign-out.mjs';
@@ -36,6 +37,7 @@ export function createApplicationApi(env,store,fetcher=fetch){
   const url=new URL(req.url,'http://vega.local');if(!url.pathname.startsWith('/api/'))return false;
   const send=(status,data)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(data));};
   try{
+   if(await handleMediaConnectionApi(req,res,{service:store?.mediaConnections,principal,readJson,send}))return true;
    const rental=url.pathname.match(/^\/api\/media\/placements\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\/rental\/(start|confirm|finish|recover)$/i);
    if(rental){
     if(req.method!=='POST'||url.search)throw new ApplicationError('Invalid rental request',400);

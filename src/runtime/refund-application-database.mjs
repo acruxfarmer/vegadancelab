@@ -1,4 +1,5 @@
 import {createRentalPlaybackStore} from './rental-playback-store.mjs';
+import {createConfiguredMediaConnections} from './media-connection-configuration.mjs';
 import {createRentalPlaybackWorkflow} from './rental-playback-workflow.mjs';
 import {mediaPlayback} from '../media.mjs';
 import {createPlaybackPolicyDelivery} from './media-playback-policy.mjs';
@@ -266,6 +267,7 @@ export function createApplicationStore(pool,{nativeAdapters=null,bookingEmails=f
 export function createApplicationDatabase(value){
  const pool=new pg.Pool({...applicationDatabaseOptions(value),max:5});pool.on('error',()=>{});
  const store=createApplicationStore(pool,{nativeAdapters:mediaDeliveryAdapters(process.env),bookingEmails:true,initialOwners:DEVELOPMENT_INITIAL_OWNERS});
+ store.mediaConnections=createConfiguredMediaConnections(pool,process.env,{initialOwners:DEVELOPMENT_INITIAL_OWNERS});
  const stop=startBookingEmailDelivery(pool,process.env),close=store.close;
  store.close=async()=>{await stop();await close();};return store;
 }
