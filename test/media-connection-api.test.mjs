@@ -4,6 +4,44 @@ import {handleMediaConnectionApi} from '../src/runtime/media-connection-api.mjs'
 import {createMediaConnectionSecrets} from '../src/runtime/media-connection-secrets.mjs';
 import {callbackContext,mediaConnectionOrigin,createConfiguredMediaConnections} from '../src/runtime/media-connection-configuration.mjs';
 function response(){return {headers:{},setHeader(k,v){this.headers[k]=v;},writeHead(status,headers){this.status=status;Object.assign(this.headers,headers);},end(){}};}
+test('YouTube callback diagnostic labels distinguish rejection gates without exposing request or exception data',async()=>{
+ const secrets=createMediaConnectionSecrets('ab'.repeat(32));
+ const binding={provider:'youtube',expiresAt:Date.now()+60000,identity:{userId:'private-user'},browser:'private-browser'};
+ const seal=value=>'vega_media_oauth_youtube='+secrets.seal(value,callbackContext);
+ const validCookie=seal(binding),query='?code=private-code&state=private-state';
+ const cases=[
+  ['binding_cookie_missing','',query],
+  ['binding_cookie_duplicate',validCookie+'; '+validCookie,query],
+  ['binding_decryption','vega_media_oauth_youtube=private-broken-cookie',query],
+  ['binding_provider',seal({...binding,provider:'vimeo'}),query],
+  ['binding_expiry',seal({...binding,expiresAt:1}),query],
+  ['callback_unknown_parameter',validCookie,query+'&private-unknown-name=private-value'],
+  ['callback_duplicate_parameter',validCookie,query+'&scope=a&scope=b'],
+  ['provider_error_returned',validCookie,'?error=private-error&state=private-state'],
+  ['callback_code_or_state_missing',validCookie,'?state=private-state'],
+  ['authorization_consumption',validCookie,query],
+  ['connection_verification',validCookie,query]
+ ];
+ for(const [stage,cookie,suffix] of cases){
+  const events=[],res=response();let calls=0;
+  const service={secrets,workflow:{complete:async()=>{calls++;if(stage==='connection_verification')return {status:'unavailable'};throw Error('private-exception');}}};
+  await handleMediaConnectionApi({url:'/api/media-connections/youtube/callback'+suffix,method:'GET',headers:{cookie}},res,{service,observeCallback:e=>events.push(e)});
+  assert.deepEqual(events,[{event:'youtube_oauth_callback_incomplete',stage}]);
+  assert.equal(calls,['authorization_consumption','connection_verification'].includes(stage)?1:0);
+  assert.equal(JSON.stringify(events).includes('private-'),false);
+  assert.equal(res.headers.Location,'/media-connections.html#authorization-incomplete');
+ }
+});
+test('callback diagnostics cannot disrupt redirect and remain silent for success or Vimeo',async()=>{
+ const secrets=createMediaConnectionSecrets('ab'.repeat(32));
+ for(const [provider,status,throws] of [['youtube','connected',false],['vimeo','unavailable',false],['youtube','unavailable',true]]){
+  let observations=0;const res=response();
+  await handleMediaConnectionApi({url:`/api/media-connections/${provider}/callback?code=a&state=b`,method:'GET',headers:{cookie:`vega_media_oauth_${provider}=`+secrets.seal({provider,expiresAt:Date.now()+60000},callbackContext)}},res,{service:{secrets,workflow:{complete:async()=>({status})}},observeCallback:()=>{observations++;throw Error('observer unavailable');}});
+  assert.equal(observations,throws?1:0);
+  assert.equal(res.status,303);
+  assert.equal(res.headers.Location,status==='connected'?'/media-connections.html#connected':'/media-connections.html#authorization-incomplete');
+ }
+});
 test('Google callback metadata is tolerated but never trusted or forwarded as authorization',async()=>{
  const secrets=createMediaConnectionSecrets('ab'.repeat(32)),identity={userId:'u',tenantId:'t',businessId:'b'};let received;
  const service={secrets,workflow:{complete:async(...args)=>{received=args;return {status:'connected'};}}};
