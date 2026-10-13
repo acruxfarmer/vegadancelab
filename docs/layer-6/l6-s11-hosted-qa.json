@@ -1,0 +1,197 @@
+{
+  "slice": "L6-S11 External Media Library Integration",
+  "status": "HOSTED OWNER-MEMBER WORKFLOW DEMONSTRATED / UI CORRECTIONS PREPARED / RE-INSPECTION PENDING",
+  "hostedCommit": "5d6babf10bbdf622602dc01ef91dd0b323f72c13",
+  "deployment": "dep-db7aelvavr4c73ff9he0",
+  "deploymentReceipt": "l6-s11-5d6babf10bbdf622602dc01ef91dd0b323f72c13-deployment.local.json",
+  "verifiedAtDate": "2026-10-13",
+  "environment": "Development only",
+  "business": "Vega Dance Lab",
+  "ownerWorkflow": {
+    "discovery": {
+      "vimeo": {
+        "returned": 7,
+        "eligible": 6,
+        "restricted": 1,
+        "restrictedRegistrationDisabled": true
+      },
+      "youtube": {
+        "returned": 1,
+        "eligible": 1,
+        "reference": "IAx0SZKHSVE",
+        "providerChannelHandle": "@tradewaters"
+      }
+    },
+    "registration": "One selected reference per provider; canonical resources and initially hidden placements observed in browser and database. No automatic bulk registration.",
+    "organization": "Existing Technique and Warm-up categories; existing Daily practice collection. Member collection displayed two existing native videos plus both external references.",
+    "preview": "Both native provider players played while placements remained hidden. Vimeo progress 5 seconds; YouTube currentTime 10.386717, duration 30.041, paused false, readyState 4.",
+    "manualRefresh": "Vimeo cache advanced to revision 2 and metadata_refreshed audit recorded. Canonical UUID, owner title, category, collection and hidden placement were preserved before explicit publication.",
+    "publication": "Explicit checkbox/save action; Vimeo public/free, YouTube current test-membership qualification."
+  },
+  "resources": [
+    {
+      "provider": "vimeo",
+      "reference": "597851430",
+      "resourceId": "f479073c-2352-4304-9b5c-443480bd7100",
+      "placementId": "5ab681a5-8af0-46e0-9a7c-83b6f86be11f",
+      "ownerTitle": "S11 QA — Vimeo practice",
+      "resourceRevision": 2,
+      "cacheRevision": 2,
+      "placementRevision": 3,
+      "visible": true,
+      "policy": {
+        "kind": "public"
+      },
+      "category": "Technique",
+      "collection": "Daily practice",
+      "metadataExpiresAt": "2026-11-11T22:03:08.613Z"
+    },
+    {
+      "provider": "youtube",
+      "reference": "IAx0SZKHSVE",
+      "resourceId": "96e9ef19-a45a-4d0c-87e7-4d77274f903a",
+      "placementId": "e32b37b5-2fa8-4c29-a17d-0f6a2d55c767",
+      "resourceRevision": 1,
+      "cacheRevision": 1,
+      "placementRevision": 3,
+      "visible": true,
+      "policy": {
+        "kind": "memberships",
+        "productIds": [
+          "98418cad-59e3-4301-85c0-ec696907d3a2"
+        ]
+      },
+      "category": "Warm-up",
+      "collection": "Daily practice",
+      "metadataExpiresAt": "2026-11-11T22:03:35.592Z"
+    }
+  ],
+  "memberWorkflow": {
+    "identity": "joe@tradewaters.co; Joe performed private sign-in",
+    "authorization": "Existing member role, no staff assignments; existing qualifying membership current through 2026-10-21T07:00:00Z. No permissions or entitlements changed.",
+    "library": "Both provider references appeared in existing member library and mixed collection; YouTube and Vimeo filters each returned the single matching reference.",
+    "youtubePlayback": {
+      "currentTime": 7.041205,
+      "duration": 30.041,
+      "paused": false,
+      "readyState": 4
+    },
+    "vimeoPlayback": {
+      "currentTime": 17.263679,
+      "duration": 1399.233,
+      "paused": false,
+      "readyState": 4
+    },
+    "managementDenial": "Member management returned no business-owned resources and no authorized discovery business. Existing connection page displayed Media management permission required for both providers, with no provider identities or connection details. Exact response status was not captured; do not label this a recorded HTTP403 proof."
+  },
+  "anonymousHttp": {
+    "receipt": "l6-s11-anonymous-http.hosted.json",
+    "health": 200,
+    "hiddenVimeo": "Decision denied, metadata null; play HTTP403",
+    "membershipYouTube": "Decision denied, metadata null; play HTTP403",
+    "publicVimeoWatch": "After explicit publication, anonymous standalone watch rendered ready state and Load Vimeo player.",
+    "membershipYouTubeWatch": "Anonymous standalone watch displayed Media unavailable, without source title or embed."
+  },
+  "databaseEvidence": {
+    "sourceConnections": [
+      {
+        "provider": "vimeo",
+        "status": "connected",
+        "accountId": "/users/147572282",
+        "scope": "public",
+        "sealedCredentialPresent": true
+      },
+      {
+        "provider": "youtube",
+        "status": "connected",
+        "accountId": "UClrGrvL3_zZgHiFdloANdmg",
+        "scope": "https://www.googleapis.com/auth/youtube.readonly",
+        "sealedCredentialPresent": true
+      }
+    ],
+    "resourceAudits": [
+      "Vimeo resource_created revision1",
+      "Vimeo metadata_edited revision2",
+      "YouTube resource_created revision1"
+    ],
+    "placementAudits": [
+      "Each provider authorized revision1 and configured revisions2 and3"
+    ],
+    "refreshAudit": "Vimeo metadata_refreshed revision2",
+    "sourceAuditTotals": {
+      "authorization_started": 7,
+      "revocation_recorded": 5,
+      "connection_verified": 2,
+      "credentials_saved": 3,
+      "disconnected": 5,
+      "authorization_consumed": 2
+    },
+    "interpretation": "Previous source audit count23; now24 with credentials_saved total3, consistent with existing on-demand S10 refresh infrastructure. No OAuth, revocation or disconnect initiated. No rewrite of prior S10 qualifications."
+  },
+  "corrections": [
+    {
+      "finding": "Owner preview continued showing the previous resource after selection changed",
+      "change": "Destroy preview and invalidate pending result on resource/back/register navigation",
+      "files": [
+        "public/manage-media.js"
+      ]
+    },
+    {
+      "finding": "Delegation form offered Pay on Demand for external resources despite unsupported access enforcement",
+      "change": "Use existing server-provided allowedAccessModes for delegation checkboxes",
+      "files": [
+        "public/manage-media.js"
+      ]
+    },
+    {
+      "finding": "Member with no authorized businesses could open an empty discovery form",
+      "change": "Show connected-source entry only when at least one managed business is present",
+      "files": [
+        "public/manage-media.js"
+      ]
+    }
+  ],
+  "correctionVerification": {
+    "regression": {
+      "passed": 1398,
+      "failed": 0,
+      "receipt": "l6-s11-hosted-qa-regression.local.txt"
+    },
+    "offlineDeployment": {
+      "passed": 14,
+      "failed": 0,
+      "receipt": "l6-s11-hosted-qa-deployment-tests.local.txt",
+      "alreadyEnabledSettingPreserved": true
+    },
+    "browser": "Local correction preview could not be reached by the in-app browser; stopped local server. Hosted re-inspection is pending. Original hosted workflow evidence above is for 5d6babf only."
+  },
+  "limitations": [
+    "Authenticated member management-denial UI observed, but exact authenticated HTTP403 response not captured.",
+    "Cross-business registration, refresh, placement modification and publication were not tested through hosted authenticated HTTP; retain local and restricted-role database evidence without substituting it.",
+    "Unsupported paid access passed existing restricted-role Development database proof and local tests; no forged authenticated HTTP paid-policy request was sent.",
+    "Real-provider pagination beyond the returned first page was not exercised.",
+    "Manual metadata refresh was hosted-demonstrated for Vimeo; YouTube refresh preservation remains local-test coverage.",
+    "Elapsed-time automatic retention cleanup remains local lifecycle and rolled-back Development database proof, not a 29-day hosted observation; prolonged process outage qualification remains.",
+    "Prior S10 lifecycle qualifications remain in its closed record; no repeated connection lifecycle experiments were performed."
+  ],
+  "screenshots": [
+    "l6-s11-youtube-owner-preview.hosted.jpg",
+    "l6-s11-mixed-collection.hosted.jpg",
+    "l6-s11-youtube-member-playback.hosted.jpg",
+    "l6-s11-vimeo-member-playback.hosted.jpg",
+    "l6-s11-member-management-isolation.hosted.jpg",
+    "l6-s11-member-connection-denial.hosted.jpg",
+    "l6-s11-anonymous-membership-denial.hosted.jpg"
+  ],
+  "disposition": "Recommend narrowly bounded Development deployment of prepared UI corrections, then re-inspect changed controls before Chett review and Joe acceptance decision. No confirmed provider, data-integrity or authorization defect was found in demonstrated workflow. Do not mark complete before correction re-inspection.",
+  "boundaries": {
+    "s10ConnectionsPreserved": true,
+    "oauthRepeats": 0,
+    "sourceMediaCopied": false,
+    "providerUploads": false,
+    "productionUntouched": true,
+    "rentalPaymentControlsUnchanged": true,
+    "canonicalMerge": false,
+    "sliceClosure": false
+  }
+}

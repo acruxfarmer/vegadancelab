@@ -1,0 +1,20 @@
+﻿{
+    "runtimeCommit":  "5d6babf10bbdf622602dc01ef91dd0b323f72c13",
+    "serviceId":  "srv-dao5cjbm8hqs73db51j0",
+    "status":  "live-awaiting-s11-hosted-verification",
+    "stage":  "complete",
+    "inspectOnly":  false,
+    "settingsUpdated":  [
+                            "VEGA_MEDIA_LIBRARY_ENABLED"
+                        ],
+    "settingMutationAttempted":  true,
+    "deployAttempted":  true,
+    "deployId":  "dep-db7aelvavr4c73ff9he0",
+    "providerCalls":  0,
+    "productionUntouched":  true,
+    "secretValuesInReceipt":  false,
+    "unrelatedSettingsUnchanged":  true,
+    "disabledControlsConfirmed":  true,
+    "connectionSettingsPreserved":  true,
+    "checkedAt":  "2026-10-13T21:50:06.0124993Z"
+}

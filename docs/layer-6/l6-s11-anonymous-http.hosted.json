@@ -1,0 +1,51 @@
+{
+  "checkedAt": "2026-10-13T22:05:17.271Z",
+  "authenticated": false,
+  "checks": [
+    {
+      "name": "health",
+      "status": 200,
+      "body": {
+        "status": "application_runtime_ready",
+        "environment": "development",
+        "squareEnabled": false
+      }
+    },
+    {
+      "name": "hidden_vimeo",
+      "status": 200,
+      "body": {
+        "decision": {
+          "allowed": false,
+          "reason": "placement_unavailable"
+        },
+        "metadata": null
+      }
+    },
+    {
+      "name": "hidden_vimeo_play",
+      "status": 403,
+      "body": {
+        "error": "This video is unavailable for your account."
+      }
+    },
+    {
+      "name": "anonymous_membership_youtube",
+      "status": 200,
+      "body": {
+        "decision": {
+          "allowed": false,
+          "reason": "resource_unavailable"
+        },
+        "metadata": null
+      }
+    },
+    {
+      "name": "anonymous_membership_youtube_play",
+      "status": 403,
+      "body": {
+        "error": "This video is unavailable for your account."
+      }
+    }
+  ]
+}

@@ -72,7 +72,7 @@ try {
   $receipt.deployments=@($deploys|ForEach-Object {[ordered]@{id=$_.deploy.id;status=$_.deploy.status;commit=$_.deploy.commit.id}})
   $receipt.status='inspected';$receipt.stage='complete'
  }else{
-  if($active.Count -or $live.Count -ne 1 -or $live[0].deploy.id -cne 'dep-db77sfd9fdbs73d74u70' -or $live[0].deploy.commit.id -cne 'c61be62c322431ae3e1cb43e3a49172357e85b40'){throw 'Live checkpoint changed'}
+  if($active.Count -or $live.Count -ne 1 -or $live[0].deploy.id -cne 'dep-db7aelvavr4c73ff9he0' -or $live[0].deploy.commit.id -cne '5d6babf10bbdf622602dc01ef91dd0b323f72c13'){throw 'Live checkpoint changed'}
   if($before['VEGA_MEDIA_CONNECTIONS_ENABLED'] -cne 'true'){throw 'Connection control changed'}
   if($service.autoDeploy -cne 'no'){throw 'Automatic deployment must already be disabled'}
   $receipt.stage='saved restricted-role evidence'
@@ -80,14 +80,18 @@ try {
   if($proof.status -cne 'passed' -or $proof.baselineRestored -ne $true -or $proof.providerCalls -ne 0 -or $proof.committedFixtureWrites -ne 0){throw 'Restricted-role evidence mismatch'}
   $lock=[IO.File]::Open($marker,[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::None)
   try{$bytes=[Text.Encoding]::UTF8.GetBytes('{"attempted":true}');$lock.Write($bytes,0,$bytes.Length);$lock.Flush($true)}finally{$lock.Dispose()}
-  $receipt.stage='single library setting';$receipt.settingMutationAttempted=$true;Save-Receipt
-  $null=Api ($base+'/env-vars/VEGA_MEDIA_LIBRARY_ENABLED') 'PUT' @{value='true'}
+  $receipt.stage='single library setting'
+  if($before['VEGA_MEDIA_LIBRARY_ENABLED'] -cne 'true'){
+   $receipt.settingMutationAttempted=$true;Save-Receipt
+   $null=Api ($base+'/env-vars/VEGA_MEDIA_LIBRARY_ENABLED') 'PUT' @{value='true'}
+   $receipt.settingsUpdated=@('VEGA_MEDIA_LIBRARY_ENABLED')
+  }
   $after=Environment-Map;Safety $after
   if($after['VEGA_MEDIA_LIBRARY_ENABLED'] -cne 'true'){throw 'Library setting mismatch'}
   foreach($key in $before.Keys){if($key -cne 'VEGA_MEDIA_LIBRARY_ENABLED' -and $after[$key] -cne $before[$key]){throw 'Unrelated setting changed'}}
   $expectedCount=$before.Count;if(-not $before.ContainsKey('VEGA_MEDIA_LIBRARY_ENABLED')){$expectedCount++}
   if($after.Count -ne $expectedCount){throw 'Unexpected setting count'}
-  $receipt.settingsUpdated=@('VEGA_MEDIA_LIBRARY_ENABLED');$receipt.unrelatedSettingsUnchanged=$true
+  $receipt.unrelatedSettingsUnchanged=$true
   $recent=@(Api ($base+'/deploys?limit=20'))
   if(@($recent|Where-Object {$_.deploy.status -in @('created','queued','build_in_progress','pre_deploy_in_progress','update_in_progress')}).Count){throw 'Deployment started unexpectedly; inspect before continuing'}
   $receipt.stage='exact Development source deployment';$receipt.deployAttempted=$true;Save-Receipt

@@ -12,6 +12,7 @@ function Run-Case([string]$case){
  $null=New-Item -ItemType Directory -Path (Join-Path $caseRoot 'docs/layer-6') -Force
  $script:fixtureCase=$case;$script:writes=@();$script:deploymentMode=[bool]$Deployment;$script:deployed=$false
  $script:envFixture=@{VEGA_ENV='development';VEGA_EXTERNAL_EFFECTS='disabled';VEGA_SANDBOX_PAYMENT_EXECUTION='disabled';VEGA_PAYMENT_ATTEMPT_PREPARATION='disabled';VEGA_SANDBOX_REFUND_EXECUTION='disabled';VEGA_REFUND_PROGRAM_EXECUTION='disabled';VEGA_RENTAL_VERIFICATION='disabled';UNCHANGED_SECRET='fixture-unrelated-secret';VEGA_MEDIA_CONNECTIONS_ENABLED='true';VEGA_MEDIA_CONNECTION_KEY=('a'*64);VIMEO_CLIENT_ID='preserved-vimeo';VIMEO_CLIENT_SECRET='preserved-vimeo-secret'}
+ if($case -eq 'already-enabled'){$script:envFixture.VEGA_MEDIA_LIBRARY_ENABLED='true'}
  if($case -eq 'missing-key'){$script:envFixture.Remove('VEGA_MEDIA_CONNECTION_KEY')}
  if($case -eq 'connections-disabled'){$script:envFixture.VEGA_MEDIA_CONNECTIONS_ENABLED='false'}
  if($case -eq 'missing-vimeo'){$script:envFixture.Remove('VIMEO_CLIENT_SECRET')}
@@ -45,7 +46,7 @@ function Run-Case([string]$case){
   $base='https://api.render.com/v1/services/srv-dao5cjbm8hqs73db51j0'
   if($Uri -ceq $base){return [pscustomobject]@{id=if($script:fixtureCase -eq 'wrong-service'){'production'}else{'srv-dao5cjbm8hqs73db51j0'};autoDeploy=if($script:fixtureCase -eq 'auto-deploy'){'yes'}else{'no'};name='vega-development-web';type='web_service';ownerId='tea-dand3tajnfac7387vm30';environmentId='evm-dao55pijnfac73akca10';repo='https://github.com/acruxfarmer/vegadancelab';serviceDetails=@{envSpecificDetails=@{startCommand='node scripts/start-web.mjs'}}}}
   if($Uri -ceq ($base+'/env-vars?limit=100')){return @($script:envFixture.Keys|ForEach-Object {[pscustomobject]@{envVar=@{key=$_;value=$script:envFixture[$_]}}})}
-  if($Uri -ceq ($base+'/deploys?limit=20')){return @([pscustomobject]@{deploy=@{status=if($script:fixtureCase -eq 'active-deploy'){'build_in_progress'}else{'live'};id=if($script:fixtureCase -eq 'checkpoint-changed'){'dep-newer'}else{'dep-db77sfd9fdbs73d74u70'};commit=@{id='c61be62c322431ae3e1cb43e3a49172357e85b40'}}})}
+  if($Uri -ceq ($base+'/deploys?limit=20')){return @([pscustomobject]@{deploy=@{status=if($script:fixtureCase -eq 'active-deploy'){'build_in_progress'}else{'live'};id=if($script:fixtureCase -eq 'checkpoint-changed'){'dep-newer'}else{'dep-db7aelvavr4c73ff9he0'};commit=@{id='5d6babf10bbdf622602dc01ef91dd0b323f72c13'}}})}
   if($Uri -ceq 'https://vega-development-web.onrender.com/api/config'){return @{environment='development';squareEnabled=$false;paymentMode='disabled';externalEffects='disabled'}}
   if($script:deploymentMode -and $Uri -ceq 'https://vega-development-web.onrender.com/health/application'){return @{status='application_runtime_ready';environment='development';squareEnabled=$false}}
   if($script:deploymentMode -and $Uri -ceq ($base+'/deploys') -and $Method -ceq 'POST'){
@@ -84,14 +85,14 @@ function Run-Case([string]$case){
   if($script:envFixture.VEGA_MEDIA_CONNECTION_KEY -cnotmatch '^[a-f0-9]{64}$'){throw 'Encryption key format wrong'}
   if($case -in @('existing-key','already-provisioned') -and $script:envFixture.VEGA_MEDIA_CONNECTION_KEY -cne ('a'*64)){throw 'Existing key rotated'}
   if(-not $Deployment -and $case -eq 'already-provisioned' -and $script:writes.Count -ne 0){throw 'Unnecessary setting rewrite'}
-  if($Deployment -and ($script:writes.Count -ne 1 -or $script:writes[0] -cne 'VEGA_MEDIA_LIBRARY_ENABLED' -or -not $script:deployed)){throw 'Deployment mutation scope incorrect'}
+  if($Deployment -and (($case -eq 'already-enabled' -and $script:writes.Count -ne 0) -or ($case -ne 'already-enabled' -and ($script:writes.Count -ne 1 -or $script:writes[0] -cne 'VEGA_MEDIA_LIBRARY_ENABLED')) -or -not $script:deployed)){throw 'Deployment mutation scope incorrect'}
   $script:writes=@();$null=& $block @arguments 6>&1
   if($script:writes.Count -ne 0){throw 'Prior attempt was blindly repeated'}
   if((Get-Content -LiteralPath (Join-Path $caseRoot ('docs/layer-6/'+$filename)) -Raw) -cne $receiptText){throw 'Prior receipt was overwritten'}
  }
  Write-Output ('PASS '+$case)
 }
-$cases=@('fresh','inspect','auto-deploy','wrong-service','rental-enabled','payment-enabled','bad-key','missing-vimeo','checkpoint-changed','active-deploy','partial-failure')
+$cases=@('fresh','already-enabled','inspect','auto-deploy','wrong-service','rental-enabled','payment-enabled','bad-key','missing-vimeo','checkpoint-changed','active-deploy','partial-failure')
 if($Deployment){$cases+=@('wrong-commit','deploy-failed')}
 foreach($case in $cases){Run-Case $case}
 Write-Output ($cases.Count.ToString()+' offline operator checks passed. No live vault or network access.')
